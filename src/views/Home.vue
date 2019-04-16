@@ -1,10 +1,6 @@
 <template>
     <div class="row container-fluid padding-0">
         <div class="col-2 padding-0">
-            <!--            <multiselect v-model="value" tag-placeholder="Add this as new tag" placeholder="Search or add a tag"-->
-            <!--                         label="name" track-by="name" :options="gisLayers" :multiple="true" :taggable="true"-->
-            <!--                         @select="addLayers" @remove="deleteLayers"-->
-            <!--            ></multiselect>-->
 
             <p>All Layers</p>
             <draggable
@@ -43,12 +39,24 @@
         </div>
 
         <div class="col-10 padding-0">
+            <!--            <form class="form-inline">-->
+            <!--                <label>Geometry type &nbsp;</label>-->
+            <!--                <select id="type">-->
+            <!--                    <option value="Point">Point</option>-->
+            <!--                    <option value="LineString">LineString</option>-->
+            <!--                    <option value="Polygon">Polygon</option>-->
+            <!--                    <option value="Circle">Circle</option>-->
+            <!--                    <option value="None">None</option>-->
+            <!--                </select>-->
+            <!--            </form>-->
+
             <div id="map">
-                <select id="type">
-                    <option value="length">Length (LineString)</option>
-                    <option value="area">Area (Polygon)</option>
-                </select>
+                <button v-for="(item, index) in drawings" class="action-button-class btn btn-primary" :style="{top : ((index+1)*7+20) + '%'}"
+                        @click="setDrawType(item.name)">
+                    {{item.name}}
+                </button>
             </div>
+
         </div>
 
     </div>
@@ -62,7 +70,7 @@
     import {getArea, getLength} from 'ol/sphere.js';
     import {LineString, Polygon} from 'ol/geom.js';
     import {unByKey} from 'ol/Observable.js';
-    import Draw from 'ol/interaction/Draw.js';
+    import Draw, {createRegularPolygon, createBox} from 'ol/interaction/Draw.js';
     import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style.js';
     import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
     import {TileArcGISRest, Vector as VectorSource} from 'ol/source.js';
@@ -131,10 +139,40 @@
             return {
                 mapLayer: null,
                 value: [],
+                drawings: [
+                    {
+                        name: "Point",
+                    },
+                    {
+                        name: "LineString",
+                    },
+                    {
+                        name: "Polygon",
+                    },
+                    {
+                        name: "Circle",
+                    },
+                    {
+                        name: "Box",
+                    },
+                    {
+                        name: "Square",
+                    },
+                    {
+                        name: "Star",
+                    },
+                    {
+                        name: "None",
+                    },
+                ],
                 options: [],
                 layers: [],
                 gisLayers: [],
                 token: null,
+                source: null,
+                vector: null,
+                typeSelect: null,
+                draw: null,
                 gisLayersList: null,
                 baseMaps: {
                     sat:
@@ -173,55 +211,14 @@
         },
         mounted() {
             this.token = this.$store.getters.token;
-
-            source = new VectorSource();
-
-            let vector = new VectorLayer({
-                source: source,
-                style: new Style({
-                    fill: new Fill({
-                        color: 'rgba(255, 255, 255, 0.2)'
-                    }),
-                    stroke: new Stroke({
-                        color: '#ffcc33',
-                        width: 2
-                    }),
-                    image: new CircleStyle({
-                        radius: 7,
-                        fill: new Fill({
-                            color: '#ffcc33'
-                        })
-                    })
-                })
+            this.source = new VectorSource({wrapX: false});
+            this.vector = new VectorLayer({
+                source: this.source
             });
-
             this.layers = [
                 this.baseMaps.gray,
-                vector
+                this.vector
             ];
-            let pointerMoveHandler = function (evt) {
-                if (evt.dragging) {
-                    return;
-                }
-                /** @type {string} */
-                let helpMsg = 'Click to start drawing';
-
-                if (sketch) {
-                    var geom = (sketch.getGeometry());
-                    if (geom instanceof Polygon) {
-                        helpMsg = continuePolygonMsg;
-                    } else if (geom instanceof LineString) {
-                        helpMsg = continueLineMsg;
-                    }
-                }
-
-                helpTooltipElement.innerHTML = helpMsg;
-                helpTooltip.setPosition(evt.coordinate);
-
-                // console.log(evt.coordinate)
-                helpTooltipElement.classList.remove('hidden');
-            };
-
             this.LayerService();
             this.$nextTick(function () {
                 this.mapLayer = new Map({
@@ -234,130 +231,65 @@
                 });
                 let zoomslider = new ZoomSlider();
                 this.mapLayer.addControl(zoomslider);
-                this.mapLayer.on('pointermove', pointerMoveHandler);
-
-                this.mapLayer.getViewport().addEventListener('mouseout', function () {
-                    helpTooltipElement.classList.add('hidden');
-                });
-
-                typeSelect = document.getElementById('type');
-                typeSelect.onchange = function () {
-                    this.mapLayer.removeInteraction(draw);
-                    this.addInteraction();
-                }.bind(this);
-
-                this.addInteraction();
-
-
             });
 
         },
         methods: {
-            addInteraction() {
-                let type = (typeSelect.value === 'area' ? 'Polygon' : 'LineString');
-                draw = new Draw({
-                    source: source,
-                    type: type,
-                    style: new Style({
-                        fill: new Fill({
-                            color: 'rgba(255, 255, 255, 0.2)'
-                        }),
-                        stroke: new Stroke({
-                            color: 'rgba(0, 0, 0, 0.5)',
-                            lineDash: [10, 10],
-                            width: 2
-                        }),
-                        image: new CircleStyle({
-                            radius: 5,
-                            stroke: new Stroke({
-                                color: 'rgba(0, 0, 0, 0.7)'
-                            }),
-                            fill: new Fill({
-                                color: 'rgba(255, 255, 255, 0.2)'
-                            })
-                        })
-                    })
-                });
-                this.mapLayer.addInteraction(draw);
-
-                this.createMeasureTooltip();
-                this.createHelpTooltip();
-                let callcreateMeasureTooltip = function () {
-                    this.createMeasureTooltip();
-
-                }.bind(this);
-
-                let listener;
-                draw.on('drawstart',
-                    function (evt) {
-                        // set sketch
-                        sketch = evt.feature;
-
-                        /** @type {module:ol/coordinate~Coordinate|undefined} */
-                        let tooltipCoord = evt.coordinate;
-                        listener = sketch.getGeometry().on('change', function (evt) {
-                            console.log("b")
-
-                            let geom = evt.target;
-                            let output;
-                            if (geom instanceof Polygon) {
-                                output = formatArea(geom);
-                                tooltipCoord = geom.getInteriorPoint().getCoordinates();
-                            } else if (geom instanceof LineString) {
-                                output = formatLength(geom);
-                                tooltipCoord = geom.getLastCoordinate();
-                            }
-                            console.log(output)
-                            measureTooltipElement.innerHTML = output;
-                            measureTooltip.setPosition(tooltipCoord);
-                        });
-                    }, this);
-
-                draw.on('drawend',
-                    function () {
-                        console.log("c")
-
-                        measureTooltipElement.className = 'tooltip tooltip-static';
-                        measureTooltip.setOffset([0, -7]);
-                        // unset sketch
-                        sketch = null;
-                        // unset tooltip so that a new one can be created
-                        measureTooltipElement = null;
-                        callcreateMeasureTooltip;
-                        unByKey(listener);
-                    }, this);
-            },
-            createHelpTooltip() {
-                if (helpTooltipElement) {
-                    helpTooltipElement.parentNode.removeChild(helpTooltipElement);
-                }
-                helpTooltipElement = document.createElement('div');
-                helpTooltipElement.className = 'tooltip hidden';
-                helpTooltip = new Overlay({
-                    element: helpTooltipElement,
-                    offset: [15, 0],
-                    positioning: 'center-left'
-                });
-                this.mapLayer.addOverlay(helpTooltip);
-            },
-            createMeasureTooltip() {
-
-                if (measureTooltipElement) {
-                    measureTooltipElement.parentNode.removeChild(measureTooltipElement);
-                }
-                measureTooltipElement = document.createElement('div');
-                measureTooltipElement.className = 'tooltip tooltip-measure';
-                measureTooltip = new Overlay({
-                    element: measureTooltipElement,
-                    offset: [0, -15],
-                    positioning: 'bottom-center'
-                });
-                this.mapLayer.addOverlay(measureTooltip);
-            },
-
-
             sort() {
                 this.list = this.list.sort((a, b) => a.order - b.order);
+            },
+            addInteraction() {
+                let value = this.typeSelect
+                if (value !== 'None') {
+                    var geometryFunction;
+                    if (value === 'Square') {
+                        value = 'Circle';
+                        geometryFunction = createRegularPolygon(4);
+                    } else if (value === 'Box') {
+                        value = 'Circle';
+                        geometryFunction = createBox();
+                    } else if (value === 'Star') {
+                        value = 'Circle';
+                        geometryFunction = function (coordinates, geometry) {
+                            var center = coordinates[0];
+                            var last = coordinates[1];
+                            var dx = center[0] - last[0];
+                            var dy = center[1] - last[1];
+                            var radius = Math.sqrt(dx * dx + dy * dy);
+                            var rotation = Math.atan2(dy, dx);
+                            var newCoordinates = [];
+                            var numPoints = 12;
+                            for (var i = 0; i < numPoints; ++i) {
+                                var angle = rotation + i * 2 * Math.PI / numPoints;
+                                var fraction = i % 2 === 0 ? 1 : 0.5;
+                                var offsetX = radius * fraction * Math.cos(angle);
+                                var offsetY = radius * fraction * Math.sin(angle);
+                                newCoordinates.push([center[0] + offsetX, center[1] + offsetY]);
+                            }
+                            newCoordinates.push(newCoordinates[0].slice());
+                            if (!geometry) {
+                                geometry = new Polygon([newCoordinates]);
+                            } else {
+                                geometry.setCoordinates([newCoordinates]);
+                            }
+                            return geometry;
+                        };
+                    }
+                    this.draw = new Draw({
+                        source: this.source,
+                        type: value,
+                        geometryFunction: geometryFunction
+                    });
+                    this.mapLayer.addInteraction(this.draw);
+                } else {
+                    this.draw = new Draw({
+                        source: this.source,
+                        type: this.typeSelect
+                    });
+                    this.mapLayer.addInteraction(this.draw);
+
+                }
+
             },
             onMoveCallback(evt, originalEvent) {
                 this.gisLayersList = this.gisLayersList.map((item, index) => {
@@ -418,8 +350,16 @@
                     this.deleteLayers(service)
                 }
             },
+            setDrawType(name) {
+                this.typeSelect = name
+                this.mapLayer.removeInteraction(this.draw);
 
+                if (name !== 'None') {
 
+                    this.addInteraction();
+                }
+
+            }
         },
         computed: {
             dragOptions() {
@@ -438,6 +378,12 @@
     #map {
         height: 100vh;
         width: 100%;
+    }
+
+    .action-button-class {
+        position: absolute;
+        right: 15px;
+        z-index: 10
     }
 
     #map .ol-zoom .ol-zoom-out {
@@ -565,41 +511,3 @@
     }
 </style>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-<style>
-    .tooltip {
-        position: relative;
-        background: rgba(0, 0, 0, 0.5);
-        border-radius: 4px;
-        color: white;
-        padding: 4px 8px;
-        opacity: 1 !important;
-        white-space: nowrap;
-    }
-
-    .tooltip-measure {
-        opacity: 1;
-        font-weight: bold;
-    }
-
-    .tooltip-static {
-        background-color: #ffcc33;
-        color: black;
-        border: 1px solid white;
-    }
-
-    .tooltip-measure:before,
-    .tooltip-static:before {
-        border-top: 6px solid rgba(0, 0, 0, 0.5);
-        border-right: 6px solid transparent;
-        border-left: 6px solid transparent;
-        content: "";
-        position: absolute;
-        bottom: -6px;
-        margin-left: -7px;
-        left: 50%;
-    }
-
-    .tooltip-static:before {
-        border-top-color: #ffcc33;
-    }
-</style>
