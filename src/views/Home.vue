@@ -51,7 +51,8 @@
             <!--            </form>-->
 
             <div id="map">
-                <button v-for="(item, index) in drawings" class="action-button-class btn btn-primary" :style="{top : ((index+1)*7+20) + '%'}"
+                <button v-for="(item, index) in drawings" class="action-button-class btn btn-primary"
+                        :style="{top : ((index+1)*7+20) + '%'}"
                         @click="setDrawType(item.name)">
                     {{item.name}}
                 </button>
@@ -68,16 +69,15 @@
     import 'ol/ol.css'
     import {Map, View, Overlay} from 'ol';
     import {getArea, getLength} from 'ol/sphere.js';
-    import {LineString, Polygon} from 'ol/geom.js';
+    import {LineString, Polygon, Circle} from 'ol/geom.js';
     import {unByKey} from 'ol/Observable.js';
     import Draw, {createRegularPolygon, createBox} from 'ol/interaction/Draw.js';
+    import {Modify} from 'ol/interaction';
     import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style.js';
     import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
     import {TileArcGISRest, Vector as VectorSource} from 'ol/source.js';
     import {fromLonLat} from 'ol/proj';
     import XYZ from 'ol/source/XYZ.js';
-    import Multiselect from 'vue-multiselect'
-    import axios from 'axios';
     import draggable from "vuedraggable";
     import LayerService from '@/services/LayerService'
     import {ZoomSlider} from 'ol/control.js';
@@ -93,14 +93,6 @@
         "Sortablejs"
     ];
 
-    let helpTooltipElement;
-    let helpTooltip;
-    let sketch;
-    let source;
-    let measureTooltipElement;
-    let measureTooltip;
-    let typeSelect;
-    let draw;
     let continuePolygonMsg = 'Click to continue drawing the polygon';
     let continueLineMsg = 'Click to continue drawing the line';
 
@@ -132,7 +124,6 @@
     export default {
         name: 'home',
         components: {
-            Multiselect,
             draggable,
         },
         data() {
@@ -171,9 +162,14 @@
                 token: null,
                 source: null,
                 vector: null,
+                sketch: null,
                 typeSelect: null,
                 draw: null,
                 gisLayersList: null,
+                helpmaptooltipElement: null,
+                helpmaptooltip: null,
+                measuremaptooltipElement: null,
+                measuremaptooltip: null,
                 baseMaps: {
                     sat:
                         new TileLayer({
@@ -212,9 +208,11 @@
         mounted() {
             this.token = this.$store.getters.token;
             this.source = new VectorSource({wrapX: false});
+
             this.vector = new VectorLayer({
-                source: this.source
+                source: this.source,
             });
+            this.vector.setZIndex(9999);
             this.layers = [
                 this.baseMaps.gray,
                 this.vector
@@ -231,13 +229,17 @@
                 });
                 let zoomslider = new ZoomSlider();
                 this.mapLayer.addControl(zoomslider);
+                let modify = new Modify({source: this.source});
+                this.mapLayer.addInteraction(modify);
+
             });
 
         },
         methods: {
             sort() {
                 this.list = this.list.sort((a, b) => a.order - b.order);
-            },
+            }
+            ,
             addInteraction() {
                 let value = this.typeSelect
                 if (value !== 'None') {
@@ -275,29 +277,145 @@
                             return geometry;
                         };
                     }
+                    // if (this.typeSelect !== 'Circle') {
                     this.draw = new Draw({
                         source: this.source,
                         type: value,
                         geometryFunction: geometryFunction
                     });
                     this.mapLayer.addInteraction(this.draw);
+                    // }
+
+                    // this.draw.setZIndex(9999)
+
+
                 } else {
+
                     this.draw = new Draw({
                         source: this.source,
                         type: this.typeSelect
                     });
                     this.mapLayer.addInteraction(this.draw);
 
+                    // this.draw.setZIndex(9999)
                 }
+                this.createMeasuremaptooltip();
+                this.createHelpmaptooltip();
 
-            },
+                let listener;
+                let self = this;
+                // let handleOutput = this;
+                this.draw.on('drawstart',
+                    function (evt) {
+                        // set sketch
+                        this.sketch = evt.feature;
+
+                        /** @type {module:ol/coordinate~Coordinate|undefined} */
+                        let maptooltipCoord = evt.coordinate;
+
+
+                        listener = this.sketch.getGeometry().on('change', function (evt) {
+                            let geom = evt.target;
+                            let output;
+
+                            if (geom instanceof Polygon) {
+                                output = self.formatArea(geom);
+
+                                maptooltipCoord = geom.getInteriorPoint().getCoordinates();
+                            } else if (geom instanceof LineString) {
+                                output = self.formatLength(geom);
+
+                                maptooltipCoord = geom.getLastCoordinate();
+                            }else if (geom instanceof Circle) {
+                                output = geom.getRadius();
+                                console.log(geom.getRadius())
+                                maptooltipCoord = geom.getLastCoordinate();
+                            }
+                            console.log(output)
+                            self.measuremaptooltipElement.innerHTML = output;
+                            self.measuremaptooltip.setPosition(maptooltipCoord);
+                        });
+                    }, this);
+
+                this.draw.on('drawend',
+                    function () {
+                        self.measuremaptooltipElement.className = 'maptooltip maptooltip-static';
+                        self.measuremaptooltip.setOffset([0, -7]);
+                        // unset sketch
+                        self.sketch = null;
+                        // unset maptooltip so that a new one can be created
+                        self.measuremaptooltipElement = null;
+                        self.createMeasuremaptooltip();
+                        unByKey(listener);
+                    }, this);
+
+
+            }
+            ,
+            createHelpmaptooltip() {
+                if (this.helpmaptooltipElement) {
+                    this.helpmaptooltipElement.parentNode.removeChild(this.helpmaptooltipElement);
+                }
+                this.helpmaptooltipElement = document.createElement('div');
+                this.helpmaptooltipElement.className = 'maptooltip hidden';
+                this.helpmaptooltip = new Overlay({
+                    element: this.helpmaptooltipElement,
+                    offset: [15, 0],
+                    positioning: 'center-left'
+                });
+                this.mapLayer.addOverlay(this.helpmaptooltip);
+            }
+            ,
+            createMeasuremaptooltip() {
+                if (this.measuremaptooltipElement) {
+                    this.measuremaptooltipElement.parentNode.removeChild(this.measuremaptooltipElement);
+                }
+                this.measuremaptooltipElement = document.createElement('div');
+                this.measuremaptooltipElement.className = 'maptooltip maptooltip-measure';
+                this.measuremaptooltip = new Overlay({
+                    element: this.measuremaptooltipElement,
+                    offset: [0, -15],
+                    positioning: 'bottom-center'
+                });
+                this.mapLayer.addOverlay(this.measuremaptooltip);
+            }
+            ,
+            formatArea(polygon) {
+                let area = getArea(polygon);
+                let output;
+                if (area > 10000) {
+                    output = (Math.round(area / 1000000 * 100) / 100) +
+                        ' ' + 'km<sup>2</sup>';
+                } else {
+                    output = (Math.round(area * 100) / 100) +
+                        ' ' + 'm<sup>2</sup>';
+                }
+                return output;
+            }
+            ,
+            formatLength(line) {
+                let length = getLength(line);
+                let output;
+                if (length > 100) {
+                    output = (Math.round(length / 1000 * 100) / 100) +
+                        ' ' + 'km';
+                } else {
+                    output = (Math.round(length * 100) / 100) +
+                        ' ' + 'm';
+                }
+                return output;
+            }
+            ,
+
+
             onMoveCallback(evt, originalEvent) {
                 this.gisLayersList = this.gisLayersList.map((item, index) => {
                     let name = item.name
                     return {name, order: index + 1};
                 });
                 this.setIndexes();
-            },
+            }
+            ,
             async LayerService() {
                 const response = await LayerService.getLayers({token: this.token});
                 this.gisLayers = response.data.services;
@@ -305,7 +423,8 @@
                     let name = item.name
                     return {name, order: index + 1};
                 })
-            },
+            }
+            ,
             setIndexes() {
                 this.gisLayersList = this.gisLayersList.map((item, index) => {
                     this.mapLayer.getLayers().forEach(function (layer) {
@@ -314,7 +433,8 @@
                         }
                     });
                 });
-            },
+            }
+            ,
             addLayers(service, index) {
                 let url = "http://10.222.32.50/arcgis/rest/services/" + service.name + "/MapServer";
                 let new_layer = new TileLayer({
@@ -328,7 +448,8 @@
                 this.mapLayer.addLayer(new_layer);
                 new_layer.set('name', service.name);
                 new_layer.setZIndex(500 - index);
-            },
+            }
+            ,
             deleteLayers(service) {
                 let layersToRemove = [];
                 this.mapLayer.getLayers().forEach(function (layer) {
@@ -341,7 +462,8 @@
                 for (let i = 0; i < len; i++) {
                     this.mapLayer.removeLayer(layersToRemove[i]);
                 }
-            },
+            }
+            ,
             selectService(service, index, e) {
                 this.selectedServiceName = service.name
                 if (e.target.checked) {
@@ -349,7 +471,8 @@
                 } else {
                     this.deleteLayers(service)
                 }
-            },
+            }
+            ,
             setDrawType(name) {
                 this.typeSelect = name
                 this.mapLayer.removeInteraction(this.draw);
@@ -360,7 +483,8 @@
                 }
 
             }
-        },
+        }
+        ,
         computed: {
             dragOptions() {
                 return {
@@ -370,7 +494,8 @@
                     ghostClass: "ghost"
                 };
             }
-        },
+        }
+        ,
 
     }
 </script>
@@ -403,13 +528,13 @@
         top: 2.75em;
     }
 
-    #map .ol-zoom-in.ol-has-tooltip:hover [role=tooltip],
-    #map .ol-zoom-in.ol-has-tooltip:focus [role=tooltip] {
+    #map .ol-zoom-in.ol-has-maptooltip:hover [role=maptooltip],
+    #map .ol-zoom-in.ol-has-maptooltip:focus [role=maptooltip] {
         top: 3px;
     }
 
-    #map .ol-zoom-out.ol-has-tooltip:hover [role=tooltip],
-    #map .ol-zoom-out.ol-has-tooltip:focus [role=tooltip] {
+    #map .ol-zoom-out.ol-has-maptooltip:hover [role=maptooltip],
+    #map .ol-zoom-out.ol-has-maptooltip:focus [role=maptooltip] {
         top: 232px;
     }
 
@@ -511,3 +636,40 @@
     }
 </style>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style>
+    .maptooltip {
+        position: relative;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+        color: white;
+        padding: 4px 8px;
+        opacity: 0.7;
+        white-space: nowrap;
+    }
+
+    .maptooltip-measure {
+        opacity: 1;
+        font-weight: bold;
+    }
+
+    .maptooltip-static {
+        background-color: #ffcc33;
+        color: black;
+        border: 1px solid white;
+    }
+
+    .maptooltip-measure:before,
+    .maptooltip-static:before {
+        border-top: 6px solid rgba(0, 0, 0, 0.5);
+        border-right: 6px solid transparent;
+        border-left: 6px solid transparent;
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        margin-left: -7px;
+        left: 50%;
+    }
+
+    .maptooltip-static:before {
+        border-top-color: #ffcc33;
+    }    </style>
