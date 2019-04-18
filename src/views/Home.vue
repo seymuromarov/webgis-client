@@ -62,7 +62,8 @@
                             </div>
                             <div class="col-10">
                                 <label class="layerName" :for="layer.name"> {{ layer.name }}</label>
-                                <i style="margin-left: 10px;" class="dataIcon fas fa-table" @click=""></i>
+                                <i style="margin-left: 10px;" class="dataIcon fas fa-table"
+                                   @click="getTableData(element,layer.id)"></i>
 
                             </div>
                             <!--                        <template >-->
@@ -520,8 +521,16 @@
                 }
                 delete this.dynamicSubLayerList[0];
 
-            }
-            ,
+            },
+            async getTableData(service, layer_id) {
+                let response = await LayerService.getTableData({
+                    token: self.token,
+                    name: service.name,
+                    layer: layer_id,
+                })
+                console.log(response.data)
+
+            },
             setIndexes() {
                 this.baseLayerList = this.baseLayerList.map((item, index) => {
                     this.mapLayer.getLayers().forEach(function (layer) {
