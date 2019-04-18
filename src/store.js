@@ -7,8 +7,21 @@ import axios from 'axios'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-    state: {},
-    mutations: {},
+    state: {
+        // token: null,
+        // auth: null
+    },
+    mutations: {
+        getToken(state, response) {
+            // state.token = response.token
+            // state.auth = response
+
+        },
+        deleteToken(state, token) {
+            state.token = null
+        }
+
+    },
     actions: {},
     modules: {
         auth

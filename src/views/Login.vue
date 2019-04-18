@@ -2,11 +2,12 @@
     <div class="main">
         <div class="form-block">
             <form class="form" @submit.prevent="login">
-<!--                <img  class="logo" src="dist/logo-en.png">-->
+                <img class="logo" src="../assets/logo-en.png">
                 <input type="text" placeholder="username" v-model="username"/>
                 <input type="password" placeholder="password" v-model="password"/>
                 <p class="error-message" v-if="error"> {{ error }}</p>
-                <button><i class="fas fa-arrow-right"></i></button>
+                <!--                <button><i class="fas fa-arrow-right"></i></button>-->
+                <button>Login</button>
             </form>
         </div>
         <div class="sign-block">
@@ -16,11 +17,13 @@
 </template>
 
 <script>
+    import LoginService from '@/services/LoginService'
+
     export default {
         mounted() {
             this.error = this.$store.getters.authError
         },
-        data: function() {
+        data: function () {
             return {
                 username: '',
                 password: '',
@@ -28,20 +31,33 @@
             }
         },
         methods: {
-            login(){
-                const { username, password } = this
-                this.$store.dispatch('login', { username, password }).then(response => {
-                    if (response === 1) {
-                        this.$router.push('/')
-                        this.$store.commit('setAuthError', '')
-                    } else if (response === 0) {
-                        this.error = this.$store.getters.authError
-                    }
+            login() {
+                const {username, password} = this
+                this.LayerService(username, password)
 
-               }, error => {
-                   this.error = this.$store.getters.authError
-               })
-			}
+                //  this.$store.dispatch('login', { username, password }).then(response => {
+                //      if (response === 1) {
+                //          this.$router.push('/')
+                //          this.$store.commit('setAuthError', '')
+                //      } else if (response === 0) {
+                //          this.error = this.$store.getters.authError
+                //      }
+                //
+                // }, error => {
+                //     this.error = this.$store.getters.authError
+                // })
+            },
+            async LayerService(username, password) {
+                const response = await LoginService.getToken({username: username, password: password});
+                // response.data.username = username
+                if (!response.data.hasOwnProperty('error')) {
+                    // this.$store.commit('getToken', response.data)
+                    this.$cookie.set('username', username, {expires: '1h'});
+                    this.$cookie.set('token', response.data.token, {expires: '1h'});
+                    this.$router.push('/')
+                }
+                console.log(response.data)
+            }
         }
     }
 </script>
@@ -54,7 +70,7 @@
         left: calc(50% - 200px);
         position: absolute;
         width: 400px;
-        box-shadow: 2px 4px 20px rgba(0,0,0,0.3);
+        box-shadow: 2px 4px 20px rgba(0, 0, 0, 0.3);
         background: #fff;
         padding: 20px;
         border: none;
@@ -65,16 +81,16 @@
     }
 
     .form input {
-      width: 75%;
-      font-size: 16px;
-      text-align: center;
-      color: #fff;
-      background: #7b7b7b;
-      padding: 5px 10px;
-      margin: 5px 0;
-      outline: none;
-      border-radius: 5px;
-      border: 0;
+        width: 75%;
+        font-size: 16px;
+        text-align: center;
+        color: #fff;
+        background: #7b7b7b;
+        padding: 5px 10px;
+        margin: 5px 0;
+        outline: none;
+        border-radius: 5px;
+        border: 0;
     }
 
     .form input::placeholder {
@@ -82,17 +98,18 @@
     }
 
     .form button {
-      display: block;
-      height: 45px;
-      width: 45px;
-      margin: 20px auto 10px auto;
-      background: #4d8084;
-      color: #fff;
-      font-size: 25px;
-      border: 0;
-      border-radius: 200px;
-      cursor: pointer;
-      outline: 0;
+        display: block;
+        height: 45px;
+        /*width: 45px;*/
+        margin: 20px auto 10px auto;
+        background: #4d8084;
+        color: #fff;
+        font-size: 25px;
+        border: 0;
+        border-radius: 20px;
+        padding: 0 10px;
+        cursor: pointer;
+        outline: 0;
     }
 
     .main {
@@ -100,18 +117,18 @@
         margin: 0;
         background: url("/dist/background.jpg") no-repeat center center fixed;
         background-size: 100% 100%;
-        font-family: Roboto,sans-serif;
+        font-family: Roboto, sans-serif;
     }
 
     .sign-block {
-        position:absolute;
-        right:0;
-        bottom:0;
-        margin-right:10px
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        margin-right: 10px
     }
 
     .sign {
-        float:right;
+        float: right;
         color: #fff;
         line-height: 40px;
         font-size: 13px;

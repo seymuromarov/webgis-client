@@ -3,9 +3,11 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import 'bootstrap/dist/css/bootstrap.css'
-import './olmap'
+import './assets/style/globalStyle.scss'
 import * as ol from 'ol'
 import axios from 'axios';
+import VueCookie from 'vue-cookie'
+Vue.use(VueCookie);
 
 
 Vue.config.productionTip = false
