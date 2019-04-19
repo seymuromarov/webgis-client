@@ -63,7 +63,7 @@
                             <div class="col-10">
                                 <label class="layerName" :for="layer.name"> {{ layer.name }}</label>
                                 <i style="margin-left: 10px;" class="dataIcon fas fa-table"
-                                   @click="getTableData(element,layer.id)"></i>
+                                   @click="getTableData(element,layer.id,layer.name)"></i>
 
                             </div>
                             <!--                        <template >-->
@@ -121,7 +121,7 @@
 
             <div id="map">
                 <button v-for="(item, index) in drawings" class="action-button-class btn btn-primary"
-                        :style="{top : ((index+1)*7+15) + '%'}"
+                        :style="{top : ((index+1)*6+5) + '%'}"
                         @click="setDrawType(item.name)">
                     <i :class="item.icon"></i>
 
@@ -130,7 +130,109 @@
 
         </div>
 
+        <div class="col-10 offset-md-2" v-if="showTable">
+            <div class="tableDiv">
+                <div class="tableHeader">
+                    <div class="row">
+                        <div class="col-2">
+                            <span class="text-left">{{tableHeader}}</span>
+                        </div>
+                        <div class="col-10">
+                            <download-excel
+                                    v-if="tableFeaturesHeader"
+                                    class="fas fa-file-excel icon excelDataIcon excelIcon"
+                                    :data="featuresToExcel"
+                                    :fields="checkedColumnsToExcel"
+                                    type="xls"
+                                    :name="'test' + '_report.xls'">
+
+                                <i></i>
+
+                            </download-excel>
+                            <i class="fas  fa-columns tableColumns makeMePoint" @click="showColumnsChange">
+
+                            </i>
+                            <div class="tableShowColumns" v-if="showColumnsBoolean">
+                                <div class="columnsDiv">
+                                    <div v-for="(alias, key) in tableFeaturesHeader">
+                                        <input @click="selectColumns(alias,key, $event)" type="checkbox" :id="alias"
+                                               :value="alias" v-model="checkedColumns" checked="checked"/>
+                                        <label> {{ alias }} </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="tableContent">
+                    <table class="selfTable">
+                        <thead class="tableHeader">
+                        <tr>
+                            <th v-show="checkedColumns.includes(alias)" v-for="(alias, key) in tableFeaturesHeader">{{
+                                alias }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="tableBody">
+                        <tr v-for="(data, key) in tableFeaturesData">
+                            <td class="makeMePoint"
+                                @click="showDataModal(data)"
+                                v-show="checkedColumnsData.includes(key)"
+                                v-for="(attr, key) in data.attributes"
+                            > {{ attr }}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <modal name="data-modal"
+               transition="nice-modal-fade"
+               :min-width="200"
+               :min-height="200"
+               :delay="100"
+               :draggable="true"
+
+        >
+            <p class="tableModalHeader">{{this.tableHeader}}</p>
+
+            <div class="row" style="overflow: auto">
+
+                <table class="table popupTable">
+                    <thead>
+                    <tr class="fields">
+                        <th class="paddingLeft">Field</th>
+                        <th class="paddingRight">Value</th>
+                    </tr>
+                    </thead>
+                    <tbody class="popupTableBody">
+                    <tr v-for="(value, key) in tableFeatureData.attributes">
+                        <td class="paddingLeft">{{ key }}</td>
+                        <td class="paddingRight">{{ value }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!--                <div class="makeMePoint col-4">-->
+                <!--                    <div class="modalText"-->
+                <!--                         v-for="(attr, key) in this.tableFeaturesHeader"-->
+                <!--                    ><span>{{ attr }}</span>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+                <!--                <div class="makeMePoint col-8">-->
+                <!--                    <div class="modalText"-->
+                <!--                         v-for="(attr, key) in this.tableFeatureData.attributes"-->
+                <!--                    >-->
+                <!--                        <span> {{ attr!==" "?attr :" &nbsp" }}</span>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+            </div>
+
+        </modal>
+
     </div>
+
 
 </template>
 
@@ -161,7 +263,11 @@
         data() {
             return {
                 mapLayer: null,
+                showColumnsBoolean: false,
                 value: [],
+                checkedColumns: [],
+                checkedColumnsData: [],
+                defaultUnCheckedColumns: ['OBJECTID', 'Shape_Length', 'Shape_Area'],
                 drawings: [
                     {
                         name: "Point",
@@ -214,7 +320,13 @@
                 vectorLayer: null,
                 sketch: null,
                 typeSelect: null,
+                showTable: false,
                 draw: null,
+                tableFeaturesData: [],
+                tableFeatureData: [],
+                tableFeaturesHeader: [],
+                stackedTableFeaturesHeader: [],
+                tableHeader: null,
                 dynamicLayerList: [],
                 baseLayerList: [],
                 dynamicSubLayerList: [[]],
@@ -299,6 +411,35 @@
 
         },
         methods: {
+            selectColumns(alias, key, e) {
+                if (e.target.checked) {
+                    for (let alias in this.tableFeaturesHeader) {
+                        this.checkedColumnsData.push(this.stackedTableFeaturesHeader[alias])
+                    }
+                } else {
+                    this.checkedColumnsData = this.checkedColumnsData.filter(data => data != alias);
+                }
+            },
+            showColumnsChange() {
+                if (this.showColumnsBoolean) {
+                    this.showColumnsBoolean = false
+                } else {
+                    this.showColumnsBoolean = true
+                }
+            },
+            showDataModal(Feature) {
+                this.tableFeatureData = Feature
+                // console.log(Feature)
+                this.$modal.show('data-modal', null, {
+                    name: 'dynamic-modal',
+                    resizable: true,
+                    adaptive: true,
+                    draggable: true,
+                });
+            },
+            hideDataModal() {
+                this.$modal.hide('data-modal');
+            },
             logout() {
                 this.$cookie.delete('token');
                 this.$cookie.delete('username');
@@ -522,13 +663,58 @@
                 delete this.dynamicSubLayerList[0];
 
             },
-            async getTableData(service, layer_id) {
+            async getTableData(service, layer_id, layer_name) {
                 let response = await LayerService.getTableData({
-                    token: self.token,
+                    token: this.token,
                     name: service.name,
                     layer: layer_id,
                 })
-                console.log(response.data)
+                this.tableHeader = layer_name
+                this.tableFeaturesData = response.data.features
+                this.tableFeaturesHeader = Object.keys(this.tableFeaturesData[0].attributes);
+                let target = response.data.fieldAliases
+                this.stackedTableFeaturesHeader = this.tableFeaturesHeader
+                this.checkedColumnsData = []
+                for (let alias in this.tableFeaturesHeader) {
+                    if (!this.defaultUnCheckedColumns.includes(this.tableFeaturesHeader[alias])) {
+                        this.checkedColumnsData.push(this.tableFeaturesHeader[alias])
+                    }
+                }
+
+                this.tableFeaturesHeader = this.tableFeaturesHeader.map((item, index) => {
+                    let name = item
+                    for (let k in target) {
+                        if (typeof target[k] !== 'function') {
+                            if (item === k) {
+                                name = target[k]
+                            }
+                        }
+                    }
+                    return name;
+                });
+                this.checkedColumns = []
+                for (let alias in this.tableFeaturesHeader) {
+                    if (!this.defaultUnCheckedColumns.includes(this.tableFeaturesHeader[alias])) {
+                        this.checkedColumns.push(this.tableFeaturesHeader[alias])
+                    }
+                }
+                // this.tableFeaturesData = this.tableFeaturesData.map((item, index) => {
+                //     let name = item
+                //     for (let k in target) {
+                //         if (typeof target[k] !== 'function') {
+                //             if (item === k) {
+                //                 name = target[k]
+                //             }
+                //         }
+                //     }
+                //     return name;
+                // });
+
+
+                // console.log(this.checkedColumns)
+                console.log(this.tableFeaturesData)
+
+                this.showTable = true
 
             },
             setIndexes() {
@@ -666,7 +852,23 @@
                     disabled: false,
                     ghostClass: "ghost"
                 };
+            },
+            featuresToExcel() {
+                let features = [];
+                for (let i = 0; i < this.tableFeaturesData.length; i++) {
+                    features[i] = this.tableFeaturesData[i].attributes;
+                }
+                return features;
+            },
+            checkedColumnsToExcel() {
+                let columns = {};
+                for (let column in this.tableFeaturesHeader) {
+                    if (this.checkedColumns.includes(column))
+                        columns[this.aliases[column]] = column;
+                }
+                return columns;
             }
+
         }
         ,
 

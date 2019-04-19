@@ -170,3 +170,69 @@
   background: inherit;
   left: 12px;
 }
+
+.selfTable {
+  width: 100%;
+}
+
+.tableContent {
+  height: 250px;
+
+}
+
+.tableDiv {
+  background: white;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 300px;
+  overflow: auto;
+}
+
+.tableHeader {
+  border-bottom: 1px black solid;
+}
+
+.tableShowColumns{
+  overflow: auto;
+  position: absolute;
+   top: 25px;
+  text-align: left;
+  background: white;
+  right: 70px;
+  z-index: 99;
+  height: 100px;
+  padding: 0 80px 0 10px;
+}
+
+.tableColumns{
+  position: absolute;
+  top: 5px;
+  right: 70px;
+
+}
+
+.excelIcon{
+  position: absolute;
+  right: 100px;
+  top: 5px;
+
+}
+
+.makeMePoint{
+  cursor: pointer;
+}
+
+.tableModalHeader{
+  text-align: center;
+}
+
+.modalText{
+  display: block;
+  font-size: 18px;
+}
+
+.v--modal-box{
+  overflow: auto;
+}

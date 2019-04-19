@@ -7,6 +7,11 @@ import './assets/style/globalStyle.scss'
 import * as ol from 'ol'
 import axios from 'axios';
 import VueCookie from 'vue-cookie'
+import JsonExcel from 'vue-json-excel'
+import VModal from 'vue-js-modal'
+
+Vue.use(VModal);
+Vue.component('downloadExcel', JsonExcel);
 Vue.use(VueCookie);
 
 
