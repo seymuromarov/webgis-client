@@ -4,6 +4,8 @@ import router from './router'
 import store from './store'
 import 'bootstrap/dist/css/bootstrap.css'
 import './assets/style/globalStyle.scss'
+import './assets/style/font-awesome/css/all.css'
+import './assets/FileSaver.min.js'
 import * as ol from 'ol'
 import axios from 'axios';
 import VueCookie from 'vue-cookie'

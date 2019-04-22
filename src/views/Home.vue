@@ -8,6 +8,30 @@
             </div>
             <p>Dynamic Layers</p>
 
+            <div class="colorPickers" v-show="colorPicker.visibility">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" @click="colorPicker.borderTab = true">Border Color</a>
+                    </li>
+                    <li class="nav-item" @click="colorPicker.borderTab = false">
+                        <a class="nav-link" href="#">Fill Color</a>
+                    </li>
+                </ul>
+
+                <div class="colorPicker" v-if="colorPicker.borderTab">
+                    <h5>Border Color</h5>
+                    <colorPicker v-model="borderColors"></colorPicker>
+                </div>
+                <div class="colorPicker" v-else>
+                    <h5>Fill Color</h5>
+                    <colorPicker v-model="colors"></colorPicker>
+                </div>
+                <div class="colorPickerButton">
+                    <button class="btn btn-sm btn-danger" type="button" @click="colorPicker.visibility = false">Close
+                    </button>
+                    <button class="btn btn-sm btn-primary" type="button" @click="saveColor()">Save</button>
+                </div>
+            </div>
             <draggable
                     class="list-group"
                     tag="ul"
@@ -15,11 +39,12 @@
                     v-bind="dragOptions"
                     @start="isDragging = true"
                     @end="onMoveCallbackDynamicLayerList()"
+
             >
                 <li
                         class="list-group-item"
                         v-for="element in dynamicLayerList"
-                        :key="element.order"
+                        :key="element.name"
                         style="text-align: left"
                 >
                     <div class="row">
@@ -64,15 +89,9 @@
                                 <label class="layerName" :for="layer.name"> {{ layer.name }}</label>
                                 <i style="margin-left: 10px;" class="dataIcon fas fa-table"
                                    @click="getTableData(element,layer.id,layer.name)"></i>
-
+                                <i style="margin-left: 10px;" class="dataIcon fab fa-codiepie"
+                                   @click="OpenColorPicker(element,layer.id,layer.name,element.index)"></i>
                             </div>
-                            <!--                        <template >-->
-                            <!--                            <div class="iconsDiv" v-if="layer.geometryType">-->
-                            <!--                                <button class="colorIcon"-->
-                            <!--                                        @click=""-->
-                            <!--                                ></button>-->
-                            <!--                            </div>-->
-                            <!--                        </template>-->
 
                         </div>
 
@@ -94,7 +113,7 @@
                     <li
                             class="list-group-item"
                             v-for="element in baseLayerList"
-                            :key="element.order"
+                            :key="element.name"
                             style="text-align: left"
                     >
                         <div class="row">
@@ -125,6 +144,18 @@
                         @click="setDrawType(item.name)">
                     <i :class="item.icon"></i>
 
+                </button>
+                <button class="action-button-class btn btn-primary"
+                        style="bottom: 70px;left: 20px;"
+                        @click="pngExport"
+                        v-show="!showTable">
+                    <i class="far fa-file-image"></i>
+                </button>
+                <button class="action-button-class btn btn-primary"
+                        style="bottom: 20px;left: 20px;"
+                        @click="pdfExport"
+                        v-show="!showTable">
+                    <i class="far fa-file-pdf"></i>
                 </button>
             </div>
 
@@ -166,7 +197,7 @@
                     </div>
                 </div>
                 <div class="tableContent">
-                    <table class="selfTable">
+                    <table class="selfTable table">
                         <thead class="tableHeader">
                         <tr>
                             <th v-show="checkedColumns.includes(alias)" v-for="(alias, key) in tableFeaturesHeader">{{
@@ -253,12 +284,15 @@
     import draggable from "vuedraggable";
     import LayerService from '@/services/LayerService'
     import {ZoomSlider} from 'ol/control.js';
+    import {Chrome} from 'vue-color';
 
 
     export default {
         name: 'home',
         components: {
             draggable,
+            colorPicker: Chrome,
+
         },
         data() {
             return {
@@ -360,6 +394,7 @@
                         new TileLayer({
                             source: new XYZ({
                                 attributions: 'Tiles © Azercosmos</a>',
+                                crossOrigin: "Anonymous",
                                 url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
                             })
                         }),
@@ -367,6 +402,20 @@
                         url: "",
                     })
                 },
+                colors: {
+                    hex: '#fff',
+                    rgba: {r: 255, g: 255, b: 255, a: 1},
+                },
+                borderColors: {
+                    hex: '#fff',
+                    rgba: {r: 255, g: 255, b: 255, a: 1},
+                },
+                colorPicker: {
+                    visibility: false,
+                    layer: null,
+                    borderTab: true
+                },
+                dynamicForColors: [[]]
             }
         },
         mounted() {
@@ -411,11 +460,61 @@
 
         },
         methods: {
+            pngExport() {
+                this.mapLayer.once('rendercomplete', function (event) {
+                    let canvas = event.context.canvas;
+                    if (navigator.msSaveBlob) {
+                        navigator.msSaveBlob(canvas.msToBlob(), 'map.png');
+                    } else {
+                        canvas.toBlob(function (blob) {
+                            saveAs(blob, 'map.png');
+                        });
+                    }
+                });
+                this.mapLayer.renderSync();
+
+            },
+            pdfExport() {
+                let dims = {
+                    a0: [1189, 841],
+                    a1: [841, 594],
+                    a2: [594, 420],
+                    a3: [420, 297],
+                    a4: [297, 210],
+                    a5: [210, 148]
+                };
+                let format = 'a4';
+                let resolution = '72';
+                let dim = dims[format];
+                let width = Math.round(dim[0] * resolution / 25.4);
+                let height = Math.round(dim[1] * resolution / 25.4);
+                let size = /** @type {module:ol/size~Size} */ (this.mapLayer.getSize());
+                let extent = this.mapLayer.getView().calculateExtent(size);
+
+                this.mapLayer.once('rendercomplete', function (event) {
+                    let canvas = event.context.canvas;
+                    let data = canvas.toDataURL('image/jpeg');
+                    let pdf = new jsPDF('landscape', undefined, format);
+                    pdf.addImage(data, 'JPEG', 0, 0, dim[0], dim[1]);
+                    pdf.save('map.pdf');
+                    // Reset original map size
+                    this.mapLayer.setSize(size);
+                    this.mapLayer.getView().fit(extent, {size: size});
+                });
+
+                // Set print size
+                let printSize = [width, height];
+                this.mapLayer.setSize(printSize);
+                this.mapLayer.getView().fit(extent, {size: printSize});
+
+            },
             selectColumns(alias, key, e) {
                 if (e.target.checked) {
-                    for (let alias in this.tableFeaturesHeader) {
-                        this.checkedColumnsData.push(this.stackedTableFeaturesHeader[alias])
-                    }
+                    // for (let alias in this.tableFeaturesHeader) {
+                    // if (this.checkedColumns.includes(alias)) {
+                    this.checkedColumnsData.push(this.stackedTableFeaturesHeader[key])
+                    // }
+                    // }
                 } else {
                     this.checkedColumnsData = this.checkedColumnsData.filter(data => data != alias);
                 }
@@ -545,8 +644,7 @@
                         self.createMeasuremaptooltip();
                         unByKey(listener);
                     }, this);
-            }
-            ,
+            },
             createHelpmaptooltip() {
                 if (this.helpmaptooltipElement) {
                     this.helpmaptooltipElement.parentNode.removeChild(this.helpmaptooltipElement);
@@ -559,8 +657,7 @@
                     positioning: 'center-left'
                 });
                 this.mapLayer.addOverlay(this.helpmaptooltip);
-            }
-            ,
+            },
             createMeasuremaptooltip() {
                 if (this.measuremaptooltipElement) {
                     this.measuremaptooltipElement.parentNode.removeChild(this.measuremaptooltipElement);
@@ -573,8 +670,7 @@
                     positioning: 'bottom-center'
                 });
                 this.mapLayer.addOverlay(this.measuremaptooltip);
-            }
-            ,
+            },
             formatArea(polygon) {
                 let area = getArea(polygon);
                 let output;
@@ -614,12 +710,15 @@
             onMoveCallbackBaseLayerList(evt, originalEvent) {
                 this.baseLayerList = this.baseLayerList.map((item, index) => {
                     let name = item.name
-                    return {name, order: index + 1};
+                    let order = index + 1
+                    return {name, order};
                 });
                 this.setIndexes();
             },
             onMoveCallbackDynamicLayerList(evt, originalEvent) {
                 let self = this;
+                console.log(this.dynamicLayerList)
+
                 this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
                     let name = item.name
                     let layersVisibility = item.layersVisibility
@@ -627,7 +726,9 @@
                     let layers = item.layers
                     return {name, order: index + 1, layersVisibility, collapseVisibility, layers};
                 });
-                this.setIndexes();
+                console.log(this.dynamicLayerList)
+                this.setDynamicIndexes();
+
             },
             async LayerService() {
                 const response = await LayerService.getLayers({token: this.token});
@@ -645,6 +746,7 @@
                             'order': i + 1,
                         })
                     } else {
+
 
                         this.dynamicLayerList.push({
                             'name': self.gisLayers[i].name,
@@ -711,41 +813,70 @@
                 // });
 
 
-                // console.log(this.checkedColumns)
-                console.log(this.tableFeaturesData)
+                console.log(this.checkedColumns)
+                console.log(this.checkedColumnsData)
+                // console.log(this.tableFeaturesData)
 
                 this.showTable = true
 
             },
             setIndexes() {
-                this.baseLayerList = this.baseLayerList.map((item, index) => {
+                this.baseLayerList.map((item, index) => {
                     this.mapLayer.getLayers().forEach(function (layer) {
                         if (layer.get('name') != undefined && layer.get('name') === item.name) {
                             layer.setZIndex(500 - index)
                         }
                     });
                 });
-            }
-            ,
-            addLayers(service, index, dynamic = false) {
-                let url = "http://10.222.32.50/arcgis/rest/services/" + service.name + "/MapServer";
+            },
+            setDynamicIndexes() {
+                 this.dynamicLayerList.map((item, index) => {
+                    this.mapLayer.getLayers().forEach(function (layer) {
+                        if (layer.get('name') != undefined && layer.get('name') === item.name) {
+                            layer.setZIndex(9999 - index)
+                        }
+                    });
+                });
+            },
+            addLayers(service, index, dynamic = false, params) {
+                let url = "http://azcgisiis.gis.az/arcgis/rest/services/" + service.name + "/MapServer";
                 let new_layer;
                 if (dynamic) {
 
                     let layers = this.dynamicSubLayerList[service.name];
                     let active_layers = ''
+                    let colors = ''
+                    if (typeof this.dynamicForColors[service.name] !== 'undefined') {
+                        colors = '[';
+                        this.dynamicForColors[this.colorPicker.layer.name].forEach(function (colorLayer) {
+                            colors += colorLayer;
+                        })
+                        colors += ']';
+
+                    }
+                    // let layerDyn = '{"id":' + this.colorPicker.sublayer + ',"name":"","source":{"type":"mapLayer","mapLayerId": ' + this.colorPicker.sublayer + '},"drawingInfo":{"renderer":{"type":"simple","label":"","description":"","symbol":{"color":' + color + ',"outline":{"color":' + outline + ',"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0}]';
+                    //
+                    // this.dynamicForColors[this.colorPicker.layer.name][this.colorPicker.sublayer] = layerDyn;
+
                     layers.forEach(function (layer, index) {
                         if (layer === true) {
                             active_layers += index + ','
                         }
                     })
+
+                    // let layerDyn = '[' +
+                    //     '{"id":0,"name":"","source":{"type":"mapLayer","mapLayerId": 0},"drawingInfo":{"renderer":{"type":"simple","label":"","description":"","symbol":{"color":[212,71,71,255],"outline":{"color":[181,74,74,255],"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0},' +
+                    //     '{"id":1,"name":"","source":{"type":"mapLayer","mapLayerId": 1},"drawingInfo":{"renderer":{"type":"simple","label":"","description":"","symbol":{"color":[212,71,71,255],"outline":{"color":[181,74,74,255],"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0}' +
+                    //     ']';
                     active_layers = active_layers.slice(0, -1);
                     new_layer = new TileLayer({
                         source: new TileArcGISRest({
                             url: url,
+                            crossOrigin: "Anonymous",
                             params: {
                                 "token": this.token,
-                                "layers": "show:" + active_layers
+                                "layers": "show:" + active_layers,
+                                "dynamicLayers": colors
                             }
                         })
                     });
@@ -753,6 +884,7 @@
                     new_layer = new TileLayer({
                         source: new TileArcGISRest({
                             url: url,
+                            crossOrigin: "Anonymous",
                             params: {
                                 "token": this.token,
                             }
@@ -762,12 +894,11 @@
                 this.mapLayer.addLayer(new_layer);
                 new_layer.set('name', service.name);
                 if (dynamic) {
-                    new_layer.setZIndex(1000 - index);
+                    new_layer.setZIndex(9999 - index);
                 } else {
                     new_layer.setZIndex(500 - index);
                 }
-            }
-            ,
+            },
             deleteLayers(service) {
                 let layersToRemove = [];
                 let self = this
@@ -783,6 +914,7 @@
                 }
             },
             dynamicLayersReset(service, status) {
+                // let responseColor = await LayerService.getLayerDynamic({token: this.token, name: service.name});
                 this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
                     let name = item.name
                     let layersVisibility = item.layersVisibility
@@ -798,7 +930,7 @@
             selectService(service, index, dynamic, e) {
                 this.selectedServiceName = service.name
                 if (e.target.checked) {
-                    this.addLayers(service, index, dynamic)
+                    this.addLayers(service, index, dynamic, null)
                     for (let i in this.dynamicLayerList) {
                         if (this.dynamicLayerList[i].name === service.name) {
                             this.dynamicLayerList[i].collapseVisibility = true;
@@ -829,9 +961,44 @@
                         break;
                     }
                 }
-                this.addLayers(service, index, true)
+                this.addLayers(service, index, true, null)
 
             },
+            saveColor() {
+                // this.changeColor(this.colorPicker.layer.drawingInfo.renderer.symbol, this.colors)
+                // this.changeColor(this.colorPicker.layer.drawingInfo.renderer.symbol.outline, this.borderColors)
+                this.deleteLayers(this.colorPicker.layer)
+                this.colorPicker.visibility = false;
+                let colors = [];
+                let outlines = [];
+                colors[0] = this.colors.rgba.r;
+                colors[1] = this.colors.rgba.g;
+                colors[2] = this.colors.rgba.b;
+                colors[3] = 255;
+                outlines[0] = this.borderColors.rgba.r;
+                outlines[1] = this.borderColors.rgba.g;
+                outlines[2] = this.borderColors.rgba.b;
+                outlines[3] = 255;
+
+                let color = "[" + colors[0] + "," + colors[1] + "," + colors[2] + "," + colors[3] + "]";
+                let outline = "[" + outlines[0] + "," + outlines[1] + "," + outlines[2] + "," + outlines[3] + "]";
+                // let layerDyn = '[' +
+                //     '{"id":' + this.colorPicker.sublayer + ',"name":"","source":{"type":"mapLayer","mapLayerId": ' + this.colorPicker.sublayer + '},"drawingInfo":{"renderer":{"type":"simple","label":"","description":"","symbol":{"color":' + color + ',"outline":{"color":' + outline + ',"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0},]';
+                if (typeof this.dynamicForColors[this.colorPicker.layer.name] === 'undefined') {
+                    this.dynamicForColors[this.colorPicker.layer.name] = [];
+                }
+                let layerDyn = '{"id":' + this.colorPicker.sublayer + ',"name":"","source":{"type":"mapLayer","mapLayerId": ' + this.colorPicker.sublayer + '},"drawingInfo":{"renderer":{"type":"simple","label":"","description":"","symbol":{"color":' + color + ',"outline":{"color":' + outline + ',"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0},';
+
+                this.dynamicForColors[this.colorPicker.layer.name][this.colorPicker.sublayer] = layerDyn;
+
+                // responseDynamic.data.layers.forEach(function (element) {
+                //     self.dynamicSubLayerList[self.gisLayers[i].name][element.id] = true
+                //
+                // });
+
+                this.addLayers(this.colorPicker.layer, this.colorPicker.index, true, layerDyn)
+            },
+
             setDrawType(name) {
                 this.typeSelect = name
                 this.mapLayer.removeInteraction(this.draw);
@@ -841,11 +1008,70 @@
                     this.addInteraction();
                 }
 
+            },
+            layerBackground(layer) {
+                if (layer.color) {
+                    let color = layer.color;
+                    return "rgba(" + color[0] + "," + color[1] + "," + color[2] + "," + color[3] + ")"
+                }
+            },
+            layerBorderColor(layer) {
+                if (layer.outline) {
+                    let borderColor = layer.outline;
+                    return "rgba(" + borderColor[0] + "," + borderColor[1] + "," + borderColor[2] + "," + borderColor[3] + ")"
+                }
+            },
+            iconVisibility(layer) {
+                if (this.checkNested(layer, 'drawingInfo', 'renderer', 'symbol', 'outline', 'color')) {
+                    return "visible";
+                } else {
+                    return "hidden";
+                }
+            },
+            OpenColorPicker(layer, sublayer, name, index) {
+                this.colorPicker.visibility = true;
+                this.colorPicker.sublayer = sublayer;
+                this.colorPicker.layer = layer;
+                this.colorPicker.service = name;
+                this.colorPicker.index = index;
+            },
+            async getLayerDynamic(layer) {
+                let response = await LayerService.getLayerDynamic({
+                    token: this.token,
+                    name: layer.name,
+                })
+
+                console.log(response.data)
+            },
+            changeColor(layer, globalColor) {
+                layer.color[0] = globalColor.rgba.r;
+                layer.color[1] = globalColor.rgba.g;
+                layer.color[2] = globalColor.rgba.b;
+                layer.color[3] = globalColor.rgba.a;
+            },
+            checkNested(obj) {
+                var args = Array.prototype.slice.call(arguments, 1);
+
+                for (var i = 0; i < args.length; i++) {
+                    if (!obj || !obj.hasOwnProperty(args[i])) {
+                        return false;
+                    }
+                    obj = obj[args[i]];
+                }
+                return true;
             }
         }
         ,
         computed: {
             dragOptions() {
+                return {
+                    animation: 0,
+                    group: "description",
+                    disabled: false,
+                    ghostClass: "ghost"
+                };
+            },
+            dragOptionsDynamic() {
                 return {
                     animation: 0,
                     group: "description",
