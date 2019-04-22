@@ -157,6 +157,24 @@
                     <i class="far fa-file-image"></i>
                 </button>
                 <button class="action-button-class btn btn-primary"
+                        style="bottom: 50px;right: 10px;"
+                        @mouseover="selectLayerForm = true"
+                        v-if="!showTable">
+                    <i class="fas fa-stream"></i>
+                </button>
+                <div v-show="selectLayerForm"
+                     style="bottom: 50px;right: 10px;z-index: 999;position: absolute;background: white;text-align: left">
+                    <form>
+                        <div v-for="(element,index) in baseMaps">
+                            <input type="radio" class="" name="baseLayer" @click="setBaseLayout(index)">
+                            <span>{{index}}</span>
+
+                        </div>
+                    </form>
+                </div>
+
+
+                <button class="action-button-class btn btn-primary"
                         style="bottom: 20px;left: 20px;"
                         @click="pdfExport"
                         v-show="!showTable">
@@ -305,6 +323,7 @@
         data() {
             return {
                 mapLayer: null,
+                selectLayerForm: false,
                 showColumnsBoolean: false,
                 value: [],
                 checkedColumns: [],
@@ -381,6 +400,7 @@
                         new TileLayer({
                             source: new XYZ({
                                 attributions: 'Tiles © Azercosmos</a>',
+                                name: "base",
                                 url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
                             })
                         }),
@@ -485,8 +505,8 @@
                 let modify = new Modify({source: this.source});
                 this.mapLayer.addInteraction(modify);
 
-                let self=this;
-                dragAndDropInteraction.on('addfeatures', function(event) {
+                let self = this;
+                dragAndDropInteraction.on('addfeatures', function (event) {
                     let vectorSource = new VectorSource({
                         features: event.features
                     });
@@ -497,9 +517,9 @@
                     self.mapLayer.getView().fit(vectorSource.getExtent());
                 });
 
-                let displayFeatureInfo = function(pixel) {
+                let displayFeatureInfo = function (pixel) {
                     let features = [];
-                    self.mapLayer.forEachFeatureAtPixel(pixel, function(feature) {
+                    self.mapLayer.forEachFeatureAtPixel(pixel, function (feature) {
                         features.push(feature);
                     });
                     if (features.length > 0) {
@@ -514,7 +534,7 @@
                     }
                 };
 
-                this.mapLayer.on('pointermove', function(evt) {
+                this.mapLayer.on('pointermove', function (evt) {
                     if (evt.dragging) {
                         return;
                     }
@@ -522,9 +542,13 @@
                     displayFeatureInfo(pixel);
                 });
 
-                this.mapLayer.on('click', function(evt) {
+                this.mapLayer.on('click', function (evt) {
                     displayFeatureInfo(evt.pixel);
                 });
+
+                console.log(this.mapLayer.getLayers())
+
+
             });
 
         },
@@ -961,6 +985,16 @@
                 } else {
                     new_layer.setZIndex(500 - index);
                 }
+            },
+            setBaseLayout(index) {
+                this.mapLayer.getLayers().forEach(function (layer) {
+                    console.log(layer.get('name'))
+                    // if (layer.get('name') != undefined && layer.get('name') === service.name) {
+                    //     layersToRemove.push(layer);
+                    //     self.dynamicLayersReset(service, false)
+                    // }
+                });
+
             },
             deleteLayers(service) {
                 let layersToRemove = [];
