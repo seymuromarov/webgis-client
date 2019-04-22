@@ -140,11 +140,16 @@
 
             <div id="map">
                 <button v-for="(item, index) in drawings" class="action-button-class btn btn-primary"
-                        :style="{top : ((index+1)*6+5) + '%'}"
+                        :style="{top : ((index+1)*6+10) + '%'}"
                         @click="setDrawType(item.name)">
                     <i :class="item.icon"></i>
 
                 </button>
+                <div id="mouse-position"
+                     class="latLongShow"
+                ></div>
+                <div id="info" class="infoKms">&nbsp;</div>
+
                 <button class="action-button-class btn btn-primary"
                         style="bottom: 70px;left: 20px;"
                         @click="pngExport"
@@ -275,7 +280,7 @@
     import {LineString, Polygon, Circle, Point} from 'ol/geom.js';
     import {unByKey} from 'ol/Observable.js';
     import Draw, {createRegularPolygon, createBox} from 'ol/interaction/Draw.js';
-    import {Modify, defaults as defaultInteractions, DragRotateAndZoom} from 'ol/interaction';
+    import {Modify, defaults as defaultInteractions, DragRotateAndZoom, DragAndDrop} from 'ol/interaction';
     import {Circle as CircleStyle, Fill, Stroke, Style, Icon} from 'ol/style.js';
     import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
     import {TileArcGISRest, Vector as VectorSource} from 'ol/source.js';
@@ -283,8 +288,11 @@
     import XYZ from 'ol/source/XYZ.js';
     import draggable from "vuedraggable";
     import LayerService from '@/services/LayerService'
-    import {ZoomSlider} from 'ol/control.js';
+    import {ZoomSlider, defaults as defaultControls} from 'ol/control.js';
     import {Chrome} from 'vue-color';
+    import MousePosition from 'ol/control/MousePosition.js';
+    import {createStringXY} from 'ol/coordinate.js';
+    import {GPX, GeoJSON, IGC, KML, TopoJSON} from 'ol/format.js';
 
 
     export default {
@@ -332,11 +340,11 @@
                         icon: 'far fa-square'
 
                     },
-                    {
-                        name: "Star",
-                        icon: 'far fa-star'
-
-                    },
+                    // {
+                    //     name: "Star",
+                    //     icon: 'far fa-star'
+                    //
+                    // },
                     {
                         name: "None",
                         icon: 'fas fa-mouse-pointer'
@@ -440,10 +448,31 @@
             ];
             this.LayerService();
             this.$nextTick(function () {
+                let mousePositionControl = new MousePosition({
+                    coordinateFormat: createStringXY(4),
+                    projection: 'EPSG:4326',
+                    // // comment the following two lines to have the mouse position
+                    // // be placed within the map.
+                    className: 'custom-mouse-position',
+                    target: document.getElementById('mouse-position'),
+                    undefinedHTML: '&nbsp;'
+                });
+
+                let dragAndDropInteraction = new DragAndDrop({
+                    formatConstructors: [
+                        GPX,
+                        GeoJSON,
+                        IGC,
+                        KML,
+                        TopoJSON
+                    ]
+                });
+
                 this.mapLayer = new Map({
                     interactions: defaultInteractions().extend([
-                        new DragRotateAndZoom()
+                        new DragRotateAndZoom(), dragAndDropInteraction
                     ]),
+                    controls: defaultControls().extend([mousePositionControl]),
                     target: 'map',
                     layers: this.layers,
                     view: new View({
@@ -456,6 +485,46 @@
                 let modify = new Modify({source: this.source});
                 this.mapLayer.addInteraction(modify);
 
+                let self=this;
+                dragAndDropInteraction.on('addfeatures', function(event) {
+                    let vectorSource = new VectorSource({
+                        features: event.features
+                    });
+                    self.mapLayer.addLayer(new VectorLayer({
+                        renderMode: 'image',
+                        source: vectorSource
+                    }));
+                    self.mapLayer.getView().fit(vectorSource.getExtent());
+                });
+
+                let displayFeatureInfo = function(pixel) {
+                    let features = [];
+                    self.mapLayer.forEachFeatureAtPixel(pixel, function(feature) {
+                        features.push(feature);
+                    });
+                    if (features.length > 0) {
+                        let info = [];
+                        let i, ii;
+                        for (i = 0, ii = features.length; i < ii; ++i) {
+                            info.push(features[i].get('name'));
+                        }
+                        document.getElementById('info').innerHTML = info.join(', ') || '&nbsp';
+                    } else {
+                        document.getElementById('info').innerHTML = '&nbsp;';
+                    }
+                };
+
+                this.mapLayer.on('pointermove', function(evt) {
+                    if (evt.dragging) {
+                        return;
+                    }
+                    let pixel = self.mapLayer.getEventPixel(evt.originalEvent);
+                    displayFeatureInfo(pixel);
+                });
+
+                this.mapLayer.on('click', function(evt) {
+                    displayFeatureInfo(evt.pixel);
+                });
             });
 
         },
@@ -555,33 +624,34 @@
                     } else if (value === 'Box') {
                         value = 'Circle';
                         geometryFunction = createBox();
-                    } else if (value === 'Star') {
-                        value = 'Circle';
-                        geometryFunction = function (coordinates, geometry) {
-                            var center = coordinates[0];
-                            var last = coordinates[1];
-                            var dx = center[0] - last[0];
-                            var dy = center[1] - last[1];
-                            var radius = Math.sqrt(dx * dx + dy * dy);
-                            var rotation = Math.atan2(dy, dx);
-                            var newCoordinates = [];
-                            var numPoints = 12;
-                            for (var i = 0; i < numPoints; ++i) {
-                                var angle = rotation + i * 2 * Math.PI / numPoints;
-                                var fraction = i % 2 === 0 ? 1 : 0.5;
-                                var offsetX = radius * fraction * Math.cos(angle);
-                                var offsetY = radius * fraction * Math.sin(angle);
-                                newCoordinates.push([center[0] + offsetX, center[1] + offsetY]);
-                            }
-                            newCoordinates.push(newCoordinates[0].slice());
-                            if (!geometry) {
-                                geometry = new Polygon([newCoordinates]);
-                            } else {
-                                geometry.setCoordinates([newCoordinates]);
-                            }
-                            return geometry;
-                        };
                     }
+                    // else if (value === 'Star') {
+                    //     value = 'Circle';
+                    //     geometryFunction = function (coordinates, geometry) {
+                    //         var center = coordinates[0];
+                    //         var last = coordinates[1];
+                    //         var dx = center[0] - last[0];
+                    //         var dy = center[1] - last[1];
+                    //         var radius = Math.sqrt(dx * dx + dy * dy);
+                    //         var rotation = Math.atan2(dy, dx);
+                    //         var newCoordinates = [];
+                    //         var numPoints = 12;
+                    //         for (var i = 0; i < numPoints; ++i) {
+                    //             var angle = rotation + i * 2 * Math.PI / numPoints;
+                    //             var fraction = i % 2 === 0 ? 1 : 0.5;
+                    //             var offsetX = radius * fraction * Math.cos(angle);
+                    //             var offsetY = radius * fraction * Math.sin(angle);
+                    //             newCoordinates.push([center[0] + offsetX, center[1] + offsetY]);
+                    //         }
+                    //         newCoordinates.push(newCoordinates[0].slice());
+                    //         if (!geometry) {
+                    //             geometry = new Polygon([newCoordinates]);
+                    //         } else {
+                    //             geometry.setCoordinates([newCoordinates]);
+                    //         }
+                    //         return geometry;
+                    //     };
+                    // }
 
                     this.draw = new Draw({
                         source: this.source,
@@ -830,7 +900,7 @@
                 });
             },
             setDynamicIndexes() {
-                 this.dynamicLayerList.map((item, index) => {
+                this.dynamicLayerList.map((item, index) => {
                     this.mapLayer.getLayers().forEach(function (layer) {
                         if (layer.get('name') != undefined && layer.get('name') === item.name) {
                             layer.setZIndex(9999 - index)
@@ -854,9 +924,6 @@
                         colors += ']';
 
                     }
-                    // let layerDyn = '{"id":' + this.colorPicker.sublayer + ',"name":"","source":{"type":"mapLayer","mapLayerId": ' + this.colorPicker.sublayer + '},"drawingInfo":{"renderer":{"type":"simple","label":"","description":"","symbol":{"color":' + color + ',"outline":{"color":' + outline + ',"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0}]';
-                    //
-                    // this.dynamicForColors[this.colorPicker.layer.name][this.colorPicker.sublayer] = layerDyn;
 
                     layers.forEach(function (layer, index) {
                         if (layer === true) {
@@ -864,10 +931,6 @@
                         }
                     })
 
-                    // let layerDyn = '[' +
-                    //     '{"id":0,"name":"","source":{"type":"mapLayer","mapLayerId": 0},"drawingInfo":{"renderer":{"type":"simple","label":"","description":"","symbol":{"color":[212,71,71,255],"outline":{"color":[181,74,74,255],"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0},' +
-                    //     '{"id":1,"name":"","source":{"type":"mapLayer","mapLayerId": 1},"drawingInfo":{"renderer":{"type":"simple","label":"","description":"","symbol":{"color":[212,71,71,255],"outline":{"color":[181,74,74,255],"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0}' +
-                    //     ']';
                     active_layers = active_layers.slice(0, -1);
                     new_layer = new TileLayer({
                         source: new TileArcGISRest({

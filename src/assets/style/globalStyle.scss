@@ -265,3 +265,24 @@
   margin-top: 20px;
   text-align: right;
 }
+
+.latLongShow{
+  top: 10px;
+  right: 20px;
+  position: absolute;
+  z-index: 9999;
+  background: whitesmoke;
+  padding: 5px 10px;
+  border-radius: 10px;
+}
+
+.infoKms{
+  top: 55px;
+  right: 20px;
+  position: absolute;
+  z-index: 9999;
+  background: whitesmoke;
+  padding: 5px 10px;
+  border-radius: 10px;
+
+}
