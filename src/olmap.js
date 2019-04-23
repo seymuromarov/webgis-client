@@ -7,8 +7,8 @@
 // let token = "NozbfcjEYvYYZRhpgKE9S-TmHgSi0k_8p9VygfLGa10gXkmC2oPV8UZUyrs5pekh";
 // let url = 'https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer';
 // let azersky = "http://webgis.azercosmos.az/map.php?service=AzercosmosBasemap";
-// let demir = "http://azcgisiis.gis.az/arcgis/rest/services/DəmirYoluBaki/MapServer";
-// let mosaic = "http://azcgisiis.gis.az/arcgis/rest/services/AzerkyMosaic2017/MapServer";
+// let demir = "http://localhost:5000/arcgis/rest/services/DəmirYoluBaki/MapServer";
+// let mosaic = "http://localhost:5000/arcgis/rest/services/AzerkyMosaic2017/MapServer";
 //
 // let layers = [
 //     new TileLayer({

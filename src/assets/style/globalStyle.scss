@@ -213,7 +213,11 @@
   position: absolute;
   top: 5px;
   right: 70px;
-
+}
+.tableClose{
+  position: absolute;
+  top: 5px;
+  right: 45px;
 }
 
 .excelIcon{
@@ -224,7 +228,7 @@
 }
 
 .makeMePoint{
-  cursor: pointer;
+  cursor: pointer !important;
 }
 
 .tableModalHeader{
@@ -267,8 +271,8 @@
 }
 
 .latLongShow{
-  top: 10px;
-  right: 20px;
+  top: 6px;
+  right: 80px;
   position: absolute;
   z-index: 9999;
   background: whitesmoke;
@@ -289,4 +293,20 @@
 
 .layerDiv{
   padding-left: 20px !important;
+}
+.map:-moz-full-screen {
+  height: 100%;
+}
+.map:-webkit-full-screen {
+  height: 100%;
+}
+.map:-ms-fullscreen {
+  height: 100%;
+}
+.map:fullscreen {
+  height: 100%;
+}
+/* position the rotate control lower than usual */
+.ol-rotate {
+  top: 3em;
 }

@@ -148,21 +148,15 @@
                 <div id="mouse-position"
                      class="latLongShow"
                 ></div>
-                <div id="info" class="infoKms">&nbsp;</div>
+                <div id="info" class="infoKms" v-show="this.kmsInfo!==null">&nbsp;</div>
 
-                <button class="action-button-class btn btn-primary"
-                        style="bottom: 70px;left: 20px;"
-                        @click="pngExport"
-                        v-show="!showTable">
-                    <i class="far fa-file-image"></i>
-                </button>
                 <button class="action-button-class btn btn-primary"
                         style="bottom: 50px;right: 10px;"
                         @mouseover="selectLayerForm = true"
                         v-if="!showTable">
                     <i class="fas fa-stream"></i>
                 </button>
-                <div v-show="selectLayerForm"
+                <div v-show="selectLayerForm" @mouseleave="selectLayerForm=false"
                      style="bottom: 50px;right: 10px;z-index: 999;position: absolute;background: white;text-align: left">
                     <form>
                         <div v-for="(element,index) in baseMaps">
@@ -173,6 +167,18 @@
                     </form>
                 </div>
 
+                <button class="action-button-class btn btn-primary"
+                        style="bottom: 120px;left: 20px;"
+                        @click="addGraticule"
+                        v-show="!showTable">
+                    <i class="fas fa-barcode"></i>
+                </button>
+                <button class="action-button-class btn btn-primary"
+                        style="bottom: 70px;left: 20px;"
+                        @click="pngExport"
+                        v-show="!showTable">
+                    <i class="far fa-file-image"></i>
+                </button>
 
                 <button class="action-button-class btn btn-primary"
                         style="bottom: 20px;left: 20px;"
@@ -206,6 +212,7 @@
                             <i class="fas  fa-columns tableColumns makeMePoint" @click="showColumnsChange">
 
                             </i>
+                            <i class="fas fa-times tableClose makeMePoint" @click="showTable=false"></i>
                             <div class="tableShowColumns" v-if="showColumnsBoolean">
                                 <div class="columnsDiv">
                                     <div v-for="(alias, key) in tableFeaturesHeader">
@@ -306,11 +313,13 @@
     import XYZ from 'ol/source/XYZ.js';
     import draggable from "vuedraggable";
     import LayerService from '@/services/LayerService'
-    import {ZoomSlider, defaults as defaultControls} from 'ol/control.js';
+    import {ZoomSlider, defaults as defaultControls, FullScreen} from 'ol/control.js';
     import {Chrome} from 'vue-color';
     import MousePosition from 'ol/control/MousePosition.js';
     import {createStringXY} from 'ol/coordinate.js';
     import {GPX, GeoJSON, IGC, KML, TopoJSON} from 'ol/format.js';
+    import Graticule from 'ol/Graticule.js';
+    import {shiftKeyOnly} from "ol/events/condition";
 
 
     export default {
@@ -374,6 +383,7 @@
                 layers: [],
                 gisLayers: [],
                 token: null,
+                kmsInfo: null,
                 username: null,
                 source: null,
                 vector: null,
@@ -386,6 +396,8 @@
                 tableFeaturesData: [],
                 tableFeatureData: [],
                 tableFeaturesHeader: [],
+                graticule: false,
+                graticuleLayer: null,
                 stackedTableFeaturesHeader: [],
                 tableHeader: null,
                 dynamicLayerList: [],
@@ -397,36 +409,44 @@
                 measuremaptooltip: null,
                 baseMaps: {
                     sat:
-                        new TileLayer({
-                            source: new XYZ({
-                                attributions: 'Tiles © Azercosmos</a>',
-                                name: "base",
-                                url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-                            })
+                        new XYZ({
+                            attributions: 'Tiles © Azercosmos</a>',
+                            name: "sat",
+                            url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
                         }),
                     waterColor:
-                        new TileLayer({
-                            source: new XYZ({
-                                attributions: 'Tiles © Azercosmos</a>',
-                                url: "//{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png",
-                            })
+                        new XYZ({
+                            attributions: 'Tiles © Azercosmos</a>',
+                            name: "waterColor",
+                            url: "//a.tile.stamen.com/watercolor/{z}/{x}/{y}.png",
                         }),
                     esriWorldStreetMap:
-                        new TileLayer({
-                            source: new XYZ({
-                                attributions: 'Tiles © Azercosmos</a>',
-                                url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-                            })
+                        new XYZ({
+                            attributions: 'Tiles © Azercosmos</a>',
+                            url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
                         }),
+                    terrain:
+                        new XYZ({
+                            attributions: 'Tiles © Azercosmos</a>',
+                            name: "waterColor",
+                            url: "//a.tile.stamen.com/terrain/{z}/{x}/{y}.png",
+                        }),
+                    toner:
+                        new XYZ({
+                            attributions: 'Tiles © Azercosmos</a>',
+                            name: "waterColor",
+                            url: "//a.tile.stamen.com/toner/{z}/{x}/{y}.png",
+                        }),
+
                     gray:
-                        new TileLayer({
-                            source: new XYZ({
-                                attributions: 'Tiles © Azercosmos</a>',
-                                crossOrigin: "Anonymous",
-                                url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-                            })
+                        new XYZ({
+                            attributions: 'Tiles © Azercosmos</a>',
+                            crossOrigin: "Anonymous",
+                            url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
                         }),
-                    none: new TileArcGISRest({
+                    none: new XYZ({
+                        attributions: 'Tiles © Azercosmos</a>',
+                        crossOrigin: "Anonymous",
                         url: "",
                     })
                 },
@@ -462,8 +482,15 @@
 
             });
             this.vector.setZIndex(9999);
+            let gray = new TileLayer({
+                source: new XYZ({
+                    attributions: 'Tiles © Azercosmos</a>',
+                    crossOrigin: "Anonymous",
+                    url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+                })
+            });
             this.layers = [
-                this.baseMaps.gray,
+                gray,
                 this.vector,
             ];
             this.LayerService();
@@ -492,7 +519,10 @@
                     interactions: defaultInteractions().extend([
                         new DragRotateAndZoom(), dragAndDropInteraction
                     ]),
-                    controls: defaultControls().extend([mousePositionControl]),
+                    controls: defaultControls().extend([
+                        mousePositionControl,
+                        new FullScreen()
+                    ]),
                     target: 'map',
                     layers: this.layers,
                     view: new View({
@@ -500,6 +530,7 @@
                         zoom: 6
                     })
                 });
+
                 let zoomslider = new ZoomSlider();
                 this.mapLayer.addControl(zoomslider);
                 let modify = new Modify({source: this.source});
@@ -529,30 +560,66 @@
                             info.push(features[i].get('name'));
                         }
                         document.getElementById('info').innerHTML = info.join(', ') || '&nbsp';
+                        self.kmsInfo = info.join(', ') || null
+
                     } else {
                         document.getElementById('info').innerHTML = '&nbsp;';
+                        self.kmsInfo = null
                     }
                 };
 
+                let showInfo = function (event) {
+                    let features = self.mapLayer.getFeaturesAtPixel(event.pixel);
+                    // if (!features) {
+                    //     document.getElementById('info').innerText = '';
+                    //     document.getElementById('info').style.opacity = 0;
+                    //     return;
+                    // }
+                    // let properties = features[0].getProperties();
+                    // document.getElementById('info').innerText = JSON.stringify(properties, null, 2);
+                    // document.getElementById('info').style.opacity = 1;
+                    // console.log(features)
+                };
                 this.mapLayer.on('pointermove', function (evt) {
                     if (evt.dragging) {
                         return;
                     }
                     let pixel = self.mapLayer.getEventPixel(evt.originalEvent);
                     displayFeatureInfo(pixel);
+                    showInfo(evt)
                 });
 
                 this.mapLayer.on('click', function (evt) {
                     displayFeatureInfo(evt.pixel);
                 });
 
-                console.log(this.mapLayer.getLayers())
-
 
             });
 
         },
         methods: {
+
+            addGraticule() {
+                if (this.graticule) {
+                    this.graticuleLayer.setMap(null)
+                    this.graticule = false
+                } else {
+                    this.graticuleLayer = new Graticule({
+                        // the style to use for the lines, optional.
+                        strokeStyle: new Stroke({
+                            color: 'rgba(255,120,0,0.9)',
+                            width: 2,
+                            lineDash: [0.5, 4]
+                        }),
+                        showLabels: true,
+                        map: this.mapLayer
+                    });
+
+
+                    this.graticule = true
+                }
+
+            },
             pngExport() {
                 this.mapLayer.once('rendercomplete', function (event) {
                     let canvas = event.context.canvas;
@@ -584,23 +651,26 @@
                 let size = /** @type {module:ol/size~Size} */ (this.mapLayer.getSize());
                 let extent = this.mapLayer.getView().calculateExtent(size);
 
+                let self = this;
                 this.mapLayer.once('rendercomplete', function (event) {
                     let canvas = event.context.canvas;
                     let data = canvas.toDataURL('image/jpeg');
                     let pdf = new jsPDF('landscape', undefined, format);
                     pdf.addImage(data, 'JPEG', 0, 0, dim[0], dim[1]);
                     pdf.save('map.pdf');
+                    console.log('test')
                     // Reset original map size
-                    this.mapLayer.setSize(size);
-                    this.mapLayer.getView().fit(extent, {size: size});
+                    self.mapLayer.setSize(size);
+                    self.mapLayer.getView().fit(extent, {size: size});
                 });
 
                 // Set print size
                 let printSize = [width, height];
-                this.mapLayer.setSize(printSize);
-                this.mapLayer.getView().fit(extent, {size: printSize});
+                this.mapLayer.setSize(size);
+                // this.mapLayer.getView().fit(extent, {size: size});
 
             },
+
             selectColumns(alias, key, e) {
                 if (e.target.checked) {
                     // for (let alias in this.tableFeaturesHeader) {
@@ -680,7 +750,8 @@
                     this.draw = new Draw({
                         source: this.source,
                         type: value,
-                        geometryFunction: geometryFunction
+                        geometryFunction: geometryFunction,
+                        freehandCondition: shiftKeyOnly
                     });
                     this.mapLayer.addInteraction(this.draw);
 
@@ -688,7 +759,9 @@
 
                     this.draw = new Draw({
                         source: this.source,
-                        type: this.typeSelect
+                        type: this.typeSelect,
+                        freehandCondition: shiftKeyOnly
+
                     });
                     this.mapLayer.addInteraction(this.draw);
 
@@ -933,7 +1006,7 @@
                 });
             },
             addLayers(service, index, dynamic = false, params) {
-                let url = "http://azcgisiis.gis.az/arcgis/rest/services/" + service.name + "/MapServer";
+                let url = "http://localhost:7777/arcgis/rest/services/" + service.name + "/MapServer";
                 let new_layer;
                 if (dynamic) {
 
@@ -987,8 +1060,14 @@
                 }
             },
             setBaseLayout(index) {
+
+
+                let layers = this.mapLayer.getLayers().getArray();
+                console.log(layers)
+                console.log(layers[0])
+
+                layers[0].setSource(this.baseMaps[index])
                 this.mapLayer.getLayers().forEach(function (layer) {
-                    console.log(layer.get('name'))
                     // if (layer.get('name') != undefined && layer.get('name') === service.name) {
                     //     layersToRemove.push(layer);
                     //     self.dynamicLayersReset(service, false)
@@ -1186,12 +1265,12 @@
             checkedColumnsToExcel() {
                 let columns = {};
                 for (let column in this.tableFeaturesHeader) {
-                    if (this.checkedColumns.includes(column))
-                        columns[this.aliases[column]] = column;
+                    if (this.checkedColumns.includes(this.tableFeaturesHeader[column])) {
+                        columns[this.tableFeaturesHeader[column]] = this.stackedTableFeaturesHeader[column];
+                    }
                 }
                 return columns;
             }
-
         }
         ,
 
