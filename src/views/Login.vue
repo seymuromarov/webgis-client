@@ -7,11 +7,11 @@
                 <input type="password" placeholder="password" v-model="password"/>
                 <p class="error-message" v-if="error"> {{ error }}</p>
                 <!--                <button><i class="fas fa-arrow-right"></i></button>-->
-                <button>Login</button>
+                <button><i class="fas fa-arrow-right"></i></button>
             </form>
         </div>
         <div class="sign-block">
-            <span class="sign">© 2018 Research and Development Center, Azercosmos OJSCo</span>
+            <span class="sign">© 2019 Research and Development Center, Azercosmos OJSCo</span>
         </div>
     </div>
 </template>
@@ -35,17 +35,6 @@
                 const {username, password} = this
                 this.LayerService(username, password)
 
-                //  this.$store.dispatch('login', { username, password }).then(response => {
-                //      if (response === 1) {
-                //          this.$router.push('/')
-                //          this.$store.commit('setAuthError', '')
-                //      } else if (response === 0) {
-                //          this.error = this.$store.getters.authError
-                //      }
-                //
-                // }, error => {
-                //     this.error = this.$store.getters.authError
-                // })
             },
             async LayerService(username, password) {
                 const response = await LoginService.getToken({username: username, password: password});
@@ -113,9 +102,10 @@
     }
 
     .main {
-        height: 100%;
+        height: 100vh;
         margin: 0;
-        background: url("/dist/background.jpg") no-repeat center center fixed;
+        width: 100vw;
+        background: url("../assets/background.jpg") no-repeat center center fixed;
         background-size: 100% 100%;
         font-family: Roboto, sans-serif;
     }

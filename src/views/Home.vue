@@ -1,6 +1,6 @@
 <template>
     <div class="row container-fluid padding-0">
-        <div class="col-2 padding-0">
+        <div class="col-2 padding-0 sup-bar-layout">
 
             <div class="profileDiv">
                 <label class="userNameLabel">{{ username }}</label>
@@ -59,8 +59,13 @@
                         <div class="col-10">
                             {{ element.name }}
                             <span>
-                                      <i v-if="element.collapseVisibility" @click="dynamicLayersReset(element, true)"
-                                         class="fas fa-caret-left">
+                                      <i v-if="element.collapseVisibility && !element.layersVisibility"
+                                         @click="dynamicLayersReset(element, true)"
+                                         class="fas fa-caret-left makeMePoint">
+                                      </i>
+                                      <i v-if=" element.layersVisibility "
+                                         @click="element.layersVisibility=false"
+                                         class="fas fa-caret-down makeMePoint">
                                       </i>
                                 </span>
 
@@ -87,10 +92,14 @@
                             </div>
                             <div class="col-10">
                                 <label class="layerName" :for="layer.name"> {{ layer.name }}</label>
-                                <i style="margin-left: 10px;" class="dataIcon fas fa-table"
-                                   @click="getTableData(element,layer.id,layer.name)"></i>
-                                <i style="margin-left: 10px;" class="dataIcon fab fa-codiepie"
-                                   @click="OpenColorPicker(element,layer.id,layer.name,element.index)"></i>
+                                <div class="">
+                                    <i class="dataIcon fas fa-table"
+                                       @click="getTableData(element,layer.id,layer.name)"></i>
+                                    <i style="margin-left: 10px;" class="dataIcon fab fa-codiepie"
+                                       v-if="element.color===true"
+                                       @click="OpenColorPicker(element,layer.id,layer.name,element.order)"></i>
+
+                                </div>
                             </div>
 
                         </div>
@@ -136,11 +145,13 @@
 
         </div>
 
-        <div class="col-10 padding-0">
+        <div class="col-10 padding-0 map-layout">
 
             <div id="map">
-                <button v-for="(item, index) in drawings" class="action-button-class btn btn-primary"
+                <button v-for="(item, index) in drawings"
+                        class="action-button-class btn btn-primary"
                         :style="{top : ((index+1)*6+10) + '%'}"
+                        :title="item.tooltip"
                         @click="setDrawType(item.name)">
                     <i :class="item.icon"></i>
 
@@ -148,8 +159,14 @@
                 <div id="mouse-position"
                      class="latLongShow"
                 ></div>
-                <div id="info" class="infoKms" v-show="this.kmsInfo!==null">&nbsp;</div>
+                <div id="info" class="infokml" v-show="this.kmlInfo!==null">&nbsp;</div>
 
+                <button class="action-button-class btn btn-primary"
+                        style="bottom: 50px;right: 60px;"
+                        @click="dragAndDropToast"
+                        v-if="!showTable">
+                    <i class="fas fa-file-upload"></i>
+                </button>
                 <button class="action-button-class btn btn-primary"
                         style="bottom: 50px;right: 10px;"
                         @mouseover="selectLayerForm = true"
@@ -157,11 +174,11 @@
                     <i class="fas fa-stream"></i>
                 </button>
                 <div v-show="selectLayerForm" @mouseleave="selectLayerForm=false"
-                     style="bottom: 50px;right: 10px;z-index: 999;position: absolute;background: white;text-align: left">
+                     class="selectLayerForm">
                     <form>
                         <div v-for="(element,index) in baseMaps">
                             <input type="radio" class="" name="baseLayer" @click="setBaseLayout(index)">
-                            <span>{{index}}</span>
+                            <span style="margin-left: 5px;">{{index}}</span>
 
                         </div>
                     </form>
@@ -170,12 +187,20 @@
                 <button class="action-button-class btn btn-primary"
                         style="bottom: 120px;left: 20px;"
                         @click="addGraticule"
+                        title="Add Graticule"
                         v-show="!showTable">
                     <i class="fas fa-barcode"></i>
                 </button>
                 <button class="action-button-class btn btn-primary"
+                        style="top: 130px;left: 5px;"
+                        title="Home"
+                        @click="zoomToCenter">
+                    <i class="fas fa-home"></i>
+                </button>
+                <button class="action-button-class btn btn-primary"
                         style="bottom: 70px;left: 20px;"
                         @click="pngExport"
+                        title="Export to png"
                         v-show="!showTable">
                     <i class="far fa-file-image"></i>
                 </button>
@@ -183,6 +208,7 @@
                 <button class="action-button-class btn btn-primary"
                         style="bottom: 20px;left: 20px;"
                         @click="pdfExport"
+                        title="Export to pdf"
                         v-show="!showTable">
                     <i class="far fa-file-pdf"></i>
                 </button>
@@ -300,6 +326,7 @@
 <script>
 
     import 'ol/ol.css'
+    import geocoder from 'ol-geocoder';
     import {Map, View, Overlay, Feature} from 'ol';
     import {getArea, getLength, getDistance} from 'ol/sphere.js';
     import {LineString, Polygon, Circle, Point} from 'ol/geom.js';
@@ -332,6 +359,7 @@
         data() {
             return {
                 mapLayer: null,
+                tableQuery: null,
                 selectLayerForm: false,
                 showColumnsBoolean: false,
                 value: [],
@@ -341,31 +369,37 @@
                 drawings: [
                     {
                         name: "Point",
-                        icon: 'fas fa-map-marker-alt'
+                        icon: 'fas fa-map-marker-alt',
+                        tooltip: "Add Marker"
                     },
                     {
                         name: "LineString",
-                        icon: 'fas fa-long-arrow-alt-right'
+                        icon: 'fas fa-long-arrow-alt-right',
+                        tooltip: "Add LineString"
 
                     },
                     {
                         name: "Polygon",
-                        icon: 'fas fa-draw-polygon'
+                        icon: 'fas fa-draw-polygon',
+                        tooltip: "Add Polygon"
 
                     },
                     {
                         name: "Circle",
-                        icon: 'far fa-circle'
+                        icon: 'far fa-circle',
+                        tooltip: "Add Circle"
 
                     },
                     {
                         name: "Box",
-                        icon: 'far fa-calendar'
+                        icon: 'far fa-calendar',
+                        tooltip: "Add Rectangle"
 
                     },
                     {
                         name: "Square",
-                        icon: 'far fa-square'
+                        icon: 'far fa-square',
+                        tooltip: "Add Square"
 
                     },
                     // {
@@ -375,7 +409,8 @@
                     // },
                     {
                         name: "None",
-                        icon: 'fas fa-mouse-pointer'
+                        icon: 'fas fa-mouse-pointer',
+                        tooltip: "Mouse"
 
                     },
                 ],
@@ -383,7 +418,7 @@
                 layers: [],
                 gisLayers: [],
                 token: null,
-                kmsInfo: null,
+                kmlInfo: null,
                 username: null,
                 source: null,
                 vector: null,
@@ -410,42 +445,42 @@
                 baseMaps: {
                     sat:
                         new XYZ({
-                            attributions: 'Tiles © Azercosmos</a>',
+                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
                             name: "sat",
                             url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
                         }),
                     waterColor:
                         new XYZ({
-                            attributions: 'Tiles © Azercosmos</a>',
+                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
                             name: "waterColor",
                             url: "//a.tile.stamen.com/watercolor/{z}/{x}/{y}.png",
                         }),
                     esriWorldStreetMap:
                         new XYZ({
-                            attributions: 'Tiles © Azercosmos</a>',
+                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
                             url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
                         }),
                     terrain:
                         new XYZ({
-                            attributions: 'Tiles © Azercosmos</a>',
+                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
                             name: "waterColor",
                             url: "//a.tile.stamen.com/terrain/{z}/{x}/{y}.png",
                         }),
                     toner:
                         new XYZ({
-                            attributions: 'Tiles © Azercosmos</a>',
+                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
                             name: "waterColor",
                             url: "//a.tile.stamen.com/toner/{z}/{x}/{y}.png",
                         }),
 
                     gray:
                         new XYZ({
-                            attributions: 'Tiles © Azercosmos</a>',
+                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
                             crossOrigin: "Anonymous",
                             url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
                         }),
                     none: new XYZ({
-                        attributions: 'Tiles © Azercosmos</a>',
+                        attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
                         crossOrigin: "Anonymous",
                         url: "",
                     })
@@ -479,21 +514,18 @@
 
             this.vector = new VectorLayer({
                 source: this.source,
-
+                features: []
             });
             this.vector.setZIndex(9999);
             let gray = new TileLayer({
                 source: new XYZ({
-                    attributions: 'Tiles © Azercosmos</a>',
+                    attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
                     crossOrigin: "Anonymous",
                     url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
                 })
             });
-            this.layers = [
-                gray,
-                this.vector,
-            ];
             this.LayerService();
+
             this.$nextTick(function () {
                 let mousePositionControl = new MousePosition({
                     coordinateFormat: createStringXY(4),
@@ -502,7 +534,7 @@
                     // // be placed within the map.
                     className: 'custom-mouse-position',
                     target: document.getElementById('mouse-position'),
-                    undefinedHTML: '&nbsp;'
+                    undefinedHTML: ''
                 });
 
                 let dragAndDropInteraction = new DragAndDrop({
@@ -514,6 +546,46 @@
                         TopoJSON
                     ]
                 });
+                let geocoderControl = new geocoder('nominatim', {
+                    provider: 'osm',
+                    lang: 'en',
+                    placeholder: 'Search for ...',
+                    limit: 5,
+                    debug: false,
+                    autoComplete: true,
+                    keepOpen: false
+                });
+
+                geocoderControl.on('addresschosen', function (evt) {
+                    console.info(evt);
+                    window.setTimeout(function () {
+                        // popup.show(evt.coordinate, evt.address.formatted);
+                    }, 3000);
+                });
+
+
+                let iconFeature2 = new Feature({
+                    geometry: new Point(fromLonLat([-0.1426069, 51.4840309])),
+                    name: 'Somewhere else'
+                });
+
+                iconFeature2.setStyle(new Style({
+                    image: new Icon({
+                        anchor: [0.5, 46],
+                        size: [48, 48],
+                        anchorXUnits: 'fraction',
+                        anchorYUnits: 'pixels',
+                        src: 'http://cdn.mapmarker.io/api/v1/pin?text=P&size=50',
+                    })
+                }));
+
+
+                this.source.addFeature(iconFeature2)
+
+                this.layers = [
+                    gray,
+                    this.vector
+                ];
 
                 this.mapLayer = new Map({
                     interactions: defaultInteractions().extend([
@@ -531,11 +603,13 @@
                     })
                 });
 
-                let zoomslider = new ZoomSlider();
-                this.mapLayer.addControl(zoomslider);
+                this.mapLayer.addControl(geocoderControl)
+
+
+                // let zoomslider = new ZoomSlider();
+                // this.mapLayer.addControl(zoomslider);
                 let modify = new Modify({source: this.source});
                 this.mapLayer.addInteraction(modify);
-
                 let self = this;
                 dragAndDropInteraction.on('addfeatures', function (event) {
                     let vectorSource = new VectorSource({
@@ -557,14 +631,16 @@
                         let info = [];
                         let i, ii;
                         for (i = 0, ii = features.length; i < ii; ++i) {
-                            info.push(features[i].get('name'));
+                            if (features[i].get('name') !== undefined)
+                                info.push(features[i].get('name'));
                         }
+
                         document.getElementById('info').innerHTML = info.join(', ') || '&nbsp';
-                        self.kmsInfo = info.join(', ') || null
+                        self.kmlInfo = info.join(', ') || null
 
                     } else {
                         document.getElementById('info').innerHTML = '&nbsp;';
-                        self.kmsInfo = null
+                        self.kmlInfo = null
                     }
                 };
 
@@ -598,10 +674,21 @@
 
         },
         methods: {
+            dragAndDropToast() {
+                let toast = this.$toasted.show("Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map", {
+                    theme: "outline",
+                    position: "bottom-center",
+                    duration: 3500
+                });
 
+            },
+            zoomToCenter() {
+                this.mapLayer.getView().setCenter(fromLonLat([49.882858, 40.3598414]))
+                this.mapLayer.getView().setZoom(8)
+            },
             addGraticule() {
                 if (this.graticule) {
-                    this.graticuleLayer.setMap(null)
+                    this.graticuleLayer.setMap(null);
                     this.graticule = false
                 } else {
                     this.graticuleLayer = new Graticule({
@@ -719,34 +806,6 @@
                         value = 'Circle';
                         geometryFunction = createBox();
                     }
-                    // else if (value === 'Star') {
-                    //     value = 'Circle';
-                    //     geometryFunction = function (coordinates, geometry) {
-                    //         var center = coordinates[0];
-                    //         var last = coordinates[1];
-                    //         var dx = center[0] - last[0];
-                    //         var dy = center[1] - last[1];
-                    //         var radius = Math.sqrt(dx * dx + dy * dy);
-                    //         var rotation = Math.atan2(dy, dx);
-                    //         var newCoordinates = [];
-                    //         var numPoints = 12;
-                    //         for (var i = 0; i < numPoints; ++i) {
-                    //             var angle = rotation + i * 2 * Math.PI / numPoints;
-                    //             var fraction = i % 2 === 0 ? 1 : 0.5;
-                    //             var offsetX = radius * fraction * Math.cos(angle);
-                    //             var offsetY = radius * fraction * Math.sin(angle);
-                    //             newCoordinates.push([center[0] + offsetX, center[1] + offsetY]);
-                    //         }
-                    //         newCoordinates.push(newCoordinates[0].slice());
-                    //         if (!geometry) {
-                    //             geometry = new Polygon([newCoordinates]);
-                    //         } else {
-                    //             geometry.setCoordinates([newCoordinates]);
-                    //         }
-                    //         return geometry;
-                    //     };
-                    // }
-
                     this.draw = new Draw({
                         source: this.source,
                         type: value,
@@ -763,6 +822,8 @@
                         freehandCondition: shiftKeyOnly
 
                     });
+
+
                     this.mapLayer.addInteraction(this.draw);
 
                 }
@@ -1006,7 +1067,10 @@
                 });
             },
             addLayers(service, index, dynamic = false, params) {
-                let url = "http://localhost:7777/arcgis/rest/services/" + service.name + "/MapServer";
+                const getUrl = window.location;
+                let baseUrl = 'https://' + getUrl.hostname + ":7777";
+
+                let url = baseUrl + "/arcgis/rest/services/" + service.name + "/MapServer";
                 let new_layer;
                 if (dynamic) {
 
@@ -1036,7 +1100,8 @@
                             params: {
                                 "token": this.token,
                                 "layers": "show:" + active_layers,
-                                "dynamicLayers": colors
+                                "dynamicLayers": colors,
+                                "FORMAT": "png8"
                             }
                         })
                     });
@@ -1047,6 +1112,7 @@
                             crossOrigin: "Anonymous",
                             params: {
                                 "token": this.token,
+                                "FORMAT": "png8"
                             }
                         })
                     });
@@ -1058,6 +1124,7 @@
                 } else {
                     new_layer.setZIndex(500 - index);
                 }
+                console.log(this.mapLayer.getLayers())
             },
             setBaseLayout(index) {
 
@@ -1089,18 +1156,31 @@
                     this.mapLayer.removeLayer(layersToRemove[i]);
                 }
             },
-            dynamicLayersReset(service, status) {
+            async dynamicLayersReset(service, status) {
                 // let responseColor = await LayerService.getLayerDynamic({token: this.token, name: service.name});
+                let response = await LayerService.getLayerDynamic({
+                    token: this.token,
+                    name: service.name,
+                })
+                let colorEnabled = false;
+                if (response.data.layers[0].drawingInfo.renderer.symbol !== undefined) {
+                    if (response.data.layers[0].drawingInfo.renderer.symbol.color !== undefined) {
+                        colorEnabled = true
+                    }
+                }
+
                 this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
                     let name = item.name
                     let layersVisibility = item.layersVisibility
                     let collapseVisibility = item.collapseVisibility
+                    let color = item.color ? item.color : false
                     if (service.name === name) {
                         layersVisibility = status;
+                        color = colorEnabled
                     }
                     let layers = item.layers
                     let order = item.order
-                    return {name, order: order, layersVisibility, collapseVisibility, layers};
+                    return {name, order: order, layersVisibility, collapseVisibility, layers, color};
                 });
             },
             selectService(service, index, dynamic, e) {
@@ -1216,8 +1296,7 @@
                     token: this.token,
                     name: layer.name,
                 })
-
-                console.log(response.data)
+                return response.data
             },
             changeColor(layer, globalColor) {
                 layer.color[0] = globalColor.rgba.r;

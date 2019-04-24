@@ -10,18 +10,13 @@ export default {
         })
     },
     getLayerDynamic(params) {
-        return Api().post("/api.php", {
-            token: params.token,
-            service: params.name,
-            action: 'getLayers',
+        return Api().get("/" + params.name + "/MapServer/layers", {
+            params: {
+                f: 'json',
+                token: params.token,
+            }
         });
     },
-    // getLayers(params) {
-    //     return Api().post("/api.php", {
-    //         action: 'getServices',
-    //         token: params.token
-    //     })
-    // },
     getDynamicLayers(params) {
         return Api().get("/" + params.name + "/MapServer", {
             params: {
@@ -30,6 +25,24 @@ export default {
             }
         })
     },
+    getTableData(params) {
+        return Api().get("/" + params.name + "/MapServer/" + params.layer + "/query/", {
+            params: {
+
+                token: params.token,
+                f: 'json',
+                where: "1=1",
+                returnGeometry: false,
+                outFields: '*',
+            }
+        })
+    },
+    // getLayers(params) {
+    //     return Api().post("/api.php", {
+    //         action: 'getServices',
+    //         token: params.token
+    //     })
+    // },
     // getDynamicLayers(params) {
     //     return Api().post("/api.php", {
     //         action: 'getLayersTypes',
@@ -46,17 +59,13 @@ export default {
     //     })
     //
     // },
-    getTableData(params) {
-        return Api().get("/" + params.name + "/MapServer/" + params.layer + "/query/", {
-            params: {
+    // getLayerDynamic(params) {
+    //     return Api().post("/api.php", {
+    //         token: params.token,
+    //         service: params.name,
+    //         action: 'getLayers',
+    //     });
+    // },
 
-                token: params.token,
-                f: 'json',
-                where: "1=1",
-                returnGeometry: false,
-                outFields: '*',
-            }
-        })
-    }
 
 }
