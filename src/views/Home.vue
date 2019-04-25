@@ -148,14 +148,24 @@
         <div class="col-10 padding-0 map-layout">
 
             <div id="map">
+                <button
+                        class="action-button-class btn btn-primary"
+                        :style="{top : '15%'}"
+                        title="Add marker"
+                        @click="setMarkerTrue"
+                >
+                    <i class="fas fa-map-marker-alt"></i>
+                </button>
+
                 <button v-for="(item, index) in drawings"
                         class="action-button-class btn btn-primary"
-                        :style="{top : ((index+1)*6+10) + '%'}"
+                        :style="{top : ((index+1)*6+15) + '%'}"
                         :title="item.tooltip"
                         @click="setDrawType(item.name)">
                     <i :class="item.icon"></i>
 
                 </button>
+
                 <div id="mouse-position"
                      class="latLongShow"
                 ></div>
@@ -336,7 +346,7 @@
     import {Circle as CircleStyle, Fill, Stroke, Style, Icon} from 'ol/style.js';
     import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
     import {TileArcGISRest, Vector as VectorSource} from 'ol/source.js';
-    import {fromLonLat, METERS_PER_UNIT} from 'ol/proj';
+    import {fromLonLat, METERS_PER_UNIT, transform} from 'ol/proj';
     import XYZ from 'ol/source/XYZ.js';
     import draggable from "vuedraggable";
     import LayerService from '@/services/LayerService'
@@ -347,6 +357,7 @@
     import {GPX, GeoJSON, IGC, KML, TopoJSON} from 'ol/format.js';
     import Graticule from 'ol/Graticule.js';
     import {shiftKeyOnly} from "ol/events/condition";
+    import {baseUrl} from "../config/baseUrl";
 
 
     export default {
@@ -369,8 +380,8 @@
                 drawings: [
                     {
                         name: "Point",
-                        icon: 'fas fa-map-marker-alt',
-                        tooltip: "Add Marker"
+                        icon: 'fas fa-circle',
+                        tooltip: "Add Point"
                     },
                     {
                         name: "LineString",
@@ -416,6 +427,7 @@
                 ],
                 options: [],
                 layers: [],
+                isMarker: false,
                 gisLayers: [],
                 token: null,
                 kmlInfo: null,
@@ -534,8 +546,9 @@
                     // // be placed within the map.
                     className: 'custom-mouse-position',
                     target: document.getElementById('mouse-position'),
-                    undefinedHTML: ''
+                    undefinedHTML: '',
                 });
+                console.log(mousePositionControl)
 
                 let dragAndDropInteraction = new DragAndDrop({
                     formatConstructors: [
@@ -563,24 +576,6 @@
                     }, 3000);
                 });
 
-
-                let iconFeature2 = new Feature({
-                    geometry: new Point(fromLonLat([-0.1426069, 51.4840309])),
-                    name: 'Somewhere else'
-                });
-
-                iconFeature2.setStyle(new Style({
-                    image: new Icon({
-                        anchor: [0.5, 46],
-                        size: [48, 48],
-                        anchorXUnits: 'fraction',
-                        anchorYUnits: 'pixels',
-                        src: 'http://cdn.mapmarker.io/api/v1/pin?text=P&size=50',
-                    })
-                }));
-
-
-                this.source.addFeature(iconFeature2)
 
                 this.layers = [
                     gray,
@@ -667,6 +662,28 @@
 
                 this.mapLayer.on('click', function (evt) {
                     displayFeatureInfo(evt.pixel);
+                    let coord = transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+                    console.log(self.isMarker)
+                    if (self.isMarker) {
+                        let iconFeature2 = new Feature({
+                            geometry: new Point(fromLonLat([coord[0], coord[1]])),
+                            name: 'Marker'
+                        });
+                        iconFeature2.setStyle(new Style({
+                            image: new Icon({
+                                anchor: [0.5, 46],
+                                size: [48, 48],
+                                anchorXUnits: 'fraction',
+                                anchorYUnits: 'pixels',
+                                src: 'http://cdn.mapmarker.io/api/v1/pin?text=P&size=50',
+                            })
+                        }));
+
+
+                        self.source.addFeature(iconFeature2)
+
+                    }
+
                 });
 
 
@@ -757,7 +774,10 @@
                 // this.mapLayer.getView().fit(extent, {size: size});
 
             },
-
+            setMarkerTrue() {
+                this.isMarker = true
+                this.typeSelect = 'None'
+            },
             selectColumns(alias, key, e) {
                 if (e.target.checked) {
                     // for (let alias in this.tableFeaturesHeader) {
@@ -796,6 +816,7 @@
 
             },
             addInteraction() {
+                this.isMarker = false
                 let value = this.typeSelect
                 if (value !== 'None') {
                     var geometryFunction;
@@ -1067,8 +1088,6 @@
                 });
             },
             addLayers(service, index, dynamic = false, params) {
-                const getUrl = window.location;
-                let baseUrl = 'https://' + getUrl.hostname + ":7777";
 
                 let url = baseUrl + "/arcgis/rest/services/" + service.name + "/MapServer";
                 let new_layer;

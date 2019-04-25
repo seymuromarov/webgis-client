@@ -1,8 +1,7 @@
 import axios from 'axios'
+import {baseUrl} from "../config/baseUrl";
 
 export default() => {
-    const getUrl = window.location;
-    let baseUrl = 'https://' + getUrl.hostname + ":7777";
 
     return axios.create({
         // baseURL: `http://webgis.azercosmos.az`,

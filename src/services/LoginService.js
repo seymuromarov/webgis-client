@@ -1,4 +1,5 @@
 import Api from './Api'
+import {baseUrl} from "../config/baseUrl";
 
 export default {
     // getToken(params) {
@@ -9,8 +10,6 @@ export default {
     //     })
     // },
     getToken(params) {
-        const getUrl = window.location;
-        let baseUrl = 'https://' + getUrl.hostname + ":7777";
         return Api().get(baseUrl + "/arcgis/tokens/", {
             params: {
                 request: 'gettoken',
