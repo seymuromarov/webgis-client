@@ -305,7 +305,7 @@
                     </thead>
                     <tbody class="popupTableBody">
                     <tr v-for="(value, key) in tableFeatureData.attributes">
-                        <td class="paddingLeft">{{ key }}</td>
+                        <td class="paddingLeft">{{ tableFeaturesHeaderWithAlias[key] }}</td>
                         <td class="paddingRight">{{ value }}</td>
                     </tr>
                     </tbody>
@@ -315,10 +315,12 @@
         </modal>
         <modal name="filter-modal"
                transition="nice-modal-fade"
+               class="filter-modal-class"
                :min-width="200"
                :min-height="200"
                :delay="100"
                :draggable="true"
+               :height="540"
         >
             <div id="filterDiv" class="filterDiv">
                 <div id="filterDivHeader" class="filterDivHeader">
@@ -433,8 +435,8 @@
     import Draw, {createRegularPolygon, createBox} from 'ol/interaction/Draw.js';
     import {Modify, defaults as defaultInteractions, DragRotateAndZoom, DragAndDrop} from 'ol/interaction';
     import {Circle as CircleStyle, Fill, Stroke, Style, Icon} from 'ol/style.js';
-    import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
-    import {TileArcGISRest, Vector as VectorSource} from 'ol/source.js';
+    import {Tile as TileLayer, Vector as VectorLayer, Image as ImageLayer} from 'ol/layer.js';
+    import {TileArcGISRest, Vector as VectorSource, ImageArcGISRest} from 'ol/source.js';
     import {fromLonLat, METERS_PER_UNIT, transform, transformExtent, get as getProjection, getTransform} from 'ol/proj';
     import XYZ from 'ol/source/XYZ.js';
     import draggable from "vuedraggable";
@@ -531,6 +533,7 @@
                 tableFeatureData: [],
                 tableNextRequest: [],
                 tableFeaturesHeader: [],
+                tableFeaturesHeaderWithAlias: [],
                 graticule: false,
                 graticuleLayer: null,
                 stackedTableFeaturesHeader: [],
@@ -873,6 +876,7 @@
             },
             showDataModal(Feature) {
                 this.tableFeatureData = Feature
+
                 // console.log(Feature)
                 this.$modal.show('data-modal', null, {
                     name: 'dynamic-modal',
@@ -1114,6 +1118,7 @@
                     return;
                 }
 
+                let self = this
                 this.tableNextRequest['service'] = service;
                 this.tableNextRequest['layer_id'] = layer_id;
                 this.tableNextRequest['layer_name'] = layer_name;
@@ -1122,11 +1127,16 @@
                 this.tableFeaturesData = response.data.features
                 this.tableFeaturesHeader = Object.keys(this.tableFeaturesData[0].attributes);
                 let target = response.data.fieldAliases
+                this.tableFeaturesHeaderWithAlias = response.data.fieldAliases
                 this.stackedTableFeaturesHeader = this.tableFeaturesHeader
                 this.checkedColumnsData = []
+                this.checkedColumns = []
+
                 for (let alias in this.tableFeaturesHeader) {
                     if (!this.defaultUnCheckedColumns.includes(this.tableFeaturesHeader[alias])) {
                         this.checkedColumnsData.push(this.tableFeaturesHeader[alias])
+                        this.checkedColumns.push(this.tableFeaturesHeader[alias])
+
                     }
                 }
 
@@ -1141,12 +1151,21 @@
                     }
                     return name;
                 });
-                this.checkedColumns = []
-                for (let alias in this.tableFeaturesHeader) {
-                    if (!this.defaultUnCheckedColumns.includes(this.tableFeaturesHeader[alias])) {
-                        this.checkedColumns.push(this.tableFeaturesHeader[alias])
-                    }
-                }
+                // for (let alias in this.tableFeaturesHeader) {
+                //     if (!this.defaultUnCheckedColumns.includes(this.tableFeaturesHeader[alias])) {
+                //         this.checkedColumns.push(this.tableFeaturesHeader[alias])
+                //     }
+                // }
+
+
+                // this.checkedColumns.forEach(function (alias) {
+                //     alias = self.tableFeaturesHeaderWithAlias[alias]
+                // })
+                // this.checkedColumns.map(alias => alias = self.tableFeaturesHeaderWithAlias[alias])
+                this.checkedColumns = this.checkedColumns.map((item, index) => {
+                    return self.tableFeaturesHeaderWithAlias[item]
+                });
+
                 console.log(this.checkedColumns)
                 console.log(this.checkedColumnsData)
                 // console.log(this.tableFeaturesData)
@@ -1250,6 +1269,18 @@
                                 crossOrigin: "Anonymous",
                             })
                         });
+                    } else if (service.name === "SampleWorldCities") {
+                        new_layer = new ImageLayer({
+                            source: new ImageArcGISRest({
+                                url: url,
+                                crossOrigin: "Anonymous",
+                                params: {
+                                    "token": this.token,
+                                    "FORMAT": "png8"
+                                }
+                            })
+                        });
+
                     } else {
                         new_layer = new TileLayer({
                             source: new TileArcGISRest({
