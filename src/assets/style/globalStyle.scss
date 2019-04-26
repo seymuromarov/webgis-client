@@ -12,11 +12,17 @@ hr {
   text-align: left !important;
   margin-left: 20px;
 }
-.userNameLabel{
+
+.hidden {
+  display: none;
+}
+
+.userNameLabel {
   text-align: left !important;
-  margin-left: 10px;
+  margin-left: 20px;
   font-size: 18px;
   margin-top: 8px;
+
 }
 
 .action-button-class {
@@ -405,9 +411,11 @@ hr {
   width: calc(100% - 300px);
   position: relative;
 }
-.howMuchWidthHaveMap{
+
+.howMuchWidthHaveMap {
   width: calc(100% - 300px) !important;
 }
+
 .selectLayerForm {
   bottom: 50px;
   right: 10px;
@@ -603,6 +611,6 @@ hr {
   font-size: 15px;
 }
 
-.filter-modal-class{
+.filter-modal-class {
   background: transparent;
 }

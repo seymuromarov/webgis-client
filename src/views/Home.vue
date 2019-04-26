@@ -42,24 +42,25 @@
                     @end="onMoveCallbackDynamicLayerList()"
 
             >
-                <li
-                        class="list-group-item"
-                        v-for="element in dynamicLayerList"
-                        :key="element.name"
-                        style="text-align: left"
-                >
-                    <div class="row">
-                        <div class="col-12  layerDiv">
-                            <input class="parentCheckbox"
-                                   :id="element.name" :name="element.name" type="checkbox"
-                                   @click="selectService(element, element.order,true, $event)"/>
-                            <i class="checkbox-icon far fa-check-circle"></i>
-                            <label :for="element.name"></label>
-                            <span class="serviceTitle">
+                <transition-group type="transition" name="flip-list">
+                    <li
+                            class="list-group-item"
+                            v-for="element in dynamicLayerList"
+                            :key="element.name"
+                            style="text-align: left"
+                    >
+                        <div class="row">
+                            <div class="col-12  layerDiv">
+                                <input class="parentCheckbox"
+                                       :id="element.name" :name="element.name" type="checkbox"
+                                       @click="selectService(element, element.order,true, $event)"/>
+                                <i class="checkbox-icon far fa-check-circle"></i>
+                                <label :for="element.name"></label>
+                                <span class="serviceTitle">
                                   {{ element.name }}
                             </span>
 
-                            <span>
+                                <span>
                                       <i v-if="element.collapseVisibility && !element.layersVisibility"
                                          @click="dynamicLayersReset(element, true)"
                                          class="fas fa-caret-left makeMePoint">
@@ -70,34 +71,36 @@
                                       </i>
                                 </span>
 
+                            </div>
                         </div>
-                    </div>
 
-                    <div style="background: whitesmoke;padding-top: 10px; " v-show="element.layersVisibility"
-                    >
-                        <div class="row layerDiv"
-                             v-for="layer in element.layers"
-                             :style="{paddingLeft: layer.margin * 30 + 'px'}">
+                        <div style="background: whitesmoke;padding-top: 10px; " v-show="element.layersVisibility"
+                        >
+                            <div class="row layerDiv"
+                                 v-for="layer in element.layers"
+                                 :style="{paddingLeft: layer.margin * 30 + 'px'}">
 
 
-                            <div class="col-12">
-                                <input class="parentCheckbox"
-                                       v-show="layer.geometryType"
-                                       :id="element.name + layer.id"
-                                       :value="element.name + layer.id"
-                                       :name="element.name + layer.id"
-                                       v-model="dynamicSubLayerList[element.name][layer.id]"
-                                       type="checkbox"
-                                       @click="selectSubService(element,element.order,layer.id, $event)"/>
-                                <i class="checkbox-icon far fa-check-circle"></i>
-                                <label :for="element.name + layer.id"></label>
-                                <span class="serviceTitle" :for="layer.name"> {{ layer.name }}</span>
-                                <div class="">
-                                    <i class="dataIcon fas fa-table"
-                                       @click="getTableData(element,layer.id,layer.name,'1=1')"></i>
-                                    <i style="margin-left: 10px;" class="dataIcon fab fa-codiepie"
-                                       v-if="element.color===true"
-                                       @click="OpenColorPicker(element,layer.id,layer.name,element.order)"></i>
+                                <div class="col-12" style="white-space: nowrap">
+                                    <input class="parentCheckbox"
+                                           v-show="layer.geometryType"
+                                           :id="element.name + layer.id"
+                                           :value="element.name + layer.id"
+                                           :name="element.name + layer.id"
+                                           v-model="dynamicSubLayerList[element.name][layer.id]"
+                                           type="checkbox"
+                                           @click="selectSubService(element,element.order,layer.id, $event)"/>
+                                    <i class="checkbox-icon far fa-check-circle"></i>
+                                    <label :for="element.name + layer.id"></label>
+                                    <span class="serviceTitle" :for="layer.name"> {{ layer.name }}</span>
+                                    <div class="">
+                                        <i class="dataIcon fas fa-table"
+                                           @click="getTableData(element,layer.id,layer.name,'1=1')"></i>
+                                        <i style="margin-left: 10px;" class="dataIcon fab fa-codiepie"
+                                           v-if="element.color===true"
+                                           @click="OpenColorPicker(element,layer.id,layer.name,element.order)"></i>
+
+                                    </div>
 
                                 </div>
 
@@ -105,10 +108,9 @@
 
                         </div>
 
-                    </div>
 
-
-                </li>
+                    </li>
+                </transition-group>
             </draggable>
             <hr>
             <h4 class="text-left-layer">Basemaps</h4>
@@ -155,6 +157,15 @@
                         @click="setMarkerTrue"
                 >
                     <i class="fas fa-map-marker-alt"></i>
+                </button>
+
+                <button
+                        class="action-button-class btn btn-control"
+                        :style="{top : '55%'}"
+                        title="Add marker"
+                        @click="deleteFeatureOn"
+                >
+                    <i class="fas fa-trash"></i>
                 </button>
 
                 <button v-for="(item, index) in drawings"
@@ -517,6 +528,7 @@
                 options: [],
                 layers: [],
                 isMarker: false,
+                isRemove: false,
                 gisLayers: [],
                 token: null,
                 kmlInfo: null,
@@ -525,6 +537,7 @@
                 vector: null,
                 vectorSource: null,
                 vectorLayer: null,
+                featureIDSet: 0,
                 sketch: null,
                 typeSelect: null,
                 showTable: false,
@@ -569,12 +582,12 @@
                             name: "waterColor",
                             url: "//a.tile.stamen.com/terrain/{z}/{x}/{y}.png",
                         }),
-                    toner:
-                        new XYZ({
-
-                            name: "waterColor",
-                            url: "//a.tile.stamen.com/toner/{z}/{x}/{y}.png",
-                        }),
+                    // toner:
+                    //     new XYZ({
+                    //
+                    //         name: "waterColor",
+                    //         url: "//a.tile.stamen.com/toner/{z}/{x}/{y}.png",
+                    //     }),
 
                     gray:
                         new XYZ({
@@ -700,11 +713,14 @@
                         let info = [];
                         let i, ii;
                         for (i = 0, ii = features.length; i < ii; ++i) {
-                            if (features[i].get('name') !== undefined)
+                            if (features[i].get('name') !== undefined) {
                                 info.push(features[i].get('name'));
+
+                            }
                         }
                         document.getElementById('info').innerHTML = info.join(', ') || '&nbsp';
                         self.kmlInfo = info.join(', ') || null
+
                     } else {
                         document.getElementById('info').innerHTML = '&nbsp;';
                         self.kmlInfo = null
@@ -726,7 +742,8 @@
                         let iconFeature = new Feature({
                             crossOrigin: "Anonymous",
                             geometry: new Point(fromLonLat([coord[0], coord[1]])),
-                            name: 'Marker'
+                            name: 'Marker',
+                            id: '232'
                         });
                         iconFeature.setStyle(new Style({
                             image: new Icon({
@@ -738,6 +755,23 @@
                             })
                         }));
                         self.source.addFeature(iconFeature)
+
+                    }
+                    if (self.isRemove) {
+
+                        self.mapLayer.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+                            try {
+                                self.source.removeFeature(feature)
+                                console.log(feature)
+                                console.log(feature.get('id'))
+                                let elem = document.getElementsByClassName(feature.get('id'));
+
+                                elem[0].className = "hidden"
+                                console.log(elem)
+                            } catch (e) {
+
+                            }
+                        });
 
                     }
                     if (self.showTable) {
@@ -854,7 +888,14 @@
             },
             setMarkerTrue() {
                 this.isMarker = true
-                this.typeSelect = 'None'
+                this.isRemove = false
+
+                this.setDrawType('None')
+            },
+            deleteFeatureOn() {
+                this.isMarker = false
+                this.isRemove = true
+                this.setDrawType('None')
             },
             selectColumns(alias, key, e) {
                 if (e.target.checked) {
@@ -907,6 +948,7 @@
             },
             addInteraction() {
                 this.isMarker = false
+                this.isRemove = false
                 let value = this.typeSelect
                 if (value !== 'None') {
                     var geometryFunction;
@@ -967,21 +1009,42 @@
                                 output = self.formatCircleRadius(geom);
                                 maptooltipCoord = geom.getLastCoordinate();
                             }
-                            self.measuremaptooltipElement.innerHTML = output;
-                            self.measuremaptooltip.setPosition(maptooltipCoord);
+                            try {
+                                self.measuremaptooltipElement.innerHTML = output;
+                                self.measuremaptooltip.setPosition(maptooltipCoord);
+                            } catch (e) {
+                                self.createMeasuremaptooltip()
+                                self.measuremaptooltipElement.innerHTML = output;
+                                self.measuremaptooltip.setPosition(maptooltipCoord);
+
+                            }
+
                         });
                     }, this);
 
                 this.draw.on('drawend',
                     function (e) {
-                        self.measuremaptooltipElement.className = 'maptooltip maptooltip-static';
-                        self.measuremaptooltip.setOffset([0, -7]);
+                        try {
+                            self.measuremaptooltipElement.className = 'maptooltip maptooltip-static ' + self.featureIDSet;
+                            self.measuremaptooltip.setOffset([0, -7]);
+                        } catch (e) {
+                            self.createMeasuremaptooltip()
+                            self.measuremaptooltipElement.className = 'maptooltip maptooltip-static ' + self.featureIDSet;
+                            self.measuremaptooltip.setOffset([0, -7]);
+
+                        }
                         // unset sketch
                         self.sketch = null;
                         // unset maptooltip so that a new one can be created
                         self.measuremaptooltipElement = null;
-                        self.createMeasuremaptooltip();
+                        // self.createMeasuremaptooltip();
                         unByKey(listener);
+                        e.feature.setProperties({
+                            'id': self.featureIDSet,
+                            'name': ''
+                        })
+                        self.featureIDSet += 10;
+
                     }, this);
             },
             createHelpmaptooltip() {
@@ -1433,6 +1496,7 @@
 
                     this.addInteraction();
                 }
+                this.featureIDSet += 10;
 
             },
             OpenColorPicker(layer, sublayer, name, index) {
@@ -1506,4 +1570,3 @@
 
     }
 </script>
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
