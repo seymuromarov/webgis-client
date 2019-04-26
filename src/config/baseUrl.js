@@ -7,5 +7,6 @@ const getUrl = window.location;
 
 // let server_url = getUrl.protocol + '//' + getUrl.hostname + '/node';
 let server_url = getUrl.protocol + '//webgis.azercosmos.az/node';
+// let server_url = getUrl.protocol + '//azcgisiis.gis.az';
 
 export const baseUrl = server_url

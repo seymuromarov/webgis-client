@@ -1,13 +1,14 @@
 <template>
     <div class="row container-fluid padding-0">
-        <div class="col-2 padding-0 sup-bar-layout">
+        <div class=" padding-0 sup-bar-layout">
 
-            <div class="profileDiv">
-                <label class="userNameLabel">{{ username }}</label>
-                <i @click="logout()" title='Log out' class="logOutIcon fas fa-power-off"></i>
+            <div class="userNameLabel">
+                <span class="">{{ username }}</span>
+                <i @click="logout()" title='Log out' class="logOutIcon fas fa-power-off" style="margin-left: 10px;"></i>
             </div>
-            <p>Dynamic Layers</p>
+            <hr>
 
+            <h4 class="text-left-layer">Dynamic Layers</h4>
             <div class="colorPickers" v-show="colorPicker.visibility">
                 <ul class="nav">
                     <li class="nav-item">
@@ -48,16 +49,16 @@
                         style="text-align: left"
                 >
                     <div class="row">
-                        <div class="col-2">
-                            <div class="material-switch ">
-                                <input :id="element.name" :name="element.name" type="checkbox"
-                                       @click="selectService(element, element.order,true, $event)"/>
-                                <label :for="element.name" class="label-primary"></label>
-                            </div>
+                        <div class="col-12  layerDiv">
+                            <input class="parentCheckbox"
+                                   :id="element.name" :name="element.name" type="checkbox"
+                                   @click="selectService(element, element.order,true, $event)"/>
+                            <i class="checkbox-icon far fa-check-circle"></i>
+                            <label :for="element.name"></label>
+                            <span class="serviceTitle">
+                                  {{ element.name }}
+                            </span>
 
-                        </div>
-                        <div class="col-10">
-                            {{ element.name }}
                             <span>
                                       <i v-if="element.collapseVisibility && !element.layersVisibility"
                                          @click="dynamicLayersReset(element, true)"
@@ -72,34 +73,34 @@
                         </div>
                     </div>
 
-                    <div style="background: whitesmoke;padding-top: 10px; " v-if="element.layersVisibility">
+                    <div style="background: whitesmoke;padding-top: 10px; " v-show="element.layersVisibility"
+                    >
                         <div class="row layerDiv"
                              v-for="layer in element.layers"
                              :style="{paddingLeft: layer.margin * 30 + 'px'}">
 
-                            <div class="col-2">
-                                <div class="material-switch ">
-                                    <input v-show="layer.geometryType"
-                                           :id="element.name + layer.id"
-                                           :value="element.name + layer.id"
-                                           :name="element.name + layer.id"
-                                           v-model="dynamicSubLayerList[element.name][layer.id]"
-                                           type="checkbox"
-                                           @click="selectSubService(element,element.order,layer.id, $event)"/>
-                                    <label :for="element.name + layer.id" class="label-primary"></label>
-                                </div>
 
-                            </div>
-                            <div class="col-10">
-                                <label class="layerName" :for="layer.name"> {{ layer.name }}</label>
+                            <div class="col-12">
+                                <input class="parentCheckbox"
+                                       v-show="layer.geometryType"
+                                       :id="element.name + layer.id"
+                                       :value="element.name + layer.id"
+                                       :name="element.name + layer.id"
+                                       v-model="dynamicSubLayerList[element.name][layer.id]"
+                                       type="checkbox"
+                                       @click="selectSubService(element,element.order,layer.id, $event)"/>
+                                <i class="checkbox-icon far fa-check-circle"></i>
+                                <label :for="element.name + layer.id"></label>
+                                <span class="serviceTitle" :for="layer.name"> {{ layer.name }}</span>
                                 <div class="">
                                     <i class="dataIcon fas fa-table"
-                                       @click="getTableData(element,layer.id,layer.name)"></i>
+                                       @click="getTableData(element,layer.id,layer.name,'1=1')"></i>
                                     <i style="margin-left: 10px;" class="dataIcon fab fa-codiepie"
                                        v-if="element.color===true"
                                        @click="OpenColorPicker(element,layer.id,layer.name,element.order)"></i>
 
                                 </div>
+
                             </div>
 
                         </div>
@@ -109,7 +110,8 @@
 
                 </li>
             </draggable>
-            <p style="margin-top: 20px;">Basemaps</p>
+            <hr>
+            <h4 class="text-left-layer">Basemaps</h4>
             <draggable
                     class="list-group"
                     tag="ul"
@@ -126,17 +128,15 @@
                             style="text-align: left"
                     >
                         <div class="row">
-                            <div class="col-2">
-                                <div class="material-switch ">
-                                    <input :id="element.name" :name="element.name" type="checkbox"
-                                           @click="selectService(element, element.order,false, $event)"/>
-                                    <label :for="element.name" class="label-primary"></label>
-                                </div>
-
-                            </div>
-                            <div class="col-10">
-                                {{ element.name }}
-
+                            <div class="col-12 layerDiv">
+                                <input class="parentCheckbox"
+                                       :id="element.name" :name="element.name" type="checkbox"
+                                       @click="selectService(element, element.order,false, $event)"/>
+                                <i class="checkbox-icon far fa-check-circle"></i>
+                                <label :for="element.name"></label>
+                                <span class="serviceTitle">
+                                  {{ element.name }}
+                                </span>
                             </div>
                         </div>
                     </li>
@@ -145,11 +145,11 @@
 
         </div>
 
-        <div class="col-10 padding-0 map-layout">
+        <div class=" padding-0 map-layout">
 
             <div id="map">
                 <button
-                        class="action-button-class btn btn-primary"
+                        class="action-button-class btn btn-control"
                         :style="{top : '15%'}"
                         title="Add marker"
                         @click="setMarkerTrue"
@@ -158,8 +158,8 @@
                 </button>
 
                 <button v-for="(item, index) in drawings"
-                        class="action-button-class btn btn-primary"
-                        :style="{top : ((index+1)*6+15) + '%'}"
+                        class="action-button-class btn btn-control"
+                        :style="{top : ((index+1)*5+15) + '%'}"
                         :title="item.tooltip"
                         @click="setDrawType(item.name)">
                     <i :class="item.icon"></i>
@@ -171,14 +171,14 @@
                 ></div>
                 <div id="info" class="infokml" v-show="this.kmlInfo!==null">&nbsp;</div>
 
-                <button class="action-button-class btn btn-primary"
-                        style="bottom: 50px;right: 60px;"
+                <button class="action-button-class btn btn-control"
+                        style="bottom: 10px;right: 60px;"
                         @click="dragAndDropToast"
                         v-if="!showTable">
                     <i class="fas fa-file-upload"></i>
                 </button>
-                <button class="action-button-class btn btn-primary"
-                        style="bottom: 50px;right: 10px;"
+                <button class="action-button-class btn btn-control"
+                        style="bottom: 10px;right: 10px;"
                         @mouseover="selectLayerForm = true"
                         v-if="!showTable">
                     <i class="fas fa-stream"></i>
@@ -194,29 +194,31 @@
                     </form>
                 </div>
 
-                <button class="action-button-class btn btn-primary"
-                        style="bottom: 120px;left: 20px;"
+                <button class="action-button-class btn btn-control"
+                        style="top: 118px;left: .5rem;"
+                        title="Home"
+                        @click="zoomToCenter">
+                    <i class="fas fa-home"></i>
+                </button>
+
+                <button class="action-button-class btn btn-control"
+                        style="bottom: 90px;left: .5rem;"
                         @click="addGraticule"
                         title="Add Graticule"
                         v-show="!showTable">
                     <i class="fas fa-barcode"></i>
                 </button>
-                <button class="action-button-class btn btn-primary"
-                        style="top: 130px;left: 5px;"
-                        title="Home"
-                        @click="zoomToCenter">
-                    <i class="fas fa-home"></i>
-                </button>
-                <button class="action-button-class btn btn-primary"
-                        style="bottom: 70px;left: 20px;"
+
+                <button class="action-button-class btn btn-control"
+                        style="bottom: 50px;left: .5rem;"
                         @click="pngExport"
                         title="Export to png"
                         v-show="!showTable">
                     <i class="far fa-file-image"></i>
                 </button>
 
-                <button class="action-button-class btn btn-primary"
-                        style="bottom: 20px;left: 20px;"
+                <button class="action-button-class btn btn-control"
+                        style="bottom: 10px;left: .5rem;"
                         @click="pdfExport"
                         title="Export to pdf"
                         v-show="!showTable">
@@ -226,17 +228,17 @@
 
         </div>
 
-        <div class="col-10 offset-md-2" v-if="showTable">
-            <div class="tableDiv">
+        <div class="" v-if="showTable">
+            <div class="tableDiv howMuchWidthHaveMap">
                 <div class="tableHeader">
                     <div class="row">
                         <div class="col-2">
-                            <span class="text-left">{{tableHeader}}</span>
+                            <p class="text-left" style="margin-top: 5px;">{{tableHeader}}</p>
                         </div>
                         <div class="col-10">
                             <download-excel
                                     v-if="tableFeaturesHeader"
-                                    class="fas fa-file-excel icon excelDataIcon excelIcon"
+                                    class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
                                     :data="featuresToExcel"
                                     :fields="checkedColumnsToExcel"
                                     type="xls"
@@ -249,6 +251,7 @@
 
                             </i>
                             <i class="fas fa-times tableClose makeMePoint" @click="showTable=false"></i>
+                            <i class="fas fa-filter tableFilter makeMePoint" @click="showFilterModal"></i>
                             <div class="tableShowColumns" v-if="showColumnsBoolean">
                                 <div class="columnsDiv">
                                     <div v-for="(alias, key) in tableFeaturesHeader">
@@ -258,7 +261,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -291,12 +293,9 @@
                :min-height="200"
                :delay="100"
                :draggable="true"
-
         >
             <p class="tableModalHeader">{{this.tableHeader}}</p>
-
             <div class="row" style="overflow: auto">
-
                 <table class="table popupTable">
                     <thead>
                     <tr class="fields">
@@ -311,30 +310,120 @@
                     </tr>
                     </tbody>
                 </table>
-                <!--                <div class="makeMePoint col-4">-->
-                <!--                    <div class="modalText"-->
-                <!--                         v-for="(attr, key) in this.tableFeaturesHeader"-->
-                <!--                    ><span>{{ attr }}</span>-->
-                <!--                    </div>-->
-                <!--                </div>-->
-                <!--                <div class="makeMePoint col-8">-->
-                <!--                    <div class="modalText"-->
-                <!--                         v-for="(attr, key) in this.tableFeatureData.attributes"-->
-                <!--                    >-->
-                <!--                        <span> {{ attr!==" "?attr :" &nbsp" }}</span>-->
-                <!--                    </div>-->
-                <!--                </div>-->
             </div>
 
         </modal>
+        <modal name="filter-modal"
+               transition="nice-modal-fade"
+               :min-width="200"
+               :min-height="200"
+               :delay="100"
+               :draggable="true"
+        >
+            <div id="filterDiv" class="filterDiv">
+                <div id="filterDivHeader" class="filterDivHeader">
+                    <label class="filterLayerName"> {{ this.tableHeader }}</label>
+                    <!--                    <i class="fas fa-times filterCloseIcon" @click="closeFilter()"></i>-->
+                </div>
+                <div class="filterFieldsListDiv">
+                    <ul class="filterFieldsList">
+                        <li @dblclick="filterQuery += stackedTableFeaturesHeader[column] + ' '"
+                            @click="filterSelectedColumn(stackedTableFeaturesHeader[column])"
+                            v-for="(alias, column) in tableFeaturesHeader"> {{ alias }}
+                        </li>
+                    </ul>
+                </div>
+                <div class="filterCenterDiv">
+                    <div class="filterActionsDiv">
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <button @click="filterQuery += '= '"
+                                            class="parameterButton btn btn-sm btn-outline-secondary"> =
+                                    </button>
+                                </td>
+                                <td>
+                                    <button @click="filterQuery += '>= '"
+                                            class="parameterButton btn btn-sm btn-outline-secondary"> >=
+                                    </button>
+                                </td>
+                                <td>
+                                    <button @click="filterQuery += '> '"
+                                            class="parameterButton btn btn-sm btn-outline-secondary"> >
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button @click="filterQuery += '<= '"
+                                            class="parameterButton btn btn-sm btn-outline-secondary"> <=
+                                    </button>
+                                </td>
+                                <td>
+                                    <button @click="filterQuery += '< '"
+                                            class="parameterButton btn btn-sm btn-outline-secondary"> <
+                                    </button>
+                                </td>
+                                <td>
+                                    <button @click="filterQuery += 'LIKE '"
+                                            class="parameterButton btn btn-sm btn-outline-secondary"> like
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button @click="filterQuery += '<> '"
+                                            class="parameterButton btn btn-sm btn-outline-secondary"> <>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button @click="filterQuery += 'AND '"
+                                            class="parameterButton btn btn-sm btn-outline-secondary"> and
+                                    </button>
+                                </td>
+                                <td>
+                                    <button @click="filterQuery += 'OR '"
+                                            class="parameterButton btn btn-sm btn-outline-secondary"> or
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button @click="filterQuery += 'IS NULL'"
+                                            class="parameterButton btn btn-sm btn-outline-secondary"> null
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="filterValuesDiv">
+                        <ul class="filterValuesList">
+                            <li @dblclick="addValueToQuery(value)" class="filterValue" v-for="value in filterValues"> {{
+                                value }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="filterSelectDiv">
+                    <label class="query-start">SELECT * FROM table WHERE:</label>
+                    <textarea class="queryTextArea" name="filterQuery" rows="4" cols="69"
+                              v-model="filterQuery"> {{ filterQuery }} </textarea>
+                    <div>
+                        <button class="btn btn-outline-info filterApplyButton" @click="filterData()">Apply</button>
+                    </div>
+                </div>
+            </div>
 
+        </modal>
     </div>
 
 
 </template>
 
 <script>
-
     import 'ol/ol.css'
     import geocoder from 'ol-geocoder';
     import {Map, View, Overlay, Feature} from 'ol';
@@ -346,7 +435,7 @@
     import {Circle as CircleStyle, Fill, Stroke, Style, Icon} from 'ol/style.js';
     import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
     import {TileArcGISRest, Vector as VectorSource} from 'ol/source.js';
-    import {fromLonLat, METERS_PER_UNIT, transform} from 'ol/proj';
+    import {fromLonLat, METERS_PER_UNIT, transform, transformExtent, get as getProjection, getTransform} from 'ol/proj';
     import XYZ from 'ol/source/XYZ.js';
     import draggable from "vuedraggable";
     import LayerService from '@/services/LayerService'
@@ -358,17 +447,20 @@
     import Graticule from 'ol/Graticule.js';
     import {shiftKeyOnly} from "ol/events/condition";
     import {baseUrl} from "../config/baseUrl";
-
+    import proj4 from 'proj4';
+    import {register} from 'ol/proj/proj4.js';
+    import {applyTransform} from "ol/extent";
 
     export default {
         name: 'home',
         components: {
             draggable,
             colorPicker: Chrome,
-
         },
         data() {
             return {
+                filterQuery: '',
+                filterValues: [],
                 mapLayer: null,
                 tableQuery: null,
                 selectLayerForm: false,
@@ -413,11 +505,6 @@
                         tooltip: "Add Square"
 
                     },
-                    // {
-                    //     name: "Star",
-                    //     icon: 'far fa-star'
-                    //
-                    // },
                     {
                         name: "None",
                         icon: 'fas fa-mouse-pointer',
@@ -442,6 +529,7 @@
                 draw: null,
                 tableFeaturesData: [],
                 tableFeatureData: [],
+                tableNextRequest: [],
                 tableFeaturesHeader: [],
                 graticule: false,
                 graticuleLayer: null,
@@ -457,42 +545,42 @@
                 baseMaps: {
                     sat:
                         new XYZ({
-                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
+
                             name: "sat",
                             url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
                         }),
                     waterColor:
                         new XYZ({
-                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
+
                             name: "waterColor",
                             url: "//a.tile.stamen.com/watercolor/{z}/{x}/{y}.png",
                         }),
                     esriWorldStreetMap:
                         new XYZ({
-                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
+
                             url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
                         }),
                     terrain:
                         new XYZ({
-                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
+
                             name: "waterColor",
                             url: "//a.tile.stamen.com/terrain/{z}/{x}/{y}.png",
                         }),
                     toner:
                         new XYZ({
-                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
+
                             name: "waterColor",
                             url: "//a.tile.stamen.com/toner/{z}/{x}/{y}.png",
                         }),
 
                     gray:
                         new XYZ({
-                            attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
+
                             crossOrigin: "Anonymous",
                             url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
                         }),
                     none: new XYZ({
-                        attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
+
                         crossOrigin: "Anonymous",
                         url: "",
                     })
@@ -519,9 +607,6 @@
             if (this.token === null)
                 this.$router.push('/login')
 
-            console.log(this.token)
-
-
             this.source = new VectorSource({wrapX: false});
 
             this.vector = new VectorLayer({
@@ -531,7 +616,6 @@
             this.vector.setZIndex(9999);
             let gray = new TileLayer({
                 source: new XYZ({
-                    attributions: '© 2019 Research and Development Center, Azercosmos OJSCo',
                     crossOrigin: "Anonymous",
                     url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
                 })
@@ -542,13 +626,10 @@
                 let mousePositionControl = new MousePosition({
                     coordinateFormat: createStringXY(4),
                     projection: 'EPSG:4326',
-                    // // comment the following two lines to have the mouse position
-                    // // be placed within the map.
                     className: 'custom-mouse-position',
                     target: document.getElementById('mouse-position'),
                     undefinedHTML: '',
                 });
-                console.log(mousePositionControl)
 
                 let dragAndDropInteraction = new DragAndDrop({
                     formatConstructors: [
@@ -568,14 +649,6 @@
                     autoComplete: true,
                     keepOpen: false
                 });
-
-                geocoderControl.on('addresschosen', function (evt) {
-                    console.info(evt);
-                    window.setTimeout(function () {
-                        // popup.show(evt.coordinate, evt.address.formatted);
-                    }, 3000);
-                });
-
 
                 this.layers = [
                     gray,
@@ -599,8 +672,6 @@
                 });
 
                 this.mapLayer.addControl(geocoderControl)
-
-
                 // let zoomslider = new ZoomSlider();
                 // this.mapLayer.addControl(zoomslider);
                 let modify = new Modify({source: this.source});
@@ -629,61 +700,47 @@
                             if (features[i].get('name') !== undefined)
                                 info.push(features[i].get('name'));
                         }
-
                         document.getElementById('info').innerHTML = info.join(', ') || '&nbsp';
                         self.kmlInfo = info.join(', ') || null
-
                     } else {
                         document.getElementById('info').innerHTML = '&nbsp;';
                         self.kmlInfo = null
                     }
                 };
 
-                let showInfo = function (event) {
-                    let features = self.mapLayer.getFeaturesAtPixel(event.pixel);
-                    // if (!features) {
-                    //     document.getElementById('info').innerText = '';
-                    //     document.getElementById('info').style.opacity = 0;
-                    //     return;
-                    // }
-                    // let properties = features[0].getProperties();
-                    // document.getElementById('info').innerText = JSON.stringify(properties, null, 2);
-                    // document.getElementById('info').style.opacity = 1;
-                    // console.log(features)
-                };
                 this.mapLayer.on('pointermove', function (evt) {
                     if (evt.dragging) {
                         return;
                     }
                     let pixel = self.mapLayer.getEventPixel(evt.originalEvent);
                     displayFeatureInfo(pixel);
-                    showInfo(evt)
                 });
 
                 this.mapLayer.on('click', function (evt) {
                     displayFeatureInfo(evt.pixel);
                     let coord = transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
-                    console.log(self.isMarker)
                     if (self.isMarker) {
-                        let iconFeature2 = new Feature({
+                        let iconFeature = new Feature({
+                            crossOrigin: "Anonymous",
                             geometry: new Point(fromLonLat([coord[0], coord[1]])),
                             name: 'Marker'
                         });
-                        iconFeature2.setStyle(new Style({
+                        iconFeature.setStyle(new Style({
                             image: new Icon({
                                 anchor: [0.5, 46],
                                 size: [48, 48],
                                 anchorXUnits: 'fraction',
                                 anchorYUnits: 'pixels',
-                                src: 'http://cdn.mapmarker.io/api/v1/pin?text=P&size=50',
+                                src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAD2ElEQVRogdWaQYgcRRSGv2724HER8eBBFhHJWSWB6ClEood+5pyzJ3P1Ih5EwjKERUQPopJDlICYg4R6IQQMXkxEPETwoBAWWYLIIrIsYQ9xWaY8TPdsbU3XdFV1z5j8UPSb1139/lf16vWr7imstTzOKIDy/ybRB4W1lqIoSmvteKr0fqdARI4BrwMngDVgFRgDO8AfwB3ghqr+1dhw7SXLZMyAtXZcFMWRflVVnQXeA16MvM0t4IKq3k6176LouwZE5BngS+B05i2+As4bY/ZyOh8JIfcIk5GG9ukriqKsquo4oMBTmeQb3APOqOp9107DwZfda7IXcVVVJ4HvgCd6km+wDbyiqlspnbJCSETWgF+YLNAhcQ94KSWcSjicLvfoLlJXFpEV4BuGJw/wAvC5z2GePBM+PvGWjm8BxzuI/A38BGwCe8ABsAtsAQ87+p4TkVdDfPyLV+BwsXblfhEpgXcjyD9dNxerHM7amPlr731r7WsddrDWjo+ETgROA8/OOX/ALPE2dNk7JSJrUSHUFjKhBrzZYXglgnwMSiZP82AINXJprR27ITSvAS8PRDAGJ7r4zISQf/S9BZ5bogPPJ4VQKJV6+ieX6MCqyyckl7HhU1+XVaFmopPPNIR8r0JTBjxYogO7XaMPEAyhgLy5YNIuthq78wa2jJkmJ4R61e6J+CE7C/k6R//1ksjvA9eSQsg9GXJIVe+ynFm4oqo7bXyCIQTRmejCgsmPgVFsWCeFUD0Lt4C7C3TgW2PMZoiPL7dmoa6MBIwWRh9GsXuBoijK7E29iPwOHBuKdY2bxpg3UjoEy2l/V+bqa3Eji+J8jGJHvpFnp8Qj3qavj1eAPwck/2Pzjigm9rNqIbcZY/YZdhbWUzkEa6GQruX8F8A/A5D/1RhzI6djMAt1rv5JSt0HPh7AgZFvN7Yl1UKBB9sn9KtSN4GrufajdmQu/JkwxjxgEkq52FDV6b2Ts1AbsTaiIcdq3YdMCrBUbAOX/XunyNO3CE028uHqQzKwLSKXgLcTHdios1k2knZkbc8IlwyT90Kx2AE+yx35Rk7dkU1l3ylVvQ9cTXDgU1V9GLpfrNw7C3kZaZ24jf8e8NEQNrNrobYRMcb8BlyPcOCSqu72Hf2+tRABeb2D/AGTrJWdeVx5xdqjn20GwM8i8j1wKnD+sjFmsCKwby0UwgcB/T5wMZpdBBb2obuqqovAO45qDJxX1T5P7Rn0/sw6DyJyEjgD/Atcqxf5sKgdKNuObc295lGQp9+JA87NfKP15TkD03nNEGj9r8TjhMFqoa5sNUTOb5P/A8dYOKnlHRBqAAAAAElFTkSuQmCC',
                             })
                         }));
-
-
-                        self.source.addFeature(iconFeature2)
+                        self.source.addFeature(iconFeature)
 
                     }
-
+                    if (self.showTable) {
+                        let geometry = coord[0] + ',' + coord[1];
+                        self.getGeometryData(self.tableNextRequest['service'], self.tableNextRequest['layer_id'], self.tableNextRequest['layer_name'], self.filterQuery, geometry)
+                    }
                 });
 
 
@@ -691,13 +748,31 @@
 
         },
         methods: {
+            testMe(data) {
+                console.log(data)
+            },
+            filterSelectedColumn(column) {
+                this.filterValues = [];
+                for (let i = 0; i < this.tableFeaturesData.length; i++) {
+                    if (!this.filterValues.includes(this.tableFeaturesData[i].attributes[column]))
+                        this.filterValues.push(this.tableFeaturesData[i].attributes[column])
+                }
+            },
+            filterData() {
+                this.getTableData(this.tableNextRequest['service'], this.tableNextRequest['layer_id'], this.tableNextRequest['layer_name'], this.filterQuery)
+                this.$modal.hide('filter-modal');
+            },
+            addValueToQuery(value) {
+                if (typeof value == 'string')
+                    value = "'" + value + "'"
+                this.filterQuery += value + ' ';
+            },
             dragAndDropToast() {
                 let toast = this.$toasted.show("Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map", {
                     theme: "outline",
                     position: "bottom-center",
                     duration: 3500
                 });
-
             },
             zoomToCenter() {
                 this.mapLayer.getView().setCenter(fromLonLat([49.882858, 40.3598414]))
@@ -806,6 +881,17 @@
                     draggable: true,
                 });
             },
+            showFilterModal() {
+                // this.tableFeatureData = Feature
+                // console.log(Feature)
+                this.$modal.show('filter-modal', null, {
+                    name: 'dynamic-modal',
+                    resizable: true,
+                    adaptive: true,
+                    draggable: true,
+                });
+            },
+
             hideDataModal() {
                 this.$modal.hide('data-modal');
             },
@@ -960,7 +1046,8 @@
                 this.baseLayerList = this.baseLayerList.map((item, index) => {
                     let name = item.name
                     let order = index + 1
-                    return {name, order};
+                    let spatial = item.spatial
+                    return {name, order, spatial};
                 });
                 this.setIndexes();
             },
@@ -993,6 +1080,7 @@
                         this.baseLayerList.push({
                             'name': self.gisLayers[i].name,
                             'order': i + 1,
+                            'spaital': responseDynamic.data.spatialReference.latestWkid
                         })
                     } else {
 
@@ -1014,12 +1102,22 @@
                 delete this.dynamicSubLayerList[0];
 
             },
-            async getTableData(service, layer_id, layer_name) {
+            async getTableData(service, layer_id, layer_name, query) {
                 let response = await LayerService.getTableData({
                     token: this.token,
                     name: service.name,
                     layer: layer_id,
-                })
+                    where: query
+                });
+                if (response.data.error !== undefined) {
+                    console.log('error')
+                    return;
+                }
+
+                this.tableNextRequest['service'] = service;
+                this.tableNextRequest['layer_id'] = layer_id;
+                this.tableNextRequest['layer_name'] = layer_name;
+
                 this.tableHeader = layer_name
                 this.tableFeaturesData = response.data.features
                 this.tableFeaturesHeader = Object.keys(this.tableFeaturesData[0].attributes);
@@ -1049,25 +1147,28 @@
                         this.checkedColumns.push(this.tableFeaturesHeader[alias])
                     }
                 }
-                // this.tableFeaturesData = this.tableFeaturesData.map((item, index) => {
-                //     let name = item
-                //     for (let k in target) {
-                //         if (typeof target[k] !== 'function') {
-                //             if (item === k) {
-                //                 name = target[k]
-                //             }
-                //         }
-                //     }
-                //     return name;
-                // });
-
-
                 console.log(this.checkedColumns)
                 console.log(this.checkedColumnsData)
                 // console.log(this.tableFeaturesData)
-
                 this.showTable = true
+                this.filterQuery = '';
+                this.filterValues = [];
 
+            },
+            async getGeometryData(service, layer_id, layer_name, query, geometry) {
+                let response = await LayerService.getGeometryData({
+                    token: this.token,
+                    name: service.name,
+                    layer: layer_id,
+                    where: query,
+                    geometry: geometry,
+                });
+
+                if (response.data.features !== undefined) {
+                    if (response.data.features.length !== 0) {
+                        this.showDataModal(response.data.features[0])
+                    }
+                }
             },
             setIndexes() {
                 this.baseLayerList.map((item, index) => {
@@ -1094,47 +1195,73 @@
                 if (dynamic) {
 
                     let layers = this.dynamicSubLayerList[service.name];
-                    let active_layers = ''
-                    let colors = ''
+                    let active_layers = '';
+                    let hidden_layers = '';
+                    let colors = '';
                     if (typeof this.dynamicForColors[service.name] !== 'undefined') {
                         colors = '[';
                         this.dynamicForColors[this.colorPicker.layer.name].forEach(function (colorLayer) {
                             colors += colorLayer;
                         })
                         colors += ']';
-
                     }
-
                     layers.forEach(function (layer, index) {
                         if (layer === true) {
                             active_layers += index + ','
+                        } else {
+                            hidden_layers += index + ','
                         }
                     })
 
-                    active_layers = active_layers.slice(0, -1);
+                    let layer_config = '';
+                    if (active_layers !== '') {
+                        active_layers = active_layers.slice(0, -1);
+                        layer_config += "show:" + active_layers
+                    } else {
+                        hidden_layers = hidden_layers.slice(0, -1);
+                        layer_config += "hide:" + hidden_layers
+                    }
                     new_layer = new TileLayer({
                         source: new TileArcGISRest({
                             url: url,
                             crossOrigin: "Anonymous",
                             params: {
                                 "token": this.token,
-                                "layers": "show:" + active_layers,
+                                "layers": layer_config,
                                 "dynamicLayers": colors,
                                 "FORMAT": "png8"
                             }
                         })
                     });
                 } else {
-                    new_layer = new TileLayer({
-                        source: new TileArcGISRest({
-                            url: url,
-                            crossOrigin: "Anonymous",
-                            params: {
-                                "token": this.token,
-                                "FORMAT": "png8"
-                            }
-                        })
-                    });
+                    console.log(service.spaital)
+                    if (service.spaital === 3857) {
+
+                        url = url + "/tile/{z}/{y}/{x}?token=" + this.token
+                        // proj4.defs("EPSG:32639", "+proj=utm +zone=39 +datum=WGS84 +units=m +no_defs");
+                        //
+                        // register(proj4);
+                        // var proj54009 = getProjection('EPSG:32639');
+                        // proj54009.setExtent([4073251.6068361676, 605305.4965181611, 4762111.411185106, -265800.3546973752]);
+                        new_layer = new TileLayer({
+                            source: new XYZ({
+                                url: url,
+                                projection: 'EPSG:3857',
+                                crossOrigin: "Anonymous",
+                            })
+                        });
+                    } else {
+                        new_layer = new TileLayer({
+                            source: new TileArcGISRest({
+                                url: url,
+                                crossOrigin: "Anonymous",
+                                params: {
+                                    "token": this.token,
+                                    "FORMAT": "png8"
+                                }
+                            })
+                        });
+                    }
                 }
                 this.mapLayer.addLayer(new_layer);
                 new_layer.set('name', service.name);
@@ -1143,31 +1270,20 @@
                 } else {
                     new_layer.setZIndex(500 - index);
                 }
-                console.log(this.mapLayer.getLayers())
+
             },
             setBaseLayout(index) {
-
-
                 let layers = this.mapLayer.getLayers().getArray();
-                console.log(layers)
-                console.log(layers[0])
-
                 layers[0].setSource(this.baseMaps[index])
-                this.mapLayer.getLayers().forEach(function (layer) {
-                    // if (layer.get('name') != undefined && layer.get('name') === service.name) {
-                    //     layersToRemove.push(layer);
-                    //     self.dynamicLayersReset(service, false)
-                    // }
-                });
-
             },
-            deleteLayers(service) {
+            deleteLayers(service, reset) {
                 let layersToRemove = [];
                 let self = this
                 this.mapLayer.getLayers().forEach(function (layer) {
                     if (layer.get('name') != undefined && layer.get('name') === service.name) {
                         layersToRemove.push(layer);
-                        self.dynamicLayersReset(service, false)
+                        if (reset)
+                            self.dynamicLayersReset(service, false)
                     }
                 });
                 let len = layersToRemove.length;
@@ -1176,15 +1292,16 @@
                 }
             },
             async dynamicLayersReset(service, status) {
-                // let responseColor = await LayerService.getLayerDynamic({token: this.token, name: service.name});
                 let response = await LayerService.getLayerDynamic({
                     token: this.token,
                     name: service.name,
                 })
                 let colorEnabled = false;
-                if (response.data.layers[0].drawingInfo.renderer.symbol !== undefined) {
-                    if (response.data.layers[0].drawingInfo.renderer.symbol.color !== undefined) {
-                        colorEnabled = true
+                if (response.data.layers[0].drawingInfo !== undefined) {
+                    if (response.data.layers[0].drawingInfo.renderer.symbol !== undefined) {
+                        if (response.data.layers[0].drawingInfo.renderer.symbol.color !== undefined) {
+                            colorEnabled = true
+                        }
                     }
                 }
 
@@ -1217,6 +1334,7 @@
                     for (let i in this.dynamicLayerList) {
                         if (this.dynamicLayerList[i].name === service.name) {
                             this.dynamicLayerList[i].collapseVisibility = false;
+                            this.dynamicLayerList[i].layersVisibility = false;
                             break;
                         }
                     }
@@ -1229,13 +1347,15 @@
                 } else {
                     this.dynamicSubLayerList[service.name][id] = true
                 }
-                this.deleteLayers(service)
+                this.deleteLayers(service, false)
                 for (let i in this.dynamicLayerList) {
                     if (this.dynamicLayerList[i].name === service.name) {
                         this.dynamicLayerList[i].layersVisibility = true;
                         break;
                     }
                 }
+                this.dynamicLayersReset(service, true)
+
                 this.addLayers(service, index, true, null)
 
             },
@@ -1283,25 +1403,6 @@
                     this.addInteraction();
                 }
 
-            },
-            layerBackground(layer) {
-                if (layer.color) {
-                    let color = layer.color;
-                    return "rgba(" + color[0] + "," + color[1] + "," + color[2] + "," + color[3] + ")"
-                }
-            },
-            layerBorderColor(layer) {
-                if (layer.outline) {
-                    let borderColor = layer.outline;
-                    return "rgba(" + borderColor[0] + "," + borderColor[1] + "," + borderColor[2] + "," + borderColor[3] + ")"
-                }
-            },
-            iconVisibility(layer) {
-                if (this.checkNested(layer, 'drawingInfo', 'renderer', 'symbol', 'outline', 'color')) {
-                    return "visible";
-                } else {
-                    return "hidden";
-                }
             },
             OpenColorPicker(layer, sublayer, name, index) {
                 this.colorPicker.visibility = true;

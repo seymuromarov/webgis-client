@@ -3,14 +3,84 @@
   width: 100%;
 }
 
+hr {
+  margin-top: .5rem !important;
+  margin-bottom: .5rem !important;
+}
+
+.text-left-layer {
+  text-align: left !important;
+  margin-left: 20px;
+}
+.userNameLabel{
+  text-align: left !important;
+  margin-left: 10px;
+  font-size: 18px;
+  margin-top: 8px;
+}
+
 .action-button-class {
   position: absolute;
-  right: 15px;
+  right: .5em;
   z-index: 10;
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   padding: 0 !important;
 }
+
+.ol-control button:hover, .ol-control button:focus {
+  background-color: unset !important;
+  opacity: unset !important;
+}
+
+.ol-control {
+  background-color: unset;
+  border-radius: 0;
+  padding: 0;
+
+  button {
+    width: 31px;
+    height: 31px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+
+    &:focus {
+      box-shadow: unset !important;
+    }
+
+    &:hover {
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+    }
+
+    color: black;
+  }
+
+  #gcd-button-control {
+    left: unset;
+    top: unset;
+    width: 30px;
+    height: 30px;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBBkRBSDfaGCTAAAA2UlEQVQoz4XOMUoDQRQG4C+pRLENLOQCsQukVNJ4gRTpJCQXEFN5AK31ALIXEFIGTGnjFRbstAqKBCVFsrCOhbu62YD+08zP++YxQE3fzJuVR9eaKtk3Fby6FXuQWeqVxzVTny7s5L0tker+gr7gcmNjZC5RL+rMy8/rImPB0fe1ruPeqgLu0CnAno/qr71jtwDPWlvgAE9FuZJpV8BEqlGUpqVEVBqfCuKy70nNjbVEjk0EwdqwTLoSIT+p2FqQGZVJ3aEz5040MJRtk82McjL4jyz8kYGFmy85wkTZ8zKtPwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNC0yNVQxNTowNTozMiswMjowMEYPGlwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDQtMjVUMTU6MDU6MzIrMDI6MDA3UqLgAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==');
+  }
+}
+
+.btn-control {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+
+  &:focus {
+    box-shadow: unset !important;
+  }
+
+  &:hover {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+  }
+
+  .i {
+    color: #000;
+  }
+}
+
 
 //#map .ol-zoom .ol-zoom-out {
 //  margin-top: 204px;
@@ -73,6 +143,7 @@
 .list-group-item {
   cursor: move;
   padding: 5px 0 !important;
+  border: unset !important;
 }
 
 .list-group-item i {
@@ -189,6 +260,7 @@
   height: 300px;
   overflow: auto;
   border-radius: 10px 10px 0 0;
+  z-index: 10;
 
 }
 
@@ -211,21 +283,26 @@
 
 .tableColumns {
   position: absolute;
-  top: 5px;
-  right: 70px;
+  top: 8px;
+  right: 40px;
 }
 
 .tableClose {
   position: absolute;
-  top: 5px;
-  right: 45px;
+  top: 8px;
+  right: 15px;
+}
+
+.tableFilter {
+  position: absolute;
+  top: 8px;
+  right: 70px;
 }
 
 .excelIcon {
   position: absolute;
   right: 100px;
-  top: 5px;
-
+  top: 8px;
 }
 
 .makeMePoint {
@@ -272,13 +349,13 @@
 }
 
 .latLongShow {
-  top: 6px;
+  top: 9px;
   right: 80px;
   position: absolute;
   z-index: 9999;
   background: whitesmoke;
-  padding: 5px 10px;
-  border-radius: 10px;
+  padding: 3px 8px;
+  border-radius: 5px;
 }
 
 .infokml {
@@ -320,12 +397,17 @@
 .sup-bar-layout {
   max-height: 100vh;
   overflow: auto;
+  width: 300px !important;
 }
 
-.sup-bar-layout {
+.map-layout {
   max-height: 100vh;
+  width: calc(100% - 300px);
+  position: relative;
 }
-
+.howMuchWidthHaveMap{
+  width: calc(100% - 300px) !important;
+}
 .selectLayerForm {
   bottom: 50px;
   right: 10px;
@@ -335,4 +417,188 @@
   text-align: left;
   padding: 10px;
   border-radius: 10px;
+}
+
+//filter start
+
+.filterDiv {
+  //max-height: 600px;
+  //width: 450px;
+  //position: absolute;
+  //top: 30%;
+  //left: 50%;
+  z-index: 9998;
+  overflow: auto;
+  background-color: #fff;
+  box-shadow: 5px 5px 15px #777;
+  border-radius: 8px;
+}
+
+.filterDivHeader {
+  padding: 10px;
+  z-index: 9999;
+  color: #606060;
+  cursor: move;
+  text-align: center;
+  border-bottom: 1px solid #7f7f7f;
+}
+
+.filterLayerName {
+  font-size: 17px;
+  cursor: move;
+  margin-bottom: 0;
+}
+
+.filterCloseIcon {
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+  color: #ff7b7b;
+}
+
+.filterFieldsList {
+  max-height: 100px;
+  list-style-type: none;
+  padding: 5px 0;
+  margin: 0;
+  margin-bottom: 5px;
+  overflow: auto;
+}
+
+.filterFieldsList li {
+  cursor: pointer;
+  padding-left: 15px;
+  padding-right: 10px;
+}
+
+.filterFieldsList li:hover {
+  background-color: #c0f2f1;
+}
+
+.filterCenterDiv {
+  height: 170px;
+  border-top: 1px solid #c6c6c6;
+  border-bottom: 1px solid #c6c6c6;
+}
+
+.filterActionsDiv {
+  height: 100%;
+  width: 200px;
+  float: left;
+}
+
+.filterActionsDiv table {
+  display: inline-grid;
+  padding-left: 8px;
+  margin: 10px auto;
+}
+
+.filterActionsDiv button {
+  min-width: 50px;
+  max-width: 75px;
+  margin: 3px;
+}
+
+.filterValuesDiv {
+  height: 100%;
+  width: 225px;
+  padding: 5px 0;
+  float: right;
+  overflow: auto;
+  border-left: 2px solid #eee;
+}
+
+.filterValuesList {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.filterValue {
+  cursor: pointer;
+  padding-left: 10px;
+}
+
+.filterValue:hover {
+  background-color: #c0f2f1;
+}
+
+.filterSelectDiv {
+  padding: 10px;
+}
+
+.filterApplyButton {
+  margin: 5px 0;
+  margin-bottom: 10px;
+  float: right;
+  border-radius: 8px;
+}
+
+.clear {
+  clear: both;
+}
+
+.selectDiv select {
+  max-height: 70px;
+  vertical-align: bottom;
+  display: inline-block;
+  width: auto;
+}
+
+.selectDiv {
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.query-start {
+  color: #7f7f7f;
+}
+
+.queryTextArea {
+  padding: 8px 12px;
+  width: 100%;
+  border-radius: 15px;
+  outline: none;
+}
+
+
+//filter end
+
+.layerDiv input {
+  opacity: 0;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  cursor: pointer;
+  display: block !important;
+}
+
+.layerDiv .parentCheckbox:checked ~ .checkbox-icon {
+  color: #008422;
+}
+
+.layerDiv .childCheckbox:checked ~ .checkbox-child-icon {
+  color: #008422;
+}
+
+.checkbox-icon {
+  position: absolute;
+  cursor: pointer;
+  color: #c6c6c6;
+  font-size: 17px;
+  top: 4px;
+}
+
+.serviceTitle {
+  font-size: 17px;
+  margin-left: 25px;
+}
+
+.checkbox-child-icon {
+  position: absolute;
+  left: 29px;
+  top: 5px;
+  cursor: pointer;
+  color: #c6c6c6;
+  font-size: 15px;
 }

@@ -31,8 +31,21 @@ export default {
 
                 token: params.token,
                 f: 'json',
-                where: "1=1",
+                where: params.where,
                 returnGeometry: false,
+                outFields: '*',
+            }
+        })
+    },
+    getGeometryData(params) {
+        return Api().get("/" + params.name + "/MapServer/" + params.layer + "/query/", {
+            params: {
+                token: params.token,
+                f: 'json',
+                where: params.where,
+                returnGeometry: true,
+                geometryType: 'esriGeometryPoint',
+                geometry:params.geometry,
                 outFields: '*',
             }
         })
