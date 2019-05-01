@@ -15,7 +15,9 @@ export default {
                 request: 'gettoken',
                 username: params.username,
                 password: params.password,
-                expiration: 60,
+                expiration: 1440,
+                client: 'referrer',
+                referer: "webgis.azercosmos.az",
                 f: 'json'
             }
         })

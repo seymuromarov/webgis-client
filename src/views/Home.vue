@@ -2,13 +2,26 @@
     <div class="row container-fluid padding-0">
         <div class=" padding-0 sup-bar-layout">
 
+            <img src="../assets/logo-en.png" alt="logo" class="azc-cosmos-logo">
             <div class="userNameLabel">
                 <span class="">{{ username }}</span>
                 <i @click="logout()" title='Log out' class="logOutIcon fas fa-power-off" style="margin-left: 10px;"></i>
             </div>
             <hr>
 
-            <h4 class="text-left-layer">Dynamic Layers</h4>
+            <h5 class="text-left-layer">Dynamic Layers
+                <span>
+                                      <i v-if="!dynamicLayersShow"
+                                         @click="dynamicLayersShow=true"
+                                         class="fas fa-caret-left makeMePoint">
+                                      </i>
+                                      <i v-if="dynamicLayersShow "
+                                         @click="dynamicLayersShow=false"
+                                         class="fas fa-caret-down makeMePoint">
+                                      </i>
+                </span>
+            </h5>
+
             <div class="colorPickers" v-show="colorPicker.visibility">
                 <ul class="nav">
                     <li class="nav-item">
@@ -33,9 +46,13 @@
                     <button class="btn btn-sm btn-primary" type="button" @click="saveColor()">Save</button>
                 </div>
             </div>
+            <transition name="slide-fade">
+
             <draggable
+                    v-show="dynamicLayersShow"
                     class="list-group"
                     tag="ul"
+                    key="dynamicLayer"
                     v-model="dynamicLayerList"
                     v-bind="dragOptions"
                     @start="isDragging = true"
@@ -112,65 +129,105 @@
                     </li>
                 </transition-group>
             </draggable>
+            </transition>
             <hr>
-            <h4 class="text-left-layer">Basemaps</h4>
-            <draggable
-                    class="list-group"
-                    tag="ul"
-                    v-model="baseLayerList"
-                    v-bind="dragOptions"
-                    @start="isDragging = true"
-                    @end="onMoveCallbackBaseLayerList()"
-            >
-                <transition-group type="transition" name="flip-list">
-                    <li
-                            class="list-group-item"
-                            v-for="element in baseLayerList"
-                            :key="element.name"
-                            style="text-align: left"
-                    >
-                        <div class="row">
-                            <div class="col-12 layerDiv">
-                                <input class="parentCheckbox"
-                                       :id="element.name" :name="element.name" type="checkbox"
-                                       @click="selectService(element, element.order,false, $event)"/>
-                                <i class="checkbox-icon far fa-check-circle"></i>
-                                <label :for="element.name"></label>
-                                <span class="serviceTitle">
+            <h5 class="text-left-layer">Basemaps
+                <span>
+                                      <i v-if="!baseLayersShow"
+                                         @click="baseLayersShow=true"
+                                         class="fas fa-caret-left makeMePoint">
+                                      </i>
+                                      <i v-if="baseLayersShow "
+                                         @click="baseLayersShow=false"
+                                         class="fas fa-caret-down makeMePoint">
+                                      </i>
+                </span>
+            </h5>
+            <transition name="slide-fade">
+
+                <draggable
+                        class="list-group"
+                        v-show="baseLayersShow"
+                        tag="ul"
+                        key="baseLayers"
+                        v-model="baseLayerList"
+                        v-bind="dragOptions"
+                        @start="isDragging = true"
+                        @end="onMoveCallbackBaseLayerList()"
+                >
+                    <transition-group type="transition" name="flip-list">
+                        <li
+                                class="list-group-item"
+                                v-for="element in baseLayerList"
+                                :key="element.name"
+                                style="text-align: left"
+                        >
+                            <div class="row">
+                                <div class="col-12 layerDiv">
+                                    <input class="parentCheckbox"
+                                           :id="element.name" :name="element.name" type="checkbox"
+                                           @click="selectService(element, element.order,false, $event)"/>
+                                    <i class="checkbox-icon far fa-check-circle"></i>
+                                    <label :for="element.name"></label>
+                                    <span class="serviceTitle">
                                   {{ element.name }}
                                 </span>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                </transition-group>
-            </draggable>
+                        </li>
+                    </transition-group>
+                </draggable>
+            </transition>
 
         </div>
 
         <div class=" padding-0 map-layout">
 
             <div id="map">
+                <!--                <button-->
+                <!--                        class="action-button-class btn btn-control"-->
+                <!--                        :style="{top : '15%'}"-->
+                <!--                        title="Add marker"-->
+                <!--                        @click="setMarkerTrue"-->
+                <!--                >-->
+                <!--                    <i class="fas fa-map-marker-alt"></i>-->
+                <!--                </button>-->
                 <button
                         class="action-button-class btn btn-control"
                         :style="{top : '15%'}"
-                        title="Add marker"
-                        @click="setMarkerTrue"
+                        title="Search"
+                        @click="cityInputToggle"
                 >
-                    <i class="fas fa-map-marker-alt"></i>
+                    <i class="fas fa-search"></i>
                 </button>
+
+                <div style="position: absolute;top: 14.2%;right: 60px;z-index: 999" v-show="citySearchInputShow">
+                    <multiselect v-model="citySearchValue" :options="citySearchOptions" :custom-label="nameWithCountry"
+                                 selectLabel=""
+                                 placeholder="Select City" label="city" track-by="city"
+                                 @select="onCitySelect"></multiselect>
+                </div>
 
                 <button
                         class="action-button-class btn btn-control"
-                        :style="{top : '55%'}"
-                        title="Add marker"
+                        :style="{top : '60%'}"
+                        title="Delete Feature"
                         @click="deleteFeatureOn"
                 >
                     <i class="fas fa-trash"></i>
                 </button>
+                <button
+                        class="action-button-class btn btn-control"
+                        :style="{top : '65%'}"
+                        title="Reset Features"
+                        @click="resetFeatures"
+                >
+                    <i class="fas fa-sync-alt"></i>
+                </button>
 
                 <button v-for="(item, index) in drawings"
                         class="action-button-class btn btn-control"
-                        :style="{top : ((index+1)*5+15) + '%'}"
+                        :style="{top : ((index+1)*5+20) + '%'}"
                         :title="item.tooltip"
                         @click="setDrawType(item.name)">
                     <i :class="item.icon"></i>
@@ -183,8 +240,10 @@
                 <div id="info" class="infokml" v-show="this.kmlInfo!==null">&nbsp;</div>
 
                 <button class="action-button-class btn btn-control"
-                        style="bottom: 10px;right: 60px;"
+                        style="bottom: 10px;right: 50px;"
                         @click="dragAndDropToast"
+                        title="Upload file"
+
                         v-if="!showTable">
                     <i class="fas fa-file-upload"></i>
                 </button>
@@ -211,6 +270,20 @@
                         @click="zoomToCenter">
                     <i class="fas fa-home"></i>
                 </button>
+                <button class="action-button-class btn btn-control"
+                        style="top: 152px;left: .5rem;"
+                        title="Go next map history"
+                        :disabled='!nextHistoryEvent'
+                        @click="historyNext">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="action-button-class btn btn-control"
+                        style="top: 186px;left: .5rem;"
+                        title="Go previous map history"
+                        :disabled='!previousHistoryEvent'
+                        @click="historyBack">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
 
                 <button class="action-button-class btn btn-control"
                         style="bottom: 90px;left: .5rem;"
@@ -230,10 +303,10 @@
 
                 <button class="action-button-class btn btn-control"
                         style="bottom: 10px;left: .5rem;"
-                        @click="pdfExport"
-                        title="Export to pdf"
+                        @click="exportData"
+                        title="Export to geojson"
                         v-show="!showTable">
-                    <i class="far fa-file-pdf"></i>
+                    <i class="fas fa-file-download"></i>
                 </button>
             </div>
 
@@ -438,7 +511,7 @@
 
 <script>
     import 'ol/ol.css'
-    import geocoder from 'ol-geocoder';
+    // import geocoder from 'ol-geocoder';
     import {Map, View, Overlay, Feature} from 'ol';
     import {getArea, getLength, getDistance} from 'ol/sphere.js';
     import {LineString, Polygon, Circle, Point} from 'ol/geom.js';
@@ -454,6 +527,7 @@
     import LayerService from '@/services/LayerService'
     import {ZoomSlider, defaults as defaultControls, FullScreen} from 'ol/control.js';
     import {Chrome} from 'vue-color';
+    import Multiselect from 'vue-multiselect'
     import MousePosition from 'ol/control/MousePosition.js';
     import {createStringXY} from 'ol/coordinate.js';
     import {GPX, GeoJSON, IGC, KML, TopoJSON} from 'ol/format.js';
@@ -463,15 +537,20 @@
     import proj4 from 'proj4';
     import {register} from 'ol/proj/proj4.js';
     import {applyTransform} from "ol/extent";
+    import * as format from "ol/format";
+    import {az_json} from "../assets/json/az"
 
     export default {
         name: 'home',
         components: {
             draggable,
             colorPicker: Chrome,
+            Multiselect
         },
         data() {
             return {
+                baseLayersShow: true,
+                dynamicLayersShow: true,
                 filterQuery: '',
                 filterValues: [],
                 mapLayer: null,
@@ -546,6 +625,14 @@
                 tableFeatureData: [],
                 tableNextRequest: [],
                 tableFeaturesHeader: [],
+                citySearchOptions: [],
+                citySearchValue: null,
+                citySearchInputShow: false,
+                historyUpdate: true,
+                nextHistoryEvent: false,
+                previousHistoryEvent: false,
+                historyEvents: [],
+                historyEventsIndex: 0,
                 tableFeaturesHeaderWithAlias: [],
                 graticule: false,
                 graticuleLayer: null,
@@ -565,23 +652,23 @@
                             name: "sat",
                             url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
                         }),
-                    waterColor:
-                        new XYZ({
-
-                            name: "waterColor",
-                            url: "//a.tile.stamen.com/watercolor/{z}/{x}/{y}.png",
-                        }),
-                    esriWorldStreetMap:
+                    // waterColor:
+                    //     new XYZ({
+                    //
+                    //         name: "waterColor",
+                    //         url: "//a.tile.stamen.com/watercolor/{z}/{x}/{y}.png",
+                    //     }),
+                    street:
                         new XYZ({
 
                             url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
                         }),
-                    terrain:
-                        new XYZ({
-
-                            name: "waterColor",
-                            url: "//a.tile.stamen.com/terrain/{z}/{x}/{y}.png",
-                        }),
+                    // terrain:
+                    //     new XYZ({
+                    //
+                    //         name: "waterColor",
+                    //         url: "//a.tile.stamen.com/terrain/{z}/{x}/{y}.png",
+                    //     }),
                     // toner:
                     //     new XYZ({
                     //
@@ -618,6 +705,7 @@
             }
         },
         mounted() {
+            this.citySearchOptions = az_json;
             this.token = this.$cookie.get('token');
             this.username = this.$cookie.get('username');
             if (this.token === null)
@@ -656,20 +744,24 @@
                         TopoJSON
                     ]
                 });
-                let geocoderControl = new geocoder('nominatim', {
-                    provider: 'osm',
-                    lang: 'en',
-                    placeholder: 'Search for ...',
-                    limit: 5,
-                    debug: false,
-                    autoComplete: true,
-                    keepOpen: false
-                });
+                // let geocoderControl = new geocoder('nominatim', {
+                //     provider: 'osm',
+                //     lang: 'en',
+                //     placeholder: 'Search for ...',
+                //     limit: 5,
+                //     debug: false,
+                //     autoComplete: true,
+                //     keepOpen: false
+                // });
 
                 this.layers = [
                     gray,
                     this.vector
                 ];
+
+                let zoom = 6;
+                let center = fromLonLat([49.882858, 40.3598414]);
+                let rotation = 0;
 
                 this.mapLayer = new Map({
                     interactions: defaultInteractions().extend([
@@ -682,26 +774,29 @@
                     target: 'map',
                     layers: this.layers,
                     view: new View({
-                        center: fromLonLat([49.882858, 40.3598414]),
-                        zoom: 6
+                        center: center,
+                        zoom: zoom,
+                        rotation: rotation
                     })
                 });
 
-                this.mapLayer.addControl(geocoderControl)
+                // this.mapLayer.addControl(geocoderControl)
                 // let zoomslider = new ZoomSlider();
                 // this.mapLayer.addControl(zoomslider);
                 let modify = new Modify({source: this.source});
                 this.mapLayer.addInteraction(modify);
                 let self = this;
+
                 dragAndDropInteraction.on('addfeatures', function (event) {
-                    let vectorSource = new VectorSource({
-                        features: event.features
-                    });
-                    self.mapLayer.addLayer(new VectorLayer({
-                        renderMode: 'image',
-                        source: vectorSource
-                    }));
-                    self.mapLayer.getView().fit(vectorSource.getExtent());
+                    //     let vectorSource = new VectorSource({
+                    //         features: event.features
+                    //     });
+                    //     self.mapLayer.addLayer(new VectorLayer({
+                    //         renderMode: 'image',
+                    //         source: vectorSource
+                    //     }));
+                    self.source.addFeatures(event.features)
+                    self.mapLayer.getView().fit(self.source.getExtent());
                 });
 
                 let displayFeatureInfo = function (pixel) {
@@ -780,13 +875,95 @@
                     }
                 });
 
+                // hash check
+                let view = this.mapLayer.getView();
+                let updateHistoryMap = function () {
+                    if (self.historyUpdate) {
+                        self.historyEvents.push({
+                            zoom: view.getZoom(),
+                            center: view.getCenter(),
+                            rotation: view.getRotation()
+                        });
+                        self.historyEventsIndex = self.historyEvents.length;
+                        self.nextHistoryEvent = false
+                        if (self.historyEventsIndex !== 1) {
+                            self.previousHistoryEvent = true
+                        }
+                    } else {
+                        self.historyUpdate = true;
+                    }
+                };
+                self.mapLayer.on('moveend', updateHistoryMap);
+                window.addEventListener('popstate', function (event) {
+                    if (event.state === null) {
+                        return;
+                    }
+                    self.mapLayer.getView().setCenter(event.state.center);
+                    self.mapLayer.getView().setZoom(event.state.zoom);
+                    self.mapLayer.getView().setRotation(event.state.rotation);
+                });
+                // hash check end
 
             });
 
         },
         methods: {
-            testMe(data) {
-                console.log(data)
+            cityInputToggle() {
+                if (this.citySearchInputShow) {
+                    this.citySearchInputShow = false;
+                } else {
+                    this.citySearchInputShow = true
+                }
+            },
+            onCitySelect(city) {
+                console.log(city.lng)
+                console.log(city.lat)
+                this.mapLayer.getView().setCenter(fromLonLat([parseFloat(city.lng), parseFloat(city.lat)]))
+                this.mapLayer.getView().setZoom(11)
+                this.citySearchInputShow = false
+            },
+            nameWithCountry({city, country}) {
+                return `${city} , ${country}`
+            },
+            historyBack() {
+                this.historyUpdate = false
+                this.historyEventsIndex -= 1;
+                let myState = this.historyEvents[this.historyEventsIndex - 1];
+                this.mapLayer.getView().setCenter(myState.center);
+                this.mapLayer.getView().setZoom(myState.zoom);
+                this.mapLayer.getView().setRotation(myState.rotation);
+                this.nextHistoryEvent = true
+                if (this.historyEventsIndex === 1) {
+                    this.previousHistoryEvent = false
+                }
+            },
+            historyNext() {
+                if (this.historyEventsIndex + 1 === this.historyEvents.length) {
+                    this.nextHistoryEvent = false
+                }
+                this.previousHistoryEvent = true
+                this.historyUpdate = false
+                this.historyEventsIndex += 1;
+                let myState = this.historyEvents[this.historyEventsIndex - 1];
+                this.mapLayer.getView().setCenter(myState.center);
+                this.mapLayer.getView().setZoom(myState.zoom);
+                this.mapLayer.getView().setRotation(myState.rotation);
+            },
+            exportData() {
+                let geojson = new GeoJSON;
+                let features = this.source.getFeatures();
+                let area = geojson.writeFeatures(features, {featureProjection: 'EPSG:3857'});
+                // var GEOJSON_PARSER = new GeoJSON();
+                // var vectorLayerAsJson = GEOJSON_PARSER.writeFeaturesObject(features)
+                const blob = new Blob([area], {type: 'text/plain'})
+                const e = document.createEvent('MouseEvents'),
+                    a = document.createElement('a');
+                a.download = "shapes.json";
+                a.href = window.URL.createObjectURL(blob);
+                a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+                e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                a.dispatchEvent(e);
+
             },
             filterSelectedColumn(column) {
                 this.filterValues = [];
@@ -812,7 +989,7 @@
                 });
             },
             zoomToCenter() {
-                this.mapLayer.getView().setCenter(fromLonLat([49.882858, 40.3598414]))
+                this.mapLayer.getView().setCenter(fromLonLat([47.82858, 40.3598414]))
                 this.mapLayer.getView().setZoom(8)
             },
             addGraticule() {
@@ -897,6 +1074,20 @@
                 this.isRemove = true
                 this.setDrawType('None')
             },
+            resetFeatures() {
+                this.isMarker = false
+                this.isRemove = false
+                this.setDrawType('None')
+                let elements = document.getElementsByClassName("maptooltip");
+                for (let i = 0; i < elements.length; i++) {
+                    elements[i].setAttribute("style", "display:none;");
+
+                    console.log(elements[i])
+                }
+
+
+                this.source.clear();
+            },
             selectColumns(alias, key, e) {
                 if (e.target.checked) {
                     // for (let alias in this.tableFeaturesHeader) {
@@ -917,14 +1108,18 @@
             },
             showDataModal(Feature) {
                 this.tableFeatureData = Feature
-
-                // console.log(Feature)
                 this.$modal.show('data-modal', null, {
                     name: 'dynamic-modal',
                     resizable: true,
                     adaptive: true,
                     draggable: true,
                 });
+                if (this.tableFeatureData.geometry.x !== undefined) {
+                    this.mapLayer.getView().setCenter(fromLonLat([this.tableFeatureData.geometry.y, this.tableFeatureData.geometry.x]))
+                } else {
+                    this.mapLayer.getView().setCenter(fromLonLat(this.tableFeatureData.geometry.rings[0][0]))
+                }
+
             },
             showFilterModal() {
                 // this.tableFeatureData = Feature
@@ -958,6 +1153,9 @@
                     } else if (value === 'Box') {
                         value = 'Circle';
                         geometryFunction = createBox();
+                    } else if (value === 'Circle') {
+                        console.log("holy circle")
+                        geometryFunction = createRegularPolygon(120);
                     }
                     this.draw = new Draw({
                         source: this.source,
@@ -1113,8 +1311,8 @@
                 this.baseLayerList = this.baseLayerList.map((item, index) => {
                     let name = item.name
                     let order = index + 1
-                    let spatial = item.spatial
-                    return {name, order, spatial};
+                    let spaital = item.spaital
+                    return {name, order, spaital};
                 });
                 this.setIndexes();
             },
@@ -1460,15 +1658,18 @@
                 this.colorPicker.visibility = false;
                 let colors = [];
                 let outlines = [];
+                console.log(this.colors)
                 colors[0] = this.colors.rgba.r;
                 colors[1] = this.colors.rgba.g;
                 colors[2] = this.colors.rgba.b;
-                colors[3] = 255;
+                colors[3] = 255 * this.colors.rgba.a;
+                // colors[3] = 255;
                 outlines[0] = this.borderColors.rgba.r;
                 outlines[1] = this.borderColors.rgba.g;
                 outlines[2] = this.borderColors.rgba.b;
-                outlines[3] = 255;
+                outlines[3] = 255 * this.borderColors.rgba.a;
 
+                console.log(colors)
                 let color = "[" + colors[0] + "," + colors[1] + "," + colors[2] + "," + colors[3] + "]";
                 let outline = "[" + outlines[0] + "," + outlines[1] + "," + outlines[2] + "," + outlines[3] + "]";
                 // let layerDyn = '[' +
@@ -1570,3 +1771,4 @@
 
     }
 </script>
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

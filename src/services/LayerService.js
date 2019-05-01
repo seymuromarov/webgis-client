@@ -9,6 +9,15 @@ export default {
             }
         })
     },
+    getLayersWithFullData(params) {
+        return Api().get("/", {
+            params: {
+                token: params.token,
+                f: 'json',
+                option: 'footprints'
+            }
+        })
+    },
     getLayerDynamic(params) {
         return Api().get("/" + params.name + "/MapServer/layers", {
             params: {
@@ -32,7 +41,7 @@ export default {
                 token: params.token,
                 f: 'json',
                 where: params.where,
-                returnGeometry: false,
+                returnGeometry: true,
                 outFields: '*',
             }
         })
@@ -45,7 +54,7 @@ export default {
                 where: params.where,
                 returnGeometry: true,
                 geometryType: 'esriGeometryPoint',
-                geometry:params.geometry,
+                geometry: params.geometry,
                 outFields: '*',
             }
         })

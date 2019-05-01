@@ -365,8 +365,8 @@ hr {
 }
 
 .infokml {
-  top: 55px;
-  right: 20px;
+  top: 7%;
+  right: 10px;
   position: absolute;
   z-index: 9999;
   background: whitesmoke;
@@ -614,3 +614,26 @@ hr {
 .filter-modal-class {
   background: transparent;
 }
+.azc-cosmos-logo{
+  height: 45px;
+  margin: 10px 0;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+.slide-fade-enter-active {
+  transition: all .3s ease;
+}
+.slide-fade-leave-active {
+  transition: all .4s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to
+  /* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
+

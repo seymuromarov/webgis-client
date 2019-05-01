@@ -41,8 +41,8 @@
                 // response.data.username = username
                 if (!response.data.hasOwnProperty('error')) {
                     // this.$store.commit('getToken', response.data)
-                    this.$cookie.set('username', username, {expires: '1h'});
-                    this.$cookie.set('token', response.data.token, {expires: '1h'});
+                    this.$cookie.set('username', username, {expires: '1D'});
+                    this.$cookie.set('token', response.data.token, {expires: '1D'});
                     this.$router.push('/')
                 }
                 console.log(response.data)
