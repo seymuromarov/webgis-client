@@ -10,6 +10,11 @@ export default {
     //     })
     // },
     getToken(params) {
+        const getUrl = window.location;
+        let host = getUrl.hostname;
+        if (host === "localhost") {
+            host = "webgis.azercosmos.az";
+        }
         return Api().get(baseUrl + "/arcgis/tokens/", {
             params: {
                 request: 'gettoken',
@@ -17,7 +22,7 @@ export default {
                 password: params.password,
                 expiration: 1440,
                 client: 'referrer',
-                referer: "webgis.azercosmos.az",
+                referer: host,
                 f: 'json'
             }
         })

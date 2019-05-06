@@ -317,6 +317,11 @@ hr {
 
 .tableModalHeader {
   text-align: center;
+  margin-top: 10px;
+  margin-bottom: 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid;
+  color: #606060;
 }
 
 .modalText {
@@ -355,6 +360,16 @@ hr {
 }
 
 .latLongShow {
+  top: 9px;
+  right: 80px;
+  position: absolute;
+  z-index: 9999;
+  background: whitesmoke;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+.latLongShowForm {
   top: 9px;
   right: 80px;
   position: absolute;
@@ -614,25 +629,32 @@ hr {
 .filter-modal-class {
   background: transparent;
 }
-.azc-cosmos-logo{
+
+.azc-cosmos-logo {
   height: 45px;
   margin: 10px 0;
 }
+
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
+{
   opacity: 0;
 }
 
 .slide-fade-enter-active {
   transition: all .3s ease;
 }
+
 .slide-fade-leave-active {
   transition: all .4s ease;
 }
+
 .slide-fade-enter, .slide-fade-leave-to
-  /* .slide-fade-leave-active below version 2.1.8 */ {
+  /* .slide-fade-leave-active below version 2.1.8 */
+{
   transform: translateX(10px);
   opacity: 0;
 }
