@@ -93,43 +93,15 @@ class MapHelpers {
         this.data.mapLayer.renderSync();
 
     }
+    resetFeatures() {
+        this.data.setDrawType('None')
+        let elements = document.getElementsByClassName("maptooltip");
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].setAttribute("style", "display:none;");
+        }
+        this.data.source.clear();
+    }
 
-    // pdfExport() {
-    //     let dims = {
-    //         a0: [1189, 841],
-    //         a1: [841, 594],
-    //         a2: [594, 420],
-    //         a3: [420, 297],
-    //         a4: [297, 210],
-    //         a5: [210, 148]
-    //     };
-    //     let format = 'a4';
-    //     let resolution = '72';
-    //     let dim = dims[format];
-    //     let width = Math.round(dim[0] * resolution / 25.4);
-    //     let height = Math.round(dim[1] * resolution / 25.4);
-    //     let size = /** @type {module:ol/size~Size} */ (this.mapLayer.getSize());
-    //     let extent = this.mapLayer.getView().calculateExtent(size);
-    //
-    //     let self = this;
-    //     this.mapLayer.once('rendercomplete', function (event) {
-    //         let canvas = event.context.canvas;
-    //         let data = canvas.toDataURL('image/jpeg');
-    //         let pdf = new jsPDF('landscape', undefined, format);
-    //         pdf.addImage(data, 'JPEG', 0, 0, dim[0], dim[1]);
-    //         pdf.save('map.pdf');
-    //         console.log('test')
-    //         // Reset original map size
-    //         self.data.mapLayer.setSize(size);
-    //         self.data.mapLayer.getView().fit(extent, {size: size});
-    //     });
-    //
-    //     // Set print size
-    //     let printSize = [width, height];
-    //     this.mapLayer.setSize(size);
-    //     // this.mapLayer.getView().fit(extent, {size: size});
-    //
-    // }
     addInteraction() {
         this.data.isMarker = false
         this.data.isRemove = false
@@ -250,7 +222,6 @@ class MapHelpers {
 
             }, this);
     }
-
     createHelpmaptooltip() {
         if (this.data.helpmaptooltipElement) {
             this.data.helpmaptooltipElement.parentNode.removeChild(this.data.helpmaptooltipElement);

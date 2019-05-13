@@ -1,8 +1,18 @@
-export default {
-    setLatLongShowForm(self) {
-        self.latLongFormShow = !self.latLongFormShow;
-    },
-    cityInputToggle(self) {
-        self.citySearchInputShow = !self.citySearchInputShow;
+class Toggler {
+    constructor(self) {
+        this.data = self;
+    }
+
+    setLatLongShowForm() {
+        this.data.latLongFormShow = !this.data.latLongFormShow;
+    }
+
+    cityInputToggle() {
+        this.data.citySearchInputShow = !this.data.citySearchInputShow;
+    }
+    showColumnsChange() {
+        this.data.showColumnsBoolean = !this.data.showColumnsBoolean;
     }
 }
+
+export default Toggler;

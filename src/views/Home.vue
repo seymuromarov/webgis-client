@@ -54,7 +54,7 @@
                         tag="ul"
                         key="dynamicLayer"
                         v-model="dynamicLayerList"
-                        v-bind="dragOptions"
+                        v-bind="dragOptionsDynamic"
                         @start="isDragging = true"
                         @end="onMoveCallbackDynamicLayerList()"
 
@@ -248,15 +248,19 @@
                      @click="LatLongFormToggle"
                 ></div>
 
-                <div class="latLongShowForm" v-show="latLongFormShow" @mouseleave="LatLongFormToggle">
-                    <div style="width: 250px">
-                        <div>
-                            <input v-model="longChange" v-on:keyup.enter="changeLocation" class="form-control"
-                                   type="text" placeholder="Longitude">
+                <div class="latLongShowForm" v-show="latLongFormShow"
+                >
+                    <div style="width: 300px" @mouseleave="LatLongFormToggle">
+                        <div style="display: inline;float: left;">
+                            Lat: <input v-model="latChange" v-on:keyup.enter="changeLocation" class="form-control"
+                                        type="text" placeholder="Latitude"
+                                        style="    display: inline-block;width: 100px;">
                         </div>
-                        <div>
-                            <input v-model="latChange" v-on:keyup.enter="changeLocation" class="form-control"
-                                   type="text" placeholder="Latitude">
+                        <div style="display: inline;">
+                            Lng: <input v-model="longChange" v-on:keyup.enter="changeLocation" class="form-control"
+                                        type="text" placeholder="Longitude"
+                                        style="    display: inline-block;width: 100px;">
+
                         </div>
                     </div>
                 </div>
@@ -605,8 +609,10 @@
                 dynamicLayersShow: true,
                 latLongFormShow: false,
                 MapHelpers: null,
+                Toggler: null,
                 latChange: null,
                 longChange: null,
+                lastCoordinates: null,
                 filterQuery: '',
                 filterValues: [],
                 mapLayer: null,
@@ -736,7 +742,7 @@
                 },
                 colors: {
                     hex: '#ffffff00',
-                    rgba: {r: 255, g: 255, b: 255, a: 1},
+                    rgba: {r: 255, g: 255, b: 255, a: 0},
                 },
                 borderColors: {
                     hex: '#000000',
@@ -752,6 +758,7 @@
         },
         mounted() {
             this.MapHelpers = new MapHelpers(this)
+            this.Toggler = new Toggler(this)
             this.citySearchOptions = az_json;
             this.token = this.$cookie.get('token');
             this.username = this.$cookie.get('username');
@@ -775,14 +782,6 @@
             this.LayerService();
 
             this.$nextTick(function () {
-                let mousePositionControl = new MousePosition({
-                    coordinateFormat: createStringXY(4),
-                    projection: 'EPSG:4326',
-                    className: 'custom-mouse-position',
-                    target: document.getElementById('mouse-position'),
-                    undefinedHTML: '',
-                });
-
                 let dragAndDropInteraction = new DragAndDrop({
                     formatConstructors: [
                         GPX,
@@ -792,16 +791,6 @@
                         TopoJSON
                     ]
                 });
-                // let geocoderControl = new geocoder('nominatim', {
-                //     provider: 'osm',
-                //     lang: 'en',
-                //     placeholder: 'Search for ...',
-                //     limit: 5,
-                //     debug: false,
-                //     autoComplete: true,
-                //     keepOpen: false
-                // });
-
                 this.layers = [
                     gray,
                     this.vector
@@ -816,7 +805,6 @@
                         new DragRotateAndZoom(), dragAndDropInteraction
                     ]),
                     controls: defaultControls().extend([
-                        mousePositionControl,
                         new FullScreen()
                     ]),
                     target: 'map',
@@ -876,6 +864,11 @@
                     }
                     let pixel = self.mapLayer.getEventPixel(evt.originalEvent);
                     displayFeatureInfo(pixel);
+                    let coord = transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+                    this.lastCoordinates = coord[1].toString().substring(0, 7) + "," + coord[0].toString().substring(0, 7);
+                    document.getElementById('mouse-position').innerHTML = "Lat: " + coord[1].toString().substring(0, 7) + " , " + "Long: " + coord[0].toString().substring(0, 7);
+                    console.log(this.lastCoordinates);
+
                 });
 
                 this.mapLayer.on('click', function (evt) {
@@ -987,18 +980,21 @@
                 this.mapLayer.getView().setCenter(fromLonLat([parseFloat(this.longChange), parseFloat(this.latChange)]))
             },
             LatLongFormToggle() {
-                let loc = document.getElementsByClassName('custom-mouse-position')[0].innerHTML;
-                loc = loc.split(",").map(item => item.trim());
-                this.longChange = loc[0];
-                this.latChange = loc[1];
-                Toggler.setLatLongShowForm(this)
+                let loc = document.getElementById('mouse-position').innerHTML;
+                loc = loc.split(":").map(item => item.trim());
+                let long = loc[2];
+                let lat = loc[1].split(",").map(item => item.trim());
+                lat=lat[0]
+                this.longChange = long;
+                this.latChange = lat;
+                this.Toggler.setLatLongShowForm()
             },
             setShapeColor() {
                 document.body.style.cursor = "crosshair";
                 this.$modal.hide('color-picker-modal');
             },
             cityInputToggle() {
-                Toggler.cityInputToggle(this);
+                this.Toggler.cityInputToggle(this);
             },
             onCitySelect(city) {
                 this.mapLayer.getView().setCenter(fromLonLat([parseFloat(city.lng), parseFloat(city.lat)]))
@@ -1066,12 +1062,7 @@
                 this.isRemove = true
             },
             resetFeatures() {
-                this.setDrawType('None')
-                let elements = document.getElementsByClassName("maptooltip");
-                for (let i = 0; i < elements.length; i++) {
-                    elements[i].setAttribute("style", "display:none;");
-                }
-                this.source.clear();
+                this.MapHelpers.resetFeatures()
             },
             selectColumns(alias, key, e) {
                 if (e.target.checked) {
@@ -1081,11 +1072,7 @@
                 }
             },
             showColumnsChange() {
-                if (this.showColumnsBoolean) {
-                    this.showColumnsBoolean = false
-                } else {
-                    this.showColumnsBoolean = true
-                }
+                this.Toggler.showColumnsChange()
             },
             showDataModal(Feature) {
                 this.tableFeatureData = Feature
@@ -1335,8 +1322,8 @@
                         hidden_layers = hidden_layers.slice(0, -1);
                         layer_config += "hide:" + hidden_layers
                     }
-                    new_layer = new TileLayer({
-                        source: new TileArcGISRest({
+                    new_layer = new ImageLayer({
+                        source: new ImageArcGISRest({
                             url: url,
                             crossOrigin: "Anonymous",
                             params: {
@@ -1528,43 +1515,28 @@
                 outlines[1] = this.borderColors.rgba.g;
                 outlines[2] = this.borderColors.rgba.b;
                 outlines[3] = 255 * this.borderColors.rgba.a;
-
-                console.log(colors)
                 let color = "[" + colors[0] + "," + colors[1] + "," + colors[2] + "," + colors[3] + "]";
                 let outline = "[" + outlines[0] + "," + outlines[1] + "," + outlines[2] + "," + outlines[3] + "]";
-                // let layerDyn = '[' +
-                //     '{"id":' + this.colorPicker.sublayer + ',"name":"","source":{"type":"mapLayer","mapLayerId": ' + this.colorPicker.sublayer + '},"drawingInfo":{"renderer":{"type":"simple","label":"","description":"","symbol":{"color":' + color + ',"outline":{"color":' + outline + ',"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0},]';
                 if (typeof this.dynamicForColors[this.colorPicker.layer.name] === 'undefined') {
                     this.dynamicForColors[this.colorPicker.layer.name] = [];
                 }
                 let layerDyn = '{"id":' + this.colorPicker.sublayer + ',"name":"","source":{"type":"mapLayer","mapLayerId": ' + this.colorPicker.sublayer + '},"drawingInfo":{"renderer":{"type":"simple","label":"","description":"","symbol":{"color":' + color + ',"outline":{"color":' + outline + ',"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0},';
-
                 this.dynamicForColors[this.colorPicker.layer.name][this.colorPicker.sublayer] = layerDyn;
-
-                // responseDynamic.data.layers.forEach(function (element) {
-                //     self.dynamicSubLayerList[self.gisLayers[i].name][element.id] = true
-                //
-                // });
-
                 this.addLayers(this.colorPicker.layer, this.colorPicker.index, true, layerDyn)
             }
             ,
-
             setDrawType(name) {
                 this.typeSelect = name
                 this.mapLayer.removeInteraction(this.draw);
                 this.isColorPick = false
                 this.isMarker = false
                 this.isRemove = false
-
                 if (name !== 'None') {
 
                     this.addInteraction();
                 }
                 this.featureIDSet += 10;
                 document.body.style.cursor = "default";
-
-
             }
             ,
             OpenColorPicker(layer, sublayer, name, index) {
@@ -1573,41 +1545,14 @@
                 this.colorPicker.layer = layer;
                 this.colorPicker.service = name;
                 this.colorPicker.index = index;
-            }
-            ,
-            async getLayerDynamic(layer) {
-                let response = await LayerService.getLayerDynamic({
-                    token: this.token,
-                    name: layer.name,
-                })
-                return response.data
-            }
-            ,
-            changeColor(layer, globalColor) {
-                layer.color[0] = globalColor.rgba.r;
-                layer.color[1] = globalColor.rgba.g;
-                layer.color[2] = globalColor.rgba.b;
-                layer.color[3] = globalColor.rgba.a;
-            }
-            ,
-            checkNested(obj) {
-                var args = Array.prototype.slice.call(arguments, 1);
-
-                for (var i = 0; i < args.length; i++) {
-                    if (!obj || !obj.hasOwnProperty(args[i])) {
-                        return false;
-                    }
-                    obj = obj[args[i]];
-                }
-                return true;
-            }
+            },
         }
         ,
         computed: {
             dragOptions() {
                 return {
                     animation: 0,
-                    group: "description",
+                    group: "baseDragger",
                     disabled: false,
                     ghostClass: "ghost"
                 };
@@ -1615,7 +1560,7 @@
             dragOptionsDynamic() {
                 return {
                     animation: 0,
-                    group: "description",
+                    group: "dynamicDragger",
                     disabled: false,
                     ghostClass: "ghost"
                 };
