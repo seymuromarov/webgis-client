@@ -867,7 +867,6 @@
                     let coord = transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
                     this.lastCoordinates = coord[1].toString().substring(0, 7) + "," + coord[0].toString().substring(0, 7);
                     document.getElementById('mouse-position').innerHTML = "Lat: " + coord[1].toString().substring(0, 7) + " , " + "Long: " + coord[0].toString().substring(0, 7);
-                    console.log(this.lastCoordinates);
 
                 });
 
@@ -898,12 +897,10 @@
                         self.mapLayer.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                             try {
                                 self.source.removeFeature(feature)
-                                console.log(feature)
                                 console.log(feature.get('id'))
                                 let elem = document.getElementsByClassName(feature.get('id'));
 
                                 elem[0].className = "hidden"
-                                console.log(elem)
                             } catch (e) {
 
                             }
@@ -1083,7 +1080,7 @@
                     draggable: true,
                 });
                 if (this.tableFeatureData.geometry.x !== undefined) {
-                    this.mapLayer.getView().setCenter(fromLonLat([this.tableFeatureData.geometry.y, this.tableFeatureData.geometry.x]))
+                    this.mapLayer.getView().setCenter(fromLonLat([this.tableFeatureData.geometry.x, this.tableFeatureData.geometry.y]))
                 } else {
                     this.mapLayer.getView().setCenter(fromLonLat(this.tableFeatureData.geometry.rings[0][0]))
                 }
@@ -1136,11 +1133,11 @@
                 let self = this;
                 for (let i = 0; i < this.gisLayers.length; i++) {
                     if (self.gisLayers[i].attributes['summary'] !== "Dynamic") {
+
                         if (
                             self.gisLayers[i].attributes.title === "AzercosmosBasemap"
                             || self.gisLayers[i].attributes.title === "Azersky2018"
-                            || self.gisLayers[i].attributes.title === "TerrainColor"
-                            || self.gisLayers[i].attributes.title === "TerrainColorNew"
+                            || self.gisLayers[i].attributes.title === "Azersky2019"
                         ) {
                             self.baseLayerList.push({
                                 'name': self.gisLayers[i].attributes.title,
@@ -1210,7 +1207,6 @@
                     where: query
                 });
                 if (response.data.error !== undefined) {
-                    console.log('error')
                     return;
                 }
 
@@ -1505,7 +1501,6 @@
                 this.colorPicker.visibility = false;
                 let colors = [];
                 let outlines = [];
-                console.log(this.colors)
                 colors[0] = this.colors.rgba.r;
                 colors[1] = this.colors.rgba.g;
                 colors[2] = this.colors.rgba.b;
