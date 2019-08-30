@@ -1,3 +1,4 @@
+@import "tableStyle";
 #map {
   height: 100vh;
   width: 100%;
@@ -248,80 +249,9 @@ hr {
   left: 12px;
 }
 
-.selfTable {
-  width: 100%;
-}
-
-.tableContent {
-  height: 250px;
-
-}
-
-.tableDiv {
-  background: white;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 300px;
-  overflow: auto;
-  border-radius: 10px 10px 0 0;
-  z-index: 10;
-
-}
-
-.tableHeader {
-  height: 35px;
-  background-color: #fff;
-}
-
-.tableShowColumns {
-  overflow: auto;
-  position: absolute;
-  top: 25px;
-  text-align: left;
-  background: white;
-  right: 70px;
-  z-index: 99;
-  height: 100px;
-  padding: 0 80px 0 10px;
-}
-
-.tableColumns {
-  position: absolute;
-  top: 8px;
-  right: 40px;
-}
-
-.tableClose {
-  position: absolute;
-  top: 8px;
-  right: 15px;
-}
-
-.tableFilter {
-  position: absolute;
-  top: 8px;
-  right: 70px;
-}
-
-.excelIcon {
-  position: absolute;
-  right: 100px;
-  top: 8px;
-}
 
 .makeMePoint {
   cursor: pointer !important;
-}
-
-.tableModalHeader {
-  text-align: center;
-  margin-top: 10px;
-  margin-bottom: 0;
-  padding-bottom: 5px;
-  border-bottom: 1px solid;
-  color: #606060;
 }
 
 .modalText {
@@ -333,11 +263,6 @@ hr {
   overflow: auto !important;
 }
 
-.table th, .table td {
-  padding: 0.75rem;
-  vertical-align: top;
-  border-top: 1px solid #dee2e6;
-}
 
 .colorPickers {
   background-color: #eee;

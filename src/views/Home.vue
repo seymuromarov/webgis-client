@@ -339,8 +339,8 @@
 
         </div>
 
-        <div class="" v-if="showTable">
-            <div class="tableDiv howMuchWidthHaveMap">
+<!--        <div class="" >-->
+            <div v-if="showTable" class="tableDiv howMuchWidthHaveMap">
                 <div class="tableHeader">
                     <div class="row">
                         <div class="col-2">
@@ -397,7 +397,7 @@
                     </table>
                 </div>
             </div>
-        </div>
+<!--        </div>-->
         <modal name="data-modal"
                transition="nice-modal-fade"
                :min-width="200"
