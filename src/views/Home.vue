@@ -584,7 +584,7 @@
 
     import LayerService from '@/services/LayerService'
 
-    import {Toggler,MapHelpers,ColorPicker} from '../helpers'
+    import {Toggler,MapHelpers,ColorPicker , LayerHepler} from '../helpers'
 
     // import Toggler from '@/helpers/Toggler'
     // import MapHelpers from '@/helpers/MapHelpers'
@@ -768,6 +768,7 @@
             this.MapHelpers = new MapHelpers(this)
             this.Toggler = new Toggler(this)
             this.ColorPicker = new ColorPicker(this);
+            this.LayerHepler = new LayerHepler();
             this.citySearchOptions = az_json;
             this.token = this.$cookie.get('token');
             this.username = this.$cookie.get('username');
@@ -1227,39 +1228,44 @@
                 });
             },
             async LayerService() {
+                let self = this;
                 const response = await LayerService.getLayersWithFullData({token: this.token});
                 this.gisLayers = response.data.featureCollection.layers[0].featureSet.features;
-                let self = this;
-                for (let i = 0; i < this.gisLayers.length; i++) {
-                    if (self.gisLayers[i].attributes['summary'] !== "Dynamic") {
+              
+              
+                var layers =self.LayerHepler.creator(self.gisLayers);
+                self.baseLayerList=layers.baseLayers;
+                self.dynamicLayerList=layers.dynamicLayers;
+                // for (let i = 0; i < this.gisLayers.length; i++) {
+                //     if (self.gisLayers[i].attributes['summary'] !== "Dynamic") {
 
-                        if (
-                            self.gisLayers[i].attributes.title === "AzercosmosBasemap"
-                            || self.gisLayers[i].attributes.title === "Azersky2018"
-                            || self.gisLayers[i].attributes.title === "Azersky2019"
-                        ) {
-                            self.baseLayerList.push({
-                                'name': self.gisLayers[i].attributes.title,
-                                'order': i + 1,
-                                'spaital': 3857
-                            })
-                        } else {
-                            self.baseLayerList.push({
-                                'name': self.gisLayers[i].attributes.title,
-                                'order': i + 1,
-                                'spaital': 32936
-                            })
-                        }
-                    } else {
-                        this.dynamicLayerList.push({
-                            'name': self.gisLayers[i].attributes.title,
-                            'order': i + 1,
-                            'layersVisibility': false,
-                            'collapseVisibility': false,
-                            'layers': null
-                        })
-                    }
-                }
+                //         if (
+                //             self.gisLayers[i].attributes.title === "AzercosmosBasemap"
+                //             || self.gisLayers[i].attributes.title === "Azersky2018"
+                //             || self.gisLayers[i].attributes.title === "Azersky2019"
+                //         ) {
+                //             self.baseLayerList.push({
+                //                 'name': self.gisLayers[i].attributes.title,
+                //                 'order': i + 1,
+                //                 'spaital': 3857
+                //             })
+                //         } else {
+                //             self.baseLayerList.push({
+                //                 'name': self.gisLayers[i].attributes.title,
+                //                 'order': i + 1,
+                //                 'spaital': 32936
+                //             })
+                //         }
+                //     } else {
+                //         this.dynamicLayerList.push({
+                //             'name': self.gisLayers[i].attributes.title,
+                //             'order': i + 1,
+                //             'layersVisibility': false,
+                //             'collapseVisibility': false,
+                //             'layers': null
+                //         })
+                //     }
+                // }
                 this.baseLayerList.map((item, index) => {
                     if (item.name === "AzercosmosBasemap") {
                         this.addLayers(item, item.order, false, null)
