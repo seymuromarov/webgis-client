@@ -14,7 +14,11 @@ const state={
         borderTab: true
     },
 }
-
+const getters={
+    colorPicker : state => {
+            return state.colorPicker;
+    }
+}
 const mutations={
         SET_COLORPICKER(state , payload)
         {
@@ -86,7 +90,8 @@ const actions={
 export default {
    state,
    mutations,
-   actions
+   actions,
+   getters
 
   
 }

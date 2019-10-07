@@ -71,8 +71,8 @@ export default {
   },
   computed: {
     borderTab() {
-      console.log("bordertab", this.$store.state.colorPicker);
-      return this.$store.state.colorPicker.borderTab;
+      console.log("bordertab", this.$store.getters.colorPicker);
+      return this.$store.getters.colorPicker.borderTab;
     },
     visibility() {
       return this.$store.state.colorPicker.visibility;

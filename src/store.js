@@ -10,6 +10,9 @@ export default new Vuex.Store({
     state: {
     ...colorPickerConst.state
     },
+    getters : {
+        ...colorPickerConst.getters
+    },
     mutations: {
         getToken(state, response) {
             // state.token = response.token
