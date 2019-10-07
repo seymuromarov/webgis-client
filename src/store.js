@@ -2,14 +2,13 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import auth from './auth'
 import axios from 'axios'
-
+import {colorPickerConst} from './constants/';
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        // token: null,
-        // auth: null
+    ...colorPickerConst.state
     },
     mutations: {
         getToken(state, response) {
@@ -19,10 +18,16 @@ export default new Vuex.Store({
         },
         deleteToken(state, token) {
             state.token = null
-        }
+        },
+  
+       ...colorPickerConst.mutations
+    },
+    actions: {
+
+     
+      ...colorPickerConst.actions
 
     },
-    actions: {},
     modules: {
         auth
     }

@@ -41,6 +41,21 @@ class LayerHelper {
                 return {baseLayers ,dynamicLayers };
     }
 
+    add=(service, index, dynamic = false, params)=>{
+
+    }
+
+    delete=()=>{
+        
+    }
+    setColor=()=>{
+
+    }
+
+    setLayout=()=>{
+
+    }
+
 }
 
 export default LayerHelper;
