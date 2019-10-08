@@ -55,8 +55,6 @@ export default {
       this.isBorder = status;
     },
     save() {
-      console.log("fillColor", this.fillColor);
-      console.log("borderColor", this.borderColor);
       this.$store.dispatch("SAVE_COLORPICKER_FILLCOLOR", this.fillColor);
       this.$store.dispatch("SAVE_COLORPICKER_BORDERCOLOR", this.borderColor);
       this.$emit("updateColor");

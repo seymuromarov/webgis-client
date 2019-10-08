@@ -856,9 +856,7 @@
 
                     }
                     if (self.isColorPick) {
-                        alert();
-                        console.log(self.shapeBorderColor);
-                        console.log(self.shapeFillColor);
+            
                         self.mapLayer.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                             try {
                                 let newStyle = new Style({
