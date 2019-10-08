@@ -521,7 +521,7 @@
                :draggable="false"
                :height="400"
         >
-   <FrameColorPicker @setShapeColor="setShapeColor"/>/>
+   <ShapeColorPicker @setShapeColor="setShapeColor"/>/>
    </modal>
 
     </div>
@@ -546,7 +546,7 @@
     import {Toggler,MapHelpers,ColorPicker , LayerHelper} from '../helpers'
     import {ZoomSlider, defaults as defaultControls, FullScreen} from 'ol/control.js';
     import LayerColorPicker from '../components/LayerColorPicker';
-    import FrameColorPicker from '../components/FrameColorPicker';
+    import ShapeColorPicker from '../components/ShapeColorPicker';
     import scratch from '../components/scratch';
     import Multiselect from 'vue-multiselect'
     import MousePosition from 'ol/control/MousePosition.js';
@@ -564,7 +564,7 @@
         components: {
             draggable,
             LayerColorPicker,
-            FrameColorPicker,
+            ShapeColorPicker,
             Multiselect,
             scratch,
         },
@@ -856,20 +856,23 @@
 
                     }
                     if (self.isColorPick) {
+                        alert();
+                        console.log(self.shapeBorderColor);
+                        console.log(self.shapeFillColor);
                         self.mapLayer.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                             try {
                                 let newStyle = new Style({
                                     fill: new Fill({
-                                        color: self.shapeColors.hex8
+                                        color: self.shapeFillColor.hex8
                                     }),
                                     stroke: new Stroke({
-                                        color: self.shapeBorderColors.hex8,
+                                        color: self.shapeBorderColor.hex8,
                                         width: 2
                                     }),
                                     image: new CircleStyle({
                                         radius: 7,
                                         fill: new Fill({
-                                            color: self.shapeColors.hex8
+                                            color: self.shapeFillColor.hex8
                                         })
                                     })
                                 });
@@ -1461,6 +1464,12 @@
                 },
             selectedBorderColor() {
             return this.$store.state.borderColor;
+            },
+            shapeBorderColor() {
+            return this.$store.state.shapeBorderColor;
+            },
+            shapeFillColor() {
+            return this.$store.state.shapeFillColor;
             },
             colorPicker() {
                 return this.$store.state.colorPicker;

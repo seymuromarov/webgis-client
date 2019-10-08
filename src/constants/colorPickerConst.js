@@ -8,6 +8,14 @@ const state={
         hex: "#000000",
         rgba: { r: 255, g: 255, b: 255, a: 1 }
     },
+    shapeFillColor: {
+        hex8: '#ffffff00',
+        rgba: {r: 255, g: 255, b: 255, a: 1},
+    },
+    shapeBorderColor: {
+        hex8: '#000000',
+        rgba: {r: 255, g: 255, b: 255, a: 1},
+    },
     colorPicker: {
         visibility: false,
         layer: null,
@@ -48,9 +56,20 @@ const mutations={
            state.fillColor = payload;
           
         },
+        
         SET_COLORPICKER_BORDERCOLOR(state , payload)
         {
            state.borderColor = payload;
+          
+        },
+        SET_COLORPICKER_SHAPEBORDERCOLOR(state , payload)
+        {
+           state.shapeBorderColor = payload;
+          
+        },
+        SET_COLORPICKER_SHAPEFILLCOLOR(state , payload)
+        {
+           state.shapeFillColor = payload;
           
         }
 
@@ -76,7 +95,7 @@ const actions={
          context.commit('SET_COLORPICKER_LAYER',payload)
         
         },
-         SAVE_COLORPICKER_FILLCOLOR(context , payload)
+        SAVE_COLORPICKER_FILLCOLOR(context , payload)
         {
           context.commit('SET_COLORPICKER_FILLCOLOR',payload)
           
@@ -84,6 +103,16 @@ const actions={
         SAVE_COLORPICKER_BORDERCOLOR(context , payload)
         {
           context.commit('SET_COLORPICKER_BORDERCOLOR',payload)
+          
+        },
+         SAVE_COLORPICKER_SHAPEFILLCOLOR(context , payload)
+        {
+          context.commit('SET_COLORPICKER_SHAPEFILLCOLOR',payload)
+          
+        },
+        SAVE_COLORPICKER_SHAPEBORDERCOLOR(context , payload)
+        {
+          context.commit('SET_COLORPICKER_SHAPEBORDERCOLOR',payload)
           
         }
 }

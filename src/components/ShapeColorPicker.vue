@@ -50,6 +50,11 @@ export default {
       this.isBorder = status;
     },
     save() {
+      this.$store.dispatch("SAVE_COLORPICKER_SHAPEFILLCOLOR", this.fillColor);
+      this.$store.dispatch(
+        "SAVE_COLORPICKER_SHAPEBORDERCOLOR",
+        this.borderColor
+      );
       this.$emit("setShapeColor");
     }
   },
