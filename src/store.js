@@ -8,7 +8,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-    ...colorPickerConst.state
+        ...colorPickerConst.state
     },
     getters : {
         ...colorPickerConst.getters

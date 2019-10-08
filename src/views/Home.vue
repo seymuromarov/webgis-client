@@ -21,42 +21,10 @@
                                       </i>
                 </span>
             </h5>
-  <scratch  />
-<!-- 
-            <scratch v-bind:count="this.count"  @clicked="scracth"/>
-            <h3>{{count}}</h3> -->
-            <!-- <h4> {{colorPicker.visibility}} </h4> -->
-            <colorPicker @updateColor="saveColor"/>
 
-            <!-- <div class="colorPickers" v-show="colorPicker.visibility">
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#" @click="colorPicker.borderTab = true">Border Color</a>
-                    </li>
-                    <li class="nav-item" @click="colorPicker.borderTab = false">
-                        <a class="nav-link" href="#">Fill Color</a>
-                    </li>
-                </ul>
+            <LayerColorPicker @updateColor="saveColor"/>
 
-                <div class="colorPicker" v-if="colorPicker.borderTab">
-                    <h5>Border Color</h5>
-                    <colorPicker v-model="borderColors"></colorPicker>
-                </div>
-                <div class="colorPicker" v-else>
-                    <h5>Fill Color</h5>
-                    <colorPicker v-model="colors"></colorPicker>
-                </div>
-                <div class="colorPickerButton">
-                    <button class="btn btn-sm btn-danger" type="button" @click="colorPicker.visibility = false">Close
-                    </button>
-                    <button class="btn btn-sm btn-primary" type="button" @click="saveColor()">Save</button>
-                </div>
-            </div> -->
-
-
-
-
-
+   
             <transition name="slide-fade">
 
                 <draggable
@@ -544,7 +512,7 @@
             </div>
 
         </modal>
-        <!-- <modal name="color-picker-modal"
+   <modal name="color-picker-modal"
                transition="nice-modal-fade"
                class="color-picker-modal-class"
                :min-width="200"
@@ -553,29 +521,9 @@
                :draggable="false"
                :height="400"
         >
-            <div class="colorPickers">
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#" @click="colorPicker.borderTab = true">Border Color</a>
-                    </li>
-                    <li class="nav-item" @click="colorPicker.borderTab = false">
-                        <a class="nav-link" href="#">Fill Color</a>
-                    </li>
-                </ul>
+   <FrameColorPicker @setShapeColor="setShapeColor"/>/>
+   </modal>
 
-                <div class="colorPicker" v-if="colorPicker.borderTab">
-                    <h5>Border Color</h5>
-                    <colorPicker v-model="shapeBorderColors"></colorPicker>
-                </div>
-                <div class="colorPicker" v-else>
-                    <h5>Fill Color</h5>
-                    <colorPicker v-model="shapeColors"></colorPicker>
-                </div>
-                <div class="colorPickerButton">
-                    <button class="btn btn-sm btn-primary" type="button" @click="setShapeColor()">Save</button>
-                </div>
-            </div>
-        </modal> -->
     </div>
 
 
@@ -594,18 +542,11 @@
     import XYZ from 'ol/source/XYZ.js';
     import draggable from "vuedraggable";
 
-
     import LayerService from '@/services/LayerService'
-
     import {Toggler,MapHelpers,ColorPicker , LayerHelper} from '../helpers'
-
-    // import Toggler from '@/helpers/Toggler'
-    // import MapHelpers from '@/helpers/MapHelpers'
-
-
     import {ZoomSlider, defaults as defaultControls, FullScreen} from 'ol/control.js';
-    // import {Chrome} from 'vue-color';
-    import colorPicker from '../components/colorPicker';
+    import LayerColorPicker from '../components/LayerColorPicker';
+    import FrameColorPicker from '../components/FrameColorPicker';
     import scratch from '../components/scratch';
     import Multiselect from 'vue-multiselect'
     import MousePosition from 'ol/control/MousePosition.js';
@@ -622,8 +563,8 @@
         name: 'home',
         components: {
             draggable,
-            colorPicker,
-            // colorPicker:Chrome,
+            LayerColorPicker,
+            FrameColorPicker,
             Multiselect,
             scratch,
         },
@@ -765,19 +706,7 @@
                         url: "",
                     })
                 },
-                // colors: {
-                //     hex: '#ffffff00',
-                //     rgba: {r: 255, g: 255, b: 255, a: 0},
-                // },
-                // borderColors: {
-                //     hex: '#000000',
-                //     rgba: {r: 255, g: 255, b: 255, a: 1},
-                // },
-                // colorPicker: {
-                //     visibility: false,
-                //     layer: null,
-                //     borderTab: true
-                // },
+              
                 dynamicForColors: [[]]
             }
         },
@@ -1020,6 +949,7 @@
                 this.Toggler.setLatLongShowForm()
             },
             setShapeColor() {
+        
                 document.body.style.cursor = "crosshair";
                 this.$modal.hide('color-picker-modal');
             },
@@ -1262,78 +1192,11 @@
                 self.dynamicLayerList=layers.dynamicLayers;
                 self.baseLayerList.map((item, index) => {
                     if (item.name === "AzercosmosBasemap") {
-                        this.addLayers(item, item.order, false, null)
+                        // this.addLayers(item, item.order, false, null)
                     }
                 });
 
 
-                // for (let i = 0; i < this.gisLayers.length; i++) {
-                //     if (self.gisLayers[i].attributes['summary'] !== "Dynamic") {
-
-                //         if (
-                //             self.gisLayers[i].attributes.title === "AzercosmosBasemap"
-                //             || self.gisLayers[i].attributes.title === "Azersky2018"
-                //             || self.gisLayers[i].attributes.title === "Azersky2019"
-                //         ) {
-                //             self.baseLayerList.push({
-                //                 'name': self.gisLayers[i].attributes.title,
-                //                 'order': i + 1,
-                //                 'spaital': 3857
-                //             })
-                //         } else {
-                //             self.baseLayerList.push({
-                //                 'name': self.gisLayers[i].attributes.title,
-                //                 'order': i + 1,
-                //                 'spaital': 32936
-                //             })
-                //         }
-                //     } else {
-                //         this.dynamicLayerList.push({
-                //             'name': self.gisLayers[i].attributes.title,
-                //             'order': i + 1,
-                //             'layersVisibility': false,
-                //             'collapseVisibility': false,
-                //             'layers': null
-                //         })
-                //     }
-                // }
-                // this.baseLayerList.map((item, index) => {
-                //     if (item.name === "AzercosmosBasemap") {
-                //         this.addLayers(item, item.order, false, null)
-                //     }
-                // });
-
-
-                // const response = await LayerService.getLayers({token: this.token});
-                // this.gisLayers = response.data.services;
-                // let self = this;
-                // for (let i = 0; i < this.gisLayers.length; i++) {
-                //     let responseDynamic = await LayerService.getDynamicLayers({
-                //         token: self.token,
-                //         name: self.gisLayers[i].name
-                //     })
-                //
-                //     if (!responseDynamic.data.supportsDynamicLayers) {
-                //         this.baseLayerList.push({
-                //             'name': self.gisLayers[i].name,
-                //             'order': i + 1,
-                //             'spaital': responseDynamic.data.spatialReference.latestWkid
-                //         })
-                //     } else {
-                //         this.dynamicLayerList.push({
-                //             'name': self.gisLayers[i].name,
-                //             'order': i + 1,
-                //             'layersVisibility': false,
-                //             'collapseVisibility': false,
-                //             'layers': responseDynamic.data.layers
-                //         })
-                //         self.dynamicSubLayerList[self.gisLayers[i].name] = [];
-                //         responseDynamic.data.layers.forEach(function (element) {
-                //             self.dynamicSubLayerList[self.gisLayers[i].name][element.id] = true
-                //         });
-                //     }
-                // }
-                // delete this.dynamicSubLayerList[0];
             },
             addLayers(service, index, dynamic = false, params) {
 
@@ -1571,56 +1434,36 @@
 
        
                 this.deleteLayers(this.colorPicker.layer)
-                console.log("fill color : ", this.selectedFillColor);
-                console.log("border color : ", this.selectedBorderColor);
-                console.log("color picker : ", this.colorPicker);
+             
                 let layerDyn=this.ColorPicker.renderColor(this.colorPicker.sublayer,this.selectedFillColor , this.selectedBorderColor);
-                console.log("layer dyn ", layerDyn);
-                if (typeof this.dynamicForColors[this.colorPicker.layer.name] === 'undefined') 
+              
+              
+              if (typeof this.dynamicForColors[this.colorPicker.layer.name] === 'undefined') 
                 {
-                this.dynamicForColors[this.colorPicker.layer.name] = [];
+                     this.dynamicForColors[this.colorPicker.layer.name] = [];
                 }
                 this.dynamicForColors[this.colorPicker.layer.name][this.colorPicker.sublayer] = layerDyn;
+
+
                 this.addLayers(this.colorPicker.layer, this.colorPicker.index, true, layerDyn)
 
-                // this.$store.dispatch("SAVE_COLORPICKER_VISIBILITY", false);
-
-                // this.colorPicker.visibility = false;
-                // let colors = [];
-                // let outlines = [];
-                // colors[0] = this.colors.rgba.r;
-                // colors[1] = this.colors.rgba.g;
-                // colors[2] = this.colors.rgba.b;
-                // colors[3] = 255 * this.colors.rgba.a;
-                // // colors[3] = 255;
-                // outlines[0] = this.borderColors.rgba.r;
-                // outlines[1] = this.borderColors.rgba.g;
-                // outlines[2] = this.borderColors.rgba.b;
-                // outlines[3] = 255 * this.borderColors.rgba.a;
-                // let color = "[" + colors[0] + "," + colors[1] + "," + colors[2] + "," + colors[3] + "]";
-                // let outline = "[" + outlines[0] + "," + outlines[1] + "," + outlines[2] + "," + outlines[3] + "]";
-             
-                // let layerDyn = '{"id":' + this.colorPicker.sublayer + ',"name":"","source":{"type":"mapLayer","mapLayerId": ' + this.colorPicker.sublayer + '},"drawingInfo":{"renderer":{"type":"simple","label":"","description":"","symbol":{"color":' + color + ',"outline":{"color":' + outline + ',"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0},';
-                // this.dynamicForColors[this.colorPicker.layer.name][this.colorPicker.sublayer] = layerDyn;
-                // this.addLayers(this.colorPicker.layer, this.colorPicker.index, true, layerDyn)
+         
             }
             ,
          
             OpenColorPicker(layer, sublayer, name, index) {
-                // this.colorPicker.visibility = true;
-                // this.colorPicker.sublayer = sublayer;
-                // this.colorPicker.layer = layer;
-                // this.colorPicker.service = name;
-                // this.colorPicker.index = index;
-              this.$store.dispatch("SAVE_COLORPICKER", {
+
+              this.$store.dispatch("SAVE_COLORPICKER", 
+              {
+                    ...this.colorPicker,
                     visibility : true,
                     sublayer : sublayer,
                     layer : layer,
                     service : name,
-                    index : index,
+                    index : index,                    
+                    
               });
-                // this.colorPicker=this.ColorPicker.open(layer, sublayer, name, index);
-                // this.ColorPicker.open(layer, sublayer, name, index);
+           
             },
         }
         ,

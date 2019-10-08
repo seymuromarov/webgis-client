@@ -1,6 +1,5 @@
-       
 <template>
-  <div>
+  <div class="colorPickers">
     <ul class="nav">
       <li class="nav-item">
         <a class="nav-link active" href="#" @click="borderClick(true)">Border Color</a>
@@ -12,32 +11,27 @@
 
     <div class="colorPicker" v-if="isBorder">
       <h5>Border Color</h5>
-      <ColorScheme v-model="borderColor" @change-color.stop="onChange"></ColorScheme>
+      <ColorScheme v-model="borderColor"></ColorScheme>
     </div>
     <div class="colorPicker" v-else>
       <h5>Fill Color</h5>
-      <ColorScheme v-model="fillColor" @change-color.stop="onChange"></ColorScheme>
+      <ColorScheme v-model="fillColor"></ColorScheme>
+    </div>
+
+    <div class="colorPickerButton">
+      <button class="btn btn-sm btn-primary" type="button" @click="save">Save</button>
     </div>
   </div>
 </template>
-
-
-
 <script>
 import { Chrome } from "vue-color";
 export default {
   name: "color",
-  props: {
-    borderColorModel: Object,
-    fillColorModel: Object
-  },
+  props: {},
   components: {
     ColorScheme: Chrome
   },
-
-  mounted() {
-    console.log("bordecolormodel", this.borderColorModel);
-  },
+  mounted() {},
   data() {
     return {
       isBorder: false,
@@ -55,10 +49,10 @@ export default {
     borderClick(status) {
       this.isBorder = status;
     },
-    onChange(val) {
-      console.log(value);
+    save() {
+      this.$emit("setShapeColor");
     }
-  }
+  },
+  computed: {}
 };
 </script>
- 
