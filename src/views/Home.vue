@@ -636,15 +636,7 @@
                 layers: [],
                 isMarker: false,
                 isRemove: false,
-                isColorPick: false,
-                // shapeColors: {
-                //     hex8: '#ffffff00',
-                //     rgba: {r: 255, g: 255, b: 255, a: 1},
-                // },
-                // shapeBorderColors: {
-                //     hex8: '#000000',
-                //     rgba: {r: 255, g: 255, b: 255, a: 1},
-                // },
+                isColorPick: false,             
                 gisLayers: [],
                 token: null,
                 kmlInfo: null,
@@ -930,11 +922,7 @@
         },
         methods: {
 
-            scracth(e)
-            {
-             this.count=e;
-             alert(this.count);
-            },
+         
             changeLocation() {
                 this.mapLayer.getView().setCenter(fromLonLat([parseFloat(this.longChange), parseFloat(this.latChange)]))
             },
