@@ -937,7 +937,7 @@
                 this.Toggler.setLatLongShowForm()
             },
             setShapeColor() {
-        
+            
                 document.body.style.cursor = "crosshair";
                 this.$modal.hide('color-picker-modal');
             },
@@ -1180,7 +1180,7 @@
                 self.dynamicLayerList=layers.dynamicLayers;
                 self.baseLayerList.map((item, index) => {
                     if (item.name === "AzercosmosBasemap") {
-                        // this.addLayers(item, item.order, false, null)
+                        this.addLayers(item, item.order, false, null)
                     }
                 });
 
