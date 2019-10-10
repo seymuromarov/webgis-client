@@ -24,7 +24,7 @@
 
             <LayerColorPicker @updateColor="saveColor"/>
 
-   
+
             <transition name="slide-fade">
 
                 <draggable
@@ -318,65 +318,65 @@
 
         </div>
 
-<!--        <div class="" >-->
-            <div v-if="showTable" class="tableDiv howMuchWidthHaveMap">
-                <div class="tableHeader">
-                    <div class="row">
-                        <div class="col-2">
-                            <p class="text-left" style="margin-top: 5px;">{{tableHeader}}</p>
-                        </div>
-                        <div class="col-10">
-                            <download-excel
-                                    v-if="tableFeaturesHeader"
-                                    class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
-                                    :data="featuresToExcel"
-                                    :fields="checkedColumnsToExcel"
-                                    type="xls"
-                                    :name="'test' + '_report.xls'">
+        <!--        <div class="" >-->
+        <div v-if="showTable" class="tableDiv howMuchWidthHaveMap">
+            <div class="tableHeader">
+                <div class="row">
+                    <div class="col-2">
+                        <p class="text-left" style="margin-top: 5px;">{{tableHeader}}</p>
+                    </div>
+                    <div class="col-10">
+                        <download-excel
+                                v-if="tableFeaturesHeader"
+                                class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
+                                :data="featuresToExcel"
+                                :fields="checkedColumnsToExcel"
+                                type="xls"
+                                :name="'test' + '_report.xls'">
 
-                                <i></i>
+                            <i></i>
 
-                            </download-excel>
-                            <i class="fas  fa-columns tableColumns makeMePoint" @click="showColumnsChange">
+                        </download-excel>
+                        <i class="fas  fa-columns tableColumns makeMePoint" @click="showColumnsChange">
 
-                            </i>
-                            <i class="fas fa-times tableClose makeMePoint" @click="showTable=false"></i>
-                            <i class="fas fa-filter tableFilter makeMePoint" @click="showFilterModal"></i>
-                            <div class="tableShowColumns" v-if="showColumnsBoolean">
-                                <div class="columnsDiv">
-                                    <div v-for="(alias, key) in tableFeaturesHeader">
-                                        <input @click="selectColumns(alias,key, $event)" type="checkbox" :id="alias"
-                                               :value="alias" v-model="checkedColumns" checked="checked"/>
-                                        <label> {{ alias }} </label>
-                                    </div>
+                        </i>
+                        <i class="fas fa-times tableClose makeMePoint" @click="showTable=false"></i>
+                        <i class="fas fa-filter tableFilter makeMePoint" @click="showFilterModal"></i>
+                        <div class="tableShowColumns" v-if="showColumnsBoolean">
+                            <div class="columnsDiv">
+                                <div v-for="(alias, key) in tableFeaturesHeader">
+                                    <input @click="selectColumns(alias,key, $event)" type="checkbox" :id="alias"
+                                           :value="alias" v-model="checkedColumns" checked="checked"/>
+                                    <label> {{ alias }} </label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="tableContent">
-                    <table class="selfTable table">
-                        <thead class="tableHeader">
-                        <tr>
-                            <th v-show="checkedColumns.includes(alias)" v-for="(alias, key) in tableFeaturesHeader">{{
-                                alias }}
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody class="tableBody">
-                        <tr v-for="(data, key) in tableFeaturesData">
-                            <td class="makeMePoint"
-                                @click="showDataModal(data)"
-                                v-show="checkedColumnsData.includes(key)"
-                                v-for="(attr, key) in data.attributes"
-                            > {{ attr }}
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
-<!--        </div>-->
+            <div class="tableContent">
+                <table class="selfTable table">
+                    <thead class="tableHeader">
+                    <tr>
+                        <th v-show="checkedColumns.includes(alias)" v-for="(alias, key) in tableFeaturesHeader">{{
+                            alias }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody class="tableBody">
+                    <tr v-for="(data, key) in tableFeaturesData">
+                        <td class="makeMePoint"
+                            @click="showDataModal(data)"
+                            v-show="checkedColumnsData.includes(key)"
+                            v-for="(attr, key) in data.attributes"
+                        > {{ attr }}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--        </div>-->
         <modal name="data-modal"
                transition="nice-modal-fade"
                :min-width="200"
@@ -404,7 +404,7 @@
 
         </modal>
 
-        
+
         <modal name="filter-modal"
                transition="nice-modal-fade"
                class="filter-modal-class"
@@ -512,7 +512,7 @@
             </div>
 
         </modal>
-   <modal name="color-picker-modal"
+        <modal name="color-picker-modal"
                transition="nice-modal-fade"
                class="color-picker-modal-class"
                :min-width="200"
@@ -521,8 +521,9 @@
                :draggable="false"
                :height="400"
         >
-   <ShapeColorPicker @setShapeColor="setShapeColor"/>/>
-   </modal>
+            <ShapeColorPicker @setShapeColor="setShapeColor"/>
+
+        </modal>
 
     </div>
 
@@ -543,7 +544,7 @@
     import draggable from "vuedraggable";
 
     import LayerService from '@/services/LayerService'
-    import {Toggler,MapHelpers,ColorPicker , LayerHelper} from '../helpers'
+    import {Toggler, MapHelpers, ColorPicker, LayerHelper} from '../helpers'
     import {ZoomSlider, defaults as defaultControls, FullScreen} from 'ol/control.js';
     import LayerColorPicker from '../components/LayerColorPicker';
     import ShapeColorPicker from '../components/ShapeColorPicker';
@@ -558,6 +559,7 @@
     import {applyTransform} from "ol/extent";
     import * as format from "ol/format";
     import {az_json} from "../assets/json/az"
+    import LoginService from "../services/LoginService";
 
     export default {
         name: 'home',
@@ -636,9 +638,10 @@
                 layers: [],
                 isMarker: false,
                 isRemove: false,
-                isColorPick: false,             
+                isColorPick: false,
                 gisLayers: [],
                 token: null,
+                emlakToken: null,
                 kmlInfo: null,
                 username: null,
                 source: null,
@@ -698,7 +701,7 @@
                         url: "",
                     })
                 },
-              
+
                 dynamicForColors: [[]]
             }
         },
@@ -856,7 +859,7 @@
 
                     }
                     if (self.isColorPick) {
-            
+
                         self.mapLayer.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                             try {
                                 let newStyle = new Style({
@@ -923,7 +926,7 @@
         },
         methods: {
 
-         
+
             changeLocation() {
                 this.mapLayer.getView().setCenter(fromLonLat([parseFloat(this.longChange), parseFloat(this.latChange)]))
             },
@@ -932,13 +935,13 @@
                 loc = loc.split(":").map(item => item.trim());
                 let long = loc[2];
                 let lat = loc[1].split(",").map(item => item.trim());
-                lat=lat[0]
+                lat = lat[0]
                 this.longChange = long;
                 this.latChange = lat;
                 this.Toggler.setLatLongShowForm()
             },
             setShapeColor() {
-            
+
                 document.body.style.cursor = "crosshair";
                 this.$modal.hide('color-picker-modal');
             },
@@ -962,7 +965,6 @@
             exportData() {
                 this.MapHelpers.exportData(this)
             },
-
 
 
             filterSelectedColumn(column) {
@@ -1079,15 +1081,24 @@
                     let layersVisibility = item.layersVisibility
                     let collapseVisibility = item.collapseVisibility
                     let layers = item.layers
-                    return {name, order: index + 1, layersVisibility, collapseVisibility, layers};
+                    let apiFrom = item.apiFrom ? item.apiFrom : 'internal'
+
+                    return {name, order: index + 1, layersVisibility, collapseVisibility, layers, apiFrom};
                 });
                 this.setDynamicIndexes();
 
             },
-  
+
             async getTableData(service, layer_id, layer_name, query) {
+                let token;
+                if (service.apiFrom === 'emlak') {
+                    token = this.emlakToken
+                } else {
+                    token = this.token;
+                }
+
                 let response = await LayerService.getTableData({
-                    token: this.token,
+                    token: token,
                     name: service.name,
                     layer: layer_id,
                     where: query
@@ -1173,12 +1184,12 @@
                 let self = this;
                 const response = await LayerService.getLayersWithFullData({token: this.token});
                 this.gisLayers = response.data.featureCollection.layers[0].featureSet.features;
-              
-              
-                var layers =self.LayerHelper.creator(self.gisLayers);
 
-                self.baseLayerList=layers.baseLayers;
-                self.dynamicLayerList=layers.dynamicLayers;
+
+                let layers = self.LayerHelper.creator(self.gisLayers);
+
+                self.baseLayerList = layers.baseLayers;
+                self.dynamicLayerList = layers.dynamicLayers;
                 self.baseLayerList.map((item, index) => {
                     if (item.name === "AzercosmosBasemap") {
                         this.addLayers(item, item.order, false, null)
@@ -1191,22 +1202,20 @@
 
                 let url = baseUrl + "/arcgis/rest/services/" + service.name + "/MapServer";
                 let new_layer;
-               
-               if (dynamic) {
+
+                if (dynamic) {
                     let layers = this.dynamicSubLayerList[service.name];
                     let active_layers = '';
                     let hidden_layers = '';
                     let colors = '';
 
-                 
                     if (typeof this.dynamicForColors[service.name] !== 'undefined') {
                         colors = '[';
                         this.dynamicForColors[this.colorPicker.layer.name].forEach(function (colorLayer) {
-                            colors += colorLayer;                          
+                            colors += colorLayer;
                         })
                         colors += ']';
                     }
-             
                     layers.forEach(function (layer, index) {
                         if (layer === true) {
                             active_layers += index + ','
@@ -1223,18 +1232,48 @@
                         hidden_layers = hidden_layers.slice(0, -1);
                         layer_config += "hide:" + hidden_layers
                     }
-                    new_layer = new ImageLayer({
-                        source: new ImageArcGISRest({
-                            url: url,
-                            crossOrigin: "Anonymous",
-                            params: {
-                                "token": this.token,
-                                "layers": layer_config,
-                                "dynamicLayers": colors,
-                                // "FORMAT": "png8"
-                            }
-                        })
-                    });
+
+                    if (service.apiFrom === 'emlak') {
+                        new_layer = new ImageLayer({
+                            source: new ImageArcGISRest({
+                                url: url,
+                                crossOrigin: "Anonymous",
+                                params: {
+                                    "token": this.emlakToken,
+                                    "layers": layer_config,
+                                    "dynamicLayers": colors,
+                                    // "FORMAT": "png8"
+                                }
+                            })
+                        });
+
+                        // new_layer = new TileLayer({
+                        //     source: new TileArcGISRest({
+                        //         url: url,
+                        //         crossOrigin: "Anonymous",
+                        //         params: {
+                        //             "token": this.emlakToken,
+                        //             "FORMAT": "png8"
+                        //         }
+                        //     })
+                        // });
+
+
+                    } else {
+                        new_layer = new ImageLayer({
+                            source: new ImageArcGISRest({
+                                url: url,
+                                crossOrigin: "Anonymous",
+                                params: {
+                                    "token": this.token,
+                                    "layers": layer_config,
+                                    "dynamicLayers": colors,
+                                    // "FORMAT": "png8"
+                                }
+                            })
+                        });
+
+                    }
                 } else {
                     if (service.spaital === 3857) {
                         url = url + "/tile/{z}/{y}/{x}?token=" + this.token
@@ -1307,10 +1346,17 @@
             }
             ,
             async dynamicLayersReset(service, status) {
+                let token;
+                if (service.apiFrom === 'emlak') {
+                    token = this.emlakToken
+                } else {
+                    token = this.token;
+                }
                 let response = await LayerService.getLayerDynamic({
-                    token: this.token,
+                    token: token,
                     name: service.name,
                 })
+
                 let colorEnabled = false;
                 if (response.data.layers[0].drawingInfo !== undefined) {
                     if (response.data.layers[0].drawingInfo.renderer.symbol !== undefined) {
@@ -1324,6 +1370,8 @@
                     let name = item.name
                     let layersVisibility = item.layersVisibility
                     let collapseVisibility = item.collapseVisibility
+                    let apiFrom = item.apiFrom ? item.apiFrom : 'internal'
+
                     let color = item.color ? item.color : false
                     if (service.name === name) {
                         layersVisibility = status;
@@ -1331,32 +1379,44 @@
                     }
                     let layers = item.layers
                     let order = item.order
-                    return {name, order: order, layersVisibility, collapseVisibility, layers, color};
+                    return {name, order: order, layersVisibility, collapseVisibility, layers, color, apiFrom};
                 });
             }
             ,
 
 
-
             async selectService(service, index, dynamic, e) {
                 this.selectedServiceName = service.name
-                let self = this;
 
-                let responseDynamic = await LayerService.getDynamicLayers({
-                    token: this.token,
-                    name: service.name
-                })
+                let self = this;
+                let responseDynamic;
+                if (service.apiFrom === 'emlak') {
+                    let gettoken = await LoginService.getEmlakToken();
+                    this.emlakToken = gettoken.data.token
+                    responseDynamic = await LayerService.getLayerForEmlakService({
+                        token: this.emlakToken,
+                        name: service.name
+                    })
+                } else {
+                    responseDynamic = await LayerService.getDynamicLayers({
+                        token: this.token,
+                        name: service.name
+                    })
+                }
+
+                // }
                 this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
                     let name = item.name
                     let layersVisibility = item.layersVisibility
                     let collapseVisibility = item.collapseVisibility
                     let color = item.color ? item.color : false
+                    let apiFrom = item.apiFrom ? item.apiFrom : 'internal'
                     let layers = item.layers
                     if (service.name === name) {
                         layers = responseDynamic.data.layers
                     }
                     let order = item.order
-                    return {name, order: order, layersVisibility, collapseVisibility, layers, color};
+                    return {name, order: order, layersVisibility, collapseVisibility, layers, apiFrom, color};
                 });
 
                 self.dynamicSubLayerList[service.name] = [];
@@ -1404,7 +1464,7 @@
 
             }
             ,
-               setDrawType(name) {
+            setDrawType(name) {
                 this.typeSelect = name
                 this.mapLayer.removeInteraction(this.draw);
                 this.isColorPick = false
@@ -1421,57 +1481,56 @@
             saveColor() {
                 this.$store.dispatch("SAVE_COLORPICKER_VISIBILITY", false);
 
-       
+
                 this.deleteLayers(this.colorPicker.layer)
-             
-                let layerDyn=this.ColorPicker.renderColor(this.colorPicker.sublayer,this.selectedFillColor , this.selectedBorderColor);
-              
-              
-              if (typeof this.dynamicForColors[this.colorPicker.layer.name] === 'undefined') 
-                {
-                     this.dynamicForColors[this.colorPicker.layer.name] = [];
+
+                let layerDyn = this.ColorPicker.renderColor(this.colorPicker.sublayer, this.selectedFillColor, this.selectedBorderColor);
+
+
+                if (typeof this.dynamicForColors[this.colorPicker.layer.name] === 'undefined') {
+                    this.dynamicForColors[this.colorPicker.layer.name] = [];
                 }
                 this.dynamicForColors[this.colorPicker.layer.name][this.colorPicker.sublayer] = layerDyn;
 
 
                 this.addLayers(this.colorPicker.layer, this.colorPicker.index, true, layerDyn)
 
-         
+
             }
             ,
-         
+
             OpenColorPicker(layer, sublayer, name, index) {
 
-              this.$store.dispatch("SAVE_COLORPICKER", 
-              {
-                    ...this.colorPicker,
-                    visibility : true,
-                    sublayer : sublayer,
-                    layer : layer,
-                    service : name,
-                    index : index,                    
-                    
-              });
-           
+                this.$store.dispatch("SAVE_COLORPICKER",
+                    {
+                        ...this.colorPicker,
+                        visibility: true,
+                        sublayer: sublayer,
+                        layer: layer,
+                        service: name,
+                        index: index,
+
+                    });
+
             },
         }
         ,
         computed: {
             selectedFillColor() {
                 return this.$store.state.fillColor;
-                },
+            },
             selectedBorderColor() {
-            return this.$store.state.borderColor;
+                return this.$store.state.borderColor;
             },
             shapeBorderColor() {
-            return this.$store.state.shapeBorderColor;
+                return this.$store.state.shapeBorderColor;
             },
             shapeFillColor() {
-            return this.$store.state.shapeFillColor;
+                return this.$store.state.shapeFillColor;
             },
             colorPicker() {
                 return this.$store.state.colorPicker;
-                },
+            },
             dragOptions() {
                 return {
                     animation: 0,

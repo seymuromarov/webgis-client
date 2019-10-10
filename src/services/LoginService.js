@@ -20,10 +20,18 @@ export default {
                 request: 'gettoken',
                 username: params.username,
                 password: params.password,
-                // expiration: 1440,
-                // client: 'referrer',
-                // referer: host,
+                expiration: 1440,
+                client: 'referrer',
+                referer: host,
                 f: 'json'
+            }
+        })
+    },
+    getEmlakToken() {
+        return Api().get(baseUrl + "/emlak", {
+            params: {
+                f: 'json'
+
             }
         })
     }

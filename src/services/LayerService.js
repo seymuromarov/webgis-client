@@ -1,4 +1,5 @@
 import Api from './Api'
+import {emlakUrl} from "../config/baseUrl";
 
 export default {
     getLayers(params) {
@@ -34,10 +35,18 @@ export default {
             }
         })
     },
+    getLayerForEmlakService(params) {
+        return Api().get(emlakUrl + "/arcgis/rest/services/AZERCOSMOS/" + params.name + "/MapServer", {
+            params: {
+                token: params.token,
+                f: 'json'
+            }
+        })
+
+    },
     getTableData(params) {
         return Api().get("/" + params.name + "/MapServer/" + params.layer + "/query/", {
             params: {
-
                 token: params.token,
                 f: 'json',
                 where: params.where,
