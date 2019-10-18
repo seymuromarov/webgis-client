@@ -1,10 +1,14 @@
-class LayerHelper {
-    constructor() {
+import {emlakUsers} from "../constants/permissions";
 
+class LayerHelper {
+    constructor(self) {
+        this.data = self;
     }
 
     creator = (layers) => {
         let baseLayers = [];
+        console.log(this.data.username)
+
         let dynamicLayers = [];
         for (let i = 0; i < layers.length; i++) {
             if (layers[i].attributes['summary'] !== "Dynamic") {
@@ -39,15 +43,18 @@ class LayerHelper {
             }
         }
 
+
         //just for now
-        dynamicLayers.push({
-            'name': "UQODIYA_EKIN",
-            'order': layers.length + 1,
-            'layersVisibility': false,
-            'collapseVisibility': false,
-            'layers': null,
-            'apiFrom': 'emlak'
-        })
+        if (emlakUsers.includes(this.data.username)) {
+            dynamicLayers.push({
+                'name': "UQODIYA_EKIN",
+                'order': layers.length + 1,
+                'layersVisibility': false,
+                'collapseVisibility': false,
+                'layers': null,
+                'apiFrom': 'emlak'
+            })
+        }
 
 
         return {baseLayers, dynamicLayers};

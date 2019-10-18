@@ -706,15 +706,16 @@
             }
         },
         mounted() {
-            this.MapHelpers = new MapHelpers(this)
-            this.Toggler = new Toggler(this)
-            this.ColorPicker = new ColorPicker(this);
-            this.LayerHelper = new LayerHelper();
-            this.citySearchOptions = az_json;
             this.token = this.$cookie.get('token');
             this.username = this.$cookie.get('username');
             if (this.token === null)
                 this.$router.push('/login')
+
+            this.MapHelpers = new MapHelpers(this)
+            this.Toggler = new Toggler(this)
+            this.ColorPicker = new ColorPicker(this);
+            this.LayerHelper = new LayerHelper(this);
+            this.citySearchOptions = az_json;
 
             this.source = new VectorSource({wrapX: false});
 

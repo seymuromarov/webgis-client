@@ -22,8 +22,6 @@ Vue.use(VueCookie);
 
 Vue.config.productionTip = false
 Vue.use(ol)
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-// axios.defaults.baseURL = "http://webgis.azercosmos.az";
 
 
 
