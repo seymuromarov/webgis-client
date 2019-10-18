@@ -21,7 +21,8 @@
 
 .tableContent {
   height: 250px;
-
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .tableDiv {
@@ -32,8 +33,8 @@
   width: 100%;
   //height: 300px;
   min-height: 300px;
-  overflow-x: auto;
-  overflow-y: hidden;
+  // overflow-x: auto;
+  // overflow-y: hidden;
   //overflow: auto;
   border-radius: 10px 10px 0 0;
   z-index: 10;
