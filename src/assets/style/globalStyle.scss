@@ -5,8 +5,8 @@
 }
 
 hr {
-  margin-top: .5rem !important;
-  margin-bottom: .5rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
 }
 
 .text-left-layer {
@@ -23,19 +23,19 @@ hr {
   margin-left: 20px;
   font-size: 18px;
   margin-top: 8px;
-
 }
 
 .action-button-class {
   position: absolute;
-  right: .5em;
+  right: 0.5em;
   z-index: 10;
   width: 34px;
   height: 34px;
   padding: 0 !important;
 }
 
-.ol-control button:hover, .ol-control button:focus {
+.ol-control button:hover,
+.ol-control button:focus {
   background-color: unset !important;
   opacity: unset !important;
 }
@@ -67,7 +67,7 @@ hr {
     top: unset;
     width: 30px;
     height: 30px;
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBBkRBSDfaGCTAAAA2UlEQVQoz4XOMUoDQRQG4C+pRLENLOQCsQukVNJ4gRTpJCQXEFN5AK31ALIXEFIGTGnjFRbstAqKBCVFsrCOhbu62YD+08zP++YxQE3fzJuVR9eaKtk3Fby6FXuQWeqVxzVTny7s5L0tker+gr7gcmNjZC5RL+rMy8/rImPB0fe1ruPeqgLu0CnAno/qr71jtwDPWlvgAE9FuZJpV8BEqlGUpqVEVBqfCuKy70nNjbVEjk0EwdqwTLoSIT+p2FqQGZVJ3aEz5040MJRtk82McjL4jyz8kYGFmy85wkTZ8zKtPwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNC0yNVQxNTowNTozMiswMjowMEYPGlwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDQtMjVUMTU6MDU6MzIrMDI6MDA3UqLgAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==');
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBBkRBSDfaGCTAAAA2UlEQVQoz4XOMUoDQRQG4C+pRLENLOQCsQukVNJ4gRTpJCQXEFN5AK31ALIXEFIGTGnjFRbstAqKBCVFsrCOhbu62YD+08zP++YxQE3fzJuVR9eaKtk3Fby6FXuQWeqVxzVTny7s5L0tker+gr7gcmNjZC5RL+rMy8/rImPB0fe1ruPeqgLu0CnAno/qr71jtwDPWlvgAE9FuZJpV8BEqlGUpqVEVBqfCuKy70nNjbVEjk0EwdqwTLoSIT+p2FqQGZVJ3aEz5040MJRtk82McjL4jyz8kYGFmy85wkTZ8zKtPwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNC0yNVQxNTowNTozMiswMjowMEYPGlwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDQtMjVUMTU6MDU6MzIrMDI6MDA3UqLgAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==");
   }
 }
 
@@ -87,7 +87,6 @@ hr {
     color: #000;
   }
 }
-
 
 //#map .ol-zoom .ol-zoom-out {
 //  margin-top: 204px;
@@ -213,7 +212,7 @@ hr {
   background: rgb(0, 0, 0);
   box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
   border-radius: 8px;
-  content: '';
+  content: "";
   height: 14px;
   margin-top: -8px;
   position: absolute;
@@ -222,13 +221,12 @@ hr {
   width: 25px;
 }
 
-
 .material-switch > label::after {
   background: rgb(255, 255, 255);
   border-radius: 16px;
   -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
-  content: '';
+  content: "";
   height: 16px;
   left: -4px;
   margin-top: -8px;
@@ -249,7 +247,6 @@ hr {
   left: 12px;
 }
 
-
 .makeMePoint {
   cursor: pointer !important;
 }
@@ -262,7 +259,6 @@ hr {
 .v--modal-box {
   overflow: auto !important;
 }
-
 
 .colorPickers {
   background-color: #eee;
@@ -312,7 +308,6 @@ hr {
   background: whitesmoke;
   padding: 5px 10px;
   border-radius: 10px;
-
 }
 
 .layerDiv {
@@ -508,7 +503,6 @@ hr {
   outline: none;
 }
 
-
 //filter end
 
 .layerDiv input {
@@ -538,8 +532,9 @@ hr {
 }
 
 .serviceTitle {
-  font-size: 17px;
+  font-size: 14px;
   margin-left: 25px;
+  word-wrap: break-word;
 }
 
 .checkbox-child-icon {
@@ -560,27 +555,27 @@ hr {
   margin: 10px 0;
 }
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
 
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
-{
+ {
   opacity: 0;
 }
 
 .slide-fade-enter-active {
-  transition: all .3s ease;
+  transition: all 0.3s ease;
 }
 
 .slide-fade-leave-active {
-  transition: all .4s ease;
+  transition: all 0.4s ease;
 }
 
 .slide-fade-enter, .slide-fade-leave-to
   /* .slide-fade-leave-active below version 2.1.8 */
-{
+ {
   transform: translateX(10px);
   opacity: 0;
 }
-
