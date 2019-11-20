@@ -1346,7 +1346,6 @@ export default {
 
         async selectService(service, index, dynamic, e) {
 
-            console.log(service, index, dynamic, e)
             this.selectedServiceName = service.name
 
             let self = this;
@@ -1420,7 +1419,10 @@ export default {
             });
 
             self.dynamicSubLayerList[service.name] = [];
+              
             responseDynamic.data.layers.forEach(function (element) {
+       
+          
                 self.dynamicSubLayerList[service.name][element.id] = true
             });
 

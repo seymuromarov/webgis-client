@@ -45,7 +45,9 @@ export default {
     });
   },
   getDynamicLayers(params) {
-    return Api().get(LAYER_URLS.GET_DYNAMIC_LAYER_URL(params), {
+    var url = LAYER_URLS.GET_DYNAMIC_LAYER_URL(params);
+    console.log("TCL: getDynamicLayers -> url", url);
+    return Api().get(url, {
       params: {
         token: params.token,
         f: "json"
