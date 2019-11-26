@@ -24,7 +24,7 @@
 
             <draggable v-show="dynamicLayersShow" class="list-group" tag="ul" key="dynamicLayer" v-model="dynamicLayerList" v-bind="dragOptionsDynamic" @start="isDragging = true" @end="onMoveCallbackDynamicLayerList()">
                 <transition-group type="transition" name="flip-list">
-                    <li class="list-group-item" v-for="(element,index) in dynamicLayerList" :key="index" style="text-align: left">
+                    <li class="list-group-item" v-for="(element) in dynamicLayerList" :key="element.name" style="text-align: left">
                         <div class="row">
                             <div class="col-12  layerDiv">
                                 <input class="parentCheckbox" :id="element.name" :name="element.name" type="checkbox" @click="selectService(element, element.order,true, $event)" />
@@ -81,29 +81,16 @@
 
             <draggable class="list-group" v-show="baseLayersShow" tag="ul" key="baseLayers" v-model="baseLayerList" v-bind="dragOptions" @start="isDragging = true" @end="onMoveCallbackBaseLayerList()">
                 
-                  
-            <TreeView 
-    :data="baseLayerList" @selectService="selectService"/>
-                <!-- <transition-group type="transition" name="flip-list">
+ 
+                <transition-group type="transition" name="flip-list">
      
 
-                    <li class="list-group-item" v-for="element in baseLayerList" :key="element.name" style="text-align: left">
-
-
-                        <div class="row">
-
-                            <div class="col-12 layerDiv">
-                                <input class="parentCheckbox" :id="element.name" :name="element.name" type="checkbox" :checked="element.name==='AzercosmosBasemap'" @click="selectService(element, element.order,false, $event)" />
-                                <i class="checkbox-icon far fa-check-circle"></i>
-                                <label :for="element.name"></label>
-                                <span class="serviceTitle">
-                                    {{ element.name }}
-                                </span>
-                            </div>
-         
-                        </div>
+                    <li class="list-group-item" v-for="(element) in baseLayerList" :key="element.name" style="text-align: left">
+                 
+            <TreeView 
+    :item="element" @selectService="selectService"/>
                     </li>
-                </transition-group> -->
+                </transition-group>
             </draggable>
         </transition>
 
@@ -470,34 +457,7 @@ export default {
     },
     data() {
         return {
-             treeData :{
-                name: 'My Tree',
-                children: [
-                    { name: 'hello' },
-                    { name: 'wat' },
-                    {
-                    name: 'child folder',
-                    children: [
-                        {
-                        name: 'child folder',
-                        children: [
-                            { name: 'hello' },
-                            { name: 'wat' }
-                        ]
-                        },
-                        { name: 'hello' },
-                        { name: 'wat' },
-                        {
-                        name: 'child folder',
-                        children: [
-                            { name: 'hello' },
-                            { name: 'wat' }
-                        ]
-                        }
-                    ]
-                    }
-                ]
-                },
+     
             baseLayersShow: true,
             dynamicLayersShow: true,
             latLongFormShow: false,
@@ -561,6 +521,7 @@ export default {
             ],
             options: [],
             layers: [],
+            layerCounter:0,
             isMarker: false,
             isRemove: false,
             isColorPick: false,
@@ -779,7 +740,7 @@ export default {
                     self.mapLayer.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                         try {
                             self.source.removeFeature(feature)
-                            console.log(feature.get('id'))
+                            // console.log(feature.get('id'))
                             let elem = document.getElementsByClassName(feature.get('id'));
 
                             elem[0].className = "hidden"
@@ -996,18 +957,51 @@ export default {
             this.MapHelpers.addInteraction()
         },
         onMoveCallbackBaseLayerList(evt, originalEvent) {
-            this.baseLayerList = this.baseLayerList.map((item, index) => {
-                let name = item.name
-                let order = index + 1
-                let spatial = item.spatial
-                return {
-                    name,
-                    order,
-                    spatial
-                };
-            });
-            this.setIndexes();
+
+            this.layerCounter=0;
+            this.baseLayerList = this.baseLayerList.map((item, index) => this.recursiveLayerOrder(item));
+             this.baseLayerList.map((item, index)=> this.recursiveLayerIndexes(item))
+           
+          
         },
+         recursiveLayerIndexes(item) {
+             if (item.layers !== undefined)
+            {
+                item.layers.map((item, index)=> this.recursiveLayerIndexes(item))
+            }                     
+            else
+            {
+                  this.mapLayer.getLayers().forEach(function (layer) {
+                    if (layer.get('name') != undefined && layer.get('name') === item.name) {
+                        layer.setZIndex(500 - item.order)
+                    }
+                })
+           }
+  
+        },
+        recursiveLayerOrder(item){
+    
+        this.layerCounter++;
+            if (item.layers !== undefined)
+            return {
+               ...item,
+               order: this.layerCounter++,
+                children: item.children.map(item =>
+                this.recursiveLayerOrder(item)
+                ),
+                layers: item.layers.map(item => ({
+                    ...item,
+                order: this.layerCounter++,
+                }))
+            };
+            else
+                return {
+                    ...item,
+                    order:this.layerCounter++,
+                };
+
+        },
+
         onMoveCallbackDynamicLayerList(evt, originalEvent) {
             let self = this;
 
@@ -1109,15 +1103,7 @@ export default {
                 }
             }
         },
-        setIndexes() {
-            this.baseLayerList.map((item, index) => {
-                this.mapLayer.getLayers().forEach(function (layer) {
-                    if (layer.get('name') != undefined && layer.get('name') === item.name) {
-                        layer.setZIndex(500 - index)
-                    }
-                });
-            });
-        },
+
         setDynamicIndexes() {
             this.dynamicLayerList.map((item, index) => {
                 this.mapLayer.getLayers().forEach(function (layer) {
@@ -1148,8 +1134,8 @@ export default {
 
         },
         addLayers(service, index, dynamic = false, params) {
-        console.log("TCL: addLayers -> params", params)
-        console.log("TCL: addLayers -> service", service)
+        // console.log("TCL: addLayers -> params", params)
+        // console.log("TCL: addLayers -> service", service)
 
             let url = LAYER_URLS.GET_DYNAMIC_LAYER_URL({name:service.name});
             let vectorUrl = 'https://localhost:5001'
@@ -1255,7 +1241,7 @@ export default {
                 }
             } else {
                 
-                    console.log("TCL: btn -> addLayers -> service.spatial", service.spatial);
+                    // console.log("TCL: btn -> addLayers -> service.spatial", service.spatial);
                 if (service.spatial === 3857) {
                     url = url + "/tile/{z}/{y}/{x}?token=" + this.token
                     new_layer = new TileLayer({
@@ -1366,7 +1352,7 @@ export default {
                     token: this.emlakToken,
                     name: service.name
                 })
-                console.log(responseDynamic)
+                // console.log(responseDynamic)
             } else if (service.apiFrom === 'vectorGeojson') {
     
                 responseDynamic = {
@@ -1436,7 +1422,7 @@ export default {
             });
 
             if (e.target.checked) {
-                console.log(service, index, dynamic, null);
+                // console.log(service, index, dynamic, null);
                 this.addLayers(service, index, dynamic, null)
                 for (let i in this.dynamicLayerList) {
                     if (this.dynamicLayerList[i].name === service.name) {
@@ -1506,7 +1492,7 @@ export default {
         },
         selectLayer(a)
         {
-console.log(a);
+// console.log(a);
         },
         OpenColorPicker(layer, sublayer, name, index) {
 
