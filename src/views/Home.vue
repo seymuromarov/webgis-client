@@ -45,7 +45,7 @@
                         </div>
 
                         <div style="background: whitesmoke;padding-top: 10px; " v-show="element.layersVisibility">
-                            <div class="row layerDiv" v-for="layer in element.layers"  :style="{paddingLeft: layer.margin * 30 + 'px'}" >
+                            <div class="row layerDiv" v-for="(layer,index) in element.layers" :key="index"  :style="{paddingLeft: layer.margin * 30 + 'px'}" >
 
                                 <div class="col-12" style="white-space: nowrap" >
                                     <input class="parentCheckbox" v-show="layer.geometryType" :id="element.name + layer.id" :value="element.name + layer.id" :name="element.name + layer.id" v-model="dynamicSubLayerList[element.name][layer.id]" type="checkbox" @click="selectSubService(element,element.order,layer.id, $event)" />
@@ -120,7 +120,7 @@
                 <i class="fas fa-eye-dropper"></i>
             </button>
 
-            <button v-for="(item, index) in drawings" class="action-button-class btn btn-control" :style="{top : ((index+1)*5+25) + '%'}" :title="item.tooltip" @click="setDrawType(item.name)">
+            <button v-for="(item, index) in drawings" :key="index" class="action-button-class btn btn-control" :style="{top : ((index+1)*5+25) + '%'}" :title="item.tooltip" @click="setDrawType(item.name)">
                 <i :class="item.icon"></i>
 
             </button>
@@ -148,7 +148,7 @@
             </button>
             <div v-show="selectLayerForm" @mouseleave="selectLayerForm=false" class="selectLayerForm">
                 <form>
-                    <div v-for="(element,index) in baseMaps">
+                    <div v-for="(element,index) in baseMaps" :key="index">
                         <input type="radio" class="" name="baseLayer" @click="setBaseLayout(index)">
                         <span style="margin-left: 5px;">{{index}}</span>
 
@@ -229,7 +229,7 @@
         </div>
     </div> -->
 
-<DataTable/>
+    <DataTable/>
     
     <!--        </div>-->
     <modal name="data-modal" transition="nice-modal-fade" :min-width="200" :min-height="200" :delay="100" :draggable="true">
@@ -243,7 +243,7 @@
                     </tr>
                 </thead>
                 <tbody class="popupTableBody">
-                    <tr v-for="(value, key) in tableFeatureData.attributes">
+                    <tr v-for="(value, key) in tableFeatureData.attributes" :key="key">
                         <td class="paddingLeft">{{ tableFeaturesHeaderWithAlias[key] }}</td>
                         <td class="paddingRight">{{ value }}</td>
                     </tr>
@@ -261,7 +261,7 @@
             </div>
             <div class="filterFieldsListDiv">
                 <ul class="filterFieldsList">
-                    <li @dblclick="filterQuery += stackedTableFeaturesHeader[column] + ' '" @click="filterSelectedColumn(stackedTableFeaturesHeader[column])" v-for="(alias, column) in tableFeaturesHeader"> {{ alias }}
+                    <li @dblclick="filterQuery += stackedTableFeaturesHeader[column] + ' '" @click="filterSelectedColumn(stackedTableFeaturesHeader[column])" v-for="(alias, column) in tableFeaturesHeader" :key="column"> {{ alias }}
                     </li>
                 </ul>
             </div>
@@ -286,9 +286,9 @@
                             <tr>
                                 <td>
                                     <button @click="filterQuery += '<= '" class="parameterButton btn btn-sm btn-outline-secondary">
-                                        <= </button> </td> <td>
+                                        &le; </button> </td> <td>
                                             <button @click="filterQuery += '< '" class="parameterButton btn btn-sm btn-outline-secondary">
-                                                < </button> </td> <td>
+                                                &lt; </button> </td> <td>
                                                     <button @click="filterQuery += 'LIKE '" class="parameterButton btn btn-sm btn-outline-secondary"> like
                                                     </button>
                                 </td>
@@ -296,7 +296,7 @@
                             <tr>
                                 <td>
                                     <button @click="filterQuery += '<> '" class="parameterButton btn btn-sm btn-outline-secondary">
-                                        <>
+                                        <span>&lt;&gt;</span>
                                     </button>
                                 </td>
                                 <td>
@@ -319,7 +319,7 @@
                 </div>
                 <div class="filterValuesDiv">
                     <ul class="filterValuesList">
-                        <li @dblclick="addValueToQuery(value)" class="filterValue" v-for="value in filterValues"> {{
+                        <li @dblclick="addValueToQuery(value)" class="filterValue" v-for="(value,index) in filterValues" :key="index"> {{
                                 value }}
                         </li>
                     </ul>
