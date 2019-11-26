@@ -37,7 +37,7 @@
                                 <span>
                                     <i v-if="element.collapseVisibility && !element.layersVisibility" @click="dynamicLayersReset(element, true)" class="fas fa-caret-left makeMePoint">
                                     </i>
-                                    <i v-if=" element.layersVisibility " @click="element.layersVisibility=false" class="fas fa-caret-down makeMePoint">
+                                    <i v-if="element.layersVisibility" @click="element.layersVisibility=false" class="fas fa-caret-down makeMePoint">
                                     </i>
                                 </span>
 
@@ -195,7 +195,7 @@
     </div>
 
     <!--        <div class="" >-->
-    <div v-if="showTable" class="tableDiv howMuchWidthHaveMap">
+    <!-- <div v-if="showTable" class="tableDiv howMuchWidthHaveMap">
         <div class="tableHeader">
             <div class="row">
                 <div class="col-2">
@@ -240,7 +240,10 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </div> -->
+
+<DataTable/>
+    
     <!--        </div>-->
     <modal name="data-modal" transition="nice-modal-fade" :min-width="200" :min-height="200" :delay="100" :draggable="true">
         <p class="tableModalHeader">{{this.tableHeader}}</p>
@@ -451,7 +454,7 @@ import LoginService from "../services/LoginService";
 //#region Components
 
 import Multiselect from 'vue-multiselect'
-import {LayerColorPicker,ShapeColorPicker,scratch,TreeView} from '../components/';
+import {LayerColorPicker,ShapeColorPicker,scratch,TreeView ,DataTable} from '../components/';
 
  //#endregion
 export default {
@@ -463,6 +466,7 @@ export default {
         Multiselect,
         scratch,
         TreeView,
+        DataTable,
     },
     data() {
         return {
@@ -1028,6 +1032,7 @@ export default {
         },
 
         async getTableData(service, layer_id, layer_name, query) {
+             
             let token;
             if (service.apiFrom === 'emlak') {
                 token = this.emlakToken
@@ -1041,6 +1046,8 @@ export default {
                 layer: layer_id,
                 where: query
             });
+            console.log("TCL: btn -> getTableData -> response", response)
+                // console.log("setted");
             if (response.data.error !== undefined) {
                 return;
             }
@@ -1081,7 +1088,9 @@ export default {
             this.checkedColumns = this.checkedColumns.map((item, index) => {
                 return self.tableFeaturesHeaderWithAlias[item]
             });
-            this.showTable = true
+            this.$store.dispatch("SAVE_DATATABLE_VISIBLE", true);
+       
+            // this.showTable = true;
             this.filterQuery = '';
             this.filterValues = [];
         },
@@ -1466,6 +1475,8 @@ export default {
 
         },
         setDrawType(name) {
+        console.log("TCL: btn -> setDrawType -> name", name)
+            
             this.typeSelect = name
             this.mapLayer.removeInteraction(this.draw);
             this.isColorPick = false
