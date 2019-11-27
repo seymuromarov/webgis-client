@@ -1,9 +1,9 @@
-import Api from "./Api";
+import request from "../utils/request";
 import { baseUrl, ACCOUNT_URL } from "../config/baseUrl";
 
 export default {
   // getToken(params) {
-  //     return Api().post("/api.php", {
+  //     return request.post("/api.php", {
   //         action: 'getToken',
   //         username: params.username,
   //         password: params.password,
@@ -15,7 +15,7 @@ export default {
     if (host === "localhost") {
       host = "webgis.azercosmos.az";
     }
-    return Api().get(ACCOUNT_URL.LOGIN_URL, {
+    return request.get(ACCOUNT_URL.LOGIN_URL, {
       params: {
         request: "gettoken",
         username: params.username,
@@ -28,7 +28,7 @@ export default {
     });
   },
   getEmlakToken() {
-    return Api().get(baseUrl + "/emlak", {
+    return request.get(baseUrl + "/emlak", {
       params: {
         f: "json"
       }

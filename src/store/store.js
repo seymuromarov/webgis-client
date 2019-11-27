@@ -1,17 +1,12 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { auth, dataTable } from "./modules";
-import { colorPickerConst } from "../constants";
+import { auth, dataTable, colorPicker } from "./modules";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
-    ...colorPickerConst.state
-  },
-  getters: {
-    ...colorPickerConst.getters
-  },
+  state: {},
+  getters: {},
   mutations: {
     getToken(state, response) {
       // state.token = response.token
@@ -19,15 +14,12 @@ export default new Vuex.Store({
     },
     deleteToken(state, token) {
       state.token = null;
-    },
-
-    ...colorPickerConst.mutations
+    }
   },
-  actions: {
-    ...colorPickerConst.actions
-  },
+  actions: {},
   modules: {
     auth,
-    dataTable
+    dataTable,
+    colorPicker
   }
 });

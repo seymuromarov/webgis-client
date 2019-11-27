@@ -53,7 +53,7 @@
                                     <label :for="element.name + layer.id"></label>
                                     <span class="serviceTitle" :for="layer.name"> {{ layer.name }}</span>
                                     <div class="">
-                                        <i class="dataIcon fas fa-table" @click="getTableData(element,layer.id,layer.name,'1=1')"></i>
+                                        <i class="dataIcon fas fa-table" @click="getTableData(element,layer.id,layer.name,{where:'1=1'})"></i>
                                         <i style="margin-left: 10px;" class="dataIcon fab fa-codiepie" v-if="element.color===true" @click="OpenColorPicker(element,layer.id,layer.name,element.order)"></i>
 
                                     </div>
@@ -229,7 +229,7 @@
         </div>
     </div> -->
 
-    <DataTable/>
+    <DataTable  @showFilterModal="showFilterModal" @mapSetCenter="mapSetCenter" @filterDataQuery="filterDataQuery"/>
     
     <!--        </div>-->
     <modal name="data-modal" transition="nice-modal-fade" :min-width="200" :min-height="200" :delay="100" :draggable="true">
@@ -338,7 +338,6 @@
     </modal>
     <modal name="color-picker-modal" transition="nice-modal-fade" class="color-picker-modal-class" :min-width="200" :min-height="200" :delay="100" :draggable="false" :height="400">
         <ShapeColorPicker @setShapeColor="setShapeColor" />
-
     </modal>
 
 </div>
@@ -476,7 +475,7 @@ export default {
             value: [],
             checkedColumns: [],
             checkedColumnsData: [],
-            defaultUnCheckedColumns: ['OBJECTID', 'Shape_Length', 'Shape_Area'],
+         
             drawings: [{
                     name: "Point",
                     icon: 'fas fa-circle',
@@ -868,15 +867,20 @@ export default {
             }
         },
         filterData() {
-            this.getTableData(this.tableNextRequest['service'], this.tableNextRequest['layer_id'], this.tableNextRequest['layer_name'], this.filterQuery)
+            this.getTableData(this.tableNextRequest['service'], this.tableNextRequest['layer_id'], this.tableNextRequest['layer_name'], {where:this.filterQuery})
             this.$modal.hide('filter-modal');
+        },
+        filterDataQuery(query)
+        {
+            
+        console.log("TCL: btn -> query", query)
+            this.getTableData(this.tableNextRequest['service'], this.tableNextRequest['layer_id'], this.tableNextRequest['layer_name'], query)
         },
         addValueToQuery(value) {
             if (typeof value == 'string')
                 value = "'" + value + "'"
             this.filterQuery += value + ' ';
         },
-
         dragAndDropToast() {
             let toast = this.$toasted.show("Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map", {
                 theme: "outline",
@@ -930,12 +934,16 @@ export default {
                 adaptive: true,
                 draggable: true,
             });
-            if (this.tableFeatureData.geometry.x !== undefined) {
-                this.mapLayer.getView().setCenter(fromLonLat([this.tableFeatureData.geometry.x, this.tableFeatureData.geometry.y]))
-            } else {
-                this.mapLayer.getView().setCenter(fromLonLat(this.tableFeatureData.geometry.rings[0][0]))
-            }
+         
 
+        },
+        mapSetCenter(data)
+        {
+            if (data.geometry.x !== undefined) {
+                this.mapLayer.getView().setCenter(fromLonLat([data.geometry.x, data.geometry.y]))
+            } else {
+                this.mapLayer.getView().setCenter(fromLonLat(data.geometry.rings[0][0]))
+            }
         },
         showFilterModal() {
             this.$modal.show('filter-modal', null, {
@@ -1033,15 +1041,15 @@ export default {
             } else {
                 token = this.token;
             }
-
-            let response = await LayerService.getTableData({
+            let data={
                 token: token,
                 name: service.name,
                 layer: layer_id,
-                where: query
-            });
-            console.log("TCL: btn -> getTableData -> response", response)
-                // console.log("setted");
+                ...query
+            };
+            console.log("TCL: btn -> getTableData -> data", data)
+            let response = await LayerService.getTableData(data);
+   
             if (response.data.error !== undefined) {
                 return;
             }
@@ -1051,24 +1059,32 @@ export default {
             this.tableNextRequest['layer_id'] = layer_id;
             this.tableNextRequest['layer_name'] = layer_name;
 
-            this.tableHeader = layer_name
-            this.tableFeaturesData = response.data.features
-            this.tableFeaturesHeader = Object.keys(this.tableFeaturesData[0].attributes);
-            let target = response.data.fieldAliases
-            this.tableFeaturesHeaderWithAlias = response.data.fieldAliases
-            this.stackedTableFeaturesHeader = this.tableFeaturesHeader
-            this.checkedColumnsData = []
-            this.checkedColumns = []
+            let tableName=layer_name;
+            let tableData=response.data.features;
+            let tableHeaders=Object.keys(tableData[0].attributes);            
+            let tableStackedHeaders=tableHeaders;            
+            let target = response.data.fieldAliases;
+            let tableHeadersWithAlias=response.data.fieldAliases;       
+               
+            // this.tableHeader = layer_name
+            // this.tableFeaturesData = response.data.features
+            // this.tableFeaturesHeader = Object.keys(this.tableFeaturesData[0].attributes);
+            // let target = response.data.fieldAliases
+            // this.tableFeaturesHeaderWithAlias = response.data.fieldAliases
+            // this.stackedTableFeaturesHeader = this.tableFeaturesHeader
+            let checkedColumnsData = []
+            let checkedColumns = []
 
-            for (let alias in this.tableFeaturesHeader) {
-                if (!this.defaultUnCheckedColumns.includes(this.tableFeaturesHeader[alias])) {
-                    this.checkedColumnsData.push(this.tableFeaturesHeader[alias])
-                    this.checkedColumns.push(this.tableFeaturesHeader[alias])
+            
+            let defaultUnCheckedColumns= ['OBJECTID', 'Shape_Length', 'Shape_Area'];
+            for (let alias in tableHeaders) {
+                if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
+                    checkedColumnsData.push(tableHeaders[alias])
+                    checkedColumns.push(tableHeaders[alias])
 
                 }
             }
-
-            this.tableFeaturesHeader = this.tableFeaturesHeader.map((item, index) => {
+            tableHeaders = tableHeaders.map((item, index) => {
                 let name = item
                 for (let k in target) {
                     if (typeof target[k] !== 'function') {
@@ -1079,11 +1095,22 @@ export default {
                 }
                 return name;
             });
-            this.checkedColumns = this.checkedColumns.map((item, index) => {
-                return self.tableFeaturesHeaderWithAlias[item]
+            checkedColumns = checkedColumns.map((item, index) => {
+                return tableHeadersWithAlias[item]
             });
-            this.$store.dispatch("SAVE_DATATABLE_VISIBLE", true);
-       
+           
+            this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
+                isVisible:true,
+                tableName:tableName,
+                tableHeaders:tableHeaders,
+                tableStackedHeaders:tableStackedHeaders,
+                tableHeadersWithAlias:tableHeadersWithAlias,
+                tableData:tableData,
+                target:target,
+                checkedColumnsData:checkedColumnsData,
+                checkedColumns:checkedColumns,
+
+            });
             // this.showTable = true;
             this.filterQuery = '';
             this.filterValues = [];
