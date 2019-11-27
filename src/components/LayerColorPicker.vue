@@ -2,7 +2,9 @@
   <div class="colorPickers" v-show="visibility">
     <ul class="nav">
       <li class="nav-item">
-        <a class="nav-link active" href="#" @click="borderClick(true)">Border Color</a>
+        <a class="nav-link active" href="#" @click="borderClick(true)"
+          >Border Color</a
+        >
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#" @click="borderClick(false)">Fill Color</a>
@@ -23,8 +25,12 @@
         class="btn btn-sm btn-danger"
         type="button"
         @click="setColorPickerVisibility(false)"
-      >Close</button>
-      <button class="btn btn-sm btn-primary" type="button" @click="save">Save</button>
+      >
+        Close
+      </button>
+      <button class="btn btn-sm btn-primary" type="button" @click="save">
+        Save
+      </button>
     </div>
   </div>
 </template>

@@ -37,7 +37,7 @@
                                 <span>
                                     <i v-if="element.collapseVisibility && !element.layersVisibility" @click="dynamicLayersReset(element, true)" class="fas fa-caret-left makeMePoint">
                                     </i>
-                                    <i v-if=" element.layersVisibility " @click="element.layersVisibility=false" class="fas fa-caret-down makeMePoint">
+                                    <i v-if="element.layersVisibility" @click="element.layersVisibility=false" class="fas fa-caret-down makeMePoint">
                                     </i>
                                 </span>
 
@@ -45,7 +45,7 @@
                         </div>
 
                         <div style="background: whitesmoke;padding-top: 10px; " v-show="element.layersVisibility">
-                            <div class="row layerDiv" v-for="layer in element.layers"  :style="{paddingLeft: layer.margin * 30 + 'px'}" >
+                            <div class="row layerDiv" v-for="(layer,index) in element.layers" :key="index"  :style="{paddingLeft: layer.margin * 30 + 'px'}" >
 
                                 <div class="col-12" style="white-space: nowrap" >
                                     <input class="parentCheckbox" v-show="layer.geometryType" :id="element.name + layer.id" :value="element.name + layer.id" :name="element.name + layer.id" v-model="dynamicSubLayerList[element.name][layer.id]" type="checkbox" @click="selectSubService(element,element.order,layer.id, $event)" />
@@ -53,7 +53,7 @@
                                     <label :for="element.name + layer.id"></label>
                                     <span class="serviceTitle" :for="layer.name"> {{ layer.name }}</span>
                                     <div class="">
-                                        <i class="dataIcon fas fa-table" @click="getTableData(element,layer.id,layer.name,'1=1')"></i>
+                                        <i class="dataIcon fas fa-table" @click="getTableData(element,layer.id,layer.name,{where:'1=1'})"></i>
                                         <i style="margin-left: 10px;" class="dataIcon fab fa-codiepie" v-if="element.color===true" @click="OpenColorPicker(element,layer.id,layer.name,element.order)"></i>
 
                                     </div>
@@ -120,7 +120,7 @@
                 <i class="fas fa-eye-dropper"></i>
             </button>
 
-            <button v-for="(item, index) in drawings" class="action-button-class btn btn-control" :style="{top : ((index+1)*5+25) + '%'}" :title="item.tooltip" @click="setDrawType(item.name)">
+            <button v-for="(item, index) in drawings" :key="index" class="action-button-class btn btn-control" :style="{top : ((index+1)*5+25) + '%'}" :title="item.tooltip" @click="setDrawType(item.name)">
                 <i :class="item.icon"></i>
 
             </button>
@@ -148,7 +148,7 @@
             </button>
             <div v-show="selectLayerForm" @mouseleave="selectLayerForm=false" class="selectLayerForm">
                 <form>
-                    <div v-for="(element,index) in baseMaps">
+                    <div v-for="(element,index) in baseMaps" :key="index">
                         <input type="radio" class="" name="baseLayer" @click="setBaseLayout(index)">
                         <span style="margin-left: 5px;">{{index}}</span>
 
@@ -182,7 +182,7 @@
     </div>
 
     <!--        <div class="" >-->
-    <div v-if="showTable" class="tableDiv howMuchWidthHaveMap">
+    <!-- <div v-if="showTable" class="tableDiv howMuchWidthHaveMap">
         <div class="tableHeader">
             <div class="row">
                 <div class="col-2">
@@ -227,7 +227,10 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </div> -->
+
+    <DataTable  @showFilterModal="showFilterModal" @mapSetCenter="mapSetCenter" @filterDataQuery="filterDataQuery"/>
+    
     <!--        </div>-->
     <modal name="data-modal" transition="nice-modal-fade" :min-width="200" :min-height="200" :delay="100" :draggable="true">
         <p class="tableModalHeader">{{this.tableHeader}}</p>
@@ -240,7 +243,7 @@
                     </tr>
                 </thead>
                 <tbody class="popupTableBody">
-                    <tr v-for="(value, key) in tableFeatureData.attributes">
+                    <tr v-for="(value, key) in tableFeatureData.attributes" :key="key">
                         <td class="paddingLeft">{{ tableFeaturesHeaderWithAlias[key] }}</td>
                         <td class="paddingRight">{{ value }}</td>
                     </tr>
@@ -258,7 +261,7 @@
             </div>
             <div class="filterFieldsListDiv">
                 <ul class="filterFieldsList">
-                    <li @dblclick="filterQuery += stackedTableFeaturesHeader[column] + ' '" @click="filterSelectedColumn(stackedTableFeaturesHeader[column])" v-for="(alias, column) in tableFeaturesHeader"> {{ alias }}
+                    <li @dblclick="filterQuery += stackedTableFeaturesHeader[column] + ' '" @click="filterSelectedColumn(stackedTableFeaturesHeader[column])" v-for="(alias, column) in tableFeaturesHeader" :key="column"> {{ alias }}
                     </li>
                 </ul>
             </div>
@@ -283,9 +286,9 @@
                             <tr>
                                 <td>
                                     <button @click="filterQuery += '<= '" class="parameterButton btn btn-sm btn-outline-secondary">
-                                        <= </button> </td> <td>
+                                        &le; </button> </td> <td>
                                             <button @click="filterQuery += '< '" class="parameterButton btn btn-sm btn-outline-secondary">
-                                                < </button> </td> <td>
+                                                &lt; </button> </td> <td>
                                                     <button @click="filterQuery += 'LIKE '" class="parameterButton btn btn-sm btn-outline-secondary"> like
                                                     </button>
                                 </td>
@@ -293,7 +296,7 @@
                             <tr>
                                 <td>
                                     <button @click="filterQuery += '<> '" class="parameterButton btn btn-sm btn-outline-secondary">
-                                        <>
+                                        <span>&lt;&gt;</span>
                                     </button>
                                 </td>
                                 <td>
@@ -316,7 +319,7 @@
                 </div>
                 <div class="filterValuesDiv">
                     <ul class="filterValuesList">
-                        <li @dblclick="addValueToQuery(value)" class="filterValue" v-for="value in filterValues"> {{
+                        <li @dblclick="addValueToQuery(value)" class="filterValue" v-for="(value,index) in filterValues" :key="index"> {{
                                 value }}
                         </li>
                     </ul>
@@ -335,7 +338,6 @@
     </modal>
     <modal name="color-picker-modal" transition="nice-modal-fade" class="color-picker-modal-class" :min-width="200" :min-height="200" :delay="100" :draggable="false" :height="400">
         <ShapeColorPicker @setShapeColor="setShapeColor" />
-
     </modal>
 
 </div>
@@ -438,7 +440,7 @@ import LoginService from "../services/LoginService";
 //#region Components
 
 import Multiselect from 'vue-multiselect'
-import {LayerColorPicker,ShapeColorPicker,scratch,TreeView} from '../components/';
+import {LayerColorPicker,ShapeColorPicker,scratch,TreeView ,DataTable} from '../components/';
 
  //#endregion
 export default {
@@ -450,6 +452,7 @@ export default {
         Multiselect,
         scratch,
         TreeView,
+        DataTable,
     },
     data() {
         return {
@@ -472,7 +475,7 @@ export default {
             value: [],
             checkedColumns: [],
             checkedColumnsData: [],
-            defaultUnCheckedColumns: ['OBJECTID', 'Shape_Length', 'Shape_Area'],
+         
             drawings: [{
                     name: "Point",
                     icon: 'fas fa-circle',
@@ -864,15 +867,20 @@ export default {
             }
         },
         filterData() {
-            this.getTableData(this.tableNextRequest['service'], this.tableNextRequest['layer_id'], this.tableNextRequest['layer_name'], this.filterQuery)
+            this.getTableData(this.tableNextRequest['service'], this.tableNextRequest['layer_id'], this.tableNextRequest['layer_name'], {where:this.filterQuery})
             this.$modal.hide('filter-modal');
+        },
+        filterDataQuery(query)
+        {
+            
+        console.log("TCL: btn -> query", query)
+            this.getTableData(this.tableNextRequest['service'], this.tableNextRequest['layer_id'], this.tableNextRequest['layer_name'], query)
         },
         addValueToQuery(value) {
             if (typeof value == 'string')
                 value = "'" + value + "'"
             this.filterQuery += value + ' ';
         },
-
         dragAndDropToast() {
             let toast = this.$toasted.show("Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map", {
                 theme: "outline",
@@ -926,12 +934,16 @@ export default {
                 adaptive: true,
                 draggable: true,
             });
-            if (this.tableFeatureData.geometry.x !== undefined) {
-                this.mapLayer.getView().setCenter(fromLonLat([this.tableFeatureData.geometry.x, this.tableFeatureData.geometry.y]))
-            } else {
-                this.mapLayer.getView().setCenter(fromLonLat(this.tableFeatureData.geometry.rings[0][0]))
-            }
+         
 
+        },
+        mapSetCenter(data)
+        {
+            if (data.geometry.x !== undefined) {
+                this.mapLayer.getView().setCenter(fromLonLat([data.geometry.x, data.geometry.y]))
+            } else {
+                this.mapLayer.getView().setCenter(fromLonLat(data.geometry.rings[0][0]))
+            }
         },
         showFilterModal() {
             this.$modal.show('filter-modal', null, {
@@ -1022,19 +1034,22 @@ export default {
         },
 
         async getTableData(service, layer_id, layer_name, query) {
+             
             let token;
             if (service.apiFrom === 'emlak') {
                 token = this.emlakToken
             } else {
                 token = this.token;
             }
-
-            let response = await LayerService.getTableData({
+            let data={
                 token: token,
                 name: service.name,
                 layer: layer_id,
-                where: query
-            });
+                ...query
+            };
+            console.log("TCL: btn -> getTableData -> data", data)
+            let response = await LayerService.getTableData(data);
+   
             if (response.data.error !== undefined) {
                 return;
             }
@@ -1044,24 +1059,32 @@ export default {
             this.tableNextRequest['layer_id'] = layer_id;
             this.tableNextRequest['layer_name'] = layer_name;
 
-            this.tableHeader = layer_name
-            this.tableFeaturesData = response.data.features
-            this.tableFeaturesHeader = Object.keys(this.tableFeaturesData[0].attributes);
-            let target = response.data.fieldAliases
-            this.tableFeaturesHeaderWithAlias = response.data.fieldAliases
-            this.stackedTableFeaturesHeader = this.tableFeaturesHeader
-            this.checkedColumnsData = []
-            this.checkedColumns = []
+            let tableName=layer_name;
+            let tableData=response.data.features;
+            let tableHeaders=Object.keys(tableData[0].attributes);            
+            let tableStackedHeaders=tableHeaders;            
+            let target = response.data.fieldAliases;
+            let tableHeadersWithAlias=response.data.fieldAliases;       
+               
+            // this.tableHeader = layer_name
+            // this.tableFeaturesData = response.data.features
+            // this.tableFeaturesHeader = Object.keys(this.tableFeaturesData[0].attributes);
+            // let target = response.data.fieldAliases
+            // this.tableFeaturesHeaderWithAlias = response.data.fieldAliases
+            // this.stackedTableFeaturesHeader = this.tableFeaturesHeader
+            let checkedColumnsData = []
+            let checkedColumns = []
 
-            for (let alias in this.tableFeaturesHeader) {
-                if (!this.defaultUnCheckedColumns.includes(this.tableFeaturesHeader[alias])) {
-                    this.checkedColumnsData.push(this.tableFeaturesHeader[alias])
-                    this.checkedColumns.push(this.tableFeaturesHeader[alias])
+            
+            let defaultUnCheckedColumns= ['OBJECTID', 'Shape_Length', 'Shape_Area'];
+            for (let alias in tableHeaders) {
+                if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
+                    checkedColumnsData.push(tableHeaders[alias])
+                    checkedColumns.push(tableHeaders[alias])
 
                 }
             }
-
-            this.tableFeaturesHeader = this.tableFeaturesHeader.map((item, index) => {
+            tableHeaders = tableHeaders.map((item, index) => {
                 let name = item
                 for (let k in target) {
                     if (typeof target[k] !== 'function') {
@@ -1072,10 +1095,23 @@ export default {
                 }
                 return name;
             });
-            this.checkedColumns = this.checkedColumns.map((item, index) => {
-                return self.tableFeaturesHeaderWithAlias[item]
+            checkedColumns = checkedColumns.map((item, index) => {
+                return tableHeadersWithAlias[item]
             });
-            this.showTable = true
+           
+            this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
+                isVisible:true,
+                tableName:tableName,
+                tableHeaders:tableHeaders,
+                tableStackedHeaders:tableStackedHeaders,
+                tableHeadersWithAlias:tableHeadersWithAlias,
+                tableData:tableData,
+                target:target,
+                checkedColumnsData:checkedColumnsData,
+                checkedColumns:checkedColumns,
+
+            });
+            // this.showTable = true;
             this.filterQuery = '';
             this.filterValues = [];
         },
@@ -1452,6 +1488,8 @@ export default {
 
         },
         setDrawType(name) {
+        console.log("TCL: btn -> setDrawType -> name", name)
+            
             this.typeSelect = name
             this.mapLayer.removeInteraction(this.draw);
             this.isColorPick = false

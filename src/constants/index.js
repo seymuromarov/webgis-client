@@ -1,5 +1,3 @@
-import colorPickerConst from './colorPickerConst';
+import permissions from "./permissions";
 
-export {
-    colorPickerConst
-}
+export { permissions };
