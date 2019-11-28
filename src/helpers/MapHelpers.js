@@ -10,6 +10,7 @@ import { unByKey } from "ol/Observable.js";
 import Style from "ol/style/Style";
 import CircleStyle from "ol/style/Circle";
 import Fill from "ol/style/Fill";
+import store from "../store/store";
 
 class MapHelpers {
   constructor(self) {
@@ -203,6 +204,9 @@ class MapHelpers {
             "TCL: MapHelpers -> addInteraction ->  bbox",
             e.feature.getGeometry().getExtent()
           );
+
+          store.dispatch("SAVE_DRAW_BBOX", e.feature.getGeometry().getExtent()).then(r=> 'Life is hard');
+
         } catch (e) {
           self.createMeasuremaptooltip();
           self.data.measuremaptooltipElement.className =
