@@ -867,14 +867,12 @@ export default {
             }
         },
         filterData() {
-            this.getTableData(this.tableNextRequest['service'], this.tableNextRequest['layer_id'], this.tableNextRequest['layer_name'], {where:this.filterQuery})
+            this.getTableData(this.tableNextRequest['service'], this.tableNextRequest['layerId'], this.tableNextRequest['layerName'], {where:this.filterQuery})
             this.$modal.hide('filter-modal');
         },
         filterDataQuery(query)
         {
-            
-        console.log("TCL: btn -> query", query)
-            this.getTableData(this.tableNextRequest['service'], this.tableNextRequest['layer_id'], this.tableNextRequest['layer_name'], query)
+            this.getTableData(this.tableNextRequest['service'], this.tableNextRequest['layerId'], this.tableNextRequest['layerName'], query)
         },
         addValueToQuery(value) {
             if (typeof value == 'string')
@@ -925,6 +923,15 @@ export default {
         },
         showColumnsChange() {
             this.Toggler.showColumnsChange()
+        },
+        showSimpleFilterModal()
+        {
+        this.$modal.show("simple-data-filter-modal", null, {
+            name: "dynamic-filter-modal",
+            resizable: false,
+            adaptive: true,
+            draggable: false
+        });
         },
         showDataModal(Feature) {
             this.tableFeatureData = Feature
@@ -1033,7 +1040,7 @@ export default {
 
         },
 
-        async getTableData(service, layer_id, layer_name, query) {
+        async getTableData(service, layerId, layerName, query) {
              
             let token;
             if (service.apiFrom === 'emlak') {
@@ -1044,7 +1051,7 @@ export default {
             let data={
                 token: token,
                 name: service.name,
-                layer: layer_id,
+                layer: layerId,
                 ...query
             };
             console.log("TCL: btn -> getTableData -> data", data)
@@ -1056,10 +1063,12 @@ export default {
 
             let self = this
             this.tableNextRequest['service'] = service;
-            this.tableNextRequest['layer_id'] = layer_id;
-            this.tableNextRequest['layer_name'] = layer_name;
+            this.tableNextRequest['layerId'] = layerId;
+            this.tableNextRequest['layerName'] = layerName;
 
-            let tableName=layer_name;
+
+            let serviceName=service.name;
+            let tableName=layerName;
             let tableData=response.data.features;
             let tableHeaders=Object.keys(tableData[0].attributes);            
             let tableStackedHeaders=tableHeaders;            
@@ -1098,17 +1107,18 @@ export default {
             checkedColumns = checkedColumns.map((item, index) => {
                 return tableHeadersWithAlias[item]
             });
-           
             this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
                 isVisible:true,
-                tableName:tableName,
-                tableHeaders:tableHeaders,
-                tableStackedHeaders:tableStackedHeaders,
-                tableHeadersWithAlias:tableHeadersWithAlias,
-                tableData:tableData,
-                target:target,
-                checkedColumnsData:checkedColumnsData,
-                checkedColumns:checkedColumns,
+                layerId,            
+                serviceName,
+                tableName,
+                tableHeaders,
+                tableStackedHeaders,
+                tableHeadersWithAlias,
+                tableData,
+                target,
+                checkedColumnsData,
+                checkedColumns,
 
             });
             // this.showTable = true;

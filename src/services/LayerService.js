@@ -64,7 +64,6 @@ export default {
   },
 
   getTableData(params) {
-    console.log("TCL: getTableData -> params", params);
     return request.get(LAYER_URLS.GET_TABLE_DATA_URL(params), {
       params: {
         f: "json",
@@ -74,17 +73,16 @@ export default {
       }
     });
   },
-  getTableDataQuery(params, query) {
-    return request.get(LAYER_URLS.GET_TABLE_DATA_URL(params), {
-      params: {
-        token: params.token,
-        f: "json",
-        returnGeometry: true,
-        outFields: "*",
-        ...query
-      }
-    });
-  },
+  // getTableDataQuery(params) {
+  //   return request.get(LAYER_URLS.GET_TABLE_DATA_URL(params.layer), {
+  //     params: {
+  //       f: "json",
+  //       returnGeometry: true,
+  //       outFields: "*",
+  //       ...params.query
+  //     }
+  //   });
+  // },
 
   getGeometryData(params) {
     return request.get(LAYER_URLS.GET_GEOMETRY_DATA_URL(params), {

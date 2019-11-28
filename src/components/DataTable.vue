@@ -118,8 +118,10 @@
                 transition="nice-modal-fade"
                 :min-width="200"
                 :min-height="200"
+                :height="400"
                 :delay="100"
-                :draggable="true"
+                :draggable="false"
+                
         >
             <p class="tableModalHeader">{{ tableName }}</p>
 
@@ -140,16 +142,6 @@
                     </div>
                 </div>
 
-                <!-- <div class="form-group col-md-12">
-                  <label for="exampleInputPassword1">Classname</label>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="exampleInputPassword1"
-                    placeholder="Password"
-                  />
-                </div> -->
-
                 <div class="form-group col-md-12">
                     <label for="exampleInputPassword1">Arithmetic Operation</label>
                     <div class="row">
@@ -157,21 +149,7 @@
                                 class="btn-group btn-group-toggle col-md-12"
                                 data-toggle="buttons"
                         >
-                            <label
-                                    :class="{
-                  'btn btn-sm btn-outline-secondary': true,
-                  active: cropArithmeticOperation.trim() == 'unset'
-                }"
-                            >
-                                <input
-                                        type="radio"
-                                        id="unset"
-                                        value="unset"
-                                        v-model="cropArithmeticOperation"
-                                        checked="checked"
-                                />
-                                Unset
-                            </label>
+           
                             <label
                                     :class="{
                   'btn btn-sm btn-outline-secondary': true,
@@ -243,12 +221,38 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-check">
-                        <input class="form-check-input " type="checkbox" id="isSeparate"  aria-label="">
-                        <label class="form-check-label" for="isSeparate">Give Seperate report?</label>
+                        <input class="form-check-input " type="checkbox"
+                        :id="isSeperate"
+                        v-model="isSeperate" 
+                        aria-label="">
+                        <label class="form-check-label" for="isSeparate"  
+                      
+                        >Give Seperate report?</label>
 
-                    </div>
+                    </div>                 
+                </div>
+                   <div class="col-md-12">
+                    <div class="form-check">
+                        <input class="form-check-input " type="checkbox"
+                        :id="isIncludeBBOX"
+                        v-model="isIncludeBBOX" 
+                        aria-label="">
+                        <label class="form-check-label" for="isIncludeBBOX"  
+                      
+                        >Include Last Selected BBOX?</label>
 
-                    <button
+                    </div>                 
+                </div>
+                <div class="col-md-12">
+                  <div v-if="filteredDatas.length>0">
+                     <div class="alert alert-primary" role="alert">                      
+                      <p v-for="(data , index) in filteredDatas" :key="index" >
+                            {{data.key}} : {{data.value}}
+                      </p>                  
+                      </div>
+                  </div>
+                  
+                       <button
                             class="btn btn-outline-info filterApplyButton "
                             @click="applyFilter"
                     >
@@ -265,7 +269,8 @@
     import {mapState} from "vuex";
     import {Toggler} from "../helpers";
     import Multiselect from 'vue-multiselect'
-
+    import LayerService from '../services/LayerService'
+    import {getToken} from '../utils/token'
     export default {
         name: "DataTable",
         props: {},
@@ -277,18 +282,25 @@
                 Toggler: null,
                 isColumnPopupShowing: false,
                 selectedData: null,
-                // cropSelectedClassnames: ["T U T U N", "T A X I L"],
-                cropArithmeticOperation: "unset",
+                cropArithmeticOperation: "sum",
                 query: {
                     inSR: 3857,
                     outSR: 3857,
                     where: "1=1",
                     outStatistics: "",
-                    geometry: ''
+                
                 },
                 cropMap2019Options: ['C E L T I K', 'P A M B I Q', 'S E K E R Ch', 'T A X I L', 'T U T U N'],
                 cropMap2019value: null,
-                reportResult: null
+
+                filteredColumnName:'',
+                filteredDatas:[],
+                outStatisticFieldName:"Shape_Area_Sum",
+                reportResult: null,
+
+                isSeperate:false,
+                isIncludeBBOX:false,
+
             };
         },
         mounted() {
@@ -348,38 +360,97 @@
                     this.checkedColumns = this.checkedColumns.filter(data => data != alias);
                 }
             },
-            applyFilter() {
+            async applyFilter() {           
+
                 if (this.cropArithmeticOperation !== "unset") {
                     // this.query.outStatistics = `[{statisticType: ${this.cropArithmeticOperation},onStatisticField: "Shape_Area",outStatisticFieldName: "Shape_Area_sum"}]`;
                     this.query.outStatistics =
                         '[{"statisticType": "' +
                         this.cropArithmeticOperation +
-                        '", "onStatisticField": "Shape_Area", "outStatisticFieldName": "Shape_Area_Sum"}]';
+                        '", "onStatisticField": "Shape_Area", "outStatisticFieldName":'+'"'+this.outStatisticFieldName+'"}]';
                 } else {
                     this.query.outStatistics = "";
                 }
 
+                let geometry = this.lastBBOXOfShape.toString();
 
-                if (this.cropMap2019value.length > 0) {
+                  console.log("TCL: applyFilter -> this.isIncludeBBOX", this.isIncludeBBOX)
+            let data={
+                  token:this.token,
+                  name: this.serviceName,
+                  layer:this.layerId,
+                  ...(this.isIncludeBBOX&&{geometry})
+              };
+        
+               if (this.cropMap2019value.length > 0) {
                     this.query.where = "";
-                    for (let i = 0; i < this.cropMap2019value.length; i++) {
-                        this.query.where +=
-                            "(Classname=" + "'" + this.cropMap2019value[i] + "')";
+                     this.filteredDatas=[];
 
-                        if (i < this.cropMap2019value.length - 1)
-                            this.query.where += " OR ";
-                    }
+                      if(this.isSeperate)
+                      {
+                         for (let i = 0; i < this.cropMap2019value.length; i++) {
+                              this.query.where =
+                                  "(Classname=" + "'" + this.cropMap2019value[i] + "')";
+                          
+                                data={
+                                  ...data,
+                                  ...this.query
+                                }
+                                var val=await this.sendRequest(data);
+                                this.filteredDatas.push({
+                                  key:this.cropMap2019value[i],
+                                  value:val,
+                                })
+                          }
+                         
+                      }
+                      else
+                      {                        
+                          for (let i = 0; i < this.cropMap2019value.length; i++) {
+                              this.query.where +=
+                                  "(Classname=" + "'" + this.cropMap2019value[i] + "')";
+
+                              if (i < this.cropMap2019value.length - 1)
+                                  this.query.where += " OR ";
+                          }
+                          data={
+                            ...data,
+                            ...this.query
+                          }
+                          var val=await this.sendRequest(data);
+                          this.filteredDatas.push({
+                            key:"Total",
+                            value:val,
+                          })
+                      }
+                  
                 }
-                // if enabled bbox
-                this.query.geometry = this.lastBBOXOfShape.toString();
-
-                this.$emit("filterDataQuery", this.query);
+          
+           
+            },
+             async sendRequest(data)
+            {
+              let response = await LayerService.getTableData(data);            
+              let val=0;
+              if(response.data.features.length>0)
+              {
+                val=response.data.features[0].attributes[this.outStatisticFieldName];
+              }
+                return val;
+           
             }
+            
         },
 
         computed: {
             isVisible() {
                 return this.$store.state.dataTable.isVisible;
+            },       
+            layerId() {
+                return this.$store.state.dataTable.layerId;
+            },
+            serviceName() {
+                return this.$store.state.dataTable.serviceName;
             },
             tableName() {
                 return this.$store.state.dataTable.tableName;
@@ -407,12 +478,17 @@
             },
             lastBBOXOfShape() {
                 return this.$store.state.dataTable.lastBBOXOfShape;
-            }
+            },
+            token()
+            {
+                 return getToken();
+            },
+           
         },
         watch: {
-            isVisible(newValue, oldValue) {
-                console.log(`Updating from ${oldValue} to ${newValue}`);
-            }
+            // isVisible(newValue, oldValue) {
+            //     console.log(`Updating from ${oldValue} to ${newValue}`);
+            // }
         }
     };
 </script>
