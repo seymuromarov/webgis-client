@@ -9,10 +9,10 @@ const LOCAL_URL = "https://localhost:5001";
 const URL = LOCAL_URL;
 
 const ACCOUNT_URL = {
-  LOGIN_URL: URL + "/api/account/GetToken/"
+  LOGIN_URL: URL + "/api/account/login"
 };
 const LAYER_URLS = {
-  GET_LAYER_NAMES_URL: URL + "/api/Map/GetArcgisLayers", //local server
+  GET_LAYER_NAMES_URL: URL + "/api/Map/GetLayers", //local server
   GET_LAYER_DYNAMIC_URL: params => {
     return URL + "/api/map/service/" + params.name + "/MapServer/layers";
   },
