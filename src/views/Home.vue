@@ -53,7 +53,15 @@
                                     <label :for="element.name + layer.id"></label>
                                     <span class="serviceTitle" :for="layer.name"> {{ layer.name }}</span>
                                     <div class="">
+                                        
+                               
                                         <i class="dataIcon fas fa-table" @click="getTableData(element,layer.id,layer.name,{where:'1=1'})"></i>
+                                                 <i
+                                                v-if="layer.name.trim() == 'CropMap2019_vector'"
+                                                class="fas fa-filter reportIcon"                                                
+                                                style="color:blue;margin-left: 10px;"
+                                                @click="showSimpleFilterModal(layer.id,element.name)"
+                                        />
                                         <i style="margin-left: 10px;" class="dataIcon fab fa-codiepie" v-if="element.color===true" @click="OpenColorPicker(element,layer.id,layer.name,element.order)"></i>
 
                                     </div>
@@ -68,6 +76,7 @@
                 </transition-group>
             </draggable>
         </transition>
+        <SimpleFilterModal  ref="reportFilterModal" />
         <hr>
         <h5 class="text-left-layer">Basemaps
             <span>
@@ -440,7 +449,7 @@ import LoginService from "../services/LoginService";
 //#region Components
 
 import Multiselect from 'vue-multiselect'
-import {LayerColorPicker,ShapeColorPicker,scratch,TreeView ,DataTable} from '../components/';
+import {LayerColorPicker,ShapeColorPicker,scratch,TreeView ,DataTable,SimpleFilterModal} from '../components/';
 
  //#endregion
 export default {
@@ -453,10 +462,11 @@ export default {
         scratch,
         TreeView,
         DataTable,
+        SimpleFilterModal
     },
     data() {
         return {
-     
+            isSimpleModalVisible:false,
             baseLayersShow: true,
             dynamicLayersShow: true,
             latLongFormShow: false,
@@ -924,14 +934,20 @@ export default {
         showColumnsChange() {
             this.Toggler.showColumnsChange()
         },
-        showSimpleFilterModal()
+        showSimpleFilterModal(layerId,layerName)
         {
-        this.$modal.show("simple-data-filter-modal", null, {
-            name: "dynamic-filter-modal",
-            resizable: false,
-            adaptive: true,
-            draggable: false
-        });
+            
+            this.$store.dispatch("SAVE_DATATABLE_LAYER_ID",layerId );
+            this.$store.dispatch("SAVE_DATATABLE_SERVICE_NAME",layerName);
+            this.$refs.reportFilterModal.$modal.show("simple-data-filter-modal", null, {
+                    name: "simple-data-filter-modal",
+                    resizable: false,
+                    adaptive: true,
+                    draggable: false
+                });
+            // this.$store.dispatch("SAVE_SIMPLE_FILTER_VISIBLE",true);
+            // this.isSimpleModalVisible=false;
+            // this.isSimpleModalVisible=true;
         },
         showDataModal(Feature) {
             this.tableFeatureData = Feature

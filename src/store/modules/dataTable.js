@@ -1,5 +1,6 @@
 const state = {
   isVisible: false,
+  isSimpleFilterVisible: false,
   tableName: "",
   serviceName: "",
   layer: "",
@@ -15,6 +16,9 @@ const state = {
 const mutations = {
   SET_DATATABLE_VISIBLE(state, isVisible) {
     state.isVisible = isVisible;
+  },
+  SET_SIMPLE_FILTER_VISIBLE(state, isSimpleFilterVisible) {
+    state.isSimpleFilterVisible = isSimpleFilterVisible;
   },
   SET_DATATABLE_SERVICE_NAME(state, serviceName) {
     state.serviceName = serviceName;
@@ -57,6 +61,15 @@ const getters = {
 const actions = {
   SAVE_DATATABLE_VISIBLE(context, isVisible) {
     context.commit("SET_DATATABLE_VISIBLE", isVisible);
+  },
+  SAVE_SIMPLE_FILTER_VISIBLE(context, isSimpleFilterVisible) {
+    context.commit("SET_SIMPLE_FILTER_VISIBLE", isSimpleFilterVisible);
+  },
+  SAVE_DATATABLE_SERVICE_NAME(context, serviceName) {
+    context.commit("SET_DATATABLE_SERVICE_NAME", serviceName);
+  },
+  SAVE_DATATABLE_LAYER_ID(context, layerId) {
+    context.commit("SET_DATATABLE_LAYER_ID", layerId);
   },
   SAVE_DRAW_BBOX(context, drawBBOX) {
     context.commit("SET_DRAW_BBOX", drawBBOX);
