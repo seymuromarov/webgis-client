@@ -4,8 +4,8 @@
       <div class="row">
         <div class="col-12 layerDiv">
           <span v-if="isCategory(item)" @click="toggle">
-            <i class="icon-unchecked fas fa-layer-group"></i>
-            <span class="serviceTitle">
+            <i class="icon-unchecked fas fa-layer-group "></i>
+            <span class="serviceTitle layer-category-group">
               {{ item.name }}
             </span>
             <i v-if="isOpen" class="icon-checked fas fa-minus"></i>
