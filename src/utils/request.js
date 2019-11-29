@@ -15,9 +15,10 @@ service.interceptors.request.use(
   request => {
     // do something before request is sent
     console.log("request start");
-    // if (store.getters.token) {
-    // request.headers["Authorization"] = getToken();
-    // }
+
+    request.headers["Authorization"] = "Bearer " + getToken();
+    console.log("TCL: getToken()", getToken());
+
     return request;
   },
   error => {
