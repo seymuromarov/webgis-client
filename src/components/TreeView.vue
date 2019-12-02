@@ -22,7 +22,7 @@
             <i class="checkbox-icon far fa-check-circle"></i>
             <label :for="item.name"></label>
             <span class="serviceTitle">
-              {{ item.name }}
+              {{ item.showingLabel }}
             </span>
           </span>
         </div>
