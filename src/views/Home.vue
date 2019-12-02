@@ -29,9 +29,9 @@
                             <div class="col-12  layerDiv">
                                 <input class="parentCheckbox" :id="element.name" :name="element.name" type="checkbox" @click="selectService(element, element.order,true, $event)" />
                                 <i class="checkbox-icon far fa-check-circle"></i>
-                                <label :for="element.name"></label>
+                                <label :for="element.showingLabel"></label>
                                 <span class="serviceTitle">
-                                    {{ element.name }}
+                                    {{ element.showingLabel }}
                                 </span>
 
                                 <span>
@@ -1369,6 +1369,8 @@ export default {
 
             this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
                 let name = item.name
+                let showingLabel = item.showingLabel
+                console.log("TCL: btn -> dynamicLayersReset -> showingLabel", showingLabel)
                 let layersVisibility = item.layersVisibility
                 let collapseVisibility = item.collapseVisibility
                 let apiFrom = item.apiFrom ? item.apiFrom : 'internal'
@@ -1382,6 +1384,7 @@ export default {
                 let order = item.order
                 return {
                     name,
+                    showingLabel,
                     order: order,
                     layersVisibility,
                     collapseVisibility,
@@ -1446,6 +1449,8 @@ export default {
             // }
             this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
                 let name = item.name
+                let showingLabel = item.showingLabel
+                
                 let layersVisibility = item.layersVisibility
                 let collapseVisibility = item.collapseVisibility
                 let color = item.color ? item.color : false
@@ -1457,6 +1462,7 @@ export default {
                 let order = item.order
                 return {
                     name,
+                    showingLabel,
                     order: order,
                     layersVisibility,
                     collapseVisibility,
@@ -1468,9 +1474,7 @@ export default {
 
             self.dynamicSubLayerList[service.name] = [];
               
-            responseDynamic.data.layers.forEach(function (element) {
-       
-          
+            responseDynamic.data.layers.forEach(function (element) {             
                 self.dynamicSubLayerList[service.name][element.id] = true
             });
 
@@ -1514,7 +1518,7 @@ export default {
 
         },
         setDrawType(name) {
-        console.log("TCL: btn -> setDrawType -> name", name)
+   
             
             this.typeSelect = name
             this.mapLayer.removeInteraction(this.draw);

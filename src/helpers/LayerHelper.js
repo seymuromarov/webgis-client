@@ -15,6 +15,7 @@ class LayerHelper {
         children: val.children.map((val, i) => this.recursiveMap(val, index)),
         layers: val.layers.map((val, i) => ({
           name: val.label,
+          showingLabel: val.showingLabel,
           order: this.counter++,
           spatial: val.spatial
         }))
@@ -22,6 +23,7 @@ class LayerHelper {
     else
       return {
         name: val.label,
+        showingLabel: val.showingLabel,
         order: this.counter++,
         spatial: val.spatial
       };
@@ -38,6 +40,7 @@ class LayerHelper {
       .filter(c => c.mapTypeId === "dynamic")
       .map((val, index) => ({
         name: val.label,
+        showingLabel: val.showingLabel,
         order: index + 1,
         layersVisibility: false,
         collapseVisibility: false,

@@ -4,10 +4,6 @@ import { getToken } from "./token";
 const service = axios.create({
   baseURL: `${baseUrl}/arcgis/rest/services`,
   withCredentials: false
-  // headers: {
-  //   Accept: "*",
-  //   "Content-Type": "application/json"
-  // }
 });
 
 // request interceptor
