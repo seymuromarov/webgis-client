@@ -30,12 +30,10 @@ class LayerHelper {
   };
 
   creator = layers => {
-    console.log("TCL: LayerHelper -> layers", layers);
     let baseLayers = layers
       .filter(c => c.mapTypeId === "basemap" || c.layers !== undefined)
       .map((val, index) => this.recursiveMap(val, index));
 
-    console.log("TCL: LayerHelper -> baseLayers", baseLayers);
     let dynamicLayers = layers
       .filter(c => c.mapTypeId === "dynamic")
       .map((val, index) => ({
@@ -47,6 +45,28 @@ class LayerHelper {
         layers: null,
         apiFrom: "internal"
       }));
+
+    // dynamicLayers.push({
+    //   name: "VectorAsGeoJson",
+    //   apiFrom: "vectorGeojson",
+    //   showingLabel: "VectorAsGeoJson",
+    //   layersVisibility: false,
+    //   collapseVisibility: false,
+    //   layers: null,
+    //   order: this.counter++,
+    //   spatial: 3857
+    // });
+
+    dynamicLayers.push({
+      name: "Test Upload Data",
+      apiFrom: "vectorMvt",
+      showingLabel: "Test Upload Data",
+      layersVisibility: false,
+      collapseVisibility: false,
+      layers: null,
+      order: this.counter++,
+      spatial: 3857
+    });
 
     return {
       baseLayers,
