@@ -6,7 +6,7 @@ const emlakUrl = getUrl.protocol + "//webgis.azercosmos.az/emlak";
 
 const SERVER_URL = "http://webgis1.azercosmos.az";
 const LOCAL_URL = "https://localhost:5001";
-const URL = LOCAL_URL;
+const URL = SERVER_URL;
 
 const ACCOUNT_URL = {
   LOGIN_URL: URL + "/api/account/login"
@@ -49,4 +49,9 @@ const LAYER_URLS = {
   }
 };
 
-export { baseUrl, emlakUrl, ACCOUNT_URL, LAYER_URLS };
+const MAP_URLS = {
+  MVT: "VectorAsMvt",
+  GEOJSON: "VectorAsGeoJson"
+};
+
+export { baseUrl, URL, emlakUrl, ACCOUNT_URL, LAYER_URLS, MAP_URLS };

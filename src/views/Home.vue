@@ -446,6 +446,8 @@ import {
     az_json
 } from "../assets/json/az"
 import LoginService from "../services/LoginService";
+
+import {URL,MAP_URLS} from "../config/baseUrl"
 //#region Components
 
 import Multiselect from 'vue-multiselect'
@@ -1191,7 +1193,7 @@ export default {
         // console.log("TCL: addLayers -> service", service)
 
             let url = LAYER_URLS.GET_DYNAMIC_LAYER_URL({name:service.name});
-            let vectorUrl = 'https://localhost:5001'
+            // let vectorUrl = 'https://localhost:5001'
             let new_layer;
 
             if (dynamic) {
@@ -1248,7 +1250,7 @@ export default {
                             }),
                             url: function (extent) {
                                 return (
-                                    "https://localhost:5001/VectorAsGeoJson" +
+                                   URL+"/"+MAP_URLS.GEOJSON +
                                     "/EPSG:3857/" +
                                     transformExtent(extent, "EPSG:3857", "EPSG:4326").join(",")
                                 );
@@ -1268,7 +1270,7 @@ export default {
                         declutter: false,
                         source: new VectorTileSource({
                             format: new MVT(),
-                            url: "https://localhost:5001/VectorAsMvt/{z}/{x}/{y}.pbf"
+                            url:URL+"/"+MAP_URLS.MVT+"/{z}/{x}/{y}.pbf"
                         }),
                         style: new Style({
                             stroke: new Stroke({
