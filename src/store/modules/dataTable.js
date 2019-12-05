@@ -75,6 +75,7 @@ const actions = {
     context.commit("SET_DRAW_BBOX", drawBBOX);
   },
   SAVE_DATATABLE_CONFIGURATION(context, data) {
+    console.log("TCL: SAVE_DATATABLE_CONFIGURATION -> data", data);
     const {
       isVisible,
       layerId,
@@ -103,9 +104,4 @@ const actions = {
   }
 };
 
-export default {
-  state,
-  mutations,
-  actions,
-  getters
-};
+export default { state, mutations, actions, getters };

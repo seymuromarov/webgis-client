@@ -49,9 +49,7 @@ class MapHelpers {
       maxDepth: 10,
       extractStyles: true,
       featureProjection: "EPSG:3857"
-    }).writeFeatures(features, {
-      featureProjection: "EPSG:3857"
-    });
+    }).writeFeatures(features, { featureProjection: "EPSG:3857" });
     const blob = new Blob([area], { type: "text/plain" });
     const e = document.createEvent("MouseEvents"),
       a = document.createElement("a");
@@ -118,7 +116,7 @@ class MapHelpers {
     this.data.source.clear();
   }
 
-  addInteraction() {
+  addInteraction(callback) {
     this.data.isMarker = false;
     this.data.isRemove = false;
     this.data.isColorPick = false;
@@ -128,12 +126,10 @@ class MapHelpers {
       if (value === "Square") {
         value = "Circle";
         geometryFunction = createRegularPolygon(4);
-
       } else if (value === "Box") {
         value = "Circle";
         geometryFunction = createBox();
       } else if (value === "Circle") {
-  
         geometryFunction = createRegularPolygon(120);
       }
       this.data.draw = new Draw({
@@ -197,38 +193,28 @@ class MapHelpers {
           self.data.measuremaptooltipElement.className =
             "maptooltip maptooltip-static " + self.data.featureIDSet;
           self.data.measuremaptooltip.setOffset([0, -7]);
-          store.dispatch("SAVE_DRAW_BBOX", e.feature.getGeometry().getExtent()).then(r=> 'Life is hard');
-
+          let bbox = e.feature.getGeometry().getExtent();
+          store.dispatch("SAVE_DRAW_BBOX", bbox);
+          if (callback) {
+            callback(bbox);
+          }
         } catch (e) {
           self.createMeasuremaptooltip();
           self.data.measuremaptooltipElement.className =
             "maptooltip maptooltip-static " + self.data.featureIDSet;
           self.data.measuremaptooltip.setOffset([0, -7]);
         }
-        // unset sketch
         self.data.sketch = null;
-        // unset maptooltip so that a new one can be created
         self.data.measuremaptooltipElement = null;
-        // self.data.createMeasuremaptooltip();
         unByKey(listener);
 
-        e.feature.setProperties({
-          id: self.data.featureIDSet,
-          name: ""
-        });
+        e.feature.setProperties({ id: self.data.featureIDSet, name: "" });
         let newStyle = new Style({
-          fill: new Fill({
-            color: "#FFFFFF00"
-          }),
-          stroke: new Stroke({
-            color: "#C672F5",
-            width: 2
-          }),
+          fill: new Fill({ color: "#FFFFFF00" }),
+          stroke: new Stroke({ color: "#C672F5", width: 2 }),
           image: new CircleStyle({
             radius: 7,
-            fill: new Fill({
-              color: "#FFFFFF00"
-            })
+            fill: new Fill({ color: "#FFFFFF00" })
           })
         });
 

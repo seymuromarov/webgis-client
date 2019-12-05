@@ -478,8 +478,7 @@
             lastBBOXOfShape() {
                 return this.$store.state.dataTable.lastBBOXOfShape;
             },
-            token()
-            {
+            token() {
                  return getToken();
             },
            
