@@ -128,15 +128,12 @@ class MapHelpers {
       if (value === "Square") {
         value = "Circle";
         geometryFunction = createRegularPolygon(4);
-        console.log(
-          "TCL: MapHelpers -> addInteraction -> geometryFunction",
-          geometryFunction
-        );
+
       } else if (value === "Box") {
         value = "Circle";
         geometryFunction = createBox();
       } else if (value === "Circle") {
-        console.log("holy circle");
+  
         geometryFunction = createRegularPolygon(120);
       }
       this.data.draw = new Draw({
@@ -200,11 +197,6 @@ class MapHelpers {
           self.data.measuremaptooltipElement.className =
             "maptooltip maptooltip-static " + self.data.featureIDSet;
           self.data.measuremaptooltip.setOffset([0, -7]);
-          console.log(
-            "TCL: MapHelpers -> addInteraction ->  bbox",
-            e.feature.getGeometry().getExtent()
-          );
-
           store.dispatch("SAVE_DRAW_BBOX", e.feature.getGeometry().getExtent()).then(r=> 'Life is hard');
 
         } catch (e) {

@@ -40,33 +40,14 @@ class LayerHelper {
         name: val.label,
         showingLabel: val.showingLabel,
         order: index + 1,
+        id: val.resourceTypeId.trim() === "local" ? val.id : val.name,
         layersVisibility: false,
         collapseVisibility: false,
         layers: null,
-        apiFrom: "internal"
+        apiFrom: "internal",
+        resourceType: val.resourceTypeId
       }));
-
-    // dynamicLayers.push({
-    //   name: "VectorAsGeoJson",
-    //   apiFrom: "vectorGeojson",
-    //   showingLabel: "VectorAsGeoJson",
-    //   layersVisibility: false,
-    //   collapseVisibility: false,
-    //   layers: null,
-    //   order: this.counter++,
-    //   spatial: 3857
-    // });
-
-    dynamicLayers.push({
-      name: "Test Upload Data",
-      apiFrom: "vectorMvt",
-      showingLabel: "Test Upload Data",
-      layersVisibility: false,
-      collapseVisibility: false,
-      layers: null,
-      order: this.counter++,
-      spatial: 3857
-    });
+    console.log("TCL: LayerHelper -> dynamicLayers", dynamicLayers);
 
     return {
       baseLayers,

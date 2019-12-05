@@ -51,7 +51,6 @@ export default {
         setToken(response.data.token);
         this.$router.push("/");
       }
-      console.log(response.data);
     }
   }
 };

@@ -10,7 +10,6 @@ export default {
   //     })
   // },
   getToken(params) {
-    console.log("TCL: getToken -> params", params);
     const getUrl = window.location;
     let host = getUrl.hostname;
     if (host === "localhost") {

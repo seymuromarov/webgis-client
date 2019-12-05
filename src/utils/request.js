@@ -10,10 +10,7 @@ const service = axios.create({
 service.interceptors.request.use(
   request => {
     // do something before request is sent
-    console.log("request start");
-
     request.headers["Authorization"] = "Bearer " + getToken();
-    console.log("TCL: getToken()", getToken());
 
     return request;
   },
@@ -65,19 +62,13 @@ service.interceptors.response.use(
       //     });
       //   });
       // }
-      console.log("TCL: res", res);
       return Promise.reject(new Error(res.message || "Error"));
     } else {
       return res;
     }
   },
   error => {
-    // console.log("err mesaji" + error); // for debug
-    // Message({
-    //   message: error.message,
-    //   type: "error",
-    //   duration: 5 * 1000
-    // });
+
     return Promise.reject(error);
   }
 );

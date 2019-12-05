@@ -188,10 +188,7 @@
 
             };
         },
-        mounted() {
-          console.log(this.isVisible);
-          
-        },
+
         methods: {
   
 
@@ -218,7 +215,6 @@
 
                 let geometry = this.lastBBOXOfShape.toString();
 
-                  console.log("TCL: applyFilter -> this.isIncludeBBOX", this.isIncludeBBOX)
             let data={
                   token:this.token,
                   name: this.serviceName,
@@ -275,8 +271,7 @@
              async sendRequest(data)
             {
               let response = await LayerService.getTableData(data);            
-              console.log("TCL: data", data)
-              console.log("TCL: response", response)
+
               let val=0;
               if(response.data.features.length>0)
               {

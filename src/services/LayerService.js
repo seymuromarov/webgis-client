@@ -46,7 +46,6 @@ export default {
   },
   getDynamicLayers(params) {
     var url = LAYER_URLS.GET_DYNAMIC_LAYER_URL(params);
-    console.log("TCL: getDynamicLayers -> url", url);
     return request.get(url, {
       params: {
         token: params.token,
