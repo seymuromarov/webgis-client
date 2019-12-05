@@ -6,7 +6,6 @@ import "bootstrap/dist/css/bootstrap.css";
 import "./assets/style/globalStyle.scss";
 import "./assets/style/font-awesome/css/all.css";
 import * as ol from "ol";
-// import axios from 'axios';
 import VueCookie from "vue-cookie";
 import JsonExcel from "vue-json-excel";
 import VModal from "vue-js-modal";
@@ -23,7 +22,7 @@ Vue.config.productionTip = false;
 Vue.use(ol);
 
 new Vue({
-  router,
-  store,
-  render: h => h(App)
+    router,
+    store,
+    render: h => h(App)
 }).$mount("#app");

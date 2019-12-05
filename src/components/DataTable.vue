@@ -479,16 +479,10 @@
             lastBBOXOfShape() {
                 return this.$store.state.dataTable.lastBBOXOfShape;
             },
-            token()
-            {
+            token() {
                  return getToken();
             },
            
-        },
-        watch: {
-            // isVisible(newValue, oldValue) {
-            //     console.log(`Updating from ${oldValue} to ${newValue}`);
-            // }
         }
     };
 </script>
