@@ -600,7 +600,6 @@ import {
 import MousePosition from "ol/control/MousePosition.js";
 import { createStringXY } from "ol/coordinate.js";
 import { GPX, GeoJSON, IGC, KML, TopoJSON } from "ol/format.js";
-import { LAYER_URLS } from "../config/baseUrl";
 import proj4 from "proj4";
 import { register } from "ol/proj/proj4.js";
 import { applyTransform } from "ol/extent";
@@ -611,7 +610,7 @@ import LoginService from "../services/LoginService";
 import { URL, MAP_URLS } from "../config/baseUrl";
 
 import Multiselect from 'vue-multiselect'
-import DetectorModal from "@/components/modals/ChangeDetector" 
+import DetectorModal from "@/components/modals/ChangeDetector"
 import {LayerColorPicker,ShapeColorPicker,TreeView ,DataTable,SimpleFilterModal} from '../components/';
 
 export default {
@@ -1345,7 +1344,7 @@ export default {
             self.dynamicLayerList = layers.dynamicLayers;
         },
         addLayers(service, index, dynamic = false, params) {
-            let url = LAYER_URLS.GET_DYNAMIC_LAYER_URL({name:service.name});
+            let url = URL + "/api/map/service/" + service.name + "/MapServer/";
             let new_layer;
 
             if (dynamic) {
@@ -1395,8 +1394,8 @@ export default {
                         })
                     });
 
-                
-                } else if (service.resourceType.trim() === 'local') {
+
+                } else if (service.resourceType !== undefined && service.resourceType.trim() === 'local') {
                     new_layer = new VectorTileLayer({
                         declutter: false,
                         source: new VectorTileSource({
@@ -1422,9 +1421,9 @@ export default {
                         })
                     });
                 }
-            } 
+            }
             else {
-                
+
                 if (service.spatial === 3857) {
                     url = url + "/tile/{z}/{y}/{x}?token=" + this.token;
                     new_layer = new TileLayer({
@@ -1543,8 +1542,8 @@ export default {
                     name: service.name
                 })
                 // console.log(responseDynamic)
-            } else if (service.resourceType.trim() === 'local') {
-    
+            } else if (service.resourceType !== undefined && service.resourceType.trim() === 'local') {
+
                 responseDynamic = {
                     data: {
                         layers: [{
@@ -1571,7 +1570,7 @@ export default {
                 let name = item.name
                 let id = item.id
                 let showingLabel = item.showingLabel
-                let resourceType = item.resourceType                
+                let resourceType = item.resourceType
                 let layersVisibility = item.layersVisibility
                 let collapseVisibility = item.collapseVisibility
                 let color = item.color ? item.color : false
@@ -1628,14 +1627,14 @@ export default {
             }
 
             this.deleteLayers(service, false);
-            
+
             for (let i in this.dynamicLayerList) {
                 if (this.dynamicLayerList[i].name === service.name) {
                     this.dynamicLayerList[i].layersVisibility = true;
                     break;
                 }
             }
-            
+
             this.dynamicLayersReset(service, true);
             this.addLayers(service, index, true, null);
         },

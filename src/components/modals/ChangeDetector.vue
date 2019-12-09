@@ -30,7 +30,6 @@
 
 <script>
 import Multiselect from 'vue-multiselect'
-import { LAYER_URLS } from '@/config/baseUrl'
 import LayerService from '@/services/LayerService'
 
 export default {
@@ -52,7 +51,7 @@ export default {
             this.exportedImages = []
 
             for (let layer of layers) {
-                let url = LAYER_URLS.GET_DRAWN_AREA_IMAGE({ name: layer.label }) + "?"
+                let url = URL + "/api/map/service/" + layer.label + "/MapServer/export" + "?"
                     + `token=${this.token}&`
                     + `f=image&`
                     + `format=png8&`
