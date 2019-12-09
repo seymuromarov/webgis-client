@@ -611,6 +611,7 @@ import LoginService from "../services/LoginService";
 import { URL, MAP_URLS } from "../config/baseUrl";
 
 import Multiselect from 'vue-multiselect'
+import DetectorModal from "@/components/modals/ChangeDetector" 
 import {LayerColorPicker,ShapeColorPicker,TreeView ,DataTable,SimpleFilterModal} from '../components/';
 
 export default {

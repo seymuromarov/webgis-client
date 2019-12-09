@@ -17,7 +17,8 @@ class LayerHelper {
           name: val.label,
           showingLabel: val.showingLabel,
           order: this.counter++,
-          spatial: val.spatial
+          spatial: val.spatial,
+          resourceType: val.resourceTypeId
         }))
       };
     else
@@ -25,7 +26,8 @@ class LayerHelper {
         name: val.label,
         showingLabel: val.showingLabel,
         order: this.counter++,
-        spatial: val.spatial
+        spatial: val.spatial,
+        resourceType: val.resourceTypeId
       };
   };
 
