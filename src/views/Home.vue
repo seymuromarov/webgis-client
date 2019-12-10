@@ -237,7 +237,7 @@
                 <button
                     class="action-button-class btn btn-control"
                     :style="{top : ((drawings.length + 1) * 5 + 25) + '%'}"
-                    title="Change Detection"
+                    title="NDVI Assessment"
                     @click="changeDetector"
                 >
                     <i class="fas fa-globe"></i>
@@ -547,9 +547,9 @@
             <ShapeColorPicker @setShapeColor="setShapeColor" />
         </modal>
         <detector-modal
-            v-if="bbox.length > 0"
-            v-bind="{ bbox, token }"
-            @close="bbox = []"></detector-modal>
+            v-if="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
+            v-bind="{ lastBBOXOfShape, token }"
+            @close="($store.state.dataTable.lastBBOXOfShape = []) & (isDrawnShapeForDetection = false)"></detector-modal>
     </div>
 </template>
 
@@ -636,7 +636,7 @@ export default {
     },
     data() {
         return {
-            bbox: [],
+            isDrawnShapeForDetection: false,
             isSimpleModalVisible: false,
             baseLayersShow: true,
             dynamicLayersShow: true,
@@ -1089,9 +1089,9 @@ export default {
             this.isColorPick = true;
         },
         changeDetector() {
-            this.setDrawType("Box", bbox => {
-                this.bbox = bbox
-            });
+            this.$store.state.dataTable.lastBBOXOfShape = []
+            this.setDrawType("Box")
+            this.isDrawnShapeForDetection = true
         },
         deleteFeatureOn() {
             this.setDrawType("None");
@@ -1164,8 +1164,8 @@ export default {
             this.$cookie.delete("username");
             this.$router.push("/login");
         },
-        addInteraction(callback) {
-            this.MapHelpers.addInteraction(callback);
+        addInteraction() {
+            this.MapHelpers.addInteraction();
         },
         onMoveCallbackBaseLayerList(evt, originalEvent) {
             this.layerCounter = 0;
@@ -1685,14 +1685,14 @@ export default {
             this.dynamicLayersReset(service, true);
             this.addLayers(service, index, true, null);
         },
-        setDrawType(name, callback) {
+        setDrawType(name) {
             this.typeSelect = name;
             this.mapLayer.removeInteraction(this.draw);
             this.isColorPick = false;
             this.isMarker = false;
             this.isRemove = false;
             if (name !== "None") {
-                this.addInteraction(callback);
+                this.addInteraction();
             }
             this.featureIDSet += 10;
             document.body.style.cursor = "default";
@@ -1789,7 +1789,10 @@ export default {
                 }
             }
             return columns;
-        }
+        },
+        lastBBOXOfShape () {
+            return this.$store.state.dataTable.lastBBOXOfShape;
+        },
     }
 };
 </script>

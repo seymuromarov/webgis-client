@@ -98,7 +98,7 @@ class MapHelpers {
         this.data.source.clear();
     }
 
-    addInteraction(callback) {
+    addInteraction() {
         this.data.isMarker = false;
         this.data.isRemove = false;
         this.data.isColorPick = false;
@@ -125,7 +125,7 @@ class MapHelpers {
         this.createHelpmaptooltip();
         let listener;
         let self = this;
-        self.data.draw.on("drawstart", function (evt) { // set sketch
+        self.data.draw.on("drawstart", function (evt) {
             self.data.sketch = evt.feature;
             /** @type {module:ol/coordinate~Coordinate|undefined} */
             let maptooltipCoord = evt.coordinate;
@@ -160,9 +160,6 @@ class MapHelpers {
                 self.data.measuremaptooltip.setOffset([0, -7]);
                 let bbox = e.feature.getGeometry().getExtent();
                 store.dispatch("SAVE_DRAW_BBOX", bbox);
-                if (callback) {
-                    callback(bbox)
-                }
             } catch (e) {
                 self.createMeasuremaptooltip();
                 self.data.measuremaptooltipElement.className = "maptooltip maptooltip-static " + self.data.featureIDSet;
@@ -205,9 +202,7 @@ class MapHelpers {
         this.data.helpmaptooltipElement.className = "maptooltip hidden";
         this.data.helpmaptooltip = new Overlay({
             element: this.data.helpmaptooltipElement,
-            offset: [
-                15, 0
-            ],
+            offset: [ 15, 0 ],
             positioning: "center-left"
         });
         this.data.mapLayer.addOverlay(this.data.helpmaptooltip);

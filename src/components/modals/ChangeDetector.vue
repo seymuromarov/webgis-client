@@ -1,7 +1,7 @@
 <template>
     <div class="detector-wrapper">
         <div class="detector">
-            <p class="detector-title">Change Detection</p>
+            <p class="detector-title">NDVI Assessment</p>
             <button @click="$emit('close')">&#x2715;</button>
             <multiselect
                 v-model="selectedLayers"
@@ -24,6 +24,10 @@
                     </div>
                 </div>
             </div>
+            <img
+                style="margin-top: 10px; width: 40%;"
+                v-if="exportedImages.length > 1"
+                src="@/assets/ndvi.jpg">
         </div>
     </div>
 </template>
@@ -38,7 +42,7 @@ export default {
         Multiselect
     },
     props: {
-        bbox: {
+        lastBBOXOfShape: {
             required: true,
             type: Array
         },
@@ -58,7 +62,7 @@ export default {
                     + `format=png8&`
                     + `transparent=true&`
                     + `size=1024,1024&`
-                    + `bbox=${this.bbox.toString()}&`
+                    + `bbox=${this.lastBBOXOfShape.toString()}&`
                     + `bboxsr=3857&`
                     + `imagesr=3857&`
                     + `dpi=90`

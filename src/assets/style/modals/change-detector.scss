@@ -24,6 +24,8 @@
     border-radius: 7px;
     padding: 20px;
     position: relative;
+    max-height: 90%;
+    overflow-y: scroll;
 
     & > button {
         position: absolute;
