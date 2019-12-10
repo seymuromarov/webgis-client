@@ -67,16 +67,7 @@ export default {
       }
     },
     selectService(service, index, dynamic, e) {
-      console.log(
-        "TCL: selectService -> service, index, dynamic, e",
-        service,
-        index,
-        dynamic,
-        e
-      );
-      console.log("select Service");
       this.$emit("selectService", service, index, dynamic, e);
-      // element, element.order,false, $event
     },
     isCategory: function(item) {
       return item.children && item.layers;

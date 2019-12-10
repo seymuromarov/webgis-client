@@ -374,7 +374,6 @@
 
                 let geometry = this.lastBBOXOfShape.toString();
 
-                  console.log("TCL: applyFilter -> this.isIncludeBBOX", this.isIncludeBBOX)
             let data={
                   token:this.token,
                   name: this.serviceName,

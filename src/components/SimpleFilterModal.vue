@@ -174,7 +174,6 @@ export default {
             filteredDatas: [],
             outStatisticFieldName: "Shape_Area_Sum",
             reportResult: null,
-
             isSeperate: false,
             isIncludeBBOX: false
         };
@@ -191,7 +190,6 @@ export default {
                 draggable: false
             });
         },
-
         async applyFilter() {
             if (this.cropArithmeticOperation !== "unset") {
                 // this.query.outStatistics = `[{statisticType: ${this.cropArithmeticOperation},onStatisticField: "Shape_Area",outStatisticFieldName: "Shape_Area_sum"}]`;
@@ -219,6 +217,13 @@ export default {
                 this.query.where = "";
                 this.filteredDatas = [];
 
+            let data={
+                  token:this.token,
+                  name: this.serviceName,
+                  layer:this.layerId,
+                  ...(this.isIncludeBBOX&&{geometry})
+              };
+        
                 if (this.isSeperate) {
                     for (let i = 0; i < this.cropMap2019value.length; i++) {
                         this.query.where =
