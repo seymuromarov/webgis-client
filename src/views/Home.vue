@@ -1208,19 +1208,16 @@ export default {
             let self = this;
 
             this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
-                let name = item.name;
-                let layersVisibility = item.layersVisibility;
-                let collapseVisibility = item.collapseVisibility;
-                let layers = item.layers;
-                let apiFrom = item.apiFrom ? item.apiFrom : "internal";
+                // let name = item.name;
+                // let layersVisibility = item.layersVisibility;
+                // let collapseVisibility = item.collapseVisibility;
+                // let layers = item.layers;
+                // let apiFrom = item.apiFrom ? item.apiFrom : "internal";
 
                 return {
-                    name,
+                    ...item,
                     order: index + 1,
-                    layersVisibility,
-                    collapseVisibility,
-                    layers,
-                    apiFrom
+                    apiFrom : item.apiFrom ? item.apiFrom : "internal"
                 };
             });
             this.setDynamicIndexes();
@@ -1504,28 +1501,16 @@ export default {
             }
 
             this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
-                let name = item.name;
-                let showingLabel = item.showingLabel;
-                let layersVisibility = item.layersVisibility;
-                let collapseVisibility = item.collapseVisibility;
-                let apiFrom = item.apiFrom ? item.apiFrom : "internal";
-
                 let color = item.color ? item.color : false;
                 if (service.name === name) {
                     layersVisibility = status;
                     color = colorEnabled;
                 }
-                let layers = item.layers;
-                let order = item.order;
                 return {
-                    name,
-                    showingLabel,
-                    order: order,
-                    layersVisibility,
-                    collapseVisibility,
-                    layers,
+                    ...item,
+                    apiFrom : item.apiFrom ? item.apiFrom : "internal",
                     color,
-                    apiFrom
+                    layersVisibility,
                 };
             });
         },
@@ -1566,31 +1551,18 @@ export default {
             }
 
             // }
-            this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
-                let name = item.name
-                let id = item.id
-                let showingLabel = item.showingLabel
-                let resourceType = item.resourceType
-                let layersVisibility = item.layersVisibility
-                let collapseVisibility = item.collapseVisibility
+            this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {          
                 let color = item.color ? item.color : false
                 let apiFrom = item.apiFrom ? item.apiFrom : 'internal'
                 let layers = item.layers
                 if (service.name === name) {
                     layers = responseDynamic.data.layers;
                 }
-                let order = item.order;
                 return {
-                    name,
-                    id,
-                    resourceType,
-                    showingLabel,
-                    order: order,
-                    layersVisibility,
-                    collapseVisibility,
+                    ...item,                  
                     layers,
                     apiFrom,
-                    color
+                    color:item.color ? item.color : false
                 };
             });
 
