@@ -35,6 +35,7 @@
 <script>
 import Multiselect from 'vue-multiselect'
 import LayerService from '@/services/LayerService'
+import { URL } from '@/config/baseUrl'
 
 export default {
     components: {
