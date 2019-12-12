@@ -373,33 +373,7 @@
             @filterDataQuery="filterDataQuery"
         />
 
-        <modal
-            name="data-modal"
-            transition="nice-modal-fade"
-            :min-width="200"
-            :min-height="200"
-            :delay="100"
-            :draggable="true"
-        >
-            <p class="tableModalHeader">{{this.tableHeader}}</p>
-            <div class="row" style="overflow: auto">
-                <table class="table popupTable">
-                    <thead>
-                        <tr class="fields">
-                            <th class="paddingLeft">Field</th>
-                            <th class="paddingRight">Value</th>
-                        </tr>
-                    </thead>
-                    <tbody class="popupTableBody">
-                        <tr v-for="(value, key) in tableFeatureData.attributes" :key="key">
-                            <td class="paddingLeft">{{ tableFeaturesHeaderWithAlias[key] }}</td>
-                            <td class="paddingRight">{{ value }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </modal>
-
+       
         <modal
             name="filter-modal"
             transition="nice-modal-fade"
@@ -1119,15 +1093,6 @@ export default {
                 }
             );
         },
-        showDataModal(Feature) {
-            this.tableFeatureData = Feature;
-            this.$modal.show("data-modal", null, {
-                name: "dynamic-modal",
-                resizable: true,
-                adaptive: true,
-                draggable: true
-            });
-        },
         mapSetCenter(data) {
             if (data.geometry.x !== undefined) {
                 this.mapLayer
@@ -1208,16 +1173,10 @@ export default {
             let self = this;
 
             this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
-                // let name = item.name;
-                // let layersVisibility = item.layersVisibility;
-                // let collapseVisibility = item.collapseVisibility;
-                // let layers = item.layers;
-                // let apiFrom = item.apiFrom ? item.apiFrom : "internal";
-
+               
                 return {
                     ...item,
                     order: index + 1,
-                    apiFrom : item.apiFrom ? item.apiFrom : "internal"
                 };
             });
             this.setDynamicIndexes();
@@ -1338,9 +1297,7 @@ export default {
 
             let layers = self.LayerHelper.creator(self.gisLayers);
             self.baseLayerList = layers.baseLayers;
-            console.log("TCL: LayerService ->  self.baseLayerList",  self.baseLayerList)
             self.dynamicLayerList = layers.dynamicLayers;
-            console.log("TCL: LayerService -> self.dynamicLayerList", self.dynamicLayerList)
         },
         addLayers(service, index, dynamic = false, params) {
             let url = URL + "/api/map/service/" + service.name + "/MapServer/";
@@ -1487,6 +1444,7 @@ export default {
                 token: token,
                 name: service.name
             });
+        
 
             let colorEnabled = false;
             if (response.data.layers[0].drawingInfo !== undefined) {
@@ -1502,16 +1460,16 @@ export default {
                     }
                 }
             }
-
             this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
-                let color = item.color ? item.color : false;
-                let layersVisibility=item;
-                if (service.name === name)
+                item.color=item.color ? item.color : false;
+               
+                if (service.name === item.name)               
                 {   
                     item.layersVisibility =status;
                     item.color = colorEnabled;
                 }                 
                 return item;
+                
             });
         },
         async selectService(service, index, dynamic, e) {
@@ -1526,7 +1484,6 @@ export default {
                     token: this.emlakToken,
                     name: service.name
                 })
-                // console.log(responseDynamic)
             } else if (service.resourceType !== undefined && service.resourceType.trim() === 'local') {
 
                 responseDynamic = {
@@ -1550,18 +1507,15 @@ export default {
                 });
             }
 
-            // }
+        
             this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {          
-                let color = item.color ? item.color : false
-                let apiFrom = item.apiFrom ? item.apiFrom : 'internal'
-                let layers = item.layers
-                if (service.name === name) {
-                    layers = responseDynamic.data.layers;
+                     
+                if (service.name === item.name) {
+                    item.layers = responseDynamic.data.layers;
                 }
                 return {
-                    ...item,                  
-                    layers,
-                    apiFrom,
+                    ...item,
+                    apiFrom: item.apiFrom ? item.apiFrom : 'internal',
                     color:item.color ? item.color : false
                 };
             });
