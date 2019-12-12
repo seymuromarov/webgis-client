@@ -1338,7 +1338,9 @@ export default {
 
             let layers = self.LayerHelper.creator(self.gisLayers);
             self.baseLayerList = layers.baseLayers;
+            console.log("TCL: LayerService ->  self.baseLayerList",  self.baseLayerList)
             self.dynamicLayerList = layers.dynamicLayers;
+            console.log("TCL: LayerService -> self.dynamicLayerList", self.dynamicLayerList)
         },
         addLayers(service, index, dynamic = false, params) {
             let url = URL + "/api/map/service/" + service.name + "/MapServer/";
@@ -1474,6 +1476,7 @@ export default {
             }
         },
         async dynamicLayersReset(service, status) {
+          
             let token;
             if (service.apiFrom === "emlak") {
                 token = this.emlakToken;
@@ -1502,16 +1505,13 @@ export default {
 
             this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
                 let color = item.color ? item.color : false;
-                if (service.name === name) {
-                    layersVisibility = status;
-                    color = colorEnabled;
-                }
-                return {
-                    ...item,
-                    apiFrom : item.apiFrom ? item.apiFrom : "internal",
-                    color,
-                    layersVisibility,
-                };
+                let layersVisibility=item;
+                if (service.name === name)
+                {   
+                    item.layersVisibility =status;
+                    item.color = colorEnabled;
+                }                 
+                return item;
             });
         },
         async selectService(service, index, dynamic, e) {

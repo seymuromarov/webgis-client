@@ -5,30 +5,25 @@ class LayerHelper {
     this.data = self;
     this.counter = 0;
   }
-
+  layerMap(val) {
+    return {
+      name: val.label,
+      showingLabel: val.showingLabel,
+      order: this.counter++,
+      spatial: val.spatial,
+      resourceType: val.resourceTypeId,
+      unitedDynamicLayerName: val.unitedDynamicLayerName
+    };
+  }
   recursiveMap = (val, index) => {
-    //if category
-    if (val.layers !== undefined)
+    if (val.layers !== undefined) {
       return {
         name: val.label,
         order: this.counter++,
         children: val.children.map((val, i) => this.recursiveMap(val, index)),
-        layers: val.layers.map((val, i) => ({
-          name: val.label,
-          showingLabel: val.showingLabel,
-          order: this.counter++,
-          spatial: val.spatial,
-          resourceType: val.resourceTypeId
-        }))
+        layers: val.layers.map((val, i) => this.layerMap(val))
       };
-    else
-      return {
-        name: val.label,
-        showingLabel: val.showingLabel,
-        order: this.counter++,
-        spatial: val.spatial,
-        resourceType: val.resourceTypeId
-      };
+    } else return this.layerMap(val);
   };
 
   creator = layers => {
@@ -49,7 +44,6 @@ class LayerHelper {
         apiFrom: "internal",
         resourceType: val.resourceTypeId
       }));
-    console.log("TCL: LayerHelper -> dynamicLayers", dynamicLayers);
 
     return {
       baseLayers,
