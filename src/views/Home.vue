@@ -278,7 +278,7 @@
                     style="bottom: 10px;right: 50px;"
                     @click="dragAndDropToast"
                     title="Upload file"
-                    v-if="!showTable"
+                    v-if="!isTabelVisible"
                 >
                     <i class="fas fa-file-upload"></i>
                 </button>
@@ -286,7 +286,7 @@
                     class="action-button-class btn btn-control"
                     style="bottom: 10px;right: 10px;"
                     @click="selectLayerForm = true"
-                    v-if="!showTable"
+                    v-if="!isTabelVisible"
                 >
                     <i class="fas fa-stream"></i>
                 </button>
@@ -340,7 +340,7 @@
                     style="top: 224px;left: .5rem;"
                     @click="addGraticule"
                     title="Add Graticule"
-                    v-show="!showTable"
+                    v-show="!isTabelVisible"
                 >
                     <i class="fas fa-barcode"></i>
                 </button>
@@ -350,7 +350,7 @@
                     style="bottom: 10px;left: 3rem;"
                     @click="pngExport"
                     title="Export to png"
-                    v-show="!showTable"
+                    v-show="!isTabelVisible"
                 >
                     <i class="far fa-file-image"></i>
                 </button>
@@ -360,7 +360,7 @@
                     style="bottom: 10px;left: .5rem;"
                     @click="exportData"
                     title="Export to geojson"
-                    v-show="!showTable"
+                    v-show="!isTabelVisible"
                 >
                     <i class="fas fa-file-download"></i>
                 </button>
@@ -368,6 +368,7 @@
         </div>
 
         <DataTable
+            ref="dataTable"
             @showFilterModal="showFilterModal"
             @mapSetCenter="mapSetCenter"
             @filterDataQuery="filterDataQuery"
@@ -676,7 +677,7 @@ export default {
             featureIDSet: 0,
             sketch: null,
             typeSelect: null,
-            showTable: false,
+            // isTabelVisible: false,
             draw: null,
             tableFeaturesData: [],
             tableFeatureData: [],
@@ -832,6 +833,7 @@ export default {
             });
 
             this.mapLayer.on("click", function(evt) {
+             
                 displayFeatureInfo(evt.pixel);
                 let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
                 if (self.isMarker) {
@@ -896,12 +898,15 @@ export default {
                         } catch (e) {}
                     });
                 }
-                if (self.showTable) {
+                
+                      
+                if (self.isTabelVisible) {
+                    
                     let geometry = coord[0] + "," + coord[1];
                     self.getGeometryData(
                         self.tableNextRequest["service"],
-                        self.tableNextRequest["layer_id"],
-                        self.tableNextRequest["layer_name"],
+                        self.tableNextRequest["layerId"],
+                        self.tableNextRequest["layerName"],
                         self.filterQuery,
                         geometry
                     );
@@ -1258,22 +1263,23 @@ export default {
             this.filterQuery = "";
             this.filterValues = [];
         },
-        async getGeometryData(service, layer_id, layer_name, query, geometry) {
-            let response = await LayerService.getGeometryData({
+        async getGeometryData(service, layer_id, layer_name, query, geometry) {  
+            var params={
                 token: this.token,
                 name: service.name,
                 layer: layer_id,
                 where: query,
                 geometry: geometry
-            });
-
+            };
+            let response = await LayerService.getGeometryData(params);
+            // console.log(this.$refs)
             if (response.data.features !== undefined) {
                 if (response.data.features.length !== 0) {
-                    this.showDataModal(response.data.features[0]);
+
+                    this.$refs.dataTable.showDataModal(response.data.features[0]);
                 }
             }
         },
-
         setDynamicIndexes() {
             this.dynamicLayerList.map((item, index) => {
                 this.mapLayer.getLayers().forEach(function(layer) {
@@ -1616,6 +1622,9 @@ export default {
         }
     },
     computed: {
+        isTabelVisible() {
+            return this.$store.state.dataTable.isVisible;
+            },  
         selectedFillColor() {
             return this.$store.state.fillColor;
         },
@@ -1630,6 +1639,9 @@ export default {
         },
         colorPicker() {
             return this.$store.state.colorPicker;
+        },
+        lastBBOXOfShape () {
+            return this.$store.state.dataTable.lastBBOXOfShape;
         },
         dragOptions() {
             return {
@@ -1669,9 +1681,7 @@ export default {
             }
             return columns;
         },
-        lastBBOXOfShape () {
-            return this.$store.state.dataTable.lastBBOXOfShape;
-        },
+
     }
 };
 </script>
