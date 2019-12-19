@@ -7,12 +7,20 @@ class LayerHelper {
   }
   layerMap(val) {
     return {
+      id: val.id,
       name: val.label,
       showingLabel: val.showingLabel,
       order: this.counter++,
       spatial: val.spatial,
       resourceType: val.resourceTypeId,
-      unitedDynamicLayerName: val.unitedDynamicLayerName
+      mapType: val.mapTypeId,
+      unitedDynamicLayerName:
+        val.unitedDynamicLayer != null
+          ? this.layerMap(val.unitedDynamicLayer)
+          : null,
+      layersVisibility: false,
+      collapseVisibility: false,
+      layers: null
     };
   }
   recursiveMap = (val, index) => {
@@ -30,19 +38,20 @@ class LayerHelper {
     let baseLayers = layers
       .filter(c => c.mapTypeId === "basemap" || c.layers !== undefined)
       .map((val, index) => this.recursiveMap(val, index));
-
     let dynamicLayers = layers
       .filter(c => c.mapTypeId === "dynamic")
       .map((val, index) => ({
+        id: val.resourceTypeId.trim() === "local" ? val.id : val.name,
         name: val.label,
         showingLabel: val.showingLabel,
         order: index + 1,
-        id: val.resourceTypeId.trim() === "local" ? val.id : val.name,
+        resourceType: val.resourceTypeId,
+        mapType: val.mapTypeId,
         layersVisibility: false,
         collapseVisibility: false,
+
         layers: null,
-        apiFrom: "internal",
-        resourceType: val.resourceTypeId
+        apiFrom: "internal"
       }));
 
     return {
@@ -51,11 +60,9 @@ class LayerHelper {
     };
   };
 
-  add = (service, index, dynamic = false, params) => {};
-
+  add = () => {};
   delete = () => {};
   setColor = () => {};
-
   setLayout = () => {};
 }
 

@@ -164,7 +164,7 @@
                             :key="element.name"
                             style="text-align: left"
                         >
-                            <TreeView :item="element" @selectService="selectService" />
+                            <TreeView :item="element" @selectService="selectService"  @getTableData="getTableData"    @basemapLayersReset="basemapLayersReset"/>
                         </li>
                     </transition-group>
                 </draggable>
@@ -682,7 +682,7 @@ export default {
             tableFeaturesData: [],
             tableFeatureData: [],
             tableNextRequest: [],
-            tableFeaturesHeader: [],
+            // tableFeaturesHeader: [],
             citySearchOptions: [],
             citySearchValue: null,
             citySearchInputShow: false,
@@ -694,7 +694,7 @@ export default {
             tableFeaturesHeaderWithAlias: [],
             graticule: false,
             graticuleLayer: null,
-            stackedTableFeaturesHeader: [],
+            // stackedTableFeaturesHeader: [],
             tableHeader: null,
             dynamicLayerList: [],
             baseLayerList: [],
@@ -1272,7 +1272,6 @@ export default {
                 geometry: geometry
             };
             let response = await LayerService.getGeometryData(params);
-            // console.log(this.$refs)
             if (response.data.features !== undefined) {
                 if (response.data.features.length !== 0) {
 
@@ -1438,6 +1437,20 @@ export default {
                 this.mapLayer.removeLayer(layersToRemove[i]);
             }
         },
+        async basemapLayersReset(service, status) 
+        {
+            console.log("true");
+              this.baseLayerList = this.baseLayerList.map((item, index) => {             
+               
+                if (service.name === item.name)               
+                {   
+                    item.layersVisibility =status;
+                 
+                }                 
+                return item;
+                
+            });
+        },
         async dynamicLayersReset(service, status) {
           
             let token;
@@ -1478,10 +1491,8 @@ export default {
                 
             });
         },
-        async selectService(service, index, dynamic, e) {
-            this.selectedServiceName = service.name;
-
-            let self = this;
+        async getResponseDynamic(service)
+        {
             let responseDynamic;
             if (service.apiFrom === "emlak") {
                 let gettoken = await LoginService.getEmlakToken();
@@ -1507,30 +1518,65 @@ export default {
                 }
 
             } else {
+
                 responseDynamic = await LayerService.getDynamicLayers({
                     token: this.token,
                     name: service.name
                 });
+                         
             }
+          
+            return responseDynamic;
+        },
+        setSubLayers(service,responseDynamic)
+        {
+   
+        },
+        async selectService(service, index, dynamic, e) {
+            this.selectedServiceName = service.name;
 
+            let self = this;
+            let subLayers;
         
-            this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {          
-                     
-                if (service.name === item.name) {
-                    item.layers = responseDynamic.data.layers;
-                }
-                return {
-                    ...item,
-                    apiFrom: item.apiFrom ? item.apiFrom : 'internal',
-                    color:item.color ? item.color : false
-                };
-            });
 
+            if(service.mapType==='basemap', service.unitedDynamicLayerName!==undefined &&service.unitedDynamicLayerName!==null )
+            {
+                let responseDynamic=await this.getResponseDynamic(service);
+                subLayers=await this.getResponseDynamic(service.unitedDynamicLayerName);
+                this.baseLayerList = this.baseLayerList.map((item, index) => {                             
+                    if (service.name === item.name) {
+                        item.unitedDynamicLayerName.layers = subLayers.data.layers;
+                    }
+                    return item;
+                });
+               
+            }  
+            else
+            {
+                subLayers=await this.getResponseDynamic(service);
+                this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {          
+                        
+                    if (service.name === item.name) {
+                        item.layers = subLayers.data.layers;
+                    }
+                    return {
+                        ...item,
+                        apiFrom: item.apiFrom ? item.apiFrom : 'internal',
+                        color:item.color ? item.color : false
+                    };
+             });
+
+           
+            }   
+            // this.setSubLayers(service,responseDynamic);
+           
             self.dynamicSubLayerList[service.name] = [];
-
-            responseDynamic.data.layers.forEach(function(element) {
+            subLayers.data.layers.forEach(function(element) {
                 self.dynamicSubLayerList[service.name][element.id] = true;
             });
+
+
+
 
             if (e.target.checked) {
                 this.addLayers(service, index, dynamic, null);
@@ -1540,12 +1586,32 @@ export default {
                         break;
                     }
                 }
+              
+             for (let i in this.baseLayerList) {
+                    if (this.baseLayerList[i].unitedDynamicLayerName!==undefined 
+                        &&this.baseLayerList[i].unitedDynamicLayerName!==null 
+                        &&this.baseLayerList[i].name === service.name) 
+                        {
+                        this.baseLayerList[i].collapseVisibility = true;
+                        break;
+                    }
+                }
             } else {
                 this.deleteLayers(service);
                 for (let i in this.dynamicLayerList) {
                     if (this.dynamicLayerList[i].name === service.name) {
                         this.dynamicLayerList[i].collapseVisibility = false;
                         this.dynamicLayerList[i].layersVisibility = false;
+                        break;
+                    }
+                }
+                for (let i in this.baseLayerList) {
+                    if (this.baseLayerList[i].unitedDynamicLayerName!==undefined 
+                        &&this.baseLayerList[i].unitedDynamicLayerName!==null 
+                        &&this.baseLayerList[i].name === service.name) 
+                        {
+                        this.baseLayerList[i].collapseVisibility = false;
+                        this.baseLayerList[i].layersVisibility = false;
                         break;
                     }
                 }
@@ -1623,10 +1689,16 @@ export default {
     },
     computed: {
         isTabelVisible() {
-            return this.$store.state.dataTable.isVisible;
-            },  
+        return this.$store.state.dataTable.isVisible;
+        },  
+        stackedTableFeaturesHeader() {
+             return this.$store.state.dataTable.tableStackedHeaders;
+        },
+        tableFeaturesHeader() {
+            return this.$store.state.dataTable.tableHeaders;
+        },
         selectedFillColor() {
-            return this.$store.state.fillColor;
+        return this.$store.state.fillColor;
         },
         selectedBorderColor() {
             return this.$store.state.borderColor;
@@ -1680,7 +1752,7 @@ export default {
                 }
             }
             return columns;
-        },
+        }
 
     }
 };
