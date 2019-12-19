@@ -68,6 +68,17 @@
                 )
               "
             ></i>
+            <i
+              v-if="layer.name.trim() == 'CropMap2019_vector'"
+              class="fas fa-filter reportIcon"
+              style="color:blue;margin-left: 10px;"
+              @click="
+                showSimpleFilterModal(
+                  layer.id,
+                  item.unitedDynamicLayerName.name
+                )
+              "
+            />
           </div>
         </div>
       </div>
@@ -131,6 +142,9 @@ export default {
     },
     basemapLayersReset(service, status) {
       this.$emit("basemapLayersReset", service, status);
+    },
+    showSimpleFilterModal(layerId, layerName) {
+      this.$emit("showSimpleFilterModal", layerId, layerName);
     },
     isCategory: function(item) {
       return item.children && item.layers;

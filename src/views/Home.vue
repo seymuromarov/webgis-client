@@ -164,7 +164,7 @@
                             :key="element.name"
                             style="text-align: left"
                         >
-                            <TreeView :item="element" @selectService="selectService"  @getTableData="getTableData"    @basemapLayersReset="basemapLayersReset"/>
+                            <TreeView :item="element" @selectService="selectService"  @getTableData="getTableData"  @showSimpleFilterModal="showSimpleFilterModal"   @basemapLayersReset="basemapLayersReset"/>
                         </li>
                     </transition-group>
                 </draggable>
