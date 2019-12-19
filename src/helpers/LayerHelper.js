@@ -5,51 +5,54 @@ class LayerHelper {
     this.data = self;
     this.counter = 0;
   }
-
+  layerMap(val) {
+    return {
+      id: val.id,
+      name: val.label,
+      showingLabel: val.showingLabel,
+      order: this.counter++,
+      spatial: val.spatial,
+      resourceType: val.resourceTypeId,
+      mapType: val.mapTypeId,
+      unitedDynamicLayerName:
+        val.unitedDynamicLayer != null
+          ? this.layerMap(val.unitedDynamicLayer)
+          : null,
+      layersVisibility: false,
+      collapseVisibility: false,
+      layers: null
+    };
+  }
   recursiveMap = (val, index) => {
-    //if category
-    if (val.layers !== undefined)
+    if (val.layers !== undefined) {
       return {
         name: val.label,
         order: this.counter++,
         children: val.children.map((val, i) => this.recursiveMap(val, index)),
-        layers: val.layers.map((val, i) => ({
-          name: val.label,
-          showingLabel: val.showingLabel,
-          order: this.counter++,
-          spatial: val.spatial,
-          resourceType: val.resourceTypeId
-        }))
+        layers: val.layers.map((val, i) => this.layerMap(val))
       };
-    else
-      return {
-        name: val.label,
-        showingLabel: val.showingLabel,
-        order: this.counter++,
-        spatial: val.spatial,
-        resourceType: val.resourceTypeId
-      };
+    } else return this.layerMap(val);
   };
 
   creator = layers => {
     let baseLayers = layers
       .filter(c => c.mapTypeId === "basemap" || c.layers !== undefined)
       .map((val, index) => this.recursiveMap(val, index));
-
     let dynamicLayers = layers
       .filter(c => c.mapTypeId === "dynamic")
       .map((val, index) => ({
+        id: val.resourceTypeId.trim() === "local" ? val.id : val.name,
         name: val.label,
         showingLabel: val.showingLabel,
         order: index + 1,
-        id: val.resourceTypeId.trim() === "local" ? val.id : val.name,
+        resourceType: val.resourceTypeId,
+        mapType: val.mapTypeId,
         layersVisibility: false,
         collapseVisibility: false,
+
         layers: null,
-        apiFrom: "internal",
-        resourceType: val.resourceTypeId
+        apiFrom: "internal"
       }));
-    console.log("TCL: LayerHelper -> dynamicLayers", dynamicLayers);
 
     return {
       baseLayers,
@@ -57,11 +60,9 @@ class LayerHelper {
     };
   };
 
-  add = (service, index, dynamic = false, params) => {};
-
+  add = () => {};
   delete = () => {};
   setColor = () => {};
-
   setLayout = () => {};
 }
 

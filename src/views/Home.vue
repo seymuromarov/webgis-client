@@ -164,7 +164,7 @@
                             :key="element.name"
                             style="text-align: left"
                         >
-                            <TreeView :item="element" @selectService="selectService" />
+                            <TreeView :item="element" @selectService="selectService"  @getTableData="getTableData"    @basemapLayersReset="basemapLayersReset"/>
                         </li>
                     </transition-group>
                 </draggable>
@@ -278,7 +278,7 @@
                     style="bottom: 10px;right: 50px;"
                     @click="dragAndDropToast"
                     title="Upload file"
-                    v-if="!showTable"
+                    v-if="!isTabelVisible"
                 >
                     <i class="fas fa-file-upload"></i>
                 </button>
@@ -286,7 +286,7 @@
                     class="action-button-class btn btn-control"
                     style="bottom: 10px;right: 10px;"
                     @click="selectLayerForm = true"
-                    v-if="!showTable"
+                    v-if="!isTabelVisible"
                 >
                     <i class="fas fa-stream"></i>
                 </button>
@@ -340,7 +340,7 @@
                     style="top: 224px;left: .5rem;"
                     @click="addGraticule"
                     title="Add Graticule"
-                    v-show="!showTable"
+                    v-show="!isTabelVisible"
                 >
                     <i class="fas fa-barcode"></i>
                 </button>
@@ -350,7 +350,7 @@
                     style="bottom: 10px;left: 3rem;"
                     @click="pngExport"
                     title="Export to png"
-                    v-show="!showTable"
+                    v-show="!isTabelVisible"
                 >
                     <i class="far fa-file-image"></i>
                 </button>
@@ -360,7 +360,7 @@
                     style="bottom: 10px;left: .5rem;"
                     @click="exportData"
                     title="Export to geojson"
-                    v-show="!showTable"
+                    v-show="!isTabelVisible"
                 >
                     <i class="fas fa-file-download"></i>
                 </button>
@@ -368,38 +368,13 @@
         </div>
 
         <DataTable
+            ref="dataTable"
             @showFilterModal="showFilterModal"
             @mapSetCenter="mapSetCenter"
             @filterDataQuery="filterDataQuery"
         />
 
-        <modal
-            name="data-modal"
-            transition="nice-modal-fade"
-            :min-width="200"
-            :min-height="200"
-            :delay="100"
-            :draggable="true"
-        >
-            <p class="tableModalHeader">{{this.tableHeader}}</p>
-            <div class="row" style="overflow: auto">
-                <table class="table popupTable">
-                    <thead>
-                        <tr class="fields">
-                            <th class="paddingLeft">Field</th>
-                            <th class="paddingRight">Value</th>
-                        </tr>
-                    </thead>
-                    <tbody class="popupTableBody">
-                        <tr v-for="(value, key) in tableFeatureData.attributes" :key="key">
-                            <td class="paddingLeft">{{ tableFeaturesHeaderWithAlias[key] }}</td>
-                            <td class="paddingRight">{{ value }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </modal>
-
+       
         <modal
             name="filter-modal"
             transition="nice-modal-fade"
@@ -702,12 +677,12 @@ export default {
             featureIDSet: 0,
             sketch: null,
             typeSelect: null,
-            showTable: false,
+            // isTabelVisible: false,
             draw: null,
             tableFeaturesData: [],
             tableFeatureData: [],
             tableNextRequest: [],
-            tableFeaturesHeader: [],
+            // tableFeaturesHeader: [],
             citySearchOptions: [],
             citySearchValue: null,
             citySearchInputShow: false,
@@ -719,7 +694,7 @@ export default {
             tableFeaturesHeaderWithAlias: [],
             graticule: false,
             graticuleLayer: null,
-            stackedTableFeaturesHeader: [],
+            // stackedTableFeaturesHeader: [],
             tableHeader: null,
             dynamicLayerList: [],
             baseLayerList: [],
@@ -858,6 +833,7 @@ export default {
             });
 
             this.mapLayer.on("click", function(evt) {
+             
                 displayFeatureInfo(evt.pixel);
                 let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
                 if (self.isMarker) {
@@ -922,12 +898,15 @@ export default {
                         } catch (e) {}
                     });
                 }
-                if (self.showTable) {
+                
+                      
+                if (self.isTabelVisible) {
+                    
                     let geometry = coord[0] + "," + coord[1];
                     self.getGeometryData(
                         self.tableNextRequest["service"],
-                        self.tableNextRequest["layer_id"],
-                        self.tableNextRequest["layer_name"],
+                        self.tableNextRequest["layerId"],
+                        self.tableNextRequest["layerName"],
                         self.filterQuery,
                         geometry
                     );
@@ -1119,15 +1098,6 @@ export default {
                 }
             );
         },
-        showDataModal(Feature) {
-            this.tableFeatureData = Feature;
-            this.$modal.show("data-modal", null, {
-                name: "dynamic-modal",
-                resizable: true,
-                adaptive: true,
-                draggable: true
-            });
-        },
         mapSetCenter(data) {
             if (data.geometry.x !== undefined) {
                 this.mapLayer
@@ -1208,16 +1178,10 @@ export default {
             let self = this;
 
             this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
-                // let name = item.name;
-                // let layersVisibility = item.layersVisibility;
-                // let collapseVisibility = item.collapseVisibility;
-                // let layers = item.layers;
-                // let apiFrom = item.apiFrom ? item.apiFrom : "internal";
-
+               
                 return {
                     ...item,
                     order: index + 1,
-                    apiFrom : item.apiFrom ? item.apiFrom : "internal"
                 };
             });
             this.setDynamicIndexes();
@@ -1299,22 +1263,22 @@ export default {
             this.filterQuery = "";
             this.filterValues = [];
         },
-        async getGeometryData(service, layer_id, layer_name, query, geometry) {
-            let response = await LayerService.getGeometryData({
+        async getGeometryData(service, layer_id, layer_name, query, geometry) {  
+            var params={
                 token: this.token,
                 name: service.name,
                 layer: layer_id,
                 where: query,
                 geometry: geometry
-            });
-
+            };
+            let response = await LayerService.getGeometryData(params);
             if (response.data.features !== undefined) {
                 if (response.data.features.length !== 0) {
-                    this.showDataModal(response.data.features[0]);
+
+                    this.$refs.dataTable.showDataModal(response.data.features[0]);
                 }
             }
         },
-
         setDynamicIndexes() {
             this.dynamicLayerList.map((item, index) => {
                 this.mapLayer.getLayers().forEach(function(layer) {
@@ -1473,7 +1437,22 @@ export default {
                 this.mapLayer.removeLayer(layersToRemove[i]);
             }
         },
+        async basemapLayersReset(service, status) 
+        {
+            console.log("true");
+              this.baseLayerList = this.baseLayerList.map((item, index) => {             
+               
+                if (service.name === item.name)               
+                {   
+                    item.layersVisibility =status;
+                 
+                }                 
+                return item;
+                
+            });
+        },
         async dynamicLayersReset(service, status) {
+          
             let token;
             if (service.apiFrom === "emlak") {
                 token = this.emlakToken;
@@ -1484,6 +1463,7 @@ export default {
                 token: token,
                 name: service.name
             });
+        
 
             let colorEnabled = false;
             if (response.data.layers[0].drawingInfo !== undefined) {
@@ -1499,25 +1479,20 @@ export default {
                     }
                 }
             }
-
             this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
-                let color = item.color ? item.color : false;
-                if (service.name === name) {
-                    layersVisibility = status;
-                    color = colorEnabled;
-                }
-                return {
-                    ...item,
-                    apiFrom : item.apiFrom ? item.apiFrom : "internal",
-                    color,
-                    layersVisibility,
-                };
+                item.color=item.color ? item.color : false;
+               
+                if (service.name === item.name)               
+                {   
+                    item.layersVisibility =status;
+                    item.color = colorEnabled;
+                }                 
+                return item;
+                
             });
         },
-        async selectService(service, index, dynamic, e) {
-            this.selectedServiceName = service.name;
-
-            let self = this;
+        async getResponseDynamic(service)
+        {
             let responseDynamic;
             if (service.apiFrom === "emlak") {
                 let gettoken = await LoginService.getEmlakToken();
@@ -1526,7 +1501,6 @@ export default {
                     token: this.emlakToken,
                     name: service.name
                 })
-                // console.log(responseDynamic)
             } else if (service.resourceType !== undefined && service.resourceType.trim() === 'local') {
 
                 responseDynamic = {
@@ -1544,33 +1518,65 @@ export default {
                 }
 
             } else {
+
                 responseDynamic = await LayerService.getDynamicLayers({
                     token: this.token,
                     name: service.name
                 });
+                         
             }
+          
+            return responseDynamic;
+        },
+        setSubLayers(service,responseDynamic)
+        {
+   
+        },
+        async selectService(service, index, dynamic, e) {
+            this.selectedServiceName = service.name;
 
-            // }
-            this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {          
-                let color = item.color ? item.color : false
-                let apiFrom = item.apiFrom ? item.apiFrom : 'internal'
-                let layers = item.layers
-                if (service.name === name) {
-                    layers = responseDynamic.data.layers;
-                }
-                return {
-                    ...item,                  
-                    layers,
-                    apiFrom,
-                    color:item.color ? item.color : false
-                };
-            });
+            let self = this;
+            let subLayers;
+        
 
+            if(service.mapType==='basemap', service.unitedDynamicLayerName!==undefined &&service.unitedDynamicLayerName!==null )
+            {
+                let responseDynamic=await this.getResponseDynamic(service);
+                subLayers=await this.getResponseDynamic(service.unitedDynamicLayerName);
+                this.baseLayerList = this.baseLayerList.map((item, index) => {                             
+                    if (service.name === item.name) {
+                        item.unitedDynamicLayerName.layers = subLayers.data.layers;
+                    }
+                    return item;
+                });
+               
+            }  
+            else
+            {
+                subLayers=await this.getResponseDynamic(service);
+                this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {          
+                        
+                    if (service.name === item.name) {
+                        item.layers = subLayers.data.layers;
+                    }
+                    return {
+                        ...item,
+                        apiFrom: item.apiFrom ? item.apiFrom : 'internal',
+                        color:item.color ? item.color : false
+                    };
+             });
+
+           
+            }   
+            // this.setSubLayers(service,responseDynamic);
+           
             self.dynamicSubLayerList[service.name] = [];
-
-            responseDynamic.data.layers.forEach(function(element) {
+            subLayers.data.layers.forEach(function(element) {
                 self.dynamicSubLayerList[service.name][element.id] = true;
             });
+
+
+
 
             if (e.target.checked) {
                 this.addLayers(service, index, dynamic, null);
@@ -1580,12 +1586,32 @@ export default {
                         break;
                     }
                 }
+              
+             for (let i in this.baseLayerList) {
+                    if (this.baseLayerList[i].unitedDynamicLayerName!==undefined 
+                        &&this.baseLayerList[i].unitedDynamicLayerName!==null 
+                        &&this.baseLayerList[i].name === service.name) 
+                        {
+                        this.baseLayerList[i].collapseVisibility = true;
+                        break;
+                    }
+                }
             } else {
                 this.deleteLayers(service);
                 for (let i in this.dynamicLayerList) {
                     if (this.dynamicLayerList[i].name === service.name) {
                         this.dynamicLayerList[i].collapseVisibility = false;
                         this.dynamicLayerList[i].layersVisibility = false;
+                        break;
+                    }
+                }
+                for (let i in this.baseLayerList) {
+                    if (this.baseLayerList[i].unitedDynamicLayerName!==undefined 
+                        &&this.baseLayerList[i].unitedDynamicLayerName!==null 
+                        &&this.baseLayerList[i].name === service.name) 
+                        {
+                        this.baseLayerList[i].collapseVisibility = false;
+                        this.baseLayerList[i].layersVisibility = false;
                         break;
                     }
                 }
@@ -1662,8 +1688,17 @@ export default {
         }
     },
     computed: {
+        isTabelVisible() {
+        return this.$store.state.dataTable.isVisible;
+        },  
+        stackedTableFeaturesHeader() {
+             return this.$store.state.dataTable.tableStackedHeaders;
+        },
+        tableFeaturesHeader() {
+            return this.$store.state.dataTable.tableHeaders;
+        },
         selectedFillColor() {
-            return this.$store.state.fillColor;
+        return this.$store.state.fillColor;
         },
         selectedBorderColor() {
             return this.$store.state.borderColor;
@@ -1676,6 +1711,9 @@ export default {
         },
         colorPicker() {
             return this.$store.state.colorPicker;
+        },
+        lastBBOXOfShape () {
+            return this.$store.state.dataTable.lastBBOXOfShape;
         },
         dragOptions() {
             return {
@@ -1714,10 +1752,8 @@ export default {
                 }
             }
             return columns;
-        },
-        lastBBOXOfShape () {
-            return this.$store.state.dataTable.lastBBOXOfShape;
-        },
+        }
+
     }
 };
 </script>

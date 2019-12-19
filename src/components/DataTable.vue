@@ -84,7 +84,7 @@
             </table>
         </div>
 
-        <!-- <modal
+        <modal
                 name="data-modal"
                 transition="nice-modal-fade"
                 :min-width="200"
@@ -102,7 +102,7 @@
                     </tr>
                     </thead>
                     <tbody class="popupTableBody">
-                    <tr v-for="(value, key) in selectedData" :key="key">
+                    <tr v-for="(value, key) in selectedData.attributes" :key="key">
                         <td class="paddingLeft">
                             {{ tableHeadersWithAlias[key] }}
                         </td>
@@ -111,7 +111,7 @@
                     </tbody>
                 </table>
             </div>
-        </modal> -->
+        </modal>
 
         <modal
                 name="simple-data-filter-modal"
@@ -281,7 +281,7 @@
             return {
                 Toggler: null,
                 isColumnPopupShowing: false,
-                selectedData: null,
+                selectedData: [],
                 cropArithmeticOperation: "sum",
                 query: {
                     inSR: 3857,
@@ -325,7 +325,13 @@
                 });
             },
             showDataModal(data) {
-                this.selectedData = data.attributes;
+                this.selectedData = data;
+                 this.$modal.show("data-modal", null, {
+                    name: "dynamic-modal",
+                    resizable: true,
+                    adaptive: true,
+                    draggable: true
+                });
                 this.$emit("mapSetCenter", data);
             },
             showColumnsChange() {

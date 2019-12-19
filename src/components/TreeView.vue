@@ -24,9 +24,66 @@
             <span class="serviceTitle">
               {{ item.showingLabel }}
             </span>
+
+            <span>
+              <i
+                v-if="item.collapseVisibility && !item.layersVisibility"
+                @click="basemapLayersReset(item, true)"
+                class="fas fa-caret-left makeMePoint"
+              ></i>
+              <i
+                v-if="item.layersVisibility"
+                @click="item.layersVisibility = false"
+                class="fas fa-caret-down makeMePoint"
+              ></i>
+            </span>
           </span>
         </div>
       </div>
+
+      <div
+        style="background: whitesmoke;padding-top: 10px;"
+        v-if="
+          item.unitedDynamicLayerName !== null &&
+            item.unitedDynamicLayerName !== undefined
+        "
+        v-show="item.layersVisibility"
+      >
+        <div
+          class="row layerDiv"
+          v-for="(layer, index) in item.unitedDynamicLayerName.layers"
+          :key="index"
+        >
+          <div class="col-12" style="white-space: nowrap">
+            <label :for="item.name + layer.id"></label>
+            <span class="serviceTitle" :for="layer.name">{{ layer.name }}</span>
+            <i
+              class="dataIcon fas fa-table"
+              @click="
+                getTableData(
+                  item.unitedDynamicLayerName,
+                  layer.id,
+                  layer.name,
+                  { where: '1=1' }
+                )
+              "
+            ></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div
+        style="background: whitesmoke;padding-top: 10px; "
+        v-show="item.layersVisibility"
+      >
+        <div class="row layerDiv">
+          <div class="col-12" style="white-space: nowrap">
+            <div class>
+              <i class="dataIcon fas fa-table"></i>
+            </div>
+          </div>
+        </div>
+      </div> -->
     </div>
 
     <ul v-show="isOpen" v-if="isCategory(item)">
@@ -66,8 +123,14 @@ export default {
         this.isOpen = !this.isOpen;
       }
     },
+    getTableData(service, layerId, layerName, query) {
+      this.$emit("getTableData", service, layerId, layerName, query);
+    },
     selectService(service, index, dynamic, e) {
       this.$emit("selectService", service, index, dynamic, e);
+    },
+    basemapLayersReset(service, status) {
+      this.$emit("basemapLayersReset", service, status);
     },
     isCategory: function(item) {
       return item.children && item.layers;
