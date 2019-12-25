@@ -1,0 +1,155 @@
+<template>
+    <transition name="fade">
+        <div
+            class="modal overlay"
+            id="infoModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="infoModalLabel"
+            aria-hidden="true"
+            v-show="isOpen"
+            @click.self="$emit('close')"
+        >
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <ul class="nav nav-tabs">
+                            <!-- List item -->
+                            <li class="nav-item" v-for="tab in tabs" :key="tab.key">
+                                <a
+                                    class="nav-link"
+                                    :class="{'active': tab.key === activeTab}"
+                                    href="#"
+                                    @click="changeTab(tab.key)"
+                                >{{ tab.text }}</a>
+                            </li>
+
+                            <!-- Close button -->
+                            <button
+                                type="button"
+                                class="close"
+                                data-dismiss="modal"
+                                aria-label="Close"
+                                @click="$emit('close')"
+                            >
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </ul>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="modal-body" v-if="isOpen">
+                        <About v-show="activeTab === 'about'" />
+                        <FAQ v-show="activeTab === 'faq'" />
+                        <ReleaseNotes v-show="activeTab === 'releaseNotes'" />
+                        <Contact v-show="activeTab === 'contact'" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </transition>
+</template>
+
+<script>
+import About from "./About";
+import FAQ from "./FAQ";
+import ReleaseNotes from "./ReleaseNotes";
+import Contact from "./Contact";
+
+export default {
+    name: "InfoModal",
+    components: {
+        About,
+        FAQ,
+        ReleaseNotes,
+        Contact
+    },
+    props: {
+        isOpen: {
+            required: true,
+            type: Boolean
+        }
+    },
+    data() {
+        return {
+            activeTab: "about",
+            tabs: [
+                {
+                    key: "about",
+                    text: "About"
+                },
+                {
+                    key: "faq",
+                    text: "FAQ"
+                },
+                {
+                    key: "releaseNotes",
+                    text: "Release notes"
+                },
+                {
+                    key: "contact",
+                    text: "Contact"
+                }
+            ]
+        };
+    },
+    methods: {
+        changeTab(tab) {
+            this.activeTab = tab;
+        }
+    }
+};
+</script>
+
+<style lang="scss">
+#infoModal {
+    display: block;
+    overflow: auto;
+    &.overlay {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+        border: 1px solid #d3d3d3;
+        .modal-header {
+            padding: 0px;
+            border-bottom: 0;
+            position: relative;
+            background-color: #f5f5f5;
+            .nav {
+                width: 100%;
+
+                &.nav-tabs {
+                    border-bottom: 1px solid #dee2e6;
+                    .nav-link {
+                        color: #5a5a5a;
+                        padding: 0.35rem 1rem;
+                        &.active {
+                            border-color: #d3d3d3 #d3d3d3 #fff;
+                        }
+                    }
+                }
+                .close {
+                    position: absolute;
+                    right: 10px;
+                    height: 100%;
+                    padding: 0;
+                    margin: 0;
+
+                    &:focus {
+                        outline: none;
+                    }
+                }
+            }
+        }
+        .modal-body {
+            text-align: left;
+        }
+    }
+}
+
+// Animations
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s;
+}
+</style>
