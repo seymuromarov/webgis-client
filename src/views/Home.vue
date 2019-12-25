@@ -168,6 +168,7 @@
                                 :item="element"
                                 @selectService="selectService"
                                 @getTableData="getTableData"
+                                @showSimpleFilterModal="showSimpleFilterModal"
                                 @basemapLayersReset="basemapLayersReset"
                             />
                         </li>
