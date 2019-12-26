@@ -12,6 +12,9 @@ class LayerHelper {
       showingLabel: val.showingLabel,
       order: this.counter++,
       spatial: val.spatial,
+      minZoomLevel:val.minZoomLevel,
+      maxZoomLevel:val.maxZoomLevel,
+      extent:val.extent,
       resourceType: val.resourceTypeId,
       mapType: val.mapTypeId,
       unitedDynamicLayerName:
@@ -38,13 +41,19 @@ class LayerHelper {
     let baseLayers = layers
       .filter(c => c.mapTypeId === "basemap" || c.layers !== undefined)
       .map((val, index) => this.recursiveMap(val, index));
-    let dynamicLayers = layers
+   
+   
+   
+      let dynamicLayers = layers
       .filter(c => c.mapTypeId === "dynamic")
       .map((val, index) => ({
         id: val.resourceTypeId.trim() === "local" ? val.id : val.name,
         name: val.label,
         showingLabel: val.showingLabel,
         order: index + 1,
+        minZoomLevel:val.minZoomLevel,
+        maxZoomLevel:val.maxZoomLevel,
+        extent:val.extent,
         resourceType: val.resourceTypeId,
         mapType: val.mapTypeId,
         layersVisibility: false,

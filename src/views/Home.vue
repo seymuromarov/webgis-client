@@ -547,7 +547,7 @@ import {
 import VectorTileLayer from "ol/layer/VectorTile.js";
 import VectorTileSource from "ol/source/VectorTile.js";
 import MVT from "ol/format/MVT.js";
-
+import {createXYZ} from 'ol/tilegrid';
 import {
     TileArcGISRest,
     Vector as VectorSource,
@@ -831,7 +831,7 @@ export default {
                     "Long: " +
                     coord[0].toString().substring(0, 7);
             });
-
+  
             this.mapLayer.on("click", function(evt) {
              
                 displayFeatureInfo(evt.pixel);
@@ -914,6 +914,9 @@ export default {
             });
 
             let view = this.mapLayer.getView();
+            // this.mapLayer.events.register('zoomend', this.mapLayer, function (event) {
+            //    alert();
+            // });
             let updateHistoryMap = function() {
                 if (self.historyUpdate) {
                     self.historyEvents.push({
@@ -1305,9 +1308,13 @@ export default {
             self.dynamicLayerList = layers.dynamicLayers;
         },
         addLayers(service, index, dynamic = false, params) {
+            var zoomLevelProperties={
+                maxResolution: createXYZ().getResolution(service.minZoomLevel) * 1.01,
+                minResolution: createXYZ().getResolution(service.maxZoomLevel),
+            };
             let url = URL + "/api/map/service/" + service.name + "/MapServer/";
             let new_layer;
-
+            
             if (dynamic) {
                 let layers = this.dynamicSubLayerList[service.name];
                 let active_layers = "";
@@ -1344,6 +1351,7 @@ export default {
 
                 if (service.resourceType === 'emlak') {
                     new_layer = new ImageLayer({
+                        ...zoomLevelProperties,
                         source: new ImageArcGISRest({
                             url: url,
                             crossOrigin: "Anonymous",
@@ -1351,7 +1359,8 @@ export default {
                                 token: this.emlakToken,
                                 layers: layer_config,
                                 dynamicLayers: colors
-                            }
+                            },
+                           
                         })
                     });
 
@@ -1359,9 +1368,12 @@ export default {
                 } else if (service.resourceType !== undefined && service.resourceType.trim() === 'local') {
                     new_layer = new VectorTileLayer({
                         declutter: false,
+                        ...zoomLevelProperties,
                         source: new VectorTileSource({
                             format: new MVT(),
-                            url:URL+"/"+MAP_URLS.MVT+`/${service.id}/{z}/{x}/{y}.pbf`                        }),
+                            url:URL+"/"+MAP_URLS.MVT+`/${service.id}/{z}/{x}/{y}.pbf`,        
+                         
+                            }),
                         style: new Style({
                             stroke: new Stroke({
                                 color: "rgba(0, 0, 255, 1.0)",
@@ -1371,6 +1383,7 @@ export default {
                     });
                 } else {
                     new_layer = new ImageLayer({
+                        ...zoomLevelProperties,
                         source: new ImageArcGISRest({
                             url: url,
                             crossOrigin: "Anonymous",
@@ -1378,31 +1391,36 @@ export default {
                                 token: this.token,
                                 layers: layer_config,
                                 dynamicLayers: colors
-                            }
+                            },
+                         
                         })
                     });
                 }
             }
             else {
-
                 if (service.spatial === 3857) {
+                    
                     url = url + "/tile/{z}/{y}/{x}?token=" + this.token;
                     new_layer = new TileLayer({
+                     ...zoomLevelProperties,
                         source: new XYZ({
                             url: url,
                             projection: "EPSG:3857",
-                            crossOrigin: "Anonymous"
+                            crossOrigin: "Anonymous",
+                            // ...zoomLevelProperties
                         })
                     });
                 } else {
                     new_layer = new TileLayer({
+                       
+                      ...zoomLevelProperties,
                         source: new TileArcGISRest({
                             url: url,
                             crossOrigin: "Anonymous",
                             params: {
                                 token: this.token,
                                 FORMAT: "png8"
-                            }
+                            },                      
                         })
                     });
                 }
