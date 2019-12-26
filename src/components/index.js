@@ -5,9 +5,9 @@ import DataTable from "./DataTable";
 import SimpleFilterModal from "./SimpleFilterModal";
 
 export {
-  LayerColorPicker,
-  ShapeColorPicker,
-  TreeView,
-  DataTable,
-  SimpleFilterModal
+    LayerColorPicker,
+    ShapeColorPicker,
+    TreeView,
+    DataTable,
+    SimpleFilterModal
 };
