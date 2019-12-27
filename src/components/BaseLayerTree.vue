@@ -1,4 +1,4 @@
-<template class="tree-view">
+<template class="base-layer-tree">
     <div>
         <div style="text-align: left;">
             <div class="row">
@@ -17,6 +17,7 @@
                     :id="item.name"
                     :name="item.name"
                     type="checkbox"
+                    v-model="checkboxValue"
                     @click="selectService(item, item.order, false, $event)"
             />
             <i class="checkbox-icon far fa-check-circle"></i>
@@ -72,29 +73,12 @@
                                 v-if="layer.name.trim() == 'CropMap2019_vector'"
                                 class="fas fa-filter reportIcon"
                                 style="color:blue;margin-left: 10px;"
-                                @click="
-                showSimpleFilterModal(
-                  layer.id,
-                  item.unitedDynamicLayerName.name
-                )
-              "
-                        />
+                                @click="showSimpleFilterModal(layer.id,item.unitedDynamicLayerName.name)"
+                        ></i>
                     </div>
                 </div>
             </div>
 
-            <!-- <div
-              style="background: whitesmoke;padding-top: 10px; "
-              v-show="item.layersVisibility"
-            >
-              <div class="row layerDiv">
-                <div class="col-12" style="white-space: nowrap">
-                  <div class>
-                    <i class="dataIcon fas fa-table"></i>
-                  </div>
-                </div>
-              </div>
-            </div> -->
         </div>
 
         <ul v-show="isOpen" v-if="isCategory(item)">
@@ -120,7 +104,7 @@
 <script>
     export default {
         name: "treeItem",
-        props: ["item"],
+        props: ["item", "checkboxValue"],
         data: function () {
             return {
                 isOpen: false
@@ -153,11 +137,11 @@
     };
 </script>
 <style>
-    .tree-view.tree-item {
+    .base-layer-tree.tree-item {
         cursor: pointer !important;
     }
 
-    .tree-view ul {
+    .base-layer-tree ul {
         text-align: left;
         list-style-type: none;
     }

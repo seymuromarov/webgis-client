@@ -29,7 +29,7 @@
                 </span>
             </h5>
 
-            <LayerColorPicker @updateColor="saveColor"/>
+            <LayerColorPicker @saveColor="saveColor"/>
 
             <transition name="slide-fade">
                 <draggable
@@ -56,6 +56,7 @@
                                             :id="element.name"
                                             :name="element.name"
                                             type="checkbox"
+                                            v-model="selectedLayers[element.id]"
                                             @click="selectService(element, element.order,true, $event)"
                                     />
                                     <i class="checkbox-icon far fa-check-circle"></i>
@@ -110,12 +111,6 @@
                                                     @click="getTableData(element,layer.id,layer.name,{where:'1=1'})"
                                             ></i>
                                             <i
-                                                    v-if="layer.name.trim() == 'CropMap2019_vector'"
-                                                    class="fas fa-filter reportIcon"
-                                                    style="color:blue;margin-left: 10px;"
-                                                    @click="showSimpleFilterModal(layer.id,element.name)"
-                                            />
-                                            <i
                                                     style="margin-left: 10px;"
                                                     class="dataIcon fab fa-codiepie"
                                                     v-if="element.color===true"
@@ -166,6 +161,7 @@
                         >
                             <TreeView
                                     :item="element"
+                                    :checkboxValue="selectedLayers[element.id]"
                                     @selectService="selectService"
                                     @getTableData="getTableData"
                                     @showSimpleFilterModal="showSimpleFilterModal"
@@ -718,7 +714,6 @@
                 tableFeaturesData: [],
                 tableFeatureData: [],
                 tableNextRequest: [],
-                // tableFeaturesHeader: [],
                 citySearchOptions: [],
                 citySearchValue: null,
                 citySearchInputShow: false,
@@ -730,7 +725,6 @@
                 tableFeaturesHeaderWithAlias: [],
                 graticule: false,
                 graticuleLayer: null,
-                // stackedTableFeaturesHeader: [],
                 tableHeader: null,
                 dynamicLayerList: [],
                 baseLayerList: [],
@@ -759,7 +753,7 @@
                         url: ""
                     })
                 },
-
+                selectedLayers: {},
                 dynamicForColors: [[]],
                 showInfoModal: false
             };
@@ -804,17 +798,17 @@
                 let rotation = 0;
 
                 if (window.location.hash !== '') {
-                    // try to restore center, zoom-level and rotation from the URL
                     let hash = window.location.hash.replace('#shareMap=', '');
                     let parts = hash.split('&');
-                    console.log(parts);
                     if (parts.length === 4) {
                         zoom = parseInt(parts[0], 10);
                         center = [
                             parseFloat(parts[1]),
                             parseFloat(parts[2])
                         ];
-                        console.log(parts[3].split(','))
+                        parts[3].split(',').forEach(element => {
+                            this.selectedLayers[parseInt(element)] = true;
+                        });
                     }
                 }
 
@@ -970,24 +964,18 @@
                 let view = this.mapLayer.getView();
                 let updateHistoryMap = function () {
                     if (self.historyUpdate) {
-                        let hash = '#shareMap=' +
-                            view.getZoom() + '&' +
-                            Math.round(view.getCenter()[0] * 100) / 100 + '&' +
-                            Math.round(view.getCenter()[1] * 100) / 100 + '&' +
-                            view.getRotation();
                         let state = {
                             zoom: view.getZoom(),
                             center: view.getCenter(),
                             rotation: view.getRotation()
                         };
+                        self.updateHash();
                         self.historyEvents.push(state);
                         self.historyEventsIndex = self.historyEvents.length;
                         self.nextHistoryEvent = false;
                         if (self.historyEventsIndex !== 1) {
                             self.previousHistoryEvent = true;
                         }
-                        window.history.pushState(state, 'map', hash);
-
                     } else {
                         self.historyUpdate = true;
                     }
@@ -1004,6 +992,23 @@
             });
         },
         methods: {
+            updateHash() {
+                let view = this.mapLayer.getView();
+                let state = {
+                    zoom: view.getZoom(),
+                    center: view.getCenter(),
+                    rotation: view.getRotation()
+                };
+
+                let selectedLayersArr = Object.keys(this.selectedLayers).map(Number);
+                let hash = '#shareMap=' +
+                    view.getZoom() + '&' +
+                    Math.round(view.getCenter()[0] * 100) / 100 + '&' +
+                    Math.round(view.getCenter()[1] * 100) / 100 + '&' +
+                    selectedLayersArr.toString();
+
+                window.history.pushState(state, 'map', hash);
+            },
             changeLocation() {
                 this.mapLayer
                     .getView()
@@ -1200,7 +1205,7 @@
                 );
             },
             recursiveLayerIndexes(item) {
-                if (item.layers !== undefined) {
+                if (item.layers !== undefined && item.children !== undefined) {
                     item.layers.map((item, index) =>
                         this.recursiveLayerIndexes(item)
                     );
@@ -1217,7 +1222,7 @@
             },
             recursiveLayerOrder(item) {
                 this.layerCounter++;
-                if (item.layers !== undefined)
+                if (item.layers !== undefined && item.children !== undefined)
                     return {
                         ...item,
                         order: this.layerCounter++,
@@ -1362,30 +1367,52 @@
                     }
                 );
                 self.gisLayers = response.data;
-
                 let layers = self.LayerHelper.creator(self.gisLayers);
                 self.baseLayerList = layers.baseLayers;
                 self.dynamicLayerList = layers.dynamicLayers;
+                let selectedLayersArr = Object.keys(this.selectedLayers).map(Number);
+                selectedLayersArr.filter((value) => {
+                    this.baseLayerList.map((item) => {
+                        if (item.id === value) {
+                            let e = {target: {checked: true}};
+                            self.selectService(item, item.order, false, e)
+                        }
+                    });
+                    this.dynamicLayerList.map((item, index) => {
+                        if (item.id === value) {
+                            let e = {target: {checked: true}};
+                            self.selectService(item, item.order, true, e)
+                        }
+                    });
+                });
             },
-            addLayers(service, index, dynamic = false, params) {
-                var zoomLevelProperties = {
+            selectedLayersIdHolder(isAdd = true, service) {
+                if (isAdd) {
+                    this.selectedLayers[service.id] = true
+                } else {
+                    delete this.selectedLayers[service.id];
+                }
+                this.updateHash()
+            },
+            addLayers(service, index, dynamic = false) {
+                this.selectedLayersIdHolder(true, service);
+                console.log(service);
+                let zoomLevelProperties = {
                     maxResolution: createXYZ().getResolution(service.minZoomLevel) * 1.01,
                     minResolution: createXYZ().getResolution(service.maxZoomLevel),
                 };
                 let url = URL + "/api/map/service/" + service.name + "/MapServer/";
                 let new_layer;
-
                 if (dynamic) {
                     let layers = this.dynamicSubLayerList[service.name];
                     let active_layers = "";
                     let hidden_layers = "";
                     let colors = "";
-
                     if (
                         typeof this.dynamicForColors[service.name] !== "undefined"
                     ) {
                         colors = "[";
-                        this.dynamicForColors[this.colorPicker.layer.name].forEach(
+                        this.dynamicForColors[this.colorPicker.colorPicker.layer.name].forEach(
                             function (colorLayer) {
                                 colors += colorLayer;
                             }
@@ -1399,7 +1426,6 @@
                             hidden_layers += index + ",";
                         }
                     });
-
                     let layer_config = "";
                     if (active_layers !== "") {
                         active_layers = active_layers.slice(0, -1);
@@ -1408,7 +1434,6 @@
                         hidden_layers = hidden_layers.slice(0, -1);
                         layer_config += "hide:" + hidden_layers;
                     }
-
                     if (service.resourceType === "emlak") {
                         new_layer = new ImageLayer({
                             ...zoomLevelProperties,
@@ -1420,7 +1445,6 @@
                                     layers: layer_config,
                                     dynamicLayers: colors
                                 },
-
                             })
                         });
                     } else if (
@@ -1433,7 +1457,6 @@
                             source: new VectorTileSource({
                                 format: new MVT(),
                                 url: URL + "/" + MAP_URLS.MVT + `/${service.id}/{z}/{x}/{y}.pbf`,
-
                             }),
                             style: new Style({
                                 stroke: new Stroke({
@@ -1453,13 +1476,11 @@
                                     layers: layer_config,
                                     dynamicLayers: colors
                                 },
-
                             })
                         });
                     }
                 } else {
                     if (service.spatial === 3857) {
-
                         url = url + "/tile/{z}/{y}/{x}?token=" + this.token;
                         new_layer = new TileLayer({
                             ...zoomLevelProperties,
@@ -1499,8 +1520,11 @@
                 layers[0].setSource(this.baseMaps[index]);
             },
             deleteLayers(service, reset) {
+                this.selectedLayersIdHolder(false, service);
                 let layersToRemove = [];
                 let self = this;
+                console.log(service)
+
                 this.mapLayer.getLayers().forEach(function (layer) {
                     if (
                         layer.get("name") != undefined &&
@@ -1629,23 +1653,19 @@
 
 
                 }
-                // this.setSubLayers(service,responseDynamic);
 
                 self.dynamicSubLayerList[service.name] = [];
                 subLayers.data.layers.forEach(function (element) {
                     self.dynamicSubLayerList[service.name][element.id] = true;
                 });
-
-
                 if (e.target.checked) {
-                    this.addLayers(service, index, dynamic, null);
+                    this.addLayers(service, index, dynamic);
                     for (let i in this.dynamicLayerList) {
                         if (this.dynamicLayerList[i].name === service.name) {
                             this.dynamicLayerList[i].collapseVisibility = true;
                             break;
                         }
                     }
-
                     for (let i in this.baseLayerList) {
                         if (this.baseLayerList[i].unitedDynamicLayerName !== undefined
                             && this.baseLayerList[i].unitedDynamicLayerName !== null
@@ -1691,7 +1711,7 @@
                 }
 
                 this.dynamicLayersReset(service, true);
-                this.addLayers(service, index, true, null);
+                this.addLayers(service, index, true);
             },
             setDrawType(name) {
                 this.typeSelect = name;
@@ -1707,31 +1727,27 @@
             },
             saveColor() {
                 this.$store.dispatch("SAVE_COLORPICKER_VISIBILITY", false);
+                console.log(this.colorPicker)
 
-                this.deleteLayers(this.colorPicker.layer);
+                this.deleteLayers(this.colorPicker.colorPicker.layer);
 
                 let layerDyn = this.ColorPicker.renderColor(
-                    this.colorPicker.sublayer,
+                    this.colorPicker.colorPicker.sublayer,
                     this.selectedFillColor,
                     this.selectedBorderColor
                 );
 
                 if (
-                    typeof this.dynamicForColors[this.colorPicker.layer.name] ===
+                    typeof this.dynamicForColors[this.colorPicker.colorPicker.layer.name] ===
                     "undefined"
                 ) {
-                    this.dynamicForColors[this.colorPicker.layer.name] = [];
+                    this.dynamicForColors[this.colorPicker.colorPicker.layer.name] = [];
                 }
-                this.dynamicForColors[this.colorPicker.layer.name][
-                    this.colorPicker.sublayer
+                this.dynamicForColors[this.colorPicker.colorPicker.layer.name][
+                    this.colorPicker.colorPicker.sublayer
                     ] = layerDyn;
 
-                this.addLayers(
-                    this.colorPicker.layer,
-                    this.colorPicker.index,
-                    true,
-                    layerDyn
-                );
+                this.addLayers(this.colorPicker.colorPicker.layer, this.colorPicker.colorPicker.index, true);
             },
             OpenColorPicker(layer, sublayer, name, index) {
                 this.$store.dispatch("SAVE_COLORPICKER", {
@@ -1755,10 +1771,10 @@
                 return this.$store.state.dataTable.tableHeaders;
             },
             selectedFillColor() {
-                return this.$store.state.fillColor;
+                return this.$store.state.colorPicker.fillColor;
             },
             selectedBorderColor() {
-                return this.$store.state.borderColor;
+                return this.$store.state.colorPicker.borderColor;
             },
             shapeBorderColor() {
                 return this.$store.state.shapeBorderColor;

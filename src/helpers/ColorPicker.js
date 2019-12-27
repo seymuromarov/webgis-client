@@ -14,7 +14,7 @@ class ColorPicker {
 
     }
     renderColor(subLayer , fillColor , borderColor) {
-
+        console.log(fillColor)
         let colors = [];
         let outlines = [];
         colors[0] = fillColor.rgba.r;

@@ -48,7 +48,7 @@ class LayerHelper {
         let dynamicLayers = layers
             .filter(c => c.mapTypeId === "dynamic")
             .map((val, index) => ({
-                id: val.resourceTypeId.trim() === "local" ? val.id : val.name,
+                id: val.resourceTypeId.trim() === "local" ? val.id : val.id,
                 name: val.label,
                 showingLabel: val.showingLabel,
                 order: index + 1,
