@@ -57,7 +57,7 @@
                                             :name="element.name"
                                             type="checkbox"
                                             v-model="selectedLayers[element.id]"
-                                            @click="selectService(element, element.order,true, $event)"
+                                            @click="selectService(element, element.order,true, $event,false)"
                                     />
                                     <i class="checkbox-icon far fa-check-circle"></i>
                                     <label :for="element.showingLabel"></label>
@@ -161,7 +161,7 @@
                         >
                             <TreeView
                                     :item="element"
-                                    :checkboxValue="selectedLayers[element.id]"
+                                    :selectedLayers="selectedLayers"
                                     @selectService="selectService"
                                     @getTableData="getTableData"
                                     @showSimpleFilterModal="showSimpleFilterModal"
@@ -755,7 +755,8 @@
                 },
                 selectedLayers: {},
                 dynamicForColors: [[]],
-                showInfoModal: false
+                showInfoModal: false,
+                isHashLoaded: false
             };
         },
         mounted() {
@@ -1008,6 +1009,7 @@
                     selectedLayersArr.toString();
 
                 window.history.pushState(state, 'map', hash);
+
             },
             changeLocation() {
                 this.mapLayer
@@ -1184,9 +1186,6 @@
                     draggable: true
                 });
             },
-            hideDataModal() {
-                this.$modal.hide("data-modal");
-            },
             logout() {
                 this.$cookie.delete("token");
                 this.$cookie.delete("username");
@@ -1256,11 +1255,6 @@
 
             async getTableData(service, layerId, layerName, query) {
                 let token;
-                if (service.apiFrom === "emlak") {
-                    token = this.emlakToken;
-                } else {
-                    token = this.token;
-                }
                 let data = {
                     token: token,
                     name: service.name,
@@ -1371,20 +1365,27 @@
                 self.baseLayerList = layers.baseLayers;
                 self.dynamicLayerList = layers.dynamicLayers;
                 let selectedLayersArr = Object.keys(this.selectedLayers).map(Number);
-                selectedLayersArr.filter((value) => {
-                    this.baseLayerList.map((item) => {
-                        if (item.id === value) {
-                            let e = {target: {checked: true}};
-                            self.selectService(item, item.order, false, e)
-                        }
+                selectedLayersArr.forEach((value) => {
+                    this.baseLayerList.forEach((item) => {
+                        this.checkIfLayerNeedsToTurnOn(item, value);
                     });
-                    this.dynamicLayerList.map((item, index) => {
-                        if (item.id === value) {
-                            let e = {target: {checked: true}};
-                            self.selectService(item, item.order, true, e)
-                        }
+                    this.dynamicLayerList.forEach((item) => {
+                        this.checkIfLayerNeedsToTurnOn(item, value);
                     });
                 });
+            },
+            checkIfLayerNeedsToTurnOn(layer, value) {
+                let e = {target: {checked: true}};
+
+                if (layer.hasOwnProperty('children')) {
+                    layer.layers.map(async (item) => {
+                        this.checkIfLayerNeedsToTurnOn(item, value)
+                    });
+                } else {
+                    if (layer.id === value) {
+                        this.selectService(layer, layer.order, layer.mapType === "dynamic", e, false);
+                    }
+                }
             },
             selectedLayersIdHolder(isAdd = true, service) {
                 if (isAdd) {
@@ -1396,7 +1397,9 @@
             },
             addLayers(service, index, dynamic = false) {
                 this.selectedLayersIdHolder(true, service);
-                console.log(service);
+                if (service.extent != null && this.isHashLoaded) {
+                    this.mapLayer.getView().fit([service.extent.minX, service.extent.minY, service.extent.maxX, service.extent.maxY]);
+                }
                 let zoomLevelProperties = {
                     maxResolution: createXYZ().getResolution(service.minZoomLevel) * 1.01,
                     minResolution: createXYZ().getResolution(service.maxZoomLevel),
@@ -1488,12 +1491,10 @@
                                 url: url,
                                 projection: "EPSG:3857",
                                 crossOrigin: "Anonymous",
-                                // ...zoomLevelProperties
                             })
                         });
                     } else {
                         new_layer = new TileLayer({
-
                             ...zoomLevelProperties,
                             source: new TileArcGISRest({
                                 url: url,
@@ -1523,7 +1524,6 @@
                 this.selectedLayersIdHolder(false, service);
                 let layersToRemove = [];
                 let self = this;
-                console.log(service)
 
                 this.mapLayer.getLayers().forEach(function (layer) {
                     if (
@@ -1540,7 +1540,6 @@
                 }
             },
             async basemapLayersReset(service, status) {
-                console.log("true");
                 this.baseLayerList = this.baseLayerList.map((item, index) => {
                     if (service.name === item.name) {
                         item.layersVisibility = status;
@@ -1619,46 +1618,39 @@
 
                 return responseDynamic;
             },
-            setSubLayers(service, responseDynamic) {
-            },
-            async selectService(service, index, dynamic, e) {
-                this.selectedServiceName = service.name;
-
-                let self = this;
-                let subLayers;
-
-                if (service.mapType === 'basemap', service.unitedDynamicLayerName !== undefined && service.unitedDynamicLayerName !== null) {
-                    let responseDynamic = await this.getResponseDynamic(service);
-                    subLayers = await this.getResponseDynamic(service.unitedDynamicLayerName);
-                    this.baseLayerList = this.baseLayerList.map((item, index) => {
-                        if (service.name === item.name) {
-                            item.unitedDynamicLayerName.layers = subLayers.data.layers;
-                        }
-                        return item;
-                    });
-
-                } else {
-                    subLayers = await this.getResponseDynamic(service);
-                    this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
-
-                        if (service.name === item.name) {
-                            item.layers = subLayers.data.layers;
-                        }
-                        return {
-                            ...item,
-                            apiFrom: item.apiFrom ? item.apiFrom : 'internal',
-                            color: item.color ? item.color : false
-                        };
-                    });
-
-
-                }
-
-                self.dynamicSubLayerList[service.name] = [];
-                subLayers.data.layers.forEach(function (element) {
-                    self.dynamicSubLayerList[service.name][element.id] = true;
-                });
+            async selectService(service, index, dynamic, e, isHashLoaded = true) {
                 if (e.target.checked) {
+                    let self = this;
+                    let subLayers;
+                    this.isHashLoaded = isHashLoaded
+
+                    if (service.mapType === 'basemap', service.unitedDynamicLayerName !== undefined && service.unitedDynamicLayerName !== null) {
+                        subLayers = await this.getResponseDynamic(service.unitedDynamicLayerName);
+                        this.baseLayerList = this.baseLayerList.map((item, index) => {
+                            if (service.name === item.name) {
+                                item.unitedDynamicLayerName.layers = subLayers.data.layers;
+                            }
+                            return item;
+                        });
+                    } else {
+                        subLayers = await this.getResponseDynamic(service);
+                        this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
+                            if (service.name === item.name) {
+                                item.layers = subLayers.data.layers;
+                            }
+                            return {
+                                ...item,
+                                apiFrom: item.apiFrom ? item.apiFrom : 'internal',
+                                color: item.color ? item.color : false
+                            };
+                        });
+                    }
+
+                    self.dynamicSubLayerList[service.name] = [];
+                    subLayers.data.layers.forEach(function (element) {
+                        self.dynamicSubLayerList[service.name][element.id] = true;
+                    });
+
                     this.addLayers(service, index, dynamic);
                     for (let i in this.dynamicLayerList) {
                         if (this.dynamicLayerList[i].name === service.name) {
@@ -1695,21 +1687,14 @@
                 }
             },
             selectSubService(service, index, id, e) {
-                if (this.dynamicSubLayerList[service.name][id]) {
-                    this.dynamicSubLayerList[service.name][id] = false;
-                } else {
-                    this.dynamicSubLayerList[service.name][id] = true;
-                }
-
+                this.dynamicSubLayerList[service.name][id] = !this.dynamicSubLayerList[service.name][id];
                 this.deleteLayers(service, false);
-
                 for (let i in this.dynamicLayerList) {
                     if (this.dynamicLayerList[i].name === service.name) {
                         this.dynamicLayerList[i].layersVisibility = true;
                         break;
                     }
                 }
-
                 this.dynamicLayersReset(service, true);
                 this.addLayers(service, index, true);
             },
