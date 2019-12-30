@@ -248,30 +248,44 @@
                 <div id="mouse-position" class="latLongShow" @click="LatLongFormToggle"></div>
 
                 <div class="latLongShowForm" v-show="latLongFormShow">
-                    <div style="width: 300px" @mouseleave="LatLongFormToggle">
-                        <div style="display: inline;float: left;">
-                            Lat:
-                            <input
-                                    v-model="latChange"
-                                    v-on:keyup.enter="changeLocation"
-                                    class="form-control"
-                                    type="text"
-                                    placeholder="Latitude"
-                                    style="display: inline-block;width: 100px;"
-                            />
+                    <div @mouseleave="LatLongFormToggle">
+                        <div style="width: 300px">
+                            <div style="display: inline;float: left;">
+                                Lat:
+                                <input
+                                        v-model="latChange"
+                                        v-on:keyup.enter="changeLocation"
+                                        class="form-control"
+                                        type="text"
+                                        placeholder="Latitude"
+                                        style="display: inline-block;width: 100px;"
+                                />
+                            </div>
+                            <div style="display: inline;">
+                                Lng:
+                                <input
+                                        v-model="longChange"
+                                        v-on:keyup.enter="changeLocation"
+                                        class="form-control"
+                                        type="text"
+                                        placeholder="Longitude"
+                                        style="display: inline-block;width: 100px;"
+                                />
+                            </div>
+
                         </div>
-                        <div style="display: inline;">
-                            Lng:
-                            <input
-                                    v-model="longChange"
-                                    v-on:keyup.enter="changeLocation"
-                                    class="form-control"
-                                    type="text"
-                                    placeholder="Longitude"
-                                    style="display: inline-block;width: 100px;"
-                            />
-                        </div>
+                        <input
+                                class="form-check-input"
+                                type="checkbox"
+                                v-model="isMetricCoordinateSystem"
+                                id="coordinateCheckbox"
+                                aria-label
+                        />
+                        <label class="form-check-label" for="coordinateCheckbox">Use metric coordinate system</label>
+
+
                     </div>
+
                 </div>
                 <div id="info" class="infokml" v-show="this.kmlInfo!==null">&nbsp;</div>
 
@@ -733,6 +747,7 @@
                 helpmaptooltip: null,
                 measuremaptooltipElement: null,
                 measuremaptooltip: null,
+                isMetricCoordinateSystem: false,
                 baseMaps: {
                     sat: new XYZ({
                         name: "sat",
@@ -868,16 +883,18 @@
                     }
                     let pixel = self.mapLayer.getEventPixel(evt.originalEvent);
                     let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
-                    this.lastCoordinates =
-                        coord[1].toString().substring(0, 7) +
-                        "," +
-                        coord[0].toString().substring(0, 7);
+                    if (self.isMetricCoordinateSystem) {
+                        coord = fromLonLat([coord[0], coord[1]])
+                        coord = [coord[1].toString().substring(0, 10), coord[0].toString().substring(0, 10)]
+                    } else {
+                        coord = [coord[1].toString().substring(0, 7), coord[0].toString().substring(0, 7)]
+                    }
                     document.getElementById("mouse-position").innerHTML =
                         "Lat: " +
-                        coord[1].toString().substring(0, 7) +
+                        coord[1].toString() +
                         " , " +
                         "Long: " +
-                        coord[0].toString().substring(0, 7);
+                        coord[0].toString();
                 });
 
                 this.mapLayer.on("click", function (evt) {
