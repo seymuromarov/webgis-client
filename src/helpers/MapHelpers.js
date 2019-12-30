@@ -45,7 +45,11 @@ class MapHelpers {
 
     exportData() {
         let features = this.data.source.getFeatures();
-        let area = new KML({maxDepth: 10, extractStyles: true, featureProjection: "EPSG:3857"}).writeFeatures(features, {featureProjection: "EPSG:3857"});
+        let area = new KML({
+            maxDepth: 10,
+            extractStyles: true,
+            featureProjection: "EPSG:3857"
+        }).writeFeatures(features, {featureProjection: "EPSG:3857"});
         const blob = new Blob([area], {type: "text/plain"});
         const e = document.createEvent("MouseEvents"),
             a = document.createElement("a");
@@ -89,6 +93,7 @@ class MapHelpers {
         });
         this.data.mapLayer.renderSync();
     }
+
     resetFeatures() {
         this.data.setDrawType("None");
         let elements = document.getElementsByClassName("maptooltip");
@@ -114,10 +119,19 @@ class MapHelpers {
             } else if (value === "Circle") {
                 geometryFunction = createRegularPolygon(120);
             }
-            this.data.draw = new Draw({source: this.data.source, type: value, geometryFunction: geometryFunction, freehandCondition: shiftKeyOnly});
+            this.data.draw = new Draw({
+                source: this.data.source,
+                type: value,
+                geometryFunction: geometryFunction,
+                freehandCondition: shiftKeyOnly
+            });
             this.data.mapLayer.addInteraction(this.data.draw);
         } else {
-            this.data.draw = new Draw({source: this.data.source, type: this.data.typeSelect, freehandCondition: shiftKeyOnly});
+            this.data.draw = new Draw({
+                source: this.data.source,
+                type: this.data.typeSelect,
+                freehandCondition: shiftKeyOnly
+            });
 
             this.data.mapLayer.addInteraction(this.data.draw);
         }
@@ -159,6 +173,7 @@ class MapHelpers {
                 self.data.measuremaptooltipElement.className = "maptooltip maptooltip-static " + self.data.featureIDSet;
                 self.data.measuremaptooltip.setOffset([0, -7]);
                 let bbox = e.feature.getGeometry().getExtent();
+                console.log(e.feature.getGeometry().getExtent());
                 store.dispatch("SAVE_DRAW_BBOX", bbox);
             } catch (e) {
                 self.createMeasuremaptooltip();
@@ -194,6 +209,7 @@ class MapHelpers {
             self.data.featureIDSet += 10;
         }, this);
     }
+
     createHelpmaptooltip() {
         if (this.data.helpmaptooltipElement) {
             this.data.helpmaptooltipElement.parentNode.removeChild(this.data.helpmaptooltipElement);
@@ -202,11 +218,12 @@ class MapHelpers {
         this.data.helpmaptooltipElement.className = "maptooltip hidden";
         this.data.helpmaptooltip = new Overlay({
             element: this.data.helpmaptooltipElement,
-            offset: [ 15, 0 ],
+            offset: [15, 0],
             positioning: "center-left"
         });
         this.data.mapLayer.addOverlay(this.data.helpmaptooltip);
     }
+
     createMeasuremaptooltip() {
         if (this.data.measuremaptooltipElement) {
             this.data.measuremaptooltipElement.parentNode.removeChild(this.data.measuremaptooltipElement);
@@ -222,6 +239,7 @@ class MapHelpers {
         });
         this.data.mapLayer.addOverlay(this.data.measuremaptooltip);
     }
+
     static formatArea(polygon) {
         let area = getArea(polygon);
         let output;
@@ -232,6 +250,7 @@ class MapHelpers {
         }
         return output;
     }
+
     static formatLength(line) {
         let length = getLength(line);
         let output;
@@ -242,6 +261,7 @@ class MapHelpers {
         }
         return output;
     }
+
     static formatCircleRadius(line) {
         let length = line.getRadius() * METERS_PER_UNIT["m"];
         let output;
