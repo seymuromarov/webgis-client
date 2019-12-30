@@ -44,7 +44,7 @@
                 >
                     <transition-group type="transition" name="flip-list">
                         <li
-                            class="list-group-item"
+                            class="list-group-item list-group-item--custom"
                             v-for="(element) in dynamicLayerList"
                             :key="element.name"
                             style="text-align: left"
@@ -159,7 +159,7 @@
                 >
                     <transition-group type="transition" name="flip-list">
                         <li
-                            class="list-group-item"
+                            class="list-group-item list-group-item--custom"
                             v-for="(element) in baseLayerList"
                             :key="element.name"
                             style="text-align: left"

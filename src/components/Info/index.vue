@@ -39,10 +39,11 @@
 
                     <!-- Modal Body -->
                     <div class="modal-body" v-if="isOpen">
-                        <About v-show="activeTab === 'about'" />
-                        <FAQ v-show="activeTab === 'faq'" />
-                        <ReleaseNotes v-show="activeTab === 'releaseNotes'" />
-                        <Contact v-show="activeTab === 'contact'" />
+                        <About v-if="activeTab === 'about'" />
+                        <FAQ v-if="activeTab === 'faq'" />
+                        <ReleaseNotes v-if="activeTab === 'releaseNotes'" />
+                        <Contact v-if="activeTab === 'contact'" />
+                        <Forum v-if="activeTab === 'forum'" />
                     </div>
                 </div>
             </div>
@@ -55,6 +56,8 @@ import About from "./About";
 import FAQ from "./FAQ";
 import ReleaseNotes from "./ReleaseNotes";
 import Contact from "./Contact";
+import Forum from "./Forum/index";
+import API from "../../services/InfoService";
 
 export default {
     name: "InfoModal",
@@ -62,7 +65,8 @@ export default {
         About,
         FAQ,
         ReleaseNotes,
-        Contact
+        Contact,
+        Forum
     },
     props: {
         isOpen: {
@@ -87,8 +91,12 @@ export default {
                     text: "Release notes"
                 },
                 {
+                    key: "forum",
+                    text: "Forum"
+                },
+                {
                     key: "contact",
-                    text: "Contact"
+                    text: "Contact us"
                 }
             ]
         };
@@ -108,41 +116,45 @@ export default {
     &.overlay {
         background-color: rgba(0, 0, 0, 0.5);
     }
-    .modal-content {
-        border: 1px solid #d3d3d3;
-        .modal-header {
-            padding: 0px;
-            border-bottom: 0;
-            position: relative;
-            background-color: #f5f5f5;
-            .nav {
-                width: 100%;
+    .modal-dialog {
+        max-width: 650px;
+        .modal-content {
+            border: 1px solid #d3d3d3;
+            .modal-header {
+                padding: 0px;
+                border-bottom: 0;
+                position: relative;
+                background-color: #f5f5f5;
+                .nav {
+                    width: 100%;
 
-                &.nav-tabs {
-                    border-bottom: 1px solid #dee2e6;
-                    .nav-link {
-                        color: #5a5a5a;
-                        padding: 0.35rem 1rem;
-                        &.active {
-                            border-color: #d3d3d3 #d3d3d3 #fff;
+                    &.nav-tabs {
+                        border-bottom: 1px solid #dee2e6;
+                        .nav-link {
+                            color: #5a5a5a;
+                            padding: 0.35rem 1rem;
+                            &.active {
+                                border-color: #d3d3d3 #d3d3d3 #fff;
+                            }
+                        }
+                    }
+                    .close {
+                        position: absolute;
+                        right: 10px;
+                        height: 100%;
+                        padding: 0;
+                        margin: 0;
+
+                        &:focus {
+                            outline: none;
                         }
                     }
                 }
-                .close {
-                    position: absolute;
-                    right: 10px;
-                    height: 100%;
-                    padding: 0;
-                    margin: 0;
-
-                    &:focus {
-                        outline: none;
-                    }
-                }
             }
-        }
-        .modal-body {
-            text-align: left;
+            .modal-body {
+                text-align: left;
+                min-height: 400px;
+            }
         }
     }
 }

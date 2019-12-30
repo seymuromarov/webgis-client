@@ -34,7 +34,7 @@
             </div>
             <button
                 type="submit"
-                class="btn btn-outline-primary submit-btn"
+                class="btn btn-primary submit-btn"
                 @click.prevent="sendMessage"
                 :disabled="loading"
             >Submit</button>
