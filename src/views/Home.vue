@@ -13,7 +13,7 @@
             </div>
             <hr/>
 
-            <h5 class="text-left-layer">
+            <h5 class="text-left-layer"  v-if="dynamicLayerList.length>0" >
                 Dynamic Layers
                 <span>
                     <i
@@ -125,8 +125,8 @@
                 </draggable>
             </transition>
             <SimpleFilterModal ref="reportFilterModal"/>
-            <hr/>
-            <h5 class="text-left-layer">
+            <hr>
+            <h5 class="text-left-layer" v-if="baseLayerList.length>0">
                 Basemaps
                 <span>
                     <i
@@ -562,6 +562,7 @@
         DragRotateAndZoom,
         DragAndDrop
     } from "ol/interaction";
+    import TileDebug from "ol/source/TileDebug";
     import {Circle as CircleStyle, Fill, Stroke, Style, Icon} from "ol/style.js";
     import {
         Tile as TileLayer,
@@ -573,6 +574,7 @@
     import MVT from "ol/format/MVT.js";
     import {createXYZ} from 'ol/tilegrid';
     import {
+        OSM,
         TileArcGISRest,
         Vector as VectorSource,
         ImageArcGISRest
@@ -778,6 +780,14 @@
                 features: []
             });
             this.vector.setZIndex(9999);
+
+            var debug = new TileLayer({
+                source: new TileDebug({
+                    projection: "EPSG:3857",
+                    tileGrid: new OSM().getTileGrid()
+                })
+            });
+
             let gray = new TileLayer({
                 source: new XYZ({
                     crossOrigin: "Anonymous",
@@ -793,7 +803,7 @@
                 });
                 this.layers = [gray, this.vector];
 
-                let zoom = 7;
+                let zoom = 15;
                 let center = fromLonLat([47.82858, 40.3598414]);
                 let rotation = 0;
 
@@ -1255,19 +1265,34 @@
             },
 
             async getTableData(service, layerId, layerName, query) {
+                console.log("TCL: getTableData -> service", service)
                 let token;
                 if (service.apiFrom === "emlak") {
                     token = this.emlakToken;
                 } else {
                     token = this.token;
                 }
-                let data = {
+                let response;
+                if(service.resourceType==='azcArcgis')
+                {
+                    let params = {
                     token: token,
                     name: service.name,
                     layer: layerId,
                     ...query
-                };
-                let response = await LayerService.getTableData(data);
+                     };
+
+                    response = await LayerService.getTableData(params);
+                }
+                else
+                { 
+                      let params = {
+                        layerId: service.id,                  
+                    };
+                    response = await LayerService.getLocalTableData(params);
+                  
+                }           
+               
 
                 if (response.data.error !== undefined) {
                     return;
@@ -1458,12 +1483,12 @@
                                 format: new MVT(),
                                 url: URL + "/" + MAP_URLS.MVT + `/${service.id}/{z}/{x}/{y}.pbf`,
                             }),
-                            style: new Style({
-                                stroke: new Stroke({
-                                    color: "rgba(0, 0, 255, 1.0)",
-                                    width: 2
-                                })
-                            })
+                            // style: new Style({
+                            //     stroke: new Stroke({
+                            //         color: "rgba(0, 0, 255, 1.0)",
+                            //         width: 2
+                            //     })
+                            // })
                         });
                     } else {
                         new_layer = new ImageLayer({
@@ -1549,31 +1574,37 @@
                 });
             },
             async dynamicLayersReset(service, status) {
+                console.log("TCL: dynamicLayersReset -> service", service)
                 let token;
                 if (service.apiFrom === "emlak") {
                     token = this.emlakToken;
                 } else {
                     token = this.token;
                 }
-                let response = await LayerService.getLayerDynamic({
-                    token: token,
-                    name: service.name
-                });
-
+               
+    
                 let colorEnabled = false;
-                if (response.data.layers[0].drawingInfo !== undefined) {
-                    if (
-                        response.data.layers[0].drawingInfo.renderer.symbol !==
-                        undefined
-                    ) {
+                if(service.resourceType==='azcArcgis')
+                {
+                     let response = await LayerService.getLayerDynamic({
+                            token: token,
+                            name: service.name
+                     });
+                    if (response.data.layers[0].drawingInfo !== undefined) {
                         if (
-                            response.data.layers[0].drawingInfo.renderer.symbol
-                                .color !== undefined
+                            response.data.layers[0].drawingInfo.renderer.symbol !==
+                            undefined
                         ) {
-                            colorEnabled = true;
+                            if (
+                                response.data.layers[0].drawingInfo.renderer.symbol
+                                    .color !== undefined
+                            ) {
+                                colorEnabled = true;
+                            }
                         }
                     }
                 }
+                
                 this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
                     item.color = item.color ? item.color : false;
 
