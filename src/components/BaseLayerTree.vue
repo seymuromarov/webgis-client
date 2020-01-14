@@ -17,7 +17,7 @@
                     :id="item.name"
                     :name="item.name"
                     type="checkbox"
-                    v-model="checkboxValue"
+                    v-model="selectedLayers[item.id]"
                     @click="selectService(item, item.order, false, $event)"
             />
             <i class="checkbox-icon far fa-check-circle"></i>
@@ -87,7 +87,7 @@
                     v-for="(element, index) in item.children"
                     :key="index"
             >
-                <treeItem :item="element"></treeItem>
+                <treeItem :item="element" :selectedLayers="selectedLayers"></treeItem>
             </li>
         </ul>
         <ul v-show="isOpen" v-if="isCategory(item)">
@@ -96,7 +96,7 @@
                     v-for="(element, index) in item.layers"
                     :key="index"
             >
-                <treeItem :item="element" @selectService="selectService"></treeItem>
+                <treeItem :item="element" :selectedLayers="selectedLayers" @selectService="selectService"></treeItem>
             </li>
         </ul>
     </div>
@@ -104,7 +104,7 @@
 <script>
     export default {
         name: "treeItem",
-        props: ["item", "checkboxValue"],
+        props: ["item", "selectedLayers"],
         data: function () {
             return {
                 isOpen: false
