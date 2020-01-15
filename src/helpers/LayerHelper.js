@@ -24,6 +24,7 @@ class LayerHelper {
                     : null,
             layersVisibility: false,
             collapseVisibility: false,
+           
             layers: null
         };
     }
@@ -59,11 +60,11 @@ class LayerHelper {
                 mapType: val.mapTypeId,
                 layersVisibility: false,
                 collapseVisibility: false,
-
+                query:{where:""},
                 layers: null,
                 apiFrom: "internal"
             }));
-
+            
         return {
             baseLayers,
             dynamicLayers

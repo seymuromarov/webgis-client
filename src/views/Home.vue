@@ -13,7 +13,7 @@
             </div>
             <hr/>
 
-            <h5 class="text-left-layer">
+            <h5 class="text-left-layer"  v-if="dynamicLayerList.length>0" >
                 Dynamic Layers
                 <span>
                     <i
@@ -125,8 +125,8 @@
                 </draggable>
             </transition>
             <SimpleFilterModal ref="reportFilterModal"/>
-            <hr/>
-            <h5 class="text-left-layer">
+            <hr>
+            <h5 class="text-left-layer" v-if="baseLayerList.length>0">
                 Basemaps
                 <span>
                     <i
@@ -382,7 +382,7 @@
                         class="action-button-class btn btn-control"
                         style="bottom: 10px;left: .5rem;"
                         @click="exportData"
-                        title="Export to geojson"
+                        title="Export to KMZ"
                         v-show="!isTabelVisible"
                 >
                     <i class="fas fa-file-download"></i>
@@ -394,7 +394,6 @@
                 ref="dataTable"
                 @showFilterModal="showFilterModal"
                 @mapSetCenter="mapSetCenter"
-                @filterDataQuery="filterDataQuery"
         />
 
 
@@ -576,6 +575,7 @@
         DragRotateAndZoom,
         DragAndDrop
     } from "ol/interaction";
+    import TileDebug from "ol/source/TileDebug";
     import {Circle as CircleStyle, Fill, Stroke, Style, Icon} from "ol/style.js";
     import {
         Tile as TileLayer,
@@ -587,6 +587,7 @@
     import MVT from "ol/format/MVT.js";
     import {createXYZ} from 'ol/tilegrid';
     import {
+        OSM,
         TileArcGISRest,
         Vector as VectorSource,
         ImageArcGISRest
@@ -794,6 +795,14 @@
                 features: []
             });
             this.vector.setZIndex(9999);
+
+            var debug = new TileLayer({
+                source: new TileDebug({
+                    projection: "EPSG:3857",
+                    tileGrid: new OSM().getTileGrid()
+                })
+            });
+
             let gray = new TileLayer({
                 source: new XYZ({
                     crossOrigin: "Anonymous",
@@ -809,7 +818,7 @@
                 });
                 this.layers = [gray, this.vector];
 
-                let zoom = 7;
+                let zoom = 15;
                 let center = fromLonLat([47.82858, 40.3598414]);
                 let rotation = 0;
 
@@ -1010,6 +1019,15 @@
             });
         },
         methods: {
+
+            objectToQueryString(obj) {
+                var str = [];
+                for (var p in obj)
+                    if (obj.hasOwnProperty(p)) {
+                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    }
+                return "?"+str.join("&");
+            },
             updateHash() {
                 let view = this.mapLayer.getView();
                 let state = {
@@ -1099,14 +1117,14 @@
                 );
                 this.$modal.hide("filter-modal");
             },
-            filterDataQuery(query) {
-                this.getTableData(
-                    this.tableNextRequest["service"],
-                    this.tableNextRequest["layerId"],
-                    this.tableNextRequest["layerName"],
-                    query
-                );
-            },
+            // filterDataQuery(query) {
+            //     this.getTableData(
+            //         this.tableNextRequest["service"],
+            //         this.tableNextRequest["layerId"],
+            //         this.tableNextRequest["layerName"],
+            //         query
+            //     );
+            // },
             addValueToQuery(value) {
                 if (typeof value == "string") value = "'" + value + "'";
                 this.filterQuery += value + " ";
@@ -1271,18 +1289,49 @@
             },
 
             async getTableData(service, layerId, layerName, query) {
+                var layer=this.getLayer(service.id);
+    
                 let token;
-                let data = {
+                if (service.apiFrom === "emlak") {
+                    token = this.emlakToken;
+                } else {
+                    token = this.token;
+                }
+                let response;
+
+               
+
+                if(service.resourceType==='azcArcgis')
+                {
+                    let params = {
                     token: token,
                     name: service.name,
                     layer: layerId,
                     ...query
-                };
-                let response = await LayerService.getTableData(data);
+                     };
 
+                    response = await LayerService.getTableData(params);
+                }
+                else
+                { 
+                   
+                  
+                      let params = {
+                        layerId: service.id,  
+                        ...query                
+                    };
+                    service.query=query;
+                    console.log(service.query);
+                    response = await LayerService.getLocalTableData(params);
+                    this.refreshLayer(service.id);
+                }           
+               
+              
                 if (response.data.error !== undefined) {
                     return;
                 }
+
+
 
                 let self = this;
                 this.tableNextRequest["service"] = service;
@@ -1305,12 +1354,23 @@
                     "Shape_Length",
                     "Shape_Area"
                 ];
+                //TO LOWER CASE
+                defaultUnCheckedColumns=defaultUnCheckedColumns.map(function(value,index){
+                    return value.toLowerCase();
+                });
+                tableHeaders=tableHeaders.map(function(value,index){
+                    return value.toLowerCase();
+                });
+
+
                 for (let alias in tableHeaders) {
-                    if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
-                        checkedColumnsData.push(tableHeaders[alias]);
+                    
+                    if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {                     
+                        checkedColumnsData.push(tableHeaders[alias]);                    
                         checkedColumns.push(tableHeaders[alias]);
                     }
                 }
+
                 tableHeaders = tableHeaders.map((item, index) => {
                     let name = item;
                     for (let k in target) {
@@ -1340,6 +1400,9 @@
                 });
                 this.filterQuery = "";
                 this.filterValues = [];
+
+
+                // this.dynamicLayersReset(service, true);
             },
             async getGeometryData(service, layer_id, layer_name, query, geometry) {
                 var params = {
@@ -1472,18 +1535,14 @@
                         service.resourceType.trim() === "local"
                     ) {
                         new_layer = new VectorTileLayer({
+                            id:service.id,
                             declutter: false,
                             ...zoomLevelProperties,
                             source: new VectorTileSource({
                                 format: new MVT(),
-                                url: URL + "/" + MAP_URLS.MVT + `/${service.id}/{z}/{x}/{y}.pbf`,
+                                url: URL + "/" + MAP_URLS.MVT + `/${service.id}/{z}/{x}/{y}/`+this.objectToQueryString(service.query),
                             }),
-                            style: new Style({
-                                stroke: new Stroke({
-                                    color: "rgba(0, 0, 255, 1.0)",
-                                    width: 2
-                                })
-                            })
+                          
                         });
                     } else {
                         new_layer = new ImageLayer({
@@ -1533,6 +1592,31 @@
                     new_layer.setZIndex(500 - index);
                 }
             },
+            refreshLayer(id)
+            {
+                    var layer=this.getLayer(id);
+                    if(layer!==null)
+                    {
+                        layer.getSource().clear();
+                        layer.getSource().changed();
+                        layer.getSource().setTileLoadFunction(layer.getSource().getTileLoadFunction());
+                        layer.getSource().refresh({force:true});
+                    }                            
+                
+            },
+            getLayer(id)
+            {
+                let layer= null;
+                this.mapLayer.getLayers().forEach(function (lyr) {
+                    var layerId=lyr.values_.id;
+                        if(layerId!==undefined && layerId===id)
+                        {
+                            layer =  lyr;
+                        }
+                       
+                    });
+                return layer;
+            },
             setBaseLayout(index) {
                 let layers = this.mapLayer.getLayers().getArray();
                 layers[0].setSource(this.baseMaps[index]);
@@ -1565,31 +1649,37 @@
                 });
             },
             async dynamicLayersReset(service, status) {
+                console.log("TCL: dynamicLayersReset -> service, status", service, status)
                 let token;
                 if (service.apiFrom === "emlak") {
                     token = this.emlakToken;
                 } else {
                     token = this.token;
                 }
-                let response = await LayerService.getLayerDynamic({
-                    token: token,
-                    name: service.name
-                });
-
+               
+    
                 let colorEnabled = false;
-                if (response.data.layers[0].drawingInfo !== undefined) {
-                    if (
-                        response.data.layers[0].drawingInfo.renderer.symbol !==
-                        undefined
-                    ) {
+                if(service.resourceType==='azcArcgis')
+                {
+                     let response = await LayerService.getLayerDynamic({
+                            token: token,
+                            name: service.name
+                     });
+                    if (response.data.layers[0].drawingInfo !== undefined) {
                         if (
-                            response.data.layers[0].drawingInfo.renderer.symbol
-                                .color !== undefined
+                            response.data.layers[0].drawingInfo.renderer.symbol !==
+                            undefined
                         ) {
-                            colorEnabled = true;
+                            if (
+                                response.data.layers[0].drawingInfo.renderer.symbol
+                                    .color !== undefined
+                            ) {
+                                colorEnabled = true;
+                            }
                         }
                     }
                 }
+                
                 this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
                     item.color = item.color ? item.color : false;
 
@@ -1729,7 +1819,6 @@
             },
             saveColor() {
                 this.$store.dispatch("SAVE_COLORPICKER_VISIBILITY", false);
-                console.log(this.colorPicker)
 
                 this.deleteLayers(this.colorPicker.colorPicker.layer);
 

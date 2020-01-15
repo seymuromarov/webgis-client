@@ -31,6 +31,14 @@ export default {
             }
         });
     },
+    // getLocalLayerDynamic(params) {
+    //     return request.get(URL + "/api/data/", {
+    //         params: {
+    //             f: "json",
+    //             token: params.token
+    //         }
+    //     });
+    // },
     getLayerDynamic(params) {
         return request.get(URL + "/api/map/service/" + params.name + "/MapServer/layers", {
             params: {
@@ -55,7 +63,11 @@ export default {
             }
         });
     },
-
+   getLocalTableData(params) {
+        return request.get(URL + "/api/datatable/"+params.layerId+"/", {
+            params: params
+        });
+    },
     getTableData(params) {
         return request.get(URL + "/api/data/get/" + params.name + "/MapServer/" + params.layer + "/query/", {
             params: {
