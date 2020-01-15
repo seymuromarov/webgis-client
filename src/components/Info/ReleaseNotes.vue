@@ -13,6 +13,7 @@
 <script>
 import API from "../../services/InfoService";
 import dayjs from "dayjs";
+
 import Loader from "./parts/Loader";
 
 export default {
@@ -22,21 +23,21 @@ export default {
     },
     data() {
         return {
-            notes: [],
             loading: false
         };
     },
     methods: {
         getReleaseNotes() {
+            this.loading = true;
+
             API.getReleaseNotes()
                 .then(response => {
                     if (response.data) {
-                        this.notes = response.data;
+                        this.releaseNotesData = response.data;
                     }
                     this.loading = false;
                 })
                 .catch(error => {
-                    console.log(error);
                     this.loading = false;
                 });
         },
@@ -45,8 +46,14 @@ export default {
         }
     },
     mounted() {
-        this.loading = true;
-        this.getReleaseNotes();
+        if (!this.notes.length) {
+            this.getReleaseNotes();
+        }
+    },
+    computed: {
+        notes() {
+            return this.$store.state.information.releaseNotes.data;
+        }
     }
 };
 </script>

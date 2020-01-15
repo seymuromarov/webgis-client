@@ -1,46 +1,6 @@
 <template>
     <div>
         <Loader v-if="loading" />
-
-        <!-- <div class="wrap-collabsible">
-            <input
-                id="collapsible"
-                class="toggle"
-                type="checkbox"
-                @change="labelClick"
-                data-index="0"
-            />
-            <label for="collapsible" class="lbl-toggle">More Info</label>
-            <div class="collapsible-content">
-                <div class="content-inner">
-                    <p>
-                        QUnit is by calling one of the object that are embedded in JavaScript, and faster JavaScript program could also used with
-                        its elegant, well documented, and functional programming using JS, HTML pages Modernizr is a popular browsers without
-                        plug-ins. Test-Driven Development.
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="wrap-collabsible">
-            <input
-                id="collapsible2"
-                class="toggle"
-                type="checkbox"
-                @change="labelClick"
-                data-index="1"
-            />
-            <label for="collapsible2" class="lbl-toggle">More Info</label>
-            <div class="collapsible-content">
-                <div class="content-inner">
-                    <p>
-                        QUnit is by calling one of the object that are embedded in JavaScript, and faster JavaScript program could also used with
-                        its elegant, well documented, and functional programming using JS, HTML pages Modernizr is a popular browsers without
-                        plug-ins. Test-Driven Development.
-                    </p>
-                </div>
-            </div>
-        </div>-->
-
         <div class="accordion">
             <!-- Accordion item -->
             <div class="card" v-for="question in questions" :key="question.id">
@@ -48,14 +8,14 @@
                     <h5 class="mb-0">
                         <button
                             class="btn btn-link"
-                            :class="{'collapsed': activeQuestionId !== question.id}"
+                            :class="{'collapsed': activeQuestionIds !== question.id}"
                             @click="toggleAccordion(question.id)"
                         >{{ question.question }}</button>
                     </h5>
                 </div>
 
                 <transition name="collapse" delay="0">
-                    <div v-show="question.id === activeQuestionId" class="collapse-body">
+                    <div v-show="activeQuestionIds.includes(question.id)" class="collapse-body">
                         <div class="card-body">{{ question.answer }}</div>
                     </div>
                 </transition>
@@ -75,30 +35,31 @@ export default {
     },
     data() {
         return {
-            activeQuestionId: null,
-            questions: [],
+            activeQuestionIds: [],
             loading: false
         };
     },
     methods: {
         getFAQ() {
+            this.loading = true;
+
             API.getFAQ()
                 .then(response => {
                     if (response.data) {
-                        this.questions = response.data;
+                        this.$store.commit("SET_FAQ_DATA", response.data);
                     }
                     this.loading = false;
                 })
                 .catch(error => {
-                    console.log(error);
                     this.loading = false;
                 });
         },
         toggleAccordion(id) {
-            if (this.activeQuestionId === id) {
-                this.activeQuestionId = null;
+            if (this.activeQuestionIds.includes(id)) {
+                const index = this.activeQuestionIds.findIndex(x => x === id);
+                this.activeQuestionIds.splice(index, 1);
             } else {
-                this.activeQuestionId = id;
+                this.activeQuestionIds.push(id);
             }
         },
         labelClick(e) {
@@ -117,8 +78,14 @@ export default {
         }
     },
     mounted() {
-        this.loading = true;
-        this.getFAQ();
+        if (!this.questions.length) {
+            this.getFAQ();
+        }
+    },
+    computed: {
+        questions() {
+            return this.$store.state.information.faq.data;
+        }
     }
 };
 </script>

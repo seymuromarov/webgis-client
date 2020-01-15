@@ -44,10 +44,10 @@
                 >
                     <transition-group type="transition" name="flip-list">
                         <li
-                                class="list-group-item"
-                                v-for="(element) in dynamicLayerList"
-                                :key="element.name"
-                                style="text-align: left"
+                            class="list-group-item list-group-item--custom"
+                            v-for="(element) in dynamicLayerList"
+                            :key="element.name"
+                            style="text-align: left"
                         >
                             <div class="row">
                                 <div class="col-12 layerDiv">
@@ -154,10 +154,10 @@
                 >
                     <transition-group type="transition" name="flip-list">
                         <li
-                                class="list-group-item"
-                                v-for="(element) in baseLayerList"
-                                :key="element.name"
-                                style="text-align: left"
+                            class="list-group-item list-group-item--custom"
+                            v-for="(element) in baseLayerList"
+                            :key="element.name"
+                            style="text-align: left"
                         >
                             <TreeView
                                     :item="element"

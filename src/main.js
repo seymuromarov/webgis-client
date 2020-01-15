@@ -12,6 +12,16 @@ import VModal from "vue-js-modal";
 import Toasted from "vue-toasted";
 import "ol-geocoder/dist/ol-geocoder.min.css";
 import "ol-geocoder/dist/ol-geocoder.js";
+import VueSweetalert2 from 'vue-sweetalert2';
+import VueQuillEditor from 'vue-quill-editor'
+
+// Quill Text editor styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+// VueSweetalert2 Styles
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 Vue.use(Toasted);
 Vue.use(VModal);
@@ -20,6 +30,8 @@ Vue.use(VueCookie);
 
 Vue.config.productionTip = false;
 Vue.use(ol);
+Vue.use(VueSweetalert2);
+Vue.use(VueQuillEditor)
 
 new Vue({
     router,
