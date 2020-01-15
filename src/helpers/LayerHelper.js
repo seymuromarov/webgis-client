@@ -24,6 +24,7 @@ class LayerHelper {
                     : null,
             layersVisibility: false,
             collapseVisibility: false,
+           
             layers: null
         };
     }
@@ -43,7 +44,6 @@ class LayerHelper {
         let baseLayers = layers
             .filter(c => c.mapTypeId === "basemap" || c.layers !== undefined)
             .map((val, index) => this.recursiveMap(val, index));
-        console.log("TCL: LayerHelper -> baseLayers", baseLayers)
 
 
         let dynamicLayers = layers
@@ -60,11 +60,10 @@ class LayerHelper {
                 mapType: val.mapTypeId,
                 layersVisibility: false,
                 collapseVisibility: false,
-
+                query:{where:""},
                 layers: null,
                 apiFrom: "internal"
             }));
-        console.log("TCL: LayerHelper -> dynamicLayers", dynamicLayers)
             
         return {
             baseLayers,

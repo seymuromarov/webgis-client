@@ -364,6 +364,7 @@
                         data => data != alias
                     );
                     this.checkedColumns = this.checkedColumns.filter(data => data != alias);
+                 
                 }
             },
             async applyFilter() {           
