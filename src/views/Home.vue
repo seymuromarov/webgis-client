@@ -725,7 +725,9 @@
                 sketch: null,
                 typeSelect: null,
                 // isTabelVisible: false,
-                draw: null,
+                draw: null,                
+                stackedTableFeaturesHeader: [],
+                tableFeaturesHeader: [],
                 tableFeaturesData: [],
                 tableFeatureData: [],
                 tableNextRequest: [],
@@ -1097,7 +1099,9 @@
 
             filterSelectedColumn(column) {
                 this.filterValues = [];
+                console.log( this.tableFeaturesData);
                 for (let i = 0; i < this.tableFeaturesData.length; i++) {
+                    
                     if (
                         !this.filterValues.includes(
                             this.tableFeaturesData[i].attributes[column]
@@ -1320,9 +1324,8 @@
                         ...query                
                     };
                     service.query=query;
-                    console.log(service.query);
                     response = await LayerService.getLocalTableData(params);
-                    this.refreshLayer(service);
+                    // this.refreshLayer(service);
                 }           
                
               
@@ -1353,23 +1356,23 @@
                     "Shape_Length",
                     "Shape_Area"
                 ];
-                //TO LOWER CASE
-                defaultUnCheckedColumns=defaultUnCheckedColumns.map(function(value,index){
-                    return value.toLowerCase();
-                });
-                tableHeaders=tableHeaders.map(function(value,index){
-                    return value.toLowerCase();
-                });
+                // //TO LOWER CASE
+                // defaultUnCheckedColumns=defaultUnCheckedColumns.map(function(value,index){
+                //     return value.toLowerCase();
+                // });
+                // tableHeaders=tableHeaders.map(function(value,index){
+                //     return value.toLowerCase();
+                // });
 
 
                 for (let alias in tableHeaders) {
                     
                     if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {                     
                         checkedColumnsData.push(tableHeaders[alias]);                    
+                       
                         checkedColumns.push(tableHeaders[alias]);
                     }
                 }
-
                 tableHeaders = tableHeaders.map((item, index) => {
                     let name = item;
                     for (let k in target) {
@@ -1397,6 +1400,9 @@
                     checkedColumnsData,
                     checkedColumns
                 });
+                this.tableFeaturesData=tableData;
+                this.tableFeaturesHeader=tableHeaders;
+                this.stackedTableFeaturesHeader=tableHeaders;
                 this.filterQuery = "";
                 this.filterValues = [];
 
@@ -1857,12 +1863,15 @@
             isTabelVisible() {
                 return this.$store.state.dataTable.isVisible;
             },
-            stackedTableFeaturesHeader() {
-                return this.$store.state.dataTable.tableStackedHeaders;
-            },
-            tableFeaturesHeader() {
-                return this.$store.state.dataTable.tableHeaders;
-            },
+            // stackedTableFeaturesHeader() {
+            //     return this.$store.state.dataTable.tableStackedHeaders;
+            // },
+            // tableFeaturesData () {
+            //     return this.$store.state.dataTable.tableData;
+            // },
+            // tableFeaturesHeader() {
+            //     return this.$store.state.dataTable.tableHeaders;
+            // },
             selectedFillColor() {
                 return this.$store.state.colorPicker.fillColor;
             },

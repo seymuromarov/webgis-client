@@ -65,6 +65,12 @@ const actions = {
   SAVE_SIMPLE_FILTER_VISIBLE(context, isSimpleFilterVisible) {
     context.commit("SET_SIMPLE_FILTER_VISIBLE", isSimpleFilterVisible);
   },
+  SAVE_DATATABLE_CHECKED_COLUMNS(context, checkedColumns) {
+    context.commit("SET_DATATABLE_CHECKED_COLUMNS", checkedColumns);
+  },
+  SAVE_DATATABLE_CHECKED_COLUMNS_DATA(context, checkedColumnsData) {
+    context.commit("SET_DATATABLE_CHECKED_COLUMNS_DATA", checkedColumnsData);
+  },
   SAVE_DATATABLE_SERVICE_NAME(context, serviceName) {
     context.commit("SET_DATATABLE_SERVICE_NAME", serviceName);
   },

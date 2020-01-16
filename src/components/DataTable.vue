@@ -355,14 +355,23 @@
                 return columns;
             },
             selectColumns(alias, index, e) {
+            console.log("TCL: selectColumns -> alias", alias)
+            console.log("TCL: selectColumns -> this.checkedColumns", this.checkedColumns)
+            console.log("TCL: selectColumns -> this.checkedColumnsData", this.checkedColumnsData)
                 if (e.target.checked) {
-                    this.checkedColumns.push(alias);
+                    this.checkedColumns.push(alias);   
 
                     this.checkedColumnsData.push(this.tableStackedHeaders[index]);
+                    
                 } else {
+
+                    //  this.checkedColumnsData.splice(index, 1);
+                    //  this.checkedColumns.splice(index, 1);
                     this.checkedColumnsData = this.checkedColumnsData.filter(
-                        data => data != alias
+                        data => data != this.tableStackedHeaders[this.tableHeaders.indexOf(alias)]
+                    
                     );
+                    console.log("TCL: selectColumns -> this.tableStackedHeaders", this.tableStackedHeaders)
                     this.checkedColumns = this.checkedColumns.filter(data => data != alias);
                  
                 }
@@ -464,8 +473,9 @@
             tableHeaders() {
                 return this.$store.state.dataTable.tableHeaders;
             },
-            tableStackedHeaders() {
-                return this.$store.state.dataTable.tableStackedHeaders;
+            tableStackedHeaders: {
+                get() { return this.$store.state.dataTable.tableStackedHeaders ;},
+                set(value) { this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS",value )}
             },
             tableHeadersWithAlias() {
                 return this.$store.state.dataTable.tableHeadersWithAlias;
@@ -476,12 +486,19 @@
             target() {
                 return this.$store.state.dataTable.target;
             },
-            checkedColumnsData() {
-                return this.$store.state.dataTable.checkedColumnsData;
+            checkedColumnsData:    
+            {
+                get() { return this.$store.state.dataTable.checkedColumnsData;},
+                set(value) { this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA",value )}
             },
-            checkedColumns() {
-                return this.$store.state.dataTable.checkedColumns;
+            checkedColumns:    
+            {
+                get() {  return this.$store.state.dataTable.checkedColumns;},
+                set(value) { this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS",value )}
             },
+            // checkedColumns() {
+            //     return this.$store.state.dataTable.checkedColumns;
+            // },
             lastBBOXOfShape() {
                 return this.$store.state.dataTable.lastBBOXOfShape;
             },
