@@ -1313,17 +1313,16 @@
                     response = await LayerService.getTableData(params);
                 }
                 else
-                { 
-                   
+                {                  
                   
-                      let params = {
+                    let params = {
                         layerId: service.id,  
                         ...query                
                     };
                     service.query=query;
                     console.log(service.query);
                     response = await LayerService.getLocalTableData(params);
-                    this.refreshLayer(service.id);
+                    this.refreshLayer(service);
                 }           
                
               
@@ -1592,16 +1591,19 @@
                     new_layer.setZIndex(500 - index);
                 }
             },
-            refreshLayer(id)
+            refreshLayer(service)
             {
-                    var layer=this.getLayer(id);
-                    if(layer!==null)
-                    {
-                        layer.getSource().clear();
-                        layer.getSource().changed();
-                        layer.getSource().setTileLoadFunction(layer.getSource().getTileLoadFunction());
-                        layer.getSource().refresh({force:true});
-                    }                            
+                
+                    // var layer=this.getLayer(id);
+                    // if(layer!==null)
+                    // {
+                    //     layer.getSource().clear();
+                    //     layer.getSource().changed();
+                    //     layer.getSource().setTileLoadFunction(layer.getSource().getTileLoadFunction());
+                    //     layer.getSource().refresh({force:true});
+                    // }       
+                    this.deleteLayers(service)
+                    this.addLayers(service, service.order, true);              
                 
             },
             getLayer(id)
