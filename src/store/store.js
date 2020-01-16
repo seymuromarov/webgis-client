@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import {auth, dataTable, colorPicker} from "./modules";
+import modules from "./modules";
 
 Vue.use(Vuex);
 
@@ -17,9 +17,5 @@ export default new Vuex.Store({
         }
     },
     actions: {},
-    modules: {
-        auth,
-        dataTable,
-        colorPicker
-    }
+    modules
 });

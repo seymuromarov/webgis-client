@@ -23,36 +23,45 @@ import LoginService from "@/services/LoginService";
 import { getToken, setToken } from "../utils/token";
 
 export default {
-  mounted() {
-    this.error = this.$store.getters.authError;
-  },
-  data: function() {
-    return {
-      username: "",
-      password: "",
-      error: ""
-    };
-  },
-  methods: {
-    login() {
-      const { username, password } = this;
-      this.LayerService(username, password);
+    mounted() {
+        this.error = this.$store.getters.authError;
     },
-    async LayerService(username, password) {
-      const response = await LoginService.getToken({
-        username: username,
-        password: password
-      });
-      // response.data.username = username
-      if (!response.data.hasOwnProperty("error")) {
-        // this.$store.commit('getToken', response.data)
-        this.$cookie.set("username", username, { expires: "1D" });
-        this.$store.dispatch("SAVE_AUTH_TOKEN", response.data.token);
-        setToken(response.data.token);
-        this.$router.push("/");
-      }
+    data: function() {
+        return {
+            username: "",
+            password: "",
+            error: ""
+        };
+    },
+    methods: {
+        login() {
+            const { username, password } = this;
+            this.LayerService(username, password);
+        },
+        async LayerService(username, password) {
+            const response = await LoginService.getToken({
+                username: username,
+                password: password
+            });
+            // response.data.username = username
+            if (!response.data.hasOwnProperty("error")) {
+                // this.$store.commit('getToken', response.data)
+                this.$cookie.set("username", username, { expires: "1D" });
+                this.$store.dispatch("SAVE_AUTH_TOKEN", response.data.token);
+
+                // Check admin privilege
+                const isAdmin = response.data.user.distinctPermissions.find(
+                    x => x.label.toLowerCase() === "admin"
+                );
+                this.$cookie.set("isAdmin", Boolean(isAdmin), {
+                    expires: "1D"
+                });
+
+                setToken(response.data.token);
+                this.$router.push("/");
+            }
+        }
     }
-  }
 };
 </script>
 
@@ -60,83 +69,83 @@ export default {
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
 .form-block {
-  top: 20%;
-  left: calc(50% - 200px);
-  position: absolute;
-  width: 400px;
-  box-shadow: 2px 4px 20px rgba(0, 0, 0, 0.3);
-  background: #fff;
-  padding: 20px;
-  border: none;
-  text-align: center;
-  box-sizing: border-box;
-  border-radius: 5px;
-  opacity: 0.8;
+    top: 20%;
+    left: calc(50% - 200px);
+    position: absolute;
+    width: 400px;
+    box-shadow: 2px 4px 20px rgba(0, 0, 0, 0.3);
+    background: #fff;
+    padding: 20px;
+    border: none;
+    text-align: center;
+    box-sizing: border-box;
+    border-radius: 5px;
+    opacity: 0.8;
 }
 
 .form input {
-  width: 75%;
-  font-size: 16px;
-  text-align: center;
-  color: #fff;
-  background: #7b7b7b;
-  padding: 5px 10px;
-  margin: 5px 0;
-  outline: none;
-  border-radius: 5px;
-  border: 0;
+    width: 75%;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    background: #7b7b7b;
+    padding: 5px 10px;
+    margin: 5px 0;
+    outline: none;
+    border-radius: 5px;
+    border: 0;
 }
 
 .form input::placeholder {
-  color: #fff;
+    color: #fff;
 }
 
 .form button {
-  display: block;
-  height: 45px;
-  /*width: 45px;*/
-  margin: 20px auto 10px auto;
-  background: #4d8084;
-  color: #fff;
-  font-size: 25px;
-  border: 0;
-  border-radius: 20px;
-  padding: 0 10px;
-  cursor: pointer;
-  outline: 0;
+    display: block;
+    height: 45px;
+    /*width: 45px;*/
+    margin: 20px auto 10px auto;
+    background: #4d8084;
+    color: #fff;
+    font-size: 25px;
+    border: 0;
+    border-radius: 20px;
+    padding: 0 10px;
+    cursor: pointer;
+    outline: 0;
 }
 
 .main {
-  height: 100vh;
-  margin: 0;
-  width: 100vw;
-  background: url("../assets/background.jpg") no-repeat center center fixed;
-  background-size: 100% 100%;
-  font-family: Roboto, sans-serif;
+    height: 100vh;
+    margin: 0;
+    width: 100vw;
+    background: url("../assets/background.jpg") no-repeat center center fixed;
+    background-size: 100% 100%;
+    font-family: Roboto, sans-serif;
 }
 
 .sign-block {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  margin-right: 10px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin-right: 10px;
 }
 
 .sign {
-  float: right;
-  color: #fff;
-  line-height: 40px;
-  font-size: 13px;
-  font-family: Arial;
+    float: right;
+    color: #fff;
+    line-height: 40px;
+    font-size: 13px;
+    font-family: Arial;
 }
 
 .error-message {
-  color: red;
+    color: red;
 }
 
 .logo {
-  display: block;
-  width: 67%;
-  margin: 15px auto 45px auto;
+    display: block;
+    width: 67%;
+    margin: 15px auto 45px auto;
 }
 </style>

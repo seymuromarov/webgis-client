@@ -148,13 +148,13 @@ hr {
 	min-height: 20px;
 }
 
-.list-group-item {
+.list-group-item--custom {
 	cursor: move;
 	padding: 5px 0 !important;
 	border: unset !important;
 }
 
-.list-group-item i {
+.list-group-item--custom i {
 	cursor: pointer;
 }
 
