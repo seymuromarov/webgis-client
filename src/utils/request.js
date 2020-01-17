@@ -1,7 +1,7 @@
 import axios from "axios";
 import {baseUrl} from "../config/baseUrl";
 import {getToken} from "./token";
-
+var qs = require('qs');
 const service = axios.create({
     baseURL: `${baseUrl}/arcgis/rest/services`,
     withCredentials: false
@@ -10,6 +10,11 @@ const service = axios.create({
 service.interceptors.request.use(
     request => {
         request.headers["Authorization"] = "Bearer " + getToken();
+        // request.paramsSerializer= params => {
+        // return qs.stringify(params, {
+        //     arrayFormat: "brackets",
+        //     encode: false
+        // });}
         return request;
     },
     error => {

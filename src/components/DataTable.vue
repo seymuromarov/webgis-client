@@ -325,6 +325,7 @@
                 });
             },
             showDataModal(data) {
+                console.log(data);
                 this.selectedData = data;
                  this.$modal.show("data-modal", null, {
                     name: "dynamic-modal",
@@ -357,19 +358,28 @@
             selectColumns(alias, index, e) {
                 if (e.target.checked) {
                     this.checkedColumns.push(alias);   
-
-                    this.checkedColumnsData.push(this.tableStackedHeaders[index]);
+                    var keys=Object.keys(this.tableHeadersWithAlias);
+                    var tempAlias=alias;
+                    for (let i = 0; i < keys.length; i++) {
+                        if(this.tableHeadersWithAlias[keys[i]]===alias)
+                        {
+                         tempAlias=keys[i];
+                         break;
+                        }
+                       
+                    }
+                    this.checkedColumnsData.push(tempAlias);
                     
                 } else {
 
                     //  this.checkedColumnsData.splice(index, 1);
                     //  this.checkedColumns.splice(index, 1);
                     this.checkedColumnsData = this.checkedColumnsData.filter(
-                        data => data != this.tableStackedHeaders[this.tableHeaders.indexOf(alias)]
+                       data => data.toLowerCase() != alias.toLowerCase()
                     
                     );
-                    console.log("TCL: selectColumns -> this.tableStackedHeaders", this.tableStackedHeaders)
-                    this.checkedColumns = this.checkedColumns.filter(data => data != alias);
+                  
+                    this.checkedColumns = this.checkedColumns.filter(data => data.toLowerCase() != alias.toLowerCase());
                  
                 }
             },
@@ -471,7 +481,7 @@
                 return this.$store.state.dataTable.tableHeaders;
             },
             tableStackedHeaders: {
-                get() { return this.$store.state.dataTable.tableStackedHeaders ;},
+                get() { return this.$store.state.dataTable.tableStackedHeaders},
                 set(value) { this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS",value )}
             },
             tableHeadersWithAlias() {

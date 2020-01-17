@@ -1098,7 +1098,15 @@
 
             filterSelectedColumn(column) {
                 this.filterValues = [];
-                console.log( this.tableFeaturesData);
+                var keys=Object.keys(this.tableHeadersWithAlias);
+                for (let i = 0; i < keys.length; i++) {
+                        if(this.tableHeadersWithAlias[keys[i]]===column)
+                        {
+                         column=keys[i];
+                         break;
+                        }
+                       
+                    }
                 for (let i = 0; i < this.tableFeaturesData.length; i++) {
                     
                     if (
@@ -1116,7 +1124,8 @@
                     this.tableNextRequest["service"],
                     this.tableNextRequest["layerId"],
                     this.tableNextRequest["layerName"],
-                    {where: this.filterQuery}
+                    this.filterQuery==""?{}:{where:this.filterQuery}
+                   
                 );
                 this.$modal.hide("filter-modal");
             },
@@ -1303,14 +1312,14 @@
                 let response;
 
                
-
+                console.log(query);
                 if(service.resourceType==='azcArcgis')
                 {
                     let params = {
-                    token: token,
-                    name: service.name,
-                    layer: layerId,
-                    ...query
+                        token: token,
+                        name: service.name,
+                        layer: layerId,
+                        ...query
                      };
 
                     response = await LayerService.getTableData(params);
@@ -1355,7 +1364,7 @@
                     "Shape_Length",
                     "Shape_Area"
                 ];
-                // //TO LOWER CASE
+                //TO LOWER CASE
                 // defaultUnCheckedColumns=defaultUnCheckedColumns.map(function(value,index){
                 //     return value.toLowerCase();
                 // });
@@ -1384,6 +1393,7 @@
                     return name;
                 });
                 checkedColumns = checkedColumns.map((item, index) => {
+
                     return tableHeadersWithAlias[item];
                 });
                 this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
@@ -1406,7 +1416,6 @@
                 this.filterValues = [];
 
 
-                // this.dynamicLayersReset(service, true);
             },
             async getGeometryData(service, layer_id, layer_name, query, coords) {
                 let response=null;
@@ -1425,14 +1434,12 @@
                 }
                 else
                 {
-                    console.log(coords);
-                    // geometry =[coords]
                     var params = {
                         layerId: service.id,
-                        // where: query,
-                        geometry:[coords]
+                        where: query,
+                        geometry:coords[0] + "," + coords[1]
                     };
-                    response = await LayerService.getLocalGeometryData(params);
+                    response = await LayerService.getLocalTableData(params);
                 }
               
                 if (response.data.features !== undefined) {
@@ -1886,9 +1893,9 @@
             // tableFeaturesData () {
             //     return this.$store.state.dataTable.tableData;
             // },
-            // tableFeaturesHeader() {
-            //     return this.$store.state.dataTable.tableHeaders;
-            // },
+            tableHeadersWithAlias() {
+                return this.$store.state.dataTable.tableHeadersWithAlias;
+            },
             selectedFillColor() {
                 return this.$store.state.colorPicker.fillColor;
             },

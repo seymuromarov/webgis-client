@@ -117,7 +117,7 @@ export default {
     getLocalGeometryData(params) {
         return request.get(URL + "/api/geo/vectordata/"+params.layerId+"/", {
             params: params,
-            paramsSerializer: params => parseParams(params) 
+  
         });
     }
 };
