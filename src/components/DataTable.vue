@@ -355,9 +355,6 @@
                 return columns;
             },
             selectColumns(alias, index, e) {
-            console.log("TCL: selectColumns -> alias", alias)
-            console.log("TCL: selectColumns -> this.checkedColumns", this.checkedColumns)
-            console.log("TCL: selectColumns -> this.checkedColumnsData", this.checkedColumnsData)
                 if (e.target.checked) {
                     this.checkedColumns.push(alias);   
 

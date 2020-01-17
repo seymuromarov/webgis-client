@@ -978,14 +978,13 @@
                     }
 
                     if (self.isTabelVisible) {
-
-                        let geometry = coord[0] + "," + coord[1];
+                     
                         self.getGeometryData(
                             self.tableNextRequest["service"],
                             self.tableNextRequest["layerId"],
                             self.tableNextRequest["layerName"],
                             self.filterQuery,
-                            geometry
+                            coord
                         );
                     }
                 });
@@ -1325,7 +1324,7 @@
                     };
                     service.query=query;
                     response = await LayerService.getLocalTableData(params);
-                    // this.refreshLayer(service);
+                    this.refreshLayer(service);
                 }           
                
               
@@ -1409,15 +1408,33 @@
 
                 // this.dynamicLayersReset(service, true);
             },
-            async getGeometryData(service, layer_id, layer_name, query, geometry) {
-                var params = {
-                    token: this.token,
-                    name: service.name,
-                    layer: layer_id,
-                    where: query,
-                    geometry: geometry
-                };
-                let response = await LayerService.getGeometryData(params);
+            async getGeometryData(service, layer_id, layer_name, query, coords) {
+                let response=null;
+                let geometry=null;
+                if(service.resourceType==="azcArcgis")
+                {
+                    geometry = coords[0] + "," + coords[1];
+                    var params = {
+                        token: this.token,
+                        name: service.name,
+                        layer: layer_id,
+                        where: query,
+                        geometry: geometry
+                    };
+                    response = await LayerService.getGeometryData(params);
+                }
+                else
+                {
+                    console.log(coords);
+                    // geometry =[coords]
+                    var params = {
+                        layerId: service.id,
+                        // where: query,
+                        geometry:[coords]
+                    };
+                    response = await LayerService.getLocalGeometryData(params);
+                }
+              
                 if (response.data.features !== undefined) {
                     if (response.data.features.length !== 0) {
                         this.$refs.dataTable.showDataModal(

@@ -1,6 +1,27 @@
 import request from "../utils/request";
 import {emlakUrl, URL} from "../config/baseUrl";
 
+const parseParams = (params) => {
+  const keys = Object.keys(params);
+  let options = '';
+
+  keys.forEach((key) => {
+    const isParamTypeObject = typeof params[key] === 'object';
+    const isParamTypeArray = isParamTypeObject && (params[key].length >= 0);
+
+    if (!isParamTypeObject) {
+      options += `${key}=${params[key]}&`;
+    }
+
+    if (isParamTypeObject && isParamTypeArray) {      
+      params[key].forEach((element) => {
+        options += `${key}=${element}&`;
+      });
+    }
+  });
+
+  return options ? options.slice(0, -1) : options;
+};
 export default {
     getUserRelatedLayers() {
         return request.get(URL + "/api/userlayer/getuserlayers")
@@ -65,7 +86,8 @@ export default {
     },
    getLocalTableData(params) {
         return request.get(URL + "/api/datatable/"+params.layerId+"/", {
-            params: params
+            params: params,
+          
         });
     },
     getTableData(params) {
@@ -90,6 +112,12 @@ export default {
                 geometry: params.geometry,
                 outFields: "*"
             }
+        });
+    }    ,
+    getLocalGeometryData(params) {
+        return request.get(URL + "/api/geo/vectordata/"+params.layerId+"/", {
+            params: params,
+            paramsSerializer: params => parseParams(params) 
         });
     }
 };
