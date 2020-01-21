@@ -257,6 +257,40 @@
 			@mapSetCenter="mapSetCenter"
 		/>
 
+        <modal
+                name="arithmetic-result-modal"
+                transition="nice-modal-fade"
+                :min-width="200"
+                :min-height="200"
+                :delay="100"
+                :draggable="true"
+        >
+           
+            <div >
+                <h3 class="centerize margin-bottom-1halfrem margin-top-halfrem">Report</h3>
+
+
+                <table class="table popupTable">
+                    <thead>
+                    <tr class="fields centerize">
+                        <th class="paddingLeft">Field</th>
+                        <th class="paddingRight">Value</th>
+                    </tr>
+                    </thead>
+                    <tbody class="popupTableBody">
+
+                    <tr class="centerize" v-for="(key) in Object.keys(ArithmeticDataResult)" :key="key">
+                        <td class="paddingLeft">
+                            {{key }}
+                        </td>
+                        <td class="paddingRight">{{ ArithmeticDataResult[key] }}</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </modal>
+
 		<modal
 			name="filter-modal"
 			transition="nice-modal-fade"
@@ -392,7 +426,14 @@ export default {
 			latChange: null,
 			longChange: null,
 			lastCoordinates: null,
-			filterQuery: "",
+            filterQuery: "",
+            filterQueryIsSum: false,
+                filterQueryArithmeticColumn: "",
+                ArithmeticDataResult: "",
+                dataFilter: {
+                    query:"",
+                    arithmeticType:0,
+                },
 			filterValues: [],
 			mapLayer: null,
 			tableQuery: null,
@@ -456,7 +497,9 @@ export default {
 			sketch: null,
 			typeSelect: null,
 			// isTabelVisible: false,
-			draw: null,
+            draw: null,
+            stackedTableFeaturesHeader: [],
+            tableFeaturesHeader: [],
 			tableFeaturesData: [],
 			tableFeatureData: [],
 			tableNextRequest: [],
@@ -548,7 +591,7 @@ export default {
 			});
 			this.layers = [gray, this.vector];
 
-			let zoom = 15;
+			let zoom = 8;
 			let center = fromLonLat([47.82858, 40.3598414]);
 			let rotation = 0;
 
@@ -705,13 +748,12 @@ export default {
 				}
 
 				if (self.isTabelVisible) {
-					let geometry = coord[0] + "," + coord[1];
 					self.getGeometryData(
 						self.tableNextRequest["service"],
 						self.tableNextRequest["layerId"],
 						self.tableNextRequest["layerName"],
 						self.filterQuery,
-						geometry
+						coord
 					);
 				}
 			});
@@ -830,7 +872,16 @@ export default {
 		},
 
 		filterSelectedColumn(column) {
-			this.filterValues = [];
+            this.filterValues = [];
+            var keys=Object.keys(this.tableHeadersWithAlias);
+                for (let i = 0; i < keys.length; i++) {
+                        if(this.tableHeadersWithAlias[keys[i]]===column)
+                        {
+                         column=keys[i];
+                         break;
+                        }
+                       
+                    }
 			for (let i = 0; i < this.tableFeaturesData.length; i++) {
 				if (
 					!this.filterValues.includes(
@@ -858,7 +909,11 @@ export default {
 		//         this.tableNextRequest["layerName"],
 		//         query
 		//     );
-		// },
+        // },
+        addValueToQuery(value) {
+                if (typeof value == "string") value = "'" + value + "'";
+                this.filterQuery += value + " ";
+            },
 		dragAndDropToast() {
 			let toast = this.$toasted.show(
 				"Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map",
@@ -1033,20 +1088,35 @@ export default {
 
 				response = await LayerService.getTableData(params);
 			} else {
+                query.isSum=this.filterQueryIsSum;
+                    query.ArithmeticColumnName=this.filterQueryArithmeticColumn;
 				let params = {
 					layerId: service.id,
 					...query,
 				};
 				service.query = query;
-				console.log(service.query);
-				response = await LayerService.getLocalTableData(params);
-				this.refreshLayer(service.id);
+				if(query.isSum)
+                    {
+                      response = await LayerService.getLocalArithmeticData(params);
+                      this.ArithmeticDataResult=  response.data.result;
+                        this.$modal.show("arithmetic-result-modal", null, {
+                            name: "arithmetic-result-modal",
+                            resizable: true,
+                            adaptive: true,
+                            draggable: true
+                        });
+                        
+                    }else {
+                        response = await LayerService.getLocalTableData(params);
+                    }
+				this.refreshLayer(service);
 			}
 
 			if (response.data.error !== undefined) {
 				return;
 			}
 
+if(!query.isSum){
 			let self = this;
 			this.tableNextRequest["service"] = service;
 			this.tableNextRequest["layerId"] = layerId;
@@ -1068,16 +1138,6 @@ export default {
 				"Shape_Length",
 				"Shape_Area",
 			];
-			//TO LOWER CASE
-			defaultUnCheckedColumns = defaultUnCheckedColumns.map(function(
-				value,
-				index
-			) {
-				return value.toLowerCase();
-			});
-			tableHeaders = tableHeaders.map(function(value, index) {
-				return value.toLowerCase();
-			});
 
 			for (let alias in tableHeaders) {
 				if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
@@ -1112,29 +1172,50 @@ export default {
 				target,
 				checkedColumnsData,
 				checkedColumns,
-			});
+            });
+            this.filterQueryArithmeticColumn=tableHeaders[0];
+                    this.tableFeaturesData=tableData;
+                    this.tableFeaturesHeader=tableHeaders;
+                    this.stackedTableFeaturesHeader=tableHeaders;
+                }
 			this.filterQuery = "";
 			this.filterValues = [];
 
 			// this.dynamicLayersReset(service, true);
 		},
-		async getGeometryData(service, layer_id, layer_name, query, geometry) {
-			var params = {
-				token: this.token,
-				name: service.name,
-				layer: layer_id,
-				where: query,
-				geometry: geometry,
-			};
-			let response = await LayerService.getGeometryData(params);
-			if (response.data.features !== undefined) {
-				if (response.data.features.length !== 0) {
-					this.$refs.dataTable.showDataModal(
-						response.data.features[0]
-					);
-				}
-			}
-		},
+		 async getGeometryData(service, layer_id, layer_name, query, coords) {
+                let response=null;
+                let geometry=null;
+                if(service.resourceType==="azcArcgis")
+                {
+                    geometry = coords[0] + "," + coords[1];
+                    var params = {
+                        token: this.token,
+                        name: service.name,
+                        layer: layer_id,
+                        where: query,
+                        geometry: geometry
+                    };
+                    response = await LayerService.getGeometryData(params);
+                }
+                else
+                {
+                    var params = {
+                        layerId: service.id,
+                        where: query,
+                        geometry:coords[0] + "," + coords[1]
+                    };
+                    response = await LayerService.getLocalTableData(params);
+                }
+              
+                if (response.data.features !== undefined) {
+                    if (response.data.features.length !== 0) {
+                        this.$refs.dataTable.showDataModal(
+                            response.data.features[0]
+                        );
+                    }
+                }
+            },
 		setDynamicIndexes() {
 			this.dynamicLayerList.map((item, index) => {
 				this.mapLayer.getLayers().forEach(function(layer) {
@@ -1148,28 +1229,26 @@ export default {
 			});
 		},
 		async LayerService() {
-			let self = this;
-			const response = await LayerService.getLayersWithFullDataFromServer(
-				{
-					token: this.token,
-				}
-			);
-			self.gisLayers = response.data;
-			let layers = self.LayerHelper.creator(self.gisLayers);
-			self.baseLayerList = layers.baseLayers;
-			self.dynamicLayerList = layers.dynamicLayers;
-			let selectedLayersArr = Object.keys(this.selectedLayers).map(
-				Number
-			);
-			selectedLayersArr.forEach(value => {
-				this.baseLayerList.forEach(item => {
-					this.checkIfLayerNeedsToTurnOn(item, value);
-				});
-				this.dynamicLayerList.forEach(item => {
-					this.checkIfLayerNeedsToTurnOn(item, value);
-				});
-			});
-		},
+                let self = this;
+                const response = await LayerService.getLayersWithFullDataFromServer(
+                    {
+                        token: this.token
+                    }
+                );
+                self.gisLayers = response.data;
+                let layers = self.LayerHelper.creator(self.gisLayers);
+                self.baseLayerList = layers.baseLayers;
+                self.dynamicLayerList = layers.dynamicLayers;
+                let selectedLayersArr = Object.keys(this.selectedLayers).map(Number);
+                selectedLayersArr.forEach((value) => {
+                    this.baseLayerList.forEach((item) => {
+                        this.checkIfLayerNeedsToTurnOn(item, value);
+                    });
+                    this.dynamicLayerList.forEach((item) => {
+                        this.checkIfLayerNeedsToTurnOn(item, value);
+                    });
+                });
+            },
 		checkIfLayerNeedsToTurnOn(layer, value) {
 			let e = { target: { checked: true } };
 
@@ -1270,12 +1349,7 @@ export default {
 						...zoomLevelProperties,
 						source: new VectorTileSource({
 							format: new MVT(),
-							url:
-								URL +
-								"/" +
-								MAP_URLS.MVT +
-								`/${service.id}/{z}/{x}/{y}/` +
-								this.objectToQueryString(service.query),
+							url: URL + "/" + MAP_URLS.MVT + `/${service.id}/{z}/{x}/{y}/`+(service.query.where!=""?this.objectToQueryString(service.query):""),
 						}),
 					});
 				} else {
@@ -1326,19 +1400,21 @@ export default {
 				new_layer.setZIndex(500 - index);
 			}
 		},
-		refreshLayer(id) {
-			var layer = this.getLayer(id);
-			if (layer !== null) {
-				layer.getSource().clear();
-				layer.getSource().changed();
-				layer
-					.getSource()
-					.setTileLoadFunction(
-						layer.getSource().getTileLoadFunction()
-					);
-				layer.getSource().refresh({ force: true });
-			}
-		},
+		refreshLayer(service)
+            {
+                
+                    // var layer=this.getLayer(id);
+                    // if(layer!==null)
+                    // {
+                    //     layer.getSource().clear();
+                    //     layer.getSource().changed();
+                    //     layer.getSource().setTileLoadFunction(layer.getSource().getTileLoadFunction());
+                    //     layer.getSource().refresh({force:true});
+                    // }       
+                    this.deleteLayers(service)
+                    this.addLayers(service, service.order, true);              
+                
+            },
 		getLayer(id) {
 			let layer = null;
 			this.mapLayer.getLayers().forEach(function(lyr) {
@@ -1618,11 +1694,14 @@ export default {
 		isTabelVisible() {
 			return this.$store.state.dataTable.isVisible;
 		},
-		stackedTableFeaturesHeader() {
-			return this.$store.state.dataTable.tableStackedHeaders;
-		},
-		tableFeaturesHeader() {
-			return this.$store.state.dataTable.tableHeaders;
+		// stackedTableFeaturesHeader() {
+            //     return this.$store.state.dataTable.tableStackedHeaders;
+            // },
+            // tableFeaturesData () {
+            //     return this.$store.state.dataTable.tableData;
+            // },
+            tableHeadersWithAlias() {
+                return this.$store.state.dataTable.tableHeadersWithAlias;
 		},
 		selectedFillColor() {
 			return this.$store.state.colorPicker.fillColor;
@@ -1650,14 +1729,14 @@ export default {
 				ghostClass: "ghost",
 			};
 		},
-		// dragOptionsDynamic() {
-		// 	return {
-		// 		animation: 0,
-		// 		group: "dynamicDragger",
-		// 		disabled: false,
-		// 		ghostClass: "ghost",
-		// 	};
-		// },
+		dragOptionsDynamic() {
+			return {
+				animation: 0,
+				group: "dynamicDragger",
+				disabled: false,
+				ghostClass: "ghost",
+			};
+		},
 		featuresToExcel() {
 			let features = [];
 			for (let i = 0; i < this.tableFeaturesData.length; i++) {

@@ -325,6 +325,7 @@
                 });
             },
             showDataModal(data) {
+                console.log(data);
                 this.selectedData = data;
                  this.$modal.show("data-modal", null, {
                     name: "dynamic-modal",
@@ -356,14 +357,29 @@
             },
             selectColumns(alias, index, e) {
                 if (e.target.checked) {
-                    this.checkedColumns.push(alias);
-
-                    this.checkedColumnsData.push(this.tableStackedHeaders[index]);
+                    this.checkedColumns.push(alias);   
+                    var keys=Object.keys(this.tableHeadersWithAlias);
+                    var tempAlias=alias;
+                    for (let i = 0; i < keys.length; i++) {
+                        if(this.tableHeadersWithAlias[keys[i]]===alias)
+                        {
+                         tempAlias=keys[i];
+                         break;
+                        }
+                       
+                    }
+                    this.checkedColumnsData.push(tempAlias);
+                    
                 } else {
+
+                    //  this.checkedColumnsData.splice(index, 1);
+                    //  this.checkedColumns.splice(index, 1);
                     this.checkedColumnsData = this.checkedColumnsData.filter(
-                        data => data != alias
+                       data => data.toLowerCase() != alias.toLowerCase()
+                    
                     );
-                    this.checkedColumns = this.checkedColumns.filter(data => data != alias);
+                  
+                    this.checkedColumns = this.checkedColumns.filter(data => data.toLowerCase() != alias.toLowerCase());
                  
                 }
             },
@@ -464,8 +480,9 @@
             tableHeaders() {
                 return this.$store.state.dataTable.tableHeaders;
             },
-            tableStackedHeaders() {
-                return this.$store.state.dataTable.tableStackedHeaders;
+            tableStackedHeaders: {
+                get() { return this.$store.state.dataTable.tableStackedHeaders},
+                set(value) { this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS",value )}
             },
             tableHeadersWithAlias() {
                 return this.$store.state.dataTable.tableHeadersWithAlias;
@@ -476,12 +493,19 @@
             target() {
                 return this.$store.state.dataTable.target;
             },
-            checkedColumnsData() {
-                return this.$store.state.dataTable.checkedColumnsData;
+            checkedColumnsData:    
+            {
+                get() { return this.$store.state.dataTable.checkedColumnsData;},
+                set(value) { this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA",value )}
             },
-            checkedColumns() {
-                return this.$store.state.dataTable.checkedColumns;
+            checkedColumns:    
+            {
+                get() {  return this.$store.state.dataTable.checkedColumns;},
+                set(value) { this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS",value )}
             },
+            // checkedColumns() {
+            //     return this.$store.state.dataTable.checkedColumns;
+            // },
             lastBBOXOfShape() {
                 return this.$store.state.dataTable.lastBBOXOfShape;
             },
