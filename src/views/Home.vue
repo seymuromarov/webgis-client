@@ -396,6 +396,39 @@
                 @mapSetCenter="mapSetCenter"
         />
 
+        <modal
+                name="arithmetic-result-modal"
+                transition="nice-modal-fade"
+                :min-width="200"
+                :min-height="200"
+                :delay="100"
+                :draggable="true"
+        >
+           
+            <div >
+                <h3 class="centerize margin-bottom-1halfrem margin-top-halfrem">Report</h3>
+
+
+                <table class="table popupTable">
+                    <thead>
+                    <tr class="fields centerize">
+                        <th class="paddingLeft">Field</th>
+                        <th class="paddingRight">Value</th>
+                    </tr>
+                    </thead>
+                    <tbody class="popupTableBody">
+
+                    <tr class="centerize" v-for="(key) in Object.keys(ArithmeticDataResult)" :key="key">
+                        <td class="paddingLeft">
+                            {{key }}
+                        </td>
+                        <td class="paddingRight">{{ ArithmeticDataResult[key] }}</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </modal>
 
         <modal
                 name="filter-modal"
@@ -523,6 +556,7 @@
                     </div>
                     <div class="clear"></div>
                 </div>
+     
                 <div class="filterSelectDiv">
                     <label class="query-start">SELECT * FROM table WHERE:</label>
                     <textarea
@@ -532,6 +566,33 @@
                             cols="69"
                             v-model="filterQuery"
                     > {{ filterQuery }} </textarea>
+               
+                     <div >
+
+                        <label>
+                            <input
+                                    class="parentCheckbox"
+                                    type="checkbox"
+                                    id="isSum"
+                                    :value="false"
+                                    v-model="filterQueryIsSum"
+                                    style="opacity:0;"
+                            />
+                            <i class="far fa-check-circle" v-if="filterQueryIsSum" style="cursor: pointer; color:#008422"></i>
+                            <i class="far fa-check-circle" v-else  style="cursor: pointer;"></i>
+                            Sum
+                        </label>                    
+                     
+                        <label class="ml-4" v-if="filterQueryIsSum">
+                            <select v-model="filterQueryArithmeticColumn" >
+                            <option  v-for="(alias , index) in tableFeaturesHeader" :value="alias" :key="alias">{{alias}} {{index}}</option>
+                            </select>
+                          Sum Column
+                        </label>
+
+                     </div>
+                
+             
                     <div>
                         <button
                                 class="btn btn-outline-info filterApplyButton"
@@ -540,6 +601,7 @@
                         </button>
                     </div>
                 </div>
+ 
             </div>
         </modal>
         <modal
@@ -649,6 +711,7 @@
         },
         data() {
             return {
+     
                 isDrawnShapeForDetection: false,
                 isSimpleModalVisible: false,
                 baseLayersShow: true,
@@ -661,6 +724,13 @@
                 longChange: null,
                 lastCoordinates: null,
                 filterQuery: "",
+                filterQueryIsSum: false,
+                filterQueryArithmeticColumn: "",
+                ArithmeticDataResult: "",
+                dataFilter: {
+                    query:"",
+                    arithmeticType:0,
+                },
                 filterValues: [],
                 mapLayer: null,
                 tableQuery: null,
@@ -820,7 +890,7 @@
                 });
                 this.layers = [gray, this.vector];
 
-                let zoom = 15;
+                let zoom = 8;
                 let center = fromLonLat([47.82858, 40.3598414]);
                 let rotation = 0;
 
@@ -1310,9 +1380,7 @@
                     token = this.token;
                 }
                 let response;
-
-               
-                console.log(query);
+                    
                 if(service.resourceType==='azcArcgis')
                 {
                     let params = {
@@ -1326,13 +1394,28 @@
                 }
                 else
                 {                  
-                  
+                    query.isSum=this.filterQueryIsSum;
+                    query.ArithmeticColumnName=this.filterQueryArithmeticColumn;
                     let params = {
                         layerId: service.id,  
-                        ...query                
+                        ...query                                        
                     };
                     service.query=query;
-                    response = await LayerService.getLocalTableData(params);
+                    if(query.isSum)
+                    {
+                      response = await LayerService.getLocalArithmeticData(params);
+                      this.ArithmeticDataResult=  response.data.result;
+                        this.$modal.show("arithmetic-result-modal", null, {
+                            name: "arithmetic-result-modal",
+                            resizable: true,
+                            adaptive: true,
+                            draggable: true
+                        });
+                        
+                    }
+                     
+                    else
+                      response = await LayerService.getLocalTableData(params);
                     this.refreshLayer(service);
                 }           
                
@@ -1342,76 +1425,71 @@
                 }
 
 
+                if(!query.isSum){
+                    let self = this;
+                    this.tableNextRequest["service"] = service;
+                    this.tableNextRequest["layerId"] = layerId;
+                    this.tableNextRequest["layerName"] = layerName;
 
-                let self = this;
-                this.tableNextRequest["service"] = service;
-                this.tableNextRequest["layerId"] = layerId;
-                this.tableNextRequest["layerName"] = layerName;
+                    let serviceName = service.name;
+                    let tableName = layerName;
+                    let tableData = response.data.features;
+                    let tableHeaders = Object.keys(tableData[0].attributes);
+                    let tableStackedHeaders = tableHeaders;
+                    let target = response.data.fieldAliases;
+                    let tableHeadersWithAlias = response.data.fieldAliases;
 
-                let serviceName = service.name;
-                let tableName = layerName;
-                let tableData = response.data.features;
-                let tableHeaders = Object.keys(tableData[0].attributes);
-                let tableStackedHeaders = tableHeaders;
-                let target = response.data.fieldAliases;
-                let tableHeadersWithAlias = response.data.fieldAliases;
+                    let checkedColumnsData = [];
+                    let checkedColumns = [];
 
-                let checkedColumnsData = [];
-                let checkedColumns = [];
+                    let defaultUnCheckedColumns = [
+                        "OBJECTID",
+                        "Shape_Length",
+                        "Shape_Area"
+                    ];
 
-                let defaultUnCheckedColumns = [
-                    "OBJECTID",
-                    "Shape_Length",
-                    "Shape_Area"
-                ];
-                //TO LOWER CASE
-                // defaultUnCheckedColumns=defaultUnCheckedColumns.map(function(value,index){
-                //     return value.toLowerCase();
-                // });
-                // tableHeaders=tableHeaders.map(function(value,index){
-                //     return value.toLowerCase();
-                // });
-
-
-                for (let alias in tableHeaders) {
-                    
-                    if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {                     
-                        checkedColumnsData.push(tableHeaders[alias]);                    
-                       
-                        checkedColumns.push(tableHeaders[alias]);
-                    }
-                }
-                tableHeaders = tableHeaders.map((item, index) => {
-                    let name = item;
-                    for (let k in target) {
-                        if (typeof target[k] !== "function") {
-                            if (item === k) {
-                                name = target[k];
-                            }
+                    for (let alias in tableHeaders) {
+                        
+                        if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {                     
+                            checkedColumnsData.push(tableHeaders[alias]);                    
+                        
+                            checkedColumns.push(tableHeaders[alias]);
                         }
                     }
-                    return name;
-                });
-                checkedColumns = checkedColumns.map((item, index) => {
+                    tableHeaders = tableHeaders.map((item, index) => {
+                        let name = item;
+                        for (let k in target) {
+                            if (typeof target[k] !== "function") {
+                                if (item === k) {
+                                    name = target[k];
+                                }
+                            }
+                        }
+                        return name;
+                    });
+                    checkedColumns = checkedColumns.map((item, index) => {
 
-                    return tableHeadersWithAlias[item];
-                });
-                this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
-                    isVisible: true,
-                    layerId,
-                    serviceName,
-                    tableName,
-                    tableHeaders,
-                    tableStackedHeaders,
-                    tableHeadersWithAlias,
-                    tableData,
-                    target,
-                    checkedColumnsData,
-                    checkedColumns
-                });
-                this.tableFeaturesData=tableData;
-                this.tableFeaturesHeader=tableHeaders;
-                this.stackedTableFeaturesHeader=tableHeaders;
+                        return tableHeadersWithAlias[item];
+                    });
+                    this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
+                        isVisible: true,
+                        layerId,
+                        serviceName,
+                        tableName,
+                        tableHeaders,
+                        tableStackedHeaders,
+                        tableHeadersWithAlias,
+                        tableData,
+                        target,
+                        checkedColumnsData,
+                        checkedColumns
+                    });
+                    this.filterQueryArithmeticColumn=tableHeaders[0];
+                    this.tableFeaturesData=tableData;
+                    this.tableFeaturesHeader=tableHeaders;
+                    this.stackedTableFeaturesHeader=tableHeaders;
+                }
+              
                 this.filterQuery = "";
                 this.filterValues = [];
 
@@ -1569,7 +1647,7 @@
                             ...zoomLevelProperties,
                             source: new VectorTileSource({
                                 format: new MVT(),
-                                url: URL + "/" + MAP_URLS.MVT + `/${service.id}/{z}/{x}/{y}/`+this.objectToQueryString(service.query),
+                                url: URL + "/" + MAP_URLS.MVT + `/${service.id}/{z}/{x}/{y}/`+(service.query.where!=""?this.objectToQueryString(service.query):""),
                             }),
                           
                         });

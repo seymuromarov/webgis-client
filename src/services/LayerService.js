@@ -85,9 +85,13 @@ export default {
         });
     },
    getLocalTableData(params) {
-        return request.get(URL + "/api/datatable/"+params.layerId+"/", {
-            params: params,
-          
+        return request.get(URL + "/api/datatable/GetDatas/"+params.layerId+"/", {
+            params: params,          
+        });
+    },
+    getLocalArithmeticData(params) {
+        return request.get(URL + "/api/datatable/GetArithmeticData/"+params.layerId+"/", {
+            params: params,          
         });
     },
     getTableData(params) {
