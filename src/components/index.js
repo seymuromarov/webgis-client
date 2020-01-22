@@ -5,6 +5,7 @@ import DataTable from "./DataTable";
 import SimpleFilterModal from "./SimpleFilterModal";
 import Sidebar from "./Sidebar";
 import Filter from "./Filter";
+import Report from "./Report";
 
 export {
 	LayerColorPicker,
@@ -14,4 +15,5 @@ export {
 	SimpleFilterModal,
 	Sidebar,
 	Filter,
+	Report,
 };

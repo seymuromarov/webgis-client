@@ -30,6 +30,7 @@
 			@basemapLayersReset="basemapLayersReset"
 		/>
 
+		<!-- Main content -->
 		<div class="padding-0 map-layout">
 			<div id="map">
 				<button
@@ -257,40 +258,19 @@
 			@mapSetCenter="mapSetCenter"
 		/>
 
-        <modal
-                name="arithmetic-result-modal"
-                transition="nice-modal-fade"
-                :min-width="200"
-                :min-height="200"
-                :delay="100"
-                :draggable="true"
-        >
-           
-            <div >
-                <h3 class="centerize margin-bottom-1halfrem margin-top-halfrem">Report</h3>
+		<!-- Report -->
+		<modal
+			name="arithmetic-result-modal"
+			transition="nice-modal-fade"
+			:min-width="200"
+			:min-height="200"
+			:delay="100"
+			:draggable="true"
+		>
+			<Report :arithmeticDataResult="ArithmeticDataResult"/>
+		</modal>
 
-
-                <table class="table popupTable">
-                    <thead>
-                    <tr class="fields centerize">
-                        <th class="paddingLeft">Field</th>
-                        <th class="paddingRight">Value</th>
-                    </tr>
-                    </thead>
-                    <tbody class="popupTableBody">
-
-                    <tr class="centerize" v-for="(key) in Object.keys(ArithmeticDataResult)" :key="key">
-                        <td class="paddingLeft">
-                            {{key }}
-                        </td>
-                        <td class="paddingRight">{{ ArithmeticDataResult[key] }}</td>
-                    </tr>
-                    </tbody>
-
-                </table>
-            </div>
-        </modal>
-
+		<!-- Filter -->
 		<modal
 			name="filter-modal"
 			transition="nice-modal-fade"
@@ -314,6 +294,7 @@
 			/>
 		</modal>
 
+		<!-- Shape Color Picker -->
 		<modal
 			name="color-picker-modal"
 			transition="nice-modal-fade"
@@ -342,7 +323,7 @@
 </template>
 
 <script>
-import "ol/ol.css";
+// OpenLayers
 import { Map, View, Overlay, Feature } from "ol";
 import { LineString, Polygon, Circle, Point } from "ol/geom.js";
 import {
@@ -378,30 +359,42 @@ import {
 } from "ol/proj";
 import XYZ from "ol/source/XYZ.js";
 import { bbox as bboxStrategy } from "ol/loadingstrategy";
-import LayerService from "@/services/LayerService";
-import { Toggler, MapHelpers, ColorPicker, LayerHelper } from "../helpers";
 import {
 	ZoomSlider,
 	defaults as defaultControls,
 	FullScreen,
 } from "ol/control.js";
-
 import MousePosition from "ol/control/MousePosition.js";
 import { createStringXY } from "ol/coordinate.js";
 import { GPX, GeoJSON, IGC, KML, TopoJSON } from "ol/format.js";
-import proj4 from "proj4";
 import { register } from "ol/proj/proj4.js";
 import { applyTransform } from "ol/extent";
 import * as format from "ol/format";
-import { az_json } from "../assets/json/az";
-import LoginService from "../services/LoginService";
 
-import { URL, MAP_URLS } from "../config/baseUrl";
-
+// Other dependencies
+import proj4 from "proj4";
 import Multiselect from "vue-multiselect";
+
+// Custom components
+import {
+	ShapeColorPicker,
+	DataTable,
+	Sidebar,
+	Filter,
+	Report,
+} from "@/components/";
+import InfoModal from "@/components/Info/index";
 import DetectorModal from "@/components/modals/ChangeDetector";
-import { ShapeColorPicker, DataTable, Sidebar, Filter } from "../components/";
-import InfoModal from "../components/Info/index";
+
+// Utils
+import { URL, MAP_URLS } from "@/config/baseUrl";
+import { az_json } from "@/assets/json/az";
+import LoginService from "@/services/LoginService";
+import LayerService from "@/services/LayerService";
+import { Toggler, MapHelpers, ColorPicker, LayerHelper } from "@/helpers";
+
+// Styles
+import "ol/ol.css";
 
 export default {
 	name: "Home",
@@ -413,6 +406,7 @@ export default {
 		InfoModal,
 		Sidebar,
 		FilterBox: Filter,
+		Report,
 	},
 	data() {
 		return {
@@ -426,14 +420,14 @@ export default {
 			latChange: null,
 			longChange: null,
 			lastCoordinates: null,
-            filterQuery: "",
-            filterQueryIsSum: false,
-                filterQueryArithmeticColumn: "",
-                ArithmeticDataResult: "",
-                dataFilter: {
-                    query:"",
-                    arithmeticType:0,
-                },
+			filterQuery: "",
+			filterQueryIsSum: false,
+			filterQueryArithmeticColumn: "",
+			ArithmeticDataResult: {},
+			dataFilter: {
+				query: "",
+				arithmeticType: 0,
+			},
 			filterValues: [],
 			mapLayer: null,
 			tableQuery: null,
@@ -497,9 +491,9 @@ export default {
 			sketch: null,
 			typeSelect: null,
 			// isTabelVisible: false,
-            draw: null,
-            stackedTableFeaturesHeader: [],
-            tableFeaturesHeader: [],
+			draw: null,
+			stackedTableFeaturesHeader: [],
+			tableFeaturesHeader: [],
 			tableFeaturesData: [],
 			tableFeatureData: [],
 			tableNextRequest: [],
@@ -872,16 +866,14 @@ export default {
 		},
 
 		filterSelectedColumn(column) {
-            this.filterValues = [];
-            var keys=Object.keys(this.tableHeadersWithAlias);
-                for (let i = 0; i < keys.length; i++) {
-                        if(this.tableHeadersWithAlias[keys[i]]===column)
-                        {
-                         column=keys[i];
-                         break;
-                        }
-                       
-                    }
+			this.filterValues = [];
+			var keys = Object.keys(this.tableHeadersWithAlias);
+			for (let i = 0; i < keys.length; i++) {
+				if (this.tableHeadersWithAlias[keys[i]] === column) {
+					column = keys[i];
+					break;
+				}
+			}
 			for (let i = 0; i < this.tableFeaturesData.length; i++) {
 				if (
 					!this.filterValues.includes(
@@ -909,11 +901,11 @@ export default {
 		//         this.tableNextRequest["layerName"],
 		//         query
 		//     );
-        // },
-        addValueToQuery(value) {
-                if (typeof value == "string") value = "'" + value + "'";
-                this.filterQuery += value + " ";
-            },
+		// },
+		addValueToQuery(value) {
+			if (typeof value == "string") value = "'" + value + "'";
+			this.filterQuery += value + " ";
+		},
 		dragAndDropToast() {
 			let toast = this.$toasted.show(
 				"Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map",
@@ -1054,7 +1046,6 @@ export default {
 					order: this.layerCounter++,
 				};
 		},
-
 		onMoveCallbackDynamicLayerList(evt, originalEvent) {
 			let self = this;
 
@@ -1066,7 +1057,6 @@ export default {
 			});
 			this.setDynamicIndexes();
 		},
-
 		async getTableData(service, layerId, layerName, query) {
 			var layer = this.getLayer(service.id);
 
@@ -1088,27 +1078,27 @@ export default {
 
 				response = await LayerService.getTableData(params);
 			} else {
-                query.isSum=this.filterQueryIsSum;
-                    query.ArithmeticColumnName=this.filterQueryArithmeticColumn;
+				query.isSum = this.filterQueryIsSum;
+				query.ArithmeticColumnName = this.filterQueryArithmeticColumn;
 				let params = {
 					layerId: service.id,
 					...query,
 				};
 				service.query = query;
-				if(query.isSum)
-                    {
-                      response = await LayerService.getLocalArithmeticData(params);
-                      this.ArithmeticDataResult=  response.data.result;
-                        this.$modal.show("arithmetic-result-modal", null, {
-                            name: "arithmetic-result-modal",
-                            resizable: true,
-                            adaptive: true,
-                            draggable: true
-                        });
-                        
-                    }else {
-                        response = await LayerService.getLocalTableData(params);
-                    }
+				if (query.isSum) {
+					response = await LayerService.getLocalArithmeticData(
+						params
+					);
+					this.ArithmeticDataResult = response.data.result;
+					this.$modal.show("arithmetic-result-modal", null, {
+						name: "arithmetic-result-modal",
+						resizable: true,
+						adaptive: true,
+						draggable: true,
+					});
+				} else {
+					response = await LayerService.getLocalTableData(params);
+				}
 				this.refreshLayer(service);
 			}
 
@@ -1116,106 +1106,105 @@ export default {
 				return;
 			}
 
-if(!query.isSum){
-			let self = this;
-			this.tableNextRequest["service"] = service;
-			this.tableNextRequest["layerId"] = layerId;
-			this.tableNextRequest["layerName"] = layerName;
+			if (!query.isSum) {
+				let self = this;
+				this.tableNextRequest["service"] = service;
+				this.tableNextRequest["layerId"] = layerId;
+				this.tableNextRequest["layerName"] = layerName;
 
-			let serviceName = service.name;
-			let tableName = layerName;
-			let tableData = response.data.features;
-			let tableHeaders = Object.keys(tableData[0].attributes);
-			let tableStackedHeaders = tableHeaders;
-			let target = response.data.fieldAliases;
-			let tableHeadersWithAlias = response.data.fieldAliases;
+				let serviceName = service.name;
+				let tableName = layerName;
+				let tableData = response.data.features;
+				let tableHeaders = Object.keys(tableData[0].attributes);
+				let tableStackedHeaders = tableHeaders;
+				let target = response.data.fieldAliases;
+				let tableHeadersWithAlias = response.data.fieldAliases;
 
-			let checkedColumnsData = [];
-			let checkedColumns = [];
+				let checkedColumnsData = [];
+				let checkedColumns = [];
 
-			let defaultUnCheckedColumns = [
-				"OBJECTID",
-				"Shape_Length",
-				"Shape_Area",
-			];
+				let defaultUnCheckedColumns = [
+					"OBJECTID",
+					"Shape_Length",
+					"Shape_Area",
+				];
 
-			for (let alias in tableHeaders) {
-				if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
-					checkedColumnsData.push(tableHeaders[alias]);
-					checkedColumns.push(tableHeaders[alias]);
-				}
-			}
-
-			tableHeaders = tableHeaders.map((item, index) => {
-				let name = item;
-				for (let k in target) {
-					if (typeof target[k] !== "function") {
-						if (item === k) {
-							name = target[k];
-						}
+				for (let alias in tableHeaders) {
+					if (
+						!defaultUnCheckedColumns.includes(tableHeaders[alias])
+					) {
+						checkedColumnsData.push(tableHeaders[alias]);
+						checkedColumns.push(tableHeaders[alias]);
 					}
 				}
-				return name;
-			});
-			checkedColumns = checkedColumns.map((item, index) => {
-				return tableHeadersWithAlias[item];
-			});
-			this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
-				isVisible: true,
-				layerId,
-				serviceName,
-				tableName,
-				tableHeaders,
-				tableStackedHeaders,
-				tableHeadersWithAlias,
-				tableData,
-				target,
-				checkedColumnsData,
-				checkedColumns,
-            });
-            this.filterQueryArithmeticColumn=tableHeaders[0];
-                    this.tableFeaturesData=tableData;
-                    this.tableFeaturesHeader=tableHeaders;
-                    this.stackedTableFeaturesHeader=tableHeaders;
-                }
+
+				tableHeaders = tableHeaders.map((item, index) => {
+					let name = item;
+					for (let k in target) {
+						if (typeof target[k] !== "function") {
+							if (item === k) {
+								name = target[k];
+							}
+						}
+					}
+					return name;
+				});
+				checkedColumns = checkedColumns.map((item, index) => {
+					return tableHeadersWithAlias[item];
+				});
+				this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
+					isVisible: true,
+					layerId,
+					serviceName,
+					tableName,
+					tableHeaders,
+					tableStackedHeaders,
+					tableHeadersWithAlias,
+					tableData,
+					target,
+					checkedColumnsData,
+					checkedColumns,
+				});
+				this.filterQueryArithmeticColumn = tableHeaders[0];
+				this.tableFeaturesData = tableData;
+				this.tableFeaturesHeader = tableHeaders;
+				this.stackedTableFeaturesHeader = tableHeaders;
+			}
 			this.filterQuery = "";
 			this.filterValues = [];
 
 			// this.dynamicLayersReset(service, true);
 		},
-		 async getGeometryData(service, layer_id, layer_name, query, coords) {
-                let response=null;
-                let geometry=null;
-                if(service.resourceType==="azcArcgis")
-                {
-                    geometry = coords[0] + "," + coords[1];
-                    var params = {
-                        token: this.token,
-                        name: service.name,
-                        layer: layer_id,
-                        where: query,
-                        geometry: geometry
-                    };
-                    response = await LayerService.getGeometryData(params);
-                }
-                else
-                {
-                    var params = {
-                        layerId: service.id,
-                        where: query,
-                        geometry:coords[0] + "," + coords[1]
-                    };
-                    response = await LayerService.getLocalTableData(params);
-                }
-              
-                if (response.data.features !== undefined) {
-                    if (response.data.features.length !== 0) {
-                        this.$refs.dataTable.showDataModal(
-                            response.data.features[0]
-                        );
-                    }
-                }
-            },
+		async getGeometryData(service, layer_id, layer_name, query, coords) {
+			let response = null;
+			let geometry = null;
+			if (service.resourceType === "azcArcgis") {
+				geometry = coords[0] + "," + coords[1];
+				var params = {
+					token: this.token,
+					name: service.name,
+					layer: layer_id,
+					where: query,
+					geometry: geometry,
+				};
+				response = await LayerService.getGeometryData(params);
+			} else {
+				var params = {
+					layerId: service.id,
+					where: query,
+					geometry: coords[0] + "," + coords[1],
+				};
+				response = await LayerService.getLocalTableData(params);
+			}
+
+			if (response.data.features !== undefined) {
+				if (response.data.features.length !== 0) {
+					this.$refs.dataTable.showDataModal(
+						response.data.features[0]
+					);
+				}
+			}
+		},
 		setDynamicIndexes() {
 			this.dynamicLayerList.map((item, index) => {
 				this.mapLayer.getLayers().forEach(function(layer) {
@@ -1229,26 +1218,28 @@ if(!query.isSum){
 			});
 		},
 		async LayerService() {
-                let self = this;
-                const response = await LayerService.getLayersWithFullDataFromServer(
-                    {
-                        token: this.token
-                    }
-                );
-                self.gisLayers = response.data;
-                let layers = self.LayerHelper.creator(self.gisLayers);
-                self.baseLayerList = layers.baseLayers;
-                self.dynamicLayerList = layers.dynamicLayers;
-                let selectedLayersArr = Object.keys(this.selectedLayers).map(Number);
-                selectedLayersArr.forEach((value) => {
-                    this.baseLayerList.forEach((item) => {
-                        this.checkIfLayerNeedsToTurnOn(item, value);
-                    });
-                    this.dynamicLayerList.forEach((item) => {
-                        this.checkIfLayerNeedsToTurnOn(item, value);
-                    });
-                });
-            },
+			let self = this;
+			const response = await LayerService.getLayersWithFullDataFromServer(
+				{
+					token: this.token,
+				}
+			);
+			self.gisLayers = response.data;
+			let layers = self.LayerHelper.creator(self.gisLayers);
+			self.baseLayerList = layers.baseLayers;
+			self.dynamicLayerList = layers.dynamicLayers;
+			let selectedLayersArr = Object.keys(this.selectedLayers).map(
+				Number
+			);
+			selectedLayersArr.forEach(value => {
+				this.baseLayerList.forEach(item => {
+					this.checkIfLayerNeedsToTurnOn(item, value);
+				});
+				this.dynamicLayerList.forEach(item => {
+					this.checkIfLayerNeedsToTurnOn(item, value);
+				});
+			});
+		},
 		checkIfLayerNeedsToTurnOn(layer, value) {
 			let e = { target: { checked: true } };
 
@@ -1349,7 +1340,14 @@ if(!query.isSum){
 						...zoomLevelProperties,
 						source: new VectorTileSource({
 							format: new MVT(),
-							url: URL + "/" + MAP_URLS.MVT + `/${service.id}/{z}/{x}/{y}/`+(service.query.where!=""?this.objectToQueryString(service.query):""),
+							url:
+								URL +
+								"/" +
+								MAP_URLS.MVT +
+								`/${service.id}/{z}/{x}/{y}/` +
+								(service.query.where != ""
+									? this.objectToQueryString(service.query)
+									: ""),
 						}),
 					});
 				} else {
@@ -1400,21 +1398,18 @@ if(!query.isSum){
 				new_layer.setZIndex(500 - index);
 			}
 		},
-		refreshLayer(service)
-            {
-                
-                    // var layer=this.getLayer(id);
-                    // if(layer!==null)
-                    // {
-                    //     layer.getSource().clear();
-                    //     layer.getSource().changed();
-                    //     layer.getSource().setTileLoadFunction(layer.getSource().getTileLoadFunction());
-                    //     layer.getSource().refresh({force:true});
-                    // }       
-                    this.deleteLayers(service)
-                    this.addLayers(service, service.order, true);              
-                
-            },
+		refreshLayer(service) {
+			// var layer=this.getLayer(id);
+			// if(layer!==null)
+			// {
+			//     layer.getSource().clear();
+			//     layer.getSource().changed();
+			//     layer.getSource().setTileLoadFunction(layer.getSource().getTileLoadFunction());
+			//     layer.getSource().refresh({force:true});
+			// }
+			this.deleteLayers(service);
+			this.addLayers(service, service.order, true);
+		},
 		getLayer(id) {
 			let layer = null;
 			this.mapLayer.getLayers().forEach(function(lyr) {
@@ -1457,11 +1452,6 @@ if(!query.isSum){
 			});
 		},
 		async dynamicLayersReset(service, status) {
-			console.log(
-				"TCL: dynamicLayersReset -> service, status",
-				service,
-				status
-			);
 			let token;
 			if (service.apiFrom === "emlak") {
 				token = this.emlakToken;
@@ -1695,13 +1685,13 @@ if(!query.isSum){
 			return this.$store.state.dataTable.isVisible;
 		},
 		// stackedTableFeaturesHeader() {
-            //     return this.$store.state.dataTable.tableStackedHeaders;
-            // },
-            // tableFeaturesData () {
-            //     return this.$store.state.dataTable.tableData;
-            // },
-            tableHeadersWithAlias() {
-                return this.$store.state.dataTable.tableHeadersWithAlias;
+		//     return this.$store.state.dataTable.tableStackedHeaders;
+		// },
+		// tableFeaturesData () {
+		//     return this.$store.state.dataTable.tableData;
+		// },
+		tableHeadersWithAlias() {
+			return this.$store.state.dataTable.tableHeadersWithAlias;
 		},
 		selectedFillColor() {
 			return this.$store.state.colorPicker.fillColor;
