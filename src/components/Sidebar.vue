@@ -241,14 +241,10 @@
 						<TreeView
 							:item="element"
 							:selectedLayers="selectedLayers"
-							@selectService="$emit('selectService', $event)"
-							@getTableData="$emit('getTableData', $event)"
-							@showSimpleFilterModal="
-								$emit('showSimpleFilterModal', $event)
-							"
-							@basemapLayersReset="
-								$emit('basemapLayersReset', $event)
-							"
+							@selectService="selectService"
+							@getTableData="getTableData"
+							@showSimpleFilterModal="showSimpleFilterModal"
+							@basemapLayersReset="basemapLayersReset"
 						/>
 					</li>
 				</transition-group>
@@ -258,7 +254,7 @@
 </template>
 
 <script>
-import { LayerColorPicker, SimpleFilterModal, TreeView } from "./";
+import { LayerColorPicker, SimpleFilterModal, TreeView } from "./index";
 import Draggable from "vuedraggable";
 
 export default {
@@ -267,6 +263,7 @@ export default {
 		LayerColorPicker,
 		SimpleFilterModal,
 		Draggable,
+		TreeView,
 	},
 	props: {
 		dynamicLayerList: {
@@ -317,6 +314,25 @@ export default {
 			this.$cookie.delete("token");
 			this.$cookie.delete("username");
 			this.$router.push("/login");
+		},
+		selectService(service, index, dynamic, e, isHashLoaded) {
+			this.$emit(
+				"selectService",
+				service,
+				index,
+				dynamic,
+				e,
+				isHashLoaded
+			);
+		},
+		getTableData(service, layerId, layerName, query) {
+			this.$emit("getTableData", service, layerId, layerName, query);
+		},
+		showSimpleFilterModal(layerId, layerName) {
+			this.$emit("showSimpleFilterModal", layerId, layerName);
+		},
+		basemapLayersReset(service, status) {
+			this.$emit("basemapLayersReset", service, status);
 		},
 	},
 };
