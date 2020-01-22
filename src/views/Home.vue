@@ -1609,13 +1609,15 @@
                         );
                         colors += "]";
                     }
-                    layers.forEach(function (layer, index) {
-                        if (layer === true) {
-                            active_layers += index + ",";
-                        } else {
-                            hidden_layers += index + ",";
-                        }
-                    });
+                    console.log("TCL: addLayers -> layers", layers)
+                    if(typeof layers !== 'undefined' && layers.length>0)
+                        layers.forEach(function (layer, index) {
+                            if (layer === true) {
+                                active_layers += index + ",";
+                            } else {
+                                hidden_layers += index + ",";
+                            }
+                        });
                     let layer_config = "";
                     if (active_layers !== "") {
                         active_layers = active_layers.slice(0, -1);
@@ -1701,17 +1703,21 @@
             },
             refreshLayer(service)
             {
+            console.log("TCL: service", service)
                 
-                    // var layer=this.getLayer(id);
-                    // if(layer!==null)
+                    var layer=this.getLayer(service.id);
+                    if(layer!==null)
+                    {
+                    this.deleteLayers(service)
+                    this.addLayers(service, service.order, true);      
+                    }
                     // {
                     //     layer.getSource().clear();
                     //     layer.getSource().changed();
                     //     layer.getSource().setTileLoadFunction(layer.getSource().getTileLoadFunction());
                     //     layer.getSource().refresh({force:true});
                     // }       
-                    this.deleteLayers(service)
-                    this.addLayers(service, service.order, true);              
+                          
                 
             },
             getLayer(id)
@@ -1841,7 +1847,7 @@
                     let subLayers;
                     this.isHashLoaded = isHashLoaded
 
-                    if (service.mapType === 'basemap', service.unitedDynamicLayerName !== undefined && service.unitedDynamicLayerName !== null) {
+                    if (service.mapType === 'basemap' && service.unitedDynamicLayerName !== undefined && service.unitedDynamicLayerName !== null) {
                         subLayers = await this.getResponseDynamic(service.unitedDynamicLayerName);
                         this.baseLayerList = this.baseLayerList.map((item, index) => {
                             if (service.name === item.name) {
