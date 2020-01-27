@@ -3,11 +3,13 @@
         <ul class="nav">
             <li class="nav-item">
                 <a class="nav-link active" href="#" @click="borderClick(true)"
-                >Border Color</a
+                    >Border Color</a
                 >
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" @click="borderClick(false)">Fill Color</a>
+                <a class="nav-link" href="#" @click="borderClick(false)"
+                    >Fill Color</a
+                >
             </li>
         </ul>
 
@@ -22,9 +24,9 @@
 
         <div class="colorPickerButton">
             <button
-                    class="btn btn-sm btn-danger"
-                    type="button"
-                    @click="setColorPickerVisibility(false)"
+                class="btn btn-sm btn-danger"
+                type="button"
+                @click="setColorPickerVisibility(false)"
             >
                 Close
             </button>
@@ -35,47 +37,49 @@
     </div>
 </template>
 <script>
-    import {Chrome} from "vue-color";
+import { Chrome } from "vue-color";
 
-    export default {
-        name: "color",
-        props: {},
-        components: {
-            ColorScheme: Chrome
-        },
-        mounted() {
-        },
-        data() {
-            return {
-                isBorder: false,
-                borderColor: {
-                    hex8: "#000000",
-                    rgba: {r: 255, g: 255, b: 255, a: 1}
-                },
-                fillColor: {
-                    hex8: "#ffffff00",
-                    rgba: {r: 255, g: 255, b: 255, a: 1}
-                }
-            };
-        },
-        methods: {
-            borderClick(status) {
-                this.isBorder = status;
+export default {
+    name: "color",
+    props: {},
+    components: {
+        ColorScheme: Chrome,
+    },
+    mounted() {},
+    data() {
+        return {
+            isBorder: false,
+            borderColor: {
+                hex8: "#000000",
+                rgba: { r: 255, g: 255, b: 255, a: 1 },
             },
-            save() {
-                this.$store.dispatch("SAVE_COLORPICKER_FILLCOLOR", this.fillColor);
-                this.$store.dispatch("SAVE_COLORPICKER_BORDERCOLOR", this.borderColor);
-                this.$emit("saveColor");
+            fillColor: {
+                hex8: "#ffffff00",
+                rgba: { r: 255, g: 255, b: 255, a: 1 },
             },
+        };
+    },
+    methods: {
+        borderClick(status) {
+            this.isBorder = status;
+        },
+        save() {
+            this.$store.dispatch("SAVE_COLORPICKER_FILLCOLOR", this.fillColor);
+            this.$store.dispatch(
+                "SAVE_COLORPICKER_BORDERCOLOR",
+                this.borderColor
+            );
+            this.$emit("saveColor");
+        },
 
-            setColorPickerVisibility(status) {
-                this.$store.dispatch("SAVE_COLORPICKER_VISIBILITY", status);
-            }
+        setColorPickerVisibility(status) {
+            this.$store.dispatch("SAVE_COLORPICKER_VISIBILITY", status);
         },
-        computed: {
-            visibility() {
-                return this.$store.state.colorPicker.colorPicker.visibility;
-            }
-        }
-    };
+    },
+    computed: {
+        visibility() {
+            return this.$store.state.colorPicker.colorPicker.visibility;
+        },
+    },
+};
 </script>

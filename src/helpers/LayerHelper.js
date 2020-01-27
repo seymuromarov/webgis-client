@@ -1,4 +1,4 @@
-import {emlakUsers} from "../constants/permissions";
+import { emlakUsers } from "../constants/permissions";
 
 class LayerHelper {
     constructor(self) {
@@ -24,26 +24,44 @@ class LayerHelper {
                     : null,
             layersVisibility: false,
             collapseVisibility: false,
-           
-            layers: null
+
+            layers: null,
         };
     }
-        dynamicMapping(val , index) {
+    dynamicMapping(val, index) {
         return {
-           id: val.resourceTypeId.trim() === "local" ? val.id : val.id,
-                name: val.label,
-                showingLabel: val.showingLabel,
-                order: index + 1,
-                minZoomLevel: val.minZoomLevel,
-                maxZoomLevel: val.maxZoomLevel,
-                extent: val.extent,
-                resourceType: val.resourceTypeId,
-                mapType: val.mapTypeId,
-                layersVisibility: false,
-                collapseVisibility: false,
-                query:{where:""},
-                layers: null,
-                apiFrom: "internal"
+            id: val.resourceTypeId.trim() === "local" ? val.id : val.id,
+            name: val.label,
+            showingLabel: val.showingLabel,
+            order: index + 1,
+            minZoomLevel: val.minZoomLevel,
+            maxZoomLevel: val.maxZoomLevel,
+            extent: val.extent,
+            resourceType: val.resourceTypeId,
+            mapType: val.mapTypeId,
+            layersVisibility: false,
+            collapseVisibility: false,
+            query: { where: "" },
+            layers: null,
+            apiFrom: "internal",
+        };
+    }
+    dynamicMapping(val, index) {
+        return {
+            id: val.resourceTypeId.trim() === "local" ? val.id : val.id,
+            name: val.label,
+            showingLabel: val.showingLabel,
+            order: index + 1,
+            minZoomLevel: val.minZoomLevel,
+            maxZoomLevel: val.maxZoomLevel,
+            extent: val.extent,
+            resourceType: val.resourceTypeId,
+            mapType: val.mapTypeId,
+            layersVisibility: false,
+            collapseVisibility: false,
+            query: { where: "" },
+            layers: null,
+            apiFrom: "internal",
         };
     }
 
@@ -52,9 +70,15 @@ class LayerHelper {
             return {
                 name: val.label,
                 order: this.counter++,
-                mapTypeId:val.mapTypeId,
-                children: val.children.map((val, i) => this.recursiveMap(val, index)),
-                layers: val.layers.map((val, i) => val.mapTypeId=='basemap'? this.basemapMapping(val):this.dynamicMapping(val,index))
+                mapTypeId: val.mapTypeId,
+                children: val.children.map((val, i) =>
+                    this.recursiveMap(val, index)
+                ),
+                layers: val.layers.map((val, i) =>
+                    val.mapTypeId == "basemap"
+                        ? this.basemapMapping(val)
+                        : this.dynamicMapping(val, index)
+                ),
             };
         } else return this.basemapMapping(val);
     };
@@ -62,29 +86,22 @@ class LayerHelper {
     creator = layers => {
         console.log(layers);
         let baseLayers = layers
-            .filter(c => c.mapTypeId === "basemap" )
+            .filter(c => c.mapTypeId === "basemap")
             .map((val, index) => this.recursiveMap(val, index));
-
 
         let dynamicLayers = layers
             .filter(c => c.mapTypeId === "dynamic")
             .map((val, index) => this.recursiveMap(val, index));
-            console.log(baseLayers);
-            console.log(dynamicLayers);
         return {
             baseLayers,
-            dynamicLayers
+            dynamicLayers,
         };
     };
 
-    add = () => {
-    };
-    delete = () => {
-    };
-    setColor = () => {
-    };
-    setLayout = () => {
-    };
+    add = () => {};
+    delete = () => {};
+    setColor = () => {};
+    setLayout = () => {};
 }
 
 export default LayerHelper;
