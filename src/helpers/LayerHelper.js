@@ -46,24 +46,6 @@ class LayerHelper {
             apiFrom: "internal",
         };
     }
-    dynamicMapping(val, index) {
-        return {
-            id: val.resourceTypeId.trim() === "local" ? val.id : val.id,
-            name: val.label,
-            showingLabel: val.showingLabel,
-            order: index + 1,
-            minZoomLevel: val.minZoomLevel,
-            maxZoomLevel: val.maxZoomLevel,
-            extent: val.extent,
-            resourceType: val.resourceTypeId,
-            mapType: val.mapTypeId,
-            layersVisibility: false,
-            collapseVisibility: false,
-            query: { where: "" },
-            layers: null,
-            apiFrom: "internal",
-        };
-    }
 
     recursiveMap = (val, index) => {
         if (val.layers !== undefined) {
@@ -80,7 +62,9 @@ class LayerHelper {
                         : this.dynamicMapping(val, index)
                 ),
             };
-        } else return this.basemapMapping(val);
+        } else return  val.mapTypeId == "basemap"
+                        ? this.basemapMapping(val)
+                        : this.dynamicMapping(val, index);
     };
 
     creator = layers => {

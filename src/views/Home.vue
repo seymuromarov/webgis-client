@@ -267,7 +267,12 @@
 			:delay="100"
 			:draggable="true"
 		>
-			<Report :arithmeticDataResult="ArithmeticDataResult"/>
+			<Report 
+            :arithmeticDataResult="ArithmeticDataResult"
+            :filterQueryIsSum="filterQueryIsSum"
+            :filterQueryArithmeticColumn="filterQueryArithmeticColumn"
+            :tableFeaturesHeader="tableFeaturesHeader"
+            />
 		</modal>
 
 		<!-- Filter -->

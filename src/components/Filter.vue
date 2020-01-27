@@ -146,6 +146,30 @@
                 :value="filterQuery"
                 @input="$emit('setFilterQuery', $event)"
             ></textarea>
+            <div >
+
+                <label>
+                    <input
+                            class="parentCheckbox"
+                            type="checkbox"
+                            id="isSum"
+                            :value="false"
+                            v-model="filterQueryIsSum"
+                            style="opacity:0;"
+                    />
+                    <i class="far fa-check-circle" v-if="filterQueryIsSum" style="cursor: pointer; color:#008422"></i>
+                    <i class="far fa-check-circle" v-else  style="cursor: pointer;"></i>
+                    Sum
+                </label>                    
+
+                <label class="ml-4" v-if="filterQueryIsSum">
+                    <select v-model="filterQueryArithmeticColumn" >
+                    <option  v-for="alias  in tableFeaturesHeader" :value="alias" :key="alias">{{alias}}</option>
+                    </select>
+                    Sum Column
+                </label>
+
+                </div>
             <div>
                 <button
                     class="btn btn-outline-info filterApplyButton"
@@ -162,7 +186,13 @@
 export default {
     name: "Filter",
     props: {
+        filterQueryIsSum:{
+        type:Boolean
+        },
         tableHeader: {
+            type: String,
+        },
+        filterQueryArithmeticColumn: {
             type: String,
         },
         tableFeaturesHeader: {

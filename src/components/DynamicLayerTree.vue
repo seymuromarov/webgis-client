@@ -22,7 +22,7 @@
                             type="checkbox"
                             v-model="selectedLayers[item.id]"
                             @click="
-                                selectService(item, item.order, false, $event)
+                                selectService(item, item.order, true, $event)
                             "
                         />
                         <i class="checkbox-icon far fa-check-circle"></i>
@@ -158,8 +158,6 @@ export default {
         };
     },
     mounted() {
-        console.log("TCL: this.dynamicSubLayerList", this.dynamicSubLayerList);
-        console.log("TCL: this.asdasdas", this.item);
     },
     computed: {
         checkIfToggled(element, layer) {
