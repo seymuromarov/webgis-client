@@ -1,21 +1,25 @@
 <template lang="html">
-  <div class="main">
-    <div class="form-block">
-      <form class="form" @submit.prevent="login">
-        <img class="logo" src="../assets/logo-en.png" />
-        <input type="text" placeholder="username" v-model="username" />
-        <input type="password" placeholder="password" v-model="password" />
-        <p class="error-message" v-if="error">{{ error }}</p>
-        <!--                <button><i class="fas fa-arrow-right"></i></button>-->
-        <button><i class="fas fa-arrow-right"></i></button>
-      </form>
+    <div class="main">
+        <div class="form-block">
+            <form class="form" @submit.prevent="login">
+                <img class="logo" src="../assets/logo-en.png" />
+                <input type="text" placeholder="username" v-model="username" />
+                <input
+                    type="password"
+                    placeholder="password"
+                    v-model="password"
+                />
+                <p class="error-message" v-if="error">{{ error }}</p>
+                <!--                <button><i class="fas fa-arrow-right"></i></button>-->
+                <button><i class="fas fa-arrow-right"></i></button>
+            </form>
+        </div>
+        <div class="sign-block">
+            <span class="sign"
+                >© 2020 Research and Development Center, Azercosmos OJSCo</span
+            >
+        </div>
     </div>
-    <div class="sign-block">
-      <span class="sign"
-        >© 2019 Research and Development Center, Azercosmos OJSCo</span
-      >
-    </div>
-  </div>
 </template>
 
 <script>
@@ -30,7 +34,7 @@ export default {
         return {
             username: "",
             password: "",
-            error: ""
+            error: "",
         };
     },
     methods: {
@@ -41,7 +45,7 @@ export default {
         async LayerService(username, password) {
             const response = await LoginService.getToken({
                 username: username,
-                password: password
+                password: password,
             });
             // response.data.username = username
             if (!response.data.hasOwnProperty("error")) {
@@ -54,14 +58,14 @@ export default {
                     x => x.label.toLowerCase() === "admin"
                 );
                 this.$cookie.set("isAdmin", Boolean(isAdmin), {
-                    expires: "1D"
+                    expires: "1D",
                 });
 
                 setToken(response.data.token);
                 this.$router.push("/");
             }
-        }
-    }
+        },
+    },
 };
 </script>
 

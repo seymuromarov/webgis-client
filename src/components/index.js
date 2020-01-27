@@ -1,19 +1,21 @@
 import LayerColorPicker from "./LayerColorPicker";
 import ShapeColorPicker from "./ShapeColorPicker";
-import TreeView from "./BaseLayerTree";
+import BaseLayerTree from "./BaseLayerTree";
+import DynamicLayerTree from "./DynamicLayerTree";
 import DataTable from "./DataTable";
 import SimpleFilterModal from "./SimpleFilterModal";
-import Sidebar from "./Sidebar";
+import Sidebar from "./Sidebar/index";
 import Filter from "./Filter";
 import Report from "./Report";
 
 export {
-	LayerColorPicker,
-	ShapeColorPicker,
-	TreeView,
-	DataTable,
-	SimpleFilterModal,
-	Sidebar,
-	Filter,
-	Report,
+    LayerColorPicker,
+    ShapeColorPicker,
+    BaseLayerTree,
+    DynamicLayerTree,
+    DataTable,
+    SimpleFilterModal,
+    Sidebar,
+    Filter,
+    Report,
 };

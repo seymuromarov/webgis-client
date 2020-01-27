@@ -1,8 +1,8 @@
 <template>
 	<div class="row container-fluid padding-0">
 		<!-- Sidebar -->
+		<!-- :dynamicLayerList="dynamicLayerList" -->
 		<Sidebar
-			:dynamicLayerList="dynamicLayerList"
 			:selectedLayers="selectedLayers"
 			:dynamicSubLayerList="dynamicSubLayerList"
 			:baseLayerList="baseLayerList"
@@ -288,7 +288,7 @@
 				:tableFeaturesHeader="tableFeaturesHeader"
 				:stackedTableFeaturesHeader="stackedTableFeaturesHeader"
 				@appendFilterQuery="filterQuery += $event"
-				@setFilterQuery="filterQuery = $event"
+				@setFilterQuery="filterQuery = $event.target.value"
 				@filterSelectedColumn="filterSelectedColumn"
 				@filterData="filterData"
 			/>
@@ -1026,6 +1026,31 @@ export default {
 				});
 			}
 		},
+		recursiveLayerSet(item,serviceName , subLayers)
+		{
+		if(this.isItemCategory(item , serviceName)){
+		
+			return {
+			...item,
+			layers: item.layers.map(item =>this.recursiveLayerSet(item,serviceName,subLayers)),
+			}
+
+		}
+		else
+		{
+			if (item.name==serviceName) {
+				item.layers = subLayers.data.layers;									
+			}
+			return {
+				...item,
+				apiFrom: item.apiFrom
+					? item.apiFrom
+					: "internal",
+				color: item.color ? item.color : false,
+			};	
+		}
+
+		},
 		recursiveLayerOrder(item) {
 			this.layerCounter++;
 			if (item.layers !== undefined && item.children !== undefined)
@@ -1046,20 +1071,53 @@ export default {
 					order: this.layerCounter++,
 				};
 		},
+		isItemCategory(item)
+		{
+			return item.layers !== undefined && item.children !== undefined;
+		},
+		recursiveLayerFind(item , name) {
+			if (item.layers !== undefined && item.children !== undefined) //group 
+			{
+				if(item.layers.some(c=>c.name===name))
+					return item.layers.find(c=>c.name==name);
+				else
+				{
+				 item.children.map(item =>this.recursiveLayerOrder(item));
+				}
+				
+			}
+			else //layer
+			{
+				if(item.name==name)
+				{
+					return item;
+				}
+				else
+				{
+				return null;
+				}
+			}	
+
+
+		},
 		onMoveCallbackDynamicLayerList(evt, originalEvent) {
 			let self = this;
 
-			this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
+			const list = this.dynamicLayerList.map((item, index) => {
 				return {
 					...item,
 					order: index + 1,
 				};
 			});
+
+			this.dynamicLayerList = list
+			this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', list)
+
 			this.setDynamicIndexes();
 		},
 		async getTableData(service, layerId, layerName, query) {
+            //console.log("TCL: getTableData -> service, layerId, layerName, query", service, layerId, layerName, query)
 			var layer = this.getLayer(service.id);
-
 			let token;
 			if (service.apiFrom === "emlak") {
 				token = this.emlakToken;
@@ -1075,7 +1133,7 @@ export default {
 					layer: layerId,
 					...query,
 				};
-
+                //console.log("TCL: getTableData -> params", params)
 				response = await LayerService.getTableData(params);
 			} else {
 				query.isSum = this.filterQueryIsSum;
@@ -1206,7 +1264,7 @@ export default {
 			}
 		},
 		setDynamicIndexes() {
-			this.dynamicLayerList.map((item, index) => {
+			this.$store.state.layers.dynamicLayerList.map((item, index) => {
 				this.mapLayer.getLayers().forEach(function(layer) {
 					if (
 						layer.get("name") != undefined &&
@@ -1227,7 +1285,10 @@ export default {
 			self.gisLayers = response.data;
 			let layers = self.LayerHelper.creator(self.gisLayers);
 			self.baseLayerList = layers.baseLayers;
+			
 			self.dynamicLayerList = layers.dynamicLayers;
+			this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', layers.dynamicLayers)
+
 			let selectedLayersArr = Object.keys(this.selectedLayers).map(
 				Number
 			);
@@ -1235,7 +1296,7 @@ export default {
 				this.baseLayerList.forEach(item => {
 					this.checkIfLayerNeedsToTurnOn(item, value);
 				});
-				this.dynamicLayerList.forEach(item => {
+				this.$store.state.layers.dynamicLayerList.forEach(item => {
 					this.checkIfLayerNeedsToTurnOn(item, value);
 				});
 			});
@@ -1479,16 +1540,20 @@ export default {
 					}
 				}
 			}
-
-			this.dynamicLayerList = this.dynamicLayerList.map((item, index) => {
+			const list = this.$store.state.layers.dynamicLayerList.map((item, index) => {
 				item.color = item.color ? item.color : false;
-
-				if (service.name === item.name) {
-					item.layersVisibility = status;
-					item.color = colorEnabled;
+				var layer=this.recursiveLayerFind(item ,service.name );
+				if (layer) {
+					layer.layersVisibility = status;
+					layer.color = colorEnabled;
 				}
 				return item;
 			});
+
+			this.dynamicLayerList = list
+			this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', list)
+
+			
 		},
 		async getResponseDynamic(service) {
 			let responseDynamic;
@@ -1550,22 +1615,14 @@ export default {
 							return item;
 						}
 					);
-				} else {
+				} else 
+				{
 					subLayers = await this.getResponseDynamic(service);
-					this.dynamicLayerList = this.dynamicLayerList.map(
-						(item, index) => {
-							if (service.name === item.name) {
-								item.layers = subLayers.data.layers;
-							}
-							return {
-								...item,
-								apiFrom: item.apiFrom
-									? item.apiFrom
-									: "internal",
-								color: item.color ? item.color : false,
-							};
-						}
-					);
+					const list = this.dynamicLayerList.map(
+						(item, index) => this.recursiveLayerSet(item,service.name , subLayers));
+					//console.log(list);
+					this.dynamicLayerList = list
+					this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', list)
 				}
 
 				self.dynamicSubLayerList[service.name] = [];
@@ -1574,12 +1631,18 @@ export default {
 				});
 
 				this.addLayers(service, index, dynamic);
+
 				for (let i in this.dynamicLayerList) {
-					if (this.dynamicLayerList[i].name === service.name) {
-						this.dynamicLayerList[i].collapseVisibility = true;
+					var item=this.dynamicLayerList[i];
+					var result=this.recursiveLayerFind(item , service.name);
+					if (result!=null) {
+						result.collapseVisibility = true;
+						this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', this.dynamicLayerList)
 						break;
 					}
 				}
+                    //console.log("TCL: selectService -> baseLayerList", this.baseLayerList)
+
 				for (let i in this.baseLayerList) {
 					if (
 						this.baseLayerList[i].unitedDynamicLayerName !==
@@ -1593,10 +1656,13 @@ export default {
 				}
 			} else {
 				this.deleteLayers(service);
-				for (let i in this.dynamicLayerList) {
-					if (this.dynamicLayerList[i].name === service.name) {
-						this.dynamicLayerList[i].collapseVisibility = false;
-						this.dynamicLayerList[i].layersVisibility = false;
+				for (let i in this.$store.state.layers.dynamicLayerList) {
+					if (this.$store.state.layers.dynamicLayerList[i].name === service.name) {
+						let list = this.$store.state.layers.dynamicLayerList
+						list[i].collapseVisibility = false;
+						list[i].layersVisibility = false;
+						this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', list)
+
 						break;
 					}
 				}
@@ -1615,12 +1681,18 @@ export default {
 			}
 		},
 		selectSubService(service, index, id, e) {
+        console.log("TCL: selectSubService -> service, index, id, e", service, index, id, e)
+
+			console.log(this.dynamicSubLayerList);
 			this.dynamicSubLayerList[service.name][id] = !this
 				.dynamicSubLayerList[service.name][id];
 			this.deleteLayers(service, false);
-			for (let i in this.dynamicLayerList) {
-				if (this.dynamicLayerList[i].name === service.name) {
-					this.dynamicLayerList[i].layersVisibility = true;
+			for (let i in this.$store.state.layers.dynamicLayerList) {
+				if (this.$store.state.layers.dynamicLayerList[i].name === service.name) {
+					let list = this.$store.state.layers.dynamicLayerList
+					list[i].layersVisibility = true;
+					this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', list)
+
 					break;
 				}
 			}
