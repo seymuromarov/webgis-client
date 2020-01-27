@@ -890,7 +890,7 @@ export default {
 				this.tableNextRequest["service"],
 				this.tableNextRequest["layerId"],
 				this.tableNextRequest["layerName"],
-				{ where: this.filterQuery }
+				this.filterQuery==""?{}:{where:this.filterQuery}
 			);
 			this.$modal.hide("filter-modal");
 		},
