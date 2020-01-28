@@ -3,6 +3,7 @@ const state = {
   isSimpleFilterVisible: false,
   tableName: "",
   serviceName: "",
+  serviceResourceType: "",
   layer: "",
   tableHeaders: [],
   tableHeadersWithAlias: [],
@@ -10,7 +11,7 @@ const state = {
   target: undefined,
   checkedColumnsData: [],
   checkedColumns: [],
-  lastBBOXOfShape: []
+  lastBBOXOfShape: [],
 };
 
 const mutations = {
@@ -52,6 +53,9 @@ const mutations = {
   },
   SET_DRAW_BBOX(state, drawBBOX) {
     state.lastBBOXOfShape = drawBBOX;
+  },
+  SET_SERVICE_RESOURCE_TYPE(state, serviceResourceType) {
+    state.serviceResourceType = serviceResourceType;
   }
 };
 
@@ -80,12 +84,16 @@ const actions = {
   SAVE_DRAW_BBOX(context, drawBBOX) {
     context.commit("SET_DRAW_BBOX", drawBBOX);
   },
+  SAVE_SERVICE_RESOURCE_TYPE(context, serviceResourceType) {
+    context.commit("SET_SERVICE_RESOURCE_TYPE", serviceResourceType);
+  },
   SAVE_DATATABLE_CONFIGURATION(context, data) {
     console.log("TCL: SAVE_DATATABLE_CONFIGURATION -> data", data);
     const {
       isVisible,
       layerId,
       serviceName,
+      serviceResourceType,
       tableName,
       tableHeaders,
       tableStackedHeaders,
@@ -99,6 +107,7 @@ const actions = {
     context.commit("SET_DATATABLE_VISIBLE", isVisible);
     context.commit("SET_DATATABLE_LAYER_ID", layerId);
     context.commit("SET_DATATABLE_SERVICE_NAME", serviceName);
+    context.commit("SET_SERVICE_RESOURCE_TYPE", serviceResourceType);
     context.commit("SET_DATATABLE_NAME", tableName);
     context.commit("SET_DATATABLE_HEADERS", tableHeaders);
     context.commit("SET_DATATABLE_STACKED_HEADERS", tableStackedHeaders);

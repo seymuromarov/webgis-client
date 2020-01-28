@@ -269,9 +269,6 @@
 		>
 			<Report 
             :arithmeticDataResult="ArithmeticDataResult"
-            :filterQueryIsSum="filterQueryIsSum"
-            :filterQueryArithmeticColumn="filterQueryArithmeticColumn"
-            :tableFeaturesHeader="tableFeaturesHeader"
             />
 		</modal>
 
@@ -426,8 +423,7 @@ export default {
 			longChange: null,
 			lastCoordinates: null,
 			filterQuery: "",
-			filterQueryIsSum: false,
-			filterQueryArithmeticColumn: "",
+		
 			ArithmeticDataResult: {},
 			dataFilter: {
 				query: "",
@@ -1141,14 +1137,15 @@ export default {
                 //console.log("TCL: getTableData -> params", params)
 				response = await LayerService.getTableData(params);
 			} else {
-				query.isSum = this.filterQueryIsSum;
-				query.ArithmeticColumnName = this.filterQueryArithmeticColumn;
+			
 				let params = {
 					layerId: service.id,
 					...query,
 				};
 				service.query = query;
-				if (query.isSum) {
+				if (this.filterQueryIsSum && service.resourceType==='local') {
+					params.isSum = this.filterQueryIsSum;
+					params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
 					response = await LayerService.getLocalArithmeticData(
 						params
 					);
@@ -1169,13 +1166,14 @@ export default {
 				return;
 			}
 
-			if (!query.isSum) {
+			if (!this.filterQueryIsSum) {
 				let self = this;
 				this.tableNextRequest["service"] = service;
 				this.tableNextRequest["layerId"] = layerId;
 				this.tableNextRequest["layerName"] = layerName;
 
 				let serviceName = service.name;
+				let serviceResourceType = service.resourceType;
 				let tableName = layerName;
 				let tableData = response.data.features;
 				let tableHeaders = Object.keys(tableData[0].attributes);
@@ -1219,6 +1217,7 @@ export default {
 					isVisible: true,
 					layerId,
 					serviceName,
+					serviceResourceType,
 					tableName,
 					tableHeaders,
 					tableStackedHeaders,
@@ -1228,7 +1227,6 @@ export default {
 					checkedColumnsData,
 					checkedColumns,
 				});
-				this.filterQueryArithmeticColumn = tableHeaders[0];
 				this.tableFeaturesData = tableData;
 				this.tableFeaturesHeader = tableHeaders;
 				this.stackedTableFeaturesHeader = tableHeaders;
@@ -1761,6 +1759,13 @@ export default {
 		isTabelVisible() {
 			return this.$store.state.dataTable.isVisible;
 		},
+		filterQueryIsSum() {
+			  return this.$store.state.filter.filterQueryIsSum;
+		},
+		filterQueryArithmeticColumn() {
+		   return this.$store.state.filter.filterQueryArithmeticColumn;
+		},
+
 		// stackedTableFeaturesHeader() {
 		//     return this.$store.state.dataTable.tableStackedHeaders;
 		// },

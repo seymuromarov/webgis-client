@@ -146,7 +146,7 @@
                 :value="filterQuery"
                 @input="$emit('setFilterQuery', $event)"
             ></textarea>
-            <div >
+            <div v-show="serviceResourceType==='local'">
 
                 <label>
                     <input
@@ -164,17 +164,16 @@
 
                 <label class="ml-4" v-if="filterQueryIsSum">
                     <select v-model="filterQueryArithmeticColumn" >
-                    <option  v-for="alias  in tableFeaturesHeader" :value="alias" :key="alias">{{alias}}</option>
+                    <option  v-for="alias in tableFeaturesHeader" :value="alias" :key="alias">{{alias}}</option>
                     </select>
                     Sum Column
                 </label>
 
-                </div>
+             </div>
             <div>
                 <button
                     class="btn btn-outline-info filterApplyButton"
-                    @click="$emit('filterData')"
-                >
+                    @click="$emit('filterData')">
                     Apply
                 </button>
             </div>
@@ -186,15 +185,9 @@
 export default {
     name: "Filter",
     props: {
-        filterQueryIsSum:{
-        type:Boolean
-        },
         tableHeader: {
             type: String,
-        },
-        filterQueryArithmeticColumn: {
-            type: String,
-        },
+        },     
         tableFeaturesHeader: {
             type: Array,
         },
@@ -207,6 +200,30 @@ export default {
         filterValues: {
             type: Array,
         },
+    },
+    computed: {
+        serviceResourceType() {
+			  return this.$store.state.dataTable.serviceResourceType;
+		},
+        filterQueryIsSum: {
+            get () {
+            return this.$store.state.filter.filterQueryIsSum;
+            },
+            set (filterQueryIsSum) {
+            if(filterQueryIsSum){
+                this.$store.dispatch('SAVE_FILTER_QUERY_ARITHMETIC_COLUMN', this.tableFeaturesHeader[0])
+            }    
+            return this.$store.dispatch('SAVE_FILTER_QUERY_IS_SUM', filterQueryIsSum)
+            }
+        },
+        filterQueryArithmeticColumn: {
+            get () {
+            return this.$store.state.filter.filterQueryArithmeticColumn;
+            },
+            set (filterQueryArithmeticColumn) {
+            return this.$store.dispatch('SAVE_FILTER_QUERY_ARITHMETIC_COLUMN', filterQueryArithmeticColumn)
+            }
+        }
     },
     methods: {
         addValueToQuery(value) {

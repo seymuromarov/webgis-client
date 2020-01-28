@@ -3,6 +3,7 @@ const state = {
         open: [],
         closed: [],
     },
+
     issueCount: {
         open: null,
         closed: null
