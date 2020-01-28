@@ -1,5 +1,5 @@
 import request from "../utils/request";
-import { URL } from "../config/baseUrl";
+import {URL} from "../config/baseUrl";
 
 export default {
     getCategories() {
