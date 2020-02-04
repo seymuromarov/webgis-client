@@ -89,7 +89,6 @@ const actions = {
         context.commit("SET_SERVICE_RESOURCE_TYPE", serviceResourceType);
     },
     SAVE_DATATABLE_CONFIGURATION(context, data) {
-        console.log("TCL: SAVE_DATATABLE_CONFIGURATION -> data", data);
         const {
             isVisible,
             layerId,

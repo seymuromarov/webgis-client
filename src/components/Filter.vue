@@ -146,34 +146,46 @@
                 :value="filterQuery"
                 @input="$emit('setFilterQuery', $event)"
             ></textarea>
-            <div v-show="serviceResourceType==='local'">
-
+            <div v-show="serviceResourceType === 'local'">
                 <label>
                     <input
-                            class="parentCheckbox"
-                            type="checkbox"
-                            id="isSum"
-                            :value="false"
-                            v-model="filterQueryIsSum"
-                            style="opacity:0;"
+                        class="parentCheckbox"
+                        type="checkbox"
+                        id="isSum"
+                        :value="false"
+                        v-model="filterQueryIsSum"
+                        style="opacity:0;"
                     />
-                    <i class="far fa-check-circle" v-if="filterQueryIsSum" style="cursor: pointer; color:#008422"></i>
-                    <i class="far fa-check-circle" v-else  style="cursor: pointer;"></i>
+                    <i
+                        class="far fa-check-circle"
+                        v-if="filterQueryIsSum"
+                        style="cursor: pointer; color:#008422"
+                    ></i>
+                    <i
+                        class="far fa-check-circle"
+                        v-else
+                        style="cursor: pointer;"
+                    ></i>
                     Sum
-                </label>                    
+                </label>
 
                 <label class="ml-4" v-if="filterQueryIsSum">
-                    <select v-model="filterQueryArithmeticColumn" >
-                    <option  v-for="alias in tableFeaturesHeader" :value="alias" :key="alias">{{alias}}</option>
+                    <select v-model="filterQueryArithmeticColumn">
+                        <option
+                            v-for="alias in tableFeaturesHeader"
+                            :value="alias"
+                            :key="alias"
+                            >{{ alias }}</option
+                        >
                     </select>
                     Sum Column
                 </label>
-
-             </div>
+            </div>
             <div>
                 <button
                     class="btn btn-outline-info filterApplyButton"
-                    @click="$emit('filterData')">
+                    @click="$emit('filterData')"
+                >
                     Apply
                 </button>
             </div>
@@ -183,11 +195,11 @@
 
 <script>
 export default {
-    name: "Filter",
+    name: "FilterBox",
     props: {
         tableHeader: {
             type: String,
-        },     
+        },
         tableFeaturesHeader: {
             type: Array,
         },
@@ -203,27 +215,36 @@ export default {
     },
     computed: {
         serviceResourceType() {
-			  return this.$store.state.dataTable.serviceResourceType;
-		},
+            return this.$store.state.dataTable.serviceResourceType;
+        },
         filterQueryIsSum: {
-            get () {
-            return this.$store.state.filter.filterQueryIsSum;
+            get() {
+                return this.$store.state.filter.filterQueryIsSum;
             },
-            set (filterQueryIsSum) {
-            if(filterQueryIsSum){
-                this.$store.dispatch('SAVE_FILTER_QUERY_ARITHMETIC_COLUMN', this.tableFeaturesHeader[0])
-            }    
-            return this.$store.dispatch('SAVE_FILTER_QUERY_IS_SUM', filterQueryIsSum)
-            }
+            set(filterQueryIsSum) {
+                if (filterQueryIsSum) {
+                    this.$store.dispatch(
+                        "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
+                        this.tableFeaturesHeader[0]
+                    );
+                }
+                return this.$store.dispatch(
+                    "SAVE_FILTER_QUERY_IS_SUM",
+                    filterQueryIsSum
+                );
+            },
         },
         filterQueryArithmeticColumn: {
-            get () {
-            return this.$store.state.filter.filterQueryArithmeticColumn;
+            get() {
+                return this.$store.state.filter.filterQueryArithmeticColumn;
             },
-            set (filterQueryArithmeticColumn) {
-            return this.$store.dispatch('SAVE_FILTER_QUERY_ARITHMETIC_COLUMN', filterQueryArithmeticColumn)
-            }
-        }
+            set(filterQueryArithmeticColumn) {
+                return this.$store.dispatch(
+                    "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
+                    filterQueryArithmeticColumn
+                );
+            },
+        },
     },
     methods: {
         addValueToQuery(value) {

@@ -62,13 +62,13 @@ class LayerHelper {
                         : this.dynamicMapping(val, index)
                 ),
             };
-        } else return  val.mapTypeId == "basemap"
-                        ? this.basemapMapping(val)
-                        : this.dynamicMapping(val, index);
+        } else
+            return val.mapTypeId == "basemap"
+                ? this.basemapMapping(val)
+                : this.dynamicMapping(val, index);
     };
 
     creator = layers => {
-        console.log(layers);
         let baseLayers = layers
             .filter(c => c.mapTypeId === "basemap")
             .map((val, index) => this.recursiveMap(val, index));

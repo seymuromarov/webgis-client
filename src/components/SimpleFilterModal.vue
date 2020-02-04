@@ -179,7 +179,6 @@ export default {
         };
     },
     mounted() {
-        console.log(this.isVisible);
     },
     methods: {
         showSimpleFilterModal() {
