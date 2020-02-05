@@ -7,6 +7,7 @@ import SimpleFilterModal from "./SimpleFilterModal";
 import Sidebar from "./Sidebar/index";
 import Filter from "./Filter";
 import Report from "./Report";
+import MapControls from "./MapControls";
 
 export {
     LayerColorPicker,
@@ -18,4 +19,5 @@ export {
     Sidebar,
     Filter,
     Report,
+    MapControls,
 };

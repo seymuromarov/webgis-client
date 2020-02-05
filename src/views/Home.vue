@@ -17,16 +17,18 @@
         <!-- Main content -->
         <div class="padding-0 map-layout">
             <div id="map">
-                <button
+                <!-- Search -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     :style="{ top: '15%' }"
                     title="Search"
                     @click="cityInputToggle"
                 >
                     <i class="fas fa-search"></i>
-                </button>
+                </button> -->
 
-                <div
+                <!-- Search multiselect -->
+                <!-- <div
                     style="position: absolute;top: 14.2%;right: 60px;z-index: 999"
                     v-show="citySearchInputShow"
                 >
@@ -40,34 +42,40 @@
                         track-by="city"
                         @select="onCitySelect"
                     ></multiselect>
-                </div>
+                </div> -->
 
-                <button
+                <!-- Delete Feature -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     :style="{ top: '70%' }"
                     title="Delete Feature"
                     @click="deleteFeatureOn"
                 >
                     <i class="fas fa-trash"></i>
-                </button>
-                <button
+                </button> -->
+
+                <!-- Reset feature -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     :style="{ top: '75%' }"
                     title="Reset Features"
                     @click="resetFeatures"
                 >
                     <i class="fas fa-sync-alt"></i>
-                </button>
-                <button
+                </button> -->
+
+                <!-- Color Picker -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     :style="{ top: '80%' }"
                     title="Color Picker"
                     @click="eyeDropper"
                 >
                     <i class="fas fa-eye-dropper"></i>
-                </button>
+                </button> -->
 
-                <button
+                <!-- Drawings -->
+                <!-- <button
                     v-for="(item, index) in drawings"
                     :key="index"
                     class="action-button-class btn btn-control"
@@ -76,24 +84,27 @@
                     @click="setDrawType(item.name)"
                 >
                     <i :class="item.icon"></i>
-                </button>
+                </button> -->
 
-                <button
+                <!-- NDVI Assessment -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     :style="{ top: (drawings.length + 1) * 5 + 25 + '%' }"
                     title="NDVI Assessment"
                     @click="changeDetector"
                 >
                     <i class="fas fa-globe"></i>
-                </button>
+                </button> -->
 
-                <div
+                <!-- Lattitude and Longtitude -->
+                <!-- <div
                     id="mouse-position"
                     class="latLongShow"
                     @click="LatLongFormToggle"
-                ></div>
+                ></div> -->
 
-                <div class="latLongShowForm" v-show="latLongFormShow">
+                <!-- Lattitude and Longtitude Form -->
+                <!-- <div class="latLongShowForm" v-show="latLongFormShow">
                     <div @mouseleave="LatLongFormToggle">
                         <div style="width: 300px">
                             <div style="display: inline;float: left;">
@@ -130,12 +141,15 @@
                             >Use metric coordinate system</label
                         >
                     </div>
-                </div>
-                <div id="info" class="infokml" v-show="this.kmlInfo !== null">
-                    &nbsp;
-                </div>
+                </div> -->
 
-                <button
+                <!-- KML Info ? -->
+                <!-- <div id="info" class="infokml" v-show="this.kmlInfo !== null">
+                    &nbsp;
+                </div> -->
+
+                <!-- Drag & Drop Toast -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     style="bottom: 10px;right: 90px;"
                     @click="dragAndDropToast"
@@ -143,24 +157,21 @@
                     v-if="!isTabelVisible"
                 >
                     <i class="fas fa-file-upload"></i>
-                </button>
-                <button
+                </button> -->
+
+                <!-- Map view -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     style="bottom: 10px;right: 50px;"
                     @click="selectLayerForm = true"
                     v-if="!isTabelVisible"
                 >
                     <i class="fas fa-stream"></i>
-                </button>
-                <button
-                    class="action-button-class btn btn-control"
-                    style="bottom: 10px;right: 10px;"
-                    @click="showInfoModal = true"
-                >
-                    <i class="fas fa-info"></i>
-                </button>
-                <div
-                    v-show="selectLayerForm"
+                </button> -->
+
+                <!-- Map view types -->
+                <!-- <div
+                    v-show="!selectLayerForm"
                     @mouseleave="selectLayerForm = false"
                     class="selectLayerForm"
                 >
@@ -175,17 +186,29 @@
                             <span style="margin-left: 5px;">{{ index }}</span>
                         </div>
                     </form>
-                </div>
+                </div> -->
 
-                <button
+                <!-- Information -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    style="bottom: 10px;right: 10px;"
+                    @click="showInfoModal = true"
+                >
+                    <i class="fas fa-info"></i>
+                </button> -->
+
+                <!-- Home -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     style="top: 116px;left: .5rem;"
                     title="Home"
                     @click="zoomToCenter"
                 >
                     <i class="fas fa-home"></i>
-                </button>
-                <button
+                </button> -->
+
+                <!-- History next -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     style="top: 152px;left: .5rem;"
                     title="Go next map history"
@@ -193,8 +216,10 @@
                     @click="historyNext"
                 >
                     <i class="fas fa-arrow-right"></i>
-                </button>
-                <button
+                </button> -->
+
+                <!-- History previous -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     style="top: 188px;left: .5rem;"
                     title="Go previous map history"
@@ -202,9 +227,10 @@
                     @click="historyBack"
                 >
                     <i class="fas fa-arrow-left"></i>
-                </button>
+                </button> -->
 
-                <button
+                <!-- Grid -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     style="top: 224px;left: .5rem;"
                     @click="addGraticule"
@@ -212,9 +238,10 @@
                     v-show="!isTabelVisible"
                 >
                     <i class="fas fa-barcode"></i>
-                </button>
+                </button> -->
 
-                <button
+                <!-- Export PNG -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     style="bottom: 10px;left: 3rem;"
                     @click="pngExport"
@@ -222,9 +249,10 @@
                     v-show="!isTabelVisible"
                 >
                     <i class="far fa-file-image"></i>
-                </button>
+                </button> -->
 
-                <button
+                <!-- Export data -->
+                <!-- <button
                     class="action-button-class btn btn-control"
                     style="bottom: 10px;left: .5rem;"
                     @click="exportData"
@@ -232,7 +260,14 @@
                     v-show="!isTabelVisible"
                 >
                     <i class="fas fa-file-download"></i>
-                </button>
+                </button> -->
+
+                <MapControls
+                    :map="mapLayer"
+                    :mapHelpers="MapHelpers"
+                    :nextHistoryEvent="nextHistoryEvent"
+                    :previousHistoryEvent="previousHistoryEvent"
+                />
             </div>
         </div>
 
@@ -366,13 +401,14 @@ import {
     Sidebar,
     Filter,
     Report,
+    MapControls,
 } from "@/components/";
 import InfoModal from "@/components/Info/index";
 import DetectorModal from "@/components/modals/ChangeDetector";
 
 // Utils
 import { URL, MAP_URLS } from "@/config/baseUrl";
-import { az_json } from "@/assets/json/az";
+import cities from "@/data/cities.json";
 import LoginService from "@/services/LoginService";
 import LayerService from "@/services/LayerService";
 import { Toggler, MapHelpers, ColorPicker, LayerHelper } from "@/helpers";
@@ -391,6 +427,7 @@ export default {
         Sidebar,
         FilterBox: Filter,
         Report,
+        MapControls,
     },
     data() {
         return {
@@ -528,7 +565,7 @@ export default {
         this.Toggler = new Toggler(this);
         this.ColorPicker = new ColorPicker(this);
         this.LayerHelper = new LayerHelper(this);
-        this.citySearchOptions = az_json;
+        this.citySearchOptions = cities;
 
         this.source = new VectorSource({
             wrapX: false,
@@ -587,7 +624,7 @@ export default {
                     new DragRotateAndZoom(),
                     dragAndDropInteraction,
                 ]),
-                controls: defaultControls().extend([new FullScreen()]),
+                controls: [], // defaultControls(), //.extend([new FullScreen()]),
                 target: "map",
                 layers: this.layers,
                 view: new View({
@@ -596,6 +633,8 @@ export default {
                     rotation: rotation,
                 }),
             });
+
+            console.log(this.mapLayer);
 
             let modify = new Modify({
                 source: this.source,
@@ -836,12 +875,7 @@ export default {
         nameWithCountry({ city, country }) {
             return `${city} , ${country}`;
         },
-        historyBack() {
-            this.MapHelpers.historyBack(this);
-        },
-        historyNext() {
-            this.MapHelpers.historyNext(this);
-        },
+
         exportData() {
             this.MapHelpers.exportData(this);
         },
@@ -905,12 +939,6 @@ export default {
                     duration: 3500,
                 }
             );
-        },
-        zoomToCenter() {
-            this.mapLayer
-                .getView()
-                .setCenter(fromLonLat([47.82858, 40.3598414]));
-            this.mapLayer.getView().setZoom(8);
         },
         addGraticule() {
             this.MapHelpers.addGraticule();
@@ -994,11 +1022,11 @@ export default {
         onMoveCallbackBaseLayerList(evt, originalEvent) {
             this.layerCounter = 0;
 
-            let baseLayerList = this.$store.getters.baseLayerList
+            let baseLayerList = this.$store.getters.baseLayerList;
             baseLayerList = thisbaseLayerList.map((item, index) =>
                 this.recursiveLayerOrder(item)
             );
-            this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList)
+            this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);
 
             baseLayerList.map((item, index) =>
                 this.recursiveLayerIndexes(item)
@@ -1264,7 +1292,7 @@ export default {
             self.gisLayers = response.data;
             let layers = self.LayerHelper.creator(self.gisLayers);
 
-            self.$store.dispatch("SET_BASE_LAYER_LIST", layers.baseLayers)
+            self.$store.dispatch("SET_BASE_LAYER_LIST", layers.baseLayers);
 
             this.$store.dispatch(
                 "SET_DYNAMIC_LAYER_LIST",
@@ -1493,15 +1521,16 @@ export default {
             }
         },
         async basemapLayersReset(service, status) {
-            let baseLayerList = this.$store.getters.baseLayerList.map((item, index) => {
-                if (service.name === item.name) {
-                    item.layersVisibility = status;
+            let baseLayerList = this.$store.getters.baseLayerList.map(
+                (item, index) => {
+                    if (service.name === item.name) {
+                        item.layersVisibility = status;
+                    }
+                    return item;
                 }
-                return item;
-            });
+            );
 
-            this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList)
-
+            this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);
         },
         async dynamicLayersReset(service, status) {
             let token;
@@ -1606,8 +1635,7 @@ export default {
                         }
                     );
 
-                    this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList)
-
+                    this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);
                 } else {
                     subLayers = await this.getResponseDynamic(service);
                     const list = this.$store.getters.dynamicLayerList.map(
@@ -1650,14 +1678,16 @@ export default {
 
                 for (let i in this.$store.getters.baseLayerList) {
                     if (
-                        this.$store.getters.baseLayerList[i].unitedDynamicLayerName !==
-                            undefined &&
-                        this.$store.getters.baseLayerList[i].unitedDynamicLayerName !== null &&
-                        this.$store.getters.baseLayerList[i].name === service.name
+                        this.$store.getters.baseLayerList[i]
+                            .unitedDynamicLayerName !== undefined &&
+                        this.$store.getters.baseLayerList[i]
+                            .unitedDynamicLayerName !== null &&
+                        this.$store.getters.baseLayerList[i].name ===
+                            service.name
                     ) {
-                        let list = this.$store.getters.baseLayerList
+                        let list = this.$store.getters.baseLayerList;
                         list[i].collapseVisibility = true;
-                        this.$store.dispatch("SET_BASE_LAYER_LIST", list)
+                        this.$store.dispatch("SET_BASE_LAYER_LIST", list);
 
                         break;
                     }
@@ -1679,17 +1709,19 @@ export default {
                 }
                 for (let i in this.$store.getters.baseLayerList) {
                     if (
-                        this.$store.getters.baseLayerList[i].unitedDynamicLayerName !==
-                            undefined &&
-                        this.$store.getters.baseLayerList[i].unitedDynamicLayerName !== null &&
-                        this.$store.getters.baseLayerList[i].name === service.name
+                        this.$store.getters.baseLayerList[i]
+                            .unitedDynamicLayerName !== undefined &&
+                        this.$store.getters.baseLayerList[i]
+                            .unitedDynamicLayerName !== null &&
+                        this.$store.getters.baseLayerList[i].name ===
+                            service.name
                     ) {
-                        let list = this.$store.getters.baseLayerList
+                        let list = this.$store.getters.baseLayerList;
 
                         list[i].collapseVisibility = false;
                         list[i].layersVisibility = false;
 
-                        this.$store.dispatch("SET_BASE_LAYER_LIST", list)
+                        this.$store.dispatch("SET_BASE_LAYER_LIST", list);
                         break;
                     }
                 }
