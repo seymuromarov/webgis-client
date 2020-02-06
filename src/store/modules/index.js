@@ -6,4 +6,12 @@ import forum from "./forum";
 import layers from "./layers";
 import filter from "./filter";
 
-export default { auth, dataTable, colorPicker, information, forum, layers,filter };
+export default {
+    auth,
+    dataTable,
+    colorPicker,
+    information,
+    forum,
+    layers,
+    filter,
+};

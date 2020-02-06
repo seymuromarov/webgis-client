@@ -1,7 +1,7 @@
-export const az_json =[
+[
     {
         "city": "Baku",
-        "admin": "Bak\u0131",
+        "admin": "Bakı",
         "country": "Azerbaijan",
         "population_proper": "1892000",
         "iso2": "AZ",
@@ -11,8 +11,8 @@ export const az_json =[
         "population": "2122300"
     },
     {
-        "city": "G\u0259nc\u0259",
-        "admin": "G\u0259nc\u0259",
+        "city": "Gəncə",
+        "admin": "Gəncə",
         "country": "Azerbaijan",
         "population_proper": "300131",
         "iso2": "AZ",
@@ -22,8 +22,8 @@ export const az_json =[
         "population": "303268"
     },
     {
-        "city": "Sumqay\u0131t",
-        "admin": "Sumqay\u0131t",
+        "city": "Sumqayıt",
+        "admin": "Sumqayıt",
         "country": "Azerbaijan",
         "population_proper": "265150",
         "iso2": "AZ",
@@ -33,8 +33,8 @@ export const az_json =[
         "population": "279159"
     },
     {
-        "city": "Hac\u0131var",
-        "admin": "Bab\u0259k",
+        "city": "Hacıvar",
+        "admin": "Babək",
         "country": "Azerbaijan",
         "population_proper": "64754",
         "iso2": "AZ",
@@ -44,8 +44,8 @@ export const az_json =[
         "population": "94788"
     },
     {
-        "city": "\u015e\u0259ki",
-        "admin": "\u015e\u0259ki",
+        "city": "Şəki",
+        "admin": "Şəki",
         "country": "Azerbaijan",
         "population_proper": "62191",
         "iso2": "AZ",
@@ -55,8 +55,8 @@ export const az_json =[
         "population": "64968"
     },
     {
-        "city": "L\u0259nk\u0259ran",
-        "admin": "L\u0259nk\u0259ran",
+        "city": "Lənkəran",
+        "admin": "Lənkəran",
         "country": "Azerbaijan",
         "population_proper": "60180",
         "iso2": "AZ",
@@ -77,8 +77,8 @@ export const az_json =[
         "population": "53716"
     },
     {
-        "city": "G\u00f6y\u00e7ay",
-        "admin": "G\u00f6y\u00e7ay",
+        "city": "Göyçay",
+        "admin": "Göyçay",
         "country": "Azerbaijan",
         "population_proper": "34715",
         "iso2": "AZ",
@@ -99,8 +99,8 @@ export const az_json =[
         "population": "12626"
     },
     {
-        "city": "Q\u0259b\u0259l\u0259",
-        "admin": "Q\u0259b\u0259l\u0259",
+        "city": "Qəbələ",
+        "admin": "Qəbələ",
         "country": "Azerbaijan",
         "population_proper": "11867",
         "iso2": "AZ",
@@ -110,8 +110,8 @@ export const az_json =[
         "population": "11867"
     },
     {
-        "city": "G\u0259d\u0259b\u0259y",
-        "admin": "G\u0259d\u0259b\u0259y",
+        "city": "Gədəbəy",
+        "admin": "Gədəbəy",
         "country": "Azerbaijan",
         "population_proper": "8657",
         "iso2": "AZ",
@@ -132,8 +132,8 @@ export const az_json =[
         "population": "7333"
     },
     {
-        "city": "O\u011fuz",
-        "admin": "O\u011fuz",
+        "city": "Oğuz",
+        "admin": "Oğuz",
         "country": "Azerbaijan",
         "population_proper": "6876",
         "iso2": "AZ",
@@ -154,8 +154,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Ming\u0259\u00e7evir",
-        "admin": "Ming\u0259\u00e7evir",
+        "city": "Mingəçevir",
+        "admin": "Mingəçevir",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -165,8 +165,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "X\u0131z\u0131",
-        "admin": "X\u0131z\u0131",
+        "city": "Xızı",
+        "admin": "Xızı",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -176,8 +176,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "X\u0131rdalan",
-        "admin": "Ab\u015feron",
+        "city": "Xırdalan",
+        "admin": "Abşeron",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -187,8 +187,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Heyd\u0259rabad",
-        "admin": "S\u0259d\u0259r\u0259k",
+        "city": "Heydərabad",
+        "admin": "Sədərək",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -198,8 +198,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Z\u0259ngilan",
-        "admin": "Z\u0259ngilan",
+        "city": "Zəngilan",
+        "admin": "Zəngilan",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -209,8 +209,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "A\u011fstafa",
-        "admin": "A\u011fstafa",
+        "city": "Ağstafa",
+        "admin": "Ağstafa",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -231,8 +231,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "G\u00f6yg\u00f6l",
-        "admin": "G\u00f6yg\u00f6l",
+        "city": "Göygöl",
+        "admin": "Göygöl",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -242,8 +242,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Xocav\u0259nd",
-        "admin": "Xocav\u0259nd",
+        "city": "Xocavənd",
+        "admin": "Xocavənd",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -253,8 +253,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Xa\u00e7maz",
-        "admin": "Xa\u00e7maz",
+        "city": "Xaçmaz",
+        "admin": "Xaçmaz",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -264,8 +264,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "K\u0259lb\u0259c\u0259r",
-        "admin": "K\u0259lb\u0259c\u0259r",
+        "city": "Kəlbəcər",
+        "admin": "Kəlbəcər",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -275,8 +275,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Yard\u0131ml\u0131",
-        "admin": "Yard\u0131ml\u0131",
+        "city": "Yardımlı",
+        "admin": "Yardımlı",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -286,8 +286,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Da\u015fk\u0259s\u0259n",
-        "admin": "Da\u015fk\u0259s\u0259n",
+        "city": "Daşkəsən",
+        "admin": "Daşkəsən",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -297,8 +297,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "K\u00fcrd\u0259mir",
-        "admin": "K\u00fcrd\u0259mir",
+        "city": "Kürdəmir",
+        "admin": "Kürdəmir",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -308,8 +308,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Hac\u0131qabul",
-        "admin": "Hac\u0131qabul",
+        "city": "Hacıqabul",
+        "admin": "Hacıqabul",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -341,8 +341,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "T\u0259rt\u0259r",
-        "admin": "T\u0259rt\u0259r",
+        "city": "Tərtər",
+        "admin": "Tərtər",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -352,8 +352,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Bil\u0259suvar",
-        "admin": "Bil\u0259suvar",
+        "city": "Biləsuvar",
+        "admin": "Biləsuvar",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -363,8 +363,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "\u015e\u0259mkir",
-        "admin": "\u015e\u0259mkir",
+        "city": "Şəmkir",
+        "admin": "Şəmkir",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -374,8 +374,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Qubadl\u0131",
-        "admin": "Qubadl\u0131",
+        "city": "Qubadlı",
+        "admin": "Qubadlı",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -407,8 +407,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Bab\u0259k",
-        "admin": "Bab\u0259k",
+        "city": "Babək",
+        "admin": "Babək",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -418,8 +418,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "F\u00fczuli",
-        "admin": "F\u00fczuli",
+        "city": "Füzuli",
+        "admin": "Füzuli",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -429,8 +429,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "C\u0259bray\u0131l",
-        "admin": "C\u0259bray\u0131l",
+        "city": "Cəbrayıl",
+        "admin": "Cəbrayıl",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -451,8 +451,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Xocal\u0131",
-        "admin": "Xocal\u0131",
+        "city": "Xocalı",
+        "admin": "Xocalı",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -484,8 +484,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "A\u011fda\u015f",
-        "admin": "A\u011fda\u015f",
+        "city": "Ağdaş",
+        "admin": "Ağdaş",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -506,8 +506,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Masall\u0131",
-        "admin": "Masall\u0131",
+        "city": "Masallı",
+        "admin": "Masallı",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -517,7 +517,7 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "A\u011fdam",
+        "city": "Ağdam",
         "admin": "Tovuz",
         "country": "Azerbaijan",
         "population_proper": "0",
@@ -528,8 +528,8 @@ export const az_json =[
         "population": "0"
     },
     {
-        "city": "Beyl\u0259qan",
-        "admin": "Beyl\u0259qan",
+        "city": "Beyləqan",
+        "admin": "Beyləqan",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -539,8 +539,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "A\u011fsu",
-        "admin": "A\u011fsu",
+        "city": "Ağsu",
+        "admin": "Ağsu",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -561,8 +561,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "B\u0259rd\u0259",
-        "admin": "B\u0259rd\u0259",
+        "city": "Bərdə",
+        "admin": "Bərdə",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -583,8 +583,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Balak\u0259n",
-        "admin": "Balak\u0259n",
+        "city": "Balakən",
+        "admin": "Balakən",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -594,8 +594,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "\u0130smay\u0131ll\u0131",
-        "admin": "\u0130smay\u0131ll\u0131",
+        "city": "İsmayıllı",
+        "admin": "İsmayıllı",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -605,8 +605,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "\u015eu\u015fa",
-        "admin": "\u015eu\u015fa",
+        "city": "Şuşa",
+        "admin": "Şuşa",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -627,8 +627,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "A\u011fcab\u0259di",
-        "admin": "A\u011fcab\u0259di",
+        "city": "Ağcabədi",
+        "admin": "Ağcabədi",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -638,8 +638,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "A\u011fdam",
-        "admin": "A\u011fdam",
+        "city": "Ağdam",
+        "admin": "Ağdam",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -649,8 +649,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "D\u0259v\u0259\u00e7i",
-        "admin": "\u015eabran",
+        "city": "Dəvəçi",
+        "admin": "Şabran",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -660,8 +660,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "\u0130mi\u015fli",
-        "admin": "\u0130mi\u015fli",
+        "city": "İmişli",
+        "admin": "İmişli",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -671,8 +671,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Saatl\u0131",
-        "admin": "Saatl\u0131",
+        "city": "Saatlı",
+        "admin": "Saatlı",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -682,8 +682,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Nax\u00e7\u0131van",
-        "admin": "Nax\u00e7\u0131van",
+        "city": "Naxçıvan",
+        "admin": "Naxçıvan",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -693,8 +693,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Siy\u0259z\u0259n",
-        "admin": "Siy\u0259z\u0259n",
+        "city": "Siyəzən",
+        "admin": "Siyəzən",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -704,8 +704,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "\u015eahbuz",
-        "admin": "\u015eahbuz",
+        "city": "Şahbuz",
+        "admin": "Şahbuz",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -715,8 +715,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "C\u0259lilabad",
-        "admin": "C\u0259lilabad",
+        "city": "Cəlilabad",
+        "admin": "Cəlilabad",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -737,8 +737,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Neft\u00e7ala",
-        "admin": "Neft\u00e7ala",
+        "city": "Neftçala",
+        "admin": "Neftçala",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -748,8 +748,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "La\u00e7\u0131n",
-        "admin": "La\u00e7\u0131n",
+        "city": "Laçın",
+        "admin": "Laçın",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -770,8 +770,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Z\u0259rdab",
-        "admin": "Z\u0259rdab",
+        "city": "Zərdab",
+        "admin": "Zərdab",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -781,8 +781,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "\u015e\u0259rur",
-        "admin": "\u015e\u0259rur",
+        "city": "Şərur",
+        "admin": "Şərur",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -792,8 +792,8 @@ export const az_json =[
         "population": ""
     },
     {
-        "city": "Q\u0131vraq",
-        "admin": "K\u0259ng\u0259rli",
+        "city": "Qıvraq",
+        "admin": "Kəngərli",
         "country": "Azerbaijan",
         "population_proper": "",
         "iso2": "AZ",
@@ -802,4 +802,4 @@ export const az_json =[
         "lng": "45.11513",
         "population": ""
     }
-];
+]

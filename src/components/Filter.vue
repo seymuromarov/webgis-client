@@ -183,62 +183,62 @@
 
 <script>
 export default {
-  name: "Filter",
-  props: {
-    tableHeader: {
-      type: String
+    name: "FilterBox",
+    props: {
+        tableHeader: {
+            type: String,
+        },
+        tableFeaturesHeader: {
+            type: Array,
+        },
+        stackedTableFeaturesHeader: {
+            type: Array,
+        },
+        filterQuery: {
+            type: String,
+        },
+        filterValues: {
+            type: Array,
+        },
     },
-    tableFeaturesHeader: {
-      type: Array
+    computed: {
+        serviceResourceType() {
+            return this.$store.state.dataTable.serviceResourceType;
+        },
+        filterQueryIsSum: {
+            get() {
+                return this.$store.state.filter.filterQueryIsSum;
+            },
+            set(filterQueryIsSum) {
+                if (filterQueryIsSum) {
+                    this.$store.dispatch(
+                        "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
+                        this.tableFeaturesHeader[0]
+                    );
+                }
+                return this.$store.dispatch(
+                    "SAVE_FILTER_QUERY_IS_SUM",
+                    filterQueryIsSum
+                );
+            },
+        },
+        filterQueryArithmeticColumn: {
+            get() {
+                return this.$store.state.filter.filterQueryArithmeticColumn;
+            },
+            set(filterQueryArithmeticColumn) {
+                return this.$store.dispatch(
+                    "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
+                    filterQueryArithmeticColumn
+                );
+            },
+        },
     },
-    stackedTableFeaturesHeader: {
-      type: Array
+    methods: {
+        addValueToQuery(value) {
+            if (typeof value == "string") value = "'" + value + "'";
+            this.$emit("appendFilterQuery", value + " ");
+        },
     },
-    filterQuery: {
-      type: String
-    },
-    filterValues: {
-      type: Array
-    }
-  },
-  computed: {
-    serviceInfo() {
-      return this.$store.state.dataTable.serviceInfo;
-    },
-    filterQueryIsSum: {
-      get() {
-        return this.$store.state.filter.filterQueryIsSum;
-      },
-      set(filterQueryIsSum) {
-        if (filterQueryIsSum) {
-          this.$store.dispatch(
-            "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
-            this.tableFeaturesHeader[0]
-          );
-        }
-        return this.$store.dispatch(
-          "SAVE_FILTER_QUERY_IS_SUM",
-          filterQueryIsSum
-        );
-      }
-    },
-    filterQueryArithmeticColumn: {
-      get() {
-        return this.$store.state.filter.filterQueryArithmeticColumn;
-      },
-      set(filterQueryArithmeticColumn) {
-        return this.$store.dispatch(
-          "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
-          filterQueryArithmeticColumn
-        );
-      }
-    }
-  },
-  methods: {
-    addValueToQuery(value) {
-      if (typeof value == "string") value = "'" + value + "'";
-      this.$emit("appendFilterQuery", value + " ");
-    }
-  }
 };
 </script>
