@@ -178,9 +178,7 @@ export default {
             isIncludeBBOX: false
         };
     },
-    mounted() {
-        console.log(this.isVisible);
-    },
+
     methods: {
         showSimpleFilterModal() {
             this.$modal.show("simple-data-filter-modal", null, {

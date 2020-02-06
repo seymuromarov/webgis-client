@@ -26,7 +26,6 @@
                 @setBaseLayersShow="val => (baseLayersShow = val)"
                 @setBaseLayerList="baseLayerList = $event"
                 @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
-                @showSimpleFilterModal="showSimpleFilterModal"
                 @basemapLayersReset="basemapLayersReset"
         />
 
@@ -60,7 +59,7 @@
 
                 <button
                         class="action-button-class btn btn-control"
-                        :style="{ top: '70%' }"
+                        :style="{ top: '65%' }"
                         title="Delete Feature"
                         @click="deleteFeatureOn"
                 >
@@ -68,7 +67,7 @@
                 </button>
                 <button
                         class="action-button-class btn btn-control"
-                        :style="{ top: '75%' }"
+                        :style="{ top: '70%' }"
                         title="Reset Features"
                         @click="resetFeatures"
                 >
@@ -76,7 +75,7 @@
                 </button>
                 <button
                         class="action-button-class btn btn-control"
-                        :style="{ top: '80%' }"
+                        :style="{ top: '75%' }"
                         title="Color Picker"
                         @click="eyeDropper"
                 >
@@ -96,8 +95,8 @@
 
                 <button
                         class="action-button-class btn btn-control"
-                        :style="{ top: (drawings.length + 1) * 5 + 25 + '%' }"
-                        title="NDVI Assessment"
+                        :style="{ top: (drawings.length + 5) * 5 + 25 + '%' }"
+                        title="Change Detection"
                         @click="changeDetector"
                 >
                     <i class="fas fa-globe"></i>
@@ -871,13 +870,16 @@
             async filterSelectedColumn(column) {
                 this.filterValues = [];
                 let params = {
-                    id: this.$store.state.dataTable.layerId,
+                    id: this.$store.state.dataTable.serviceInfo.id,
                 };
-                let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(params);
-                if (getLayerColumnsDistinctData.status === 200) {
+                if(this.selectedServiceInfo.resourceType==='local')
+                {
+                    let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(params);
                     let result = getLayerColumnsDistinctData.data.result
                     this.filterValues = result[Object.keys(result).find(key => key.toLowerCase() === column.toLowerCase())]
-                } else {
+                }
+                else
+                {
                     let keys = Object.keys(this.tableHeadersWithAlias);
                     for (let i = 0; i < keys.length; i++) {
                         if (this.tableHeadersWithAlias[keys[i]] === column) {
@@ -898,6 +900,12 @@
                         }
                     }
                 }
+             
+                // if (getLayerColumnsDistinctData.status === 200) {
+                  
+                // } else {
+                    
+                // }
 
             },
             filterData() {
@@ -972,20 +980,20 @@
             showColumnsChange() {
                 this.Toggler.showColumnsChange();
             },
-            showSimpleFilterModal(layerId, layerName) {
-                this.$store.dispatch("SAVE_DATATABLE_LAYER_ID", layerId);
-                this.$store.dispatch("SAVE_DATATABLE_SERVICE_NAME", layerName);
-                this.$refs.reportFilterModal.$modal.show(
-                    "simple-data-filter-modal",
-                    null,
-                    {
-                        name: "simple-data-filter-modal",
-                        resizable: false,
-                        adaptive: true,
-                        draggable: false,
-                    }
-                );
-            },
+            // showSimpleFilterModal(layerId, layerName) {
+            //     this.$store.dispatch("SAVE_DATATABLE_LAYER_ID", layerId);
+            //     this.$store.dispatch("SAVE_DATATABLE_SERVICE_NAME", layerName);
+            //     this.$refs.reportFilterModal.$modal.show(
+            //         "simple-data-filter-modal",
+            //         null,
+            //         {
+            //             name: "simple-data-filter-modal",
+            //             resizable: false,
+            //             adaptive: true,
+            //             draggable: false,
+            //         }
+            //     );
+            // },
             mapSetCenter(data) {
                 if (data.geometry.x !== undefined) {
                     this.mapLayer
@@ -1114,7 +1122,6 @@
                 this.setDynamicIndexes();
             },
             async getTableData(service, layerId, layerName, query) {
-                //console.log("TCL: getTableData -> service, layerId, layerName, query", service, layerId, layerName, query)
                 var layer = this.getLayer(service.id);
                 let token;
                 if (service.apiFrom === "emlak") {
@@ -1132,14 +1139,19 @@
                         layer: layerId,
                         ...query,
                     };
-                    //console.log("TCL: getTableData -> params", params)
                     response = await LayerService.getTableData(params);
                 } else {
-
+                    this.tablePaging = {
+                        isBusy: false,
+                        page: 1,
+                        limit: 25
+                    };
                     let params = {
                         layerId: service.id,
                         ...query,
+                        ...this.tablePaging
                     };
+
                     service.query = query;
                     if (this.filterQueryIsSum && service.resourceType === 'local') {
                         params.isSum = this.filterQueryIsSum;
@@ -1171,9 +1183,18 @@
                     this.tableNextRequest["layerName"] = layerName;
 
                     let serviceName = service.name;
+                    let serviceInfo={
+                        id:service.id,
+                        label:service.name,
+                        mapType:service.mapType,
+                        resourceType:service.resourceType,
+                        query:service.query,
+                        isDisabled:service.isDisabled,
+                    }
                     let serviceResourceType = service.resourceType;
                     let tableName = layerName;
                     let tableData = response.data.features;
+                    let totalCount = response.data.totalCount;
                     let tableHeaders = Object.keys(tableData[0].attributes);
                     let tableStackedHeaders = tableHeaders;
                     let target = response.data.fieldAliases;
@@ -1211,11 +1232,11 @@
                     checkedColumns = checkedColumns.map((item, index) => {
                         return tableHeadersWithAlias[item];
                     });
+                    await this.$store.dispatch("SAVE_DATATABLE_VISIBLE", false);
                     await this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
-                        isVisible: true,
-                        layerId: service.id,
-                        serviceName,
-                        serviceResourceType,
+                       
+                        serviceInfo,
+                        totalCount,
                         tableName,
                         tableHeaders,
                         tableStackedHeaders,
@@ -1224,7 +1245,8 @@
                         target,
                         checkedColumnsData,
                         checkedColumns,
-                    });
+                    });                   
+                    await this.$store.dispatch("SAVE_DATATABLE_VISIBLE", true);
                     this.tableFeaturesData = tableData;
                     this.tableFeaturesHeader = tableHeaders;
                     this.stackedTableFeaturesHeader = tableHeaders;
@@ -1461,16 +1483,23 @@
                 }
             },
             refreshLayer(service) {
-                // var layer=this.getLayer(id);
+              
+                // var layer=this.getLayer(service.id);
                 // if(layer!==null)
-                // {
-                //     layer.getSource().clear();
-                //     layer.getSource().changed();
-                //     layer.getSource().setTileLoadFunction(layer.getSource().getTileLoadFunction());
-                //     layer.getSource().refresh({force:true});
+                // {                   
+                //     // layer.getSource().changed();
+
+                //     var source = layer.getSource();
+                //     source.tileCache.expireCache({});
+                //     source.tileCache.clear();
+                //     source.clear();
+                //     // layer.getSource().setTileLoadFunction(layer.getSource().getTileLoadFunction());
+                //     source.refresh({force:true});
                 // }
                 this.deleteLayers(service);
                 this.addLayers(service, service.order, true);
+               
+
             },
             getLayer(id) {
                 let layer = null;
@@ -1620,7 +1649,6 @@
                         subLayers = await this.getResponseDynamic(service);
                         const list = this.dynamicLayerList.map(
                             (item, index) => this.recursiveLayerSet(item, service.name, subLayers));
-                        //console.log(list);
                         this.dynamicLayerList = list
                         this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', list)
                     }
@@ -1641,7 +1669,6 @@
                             break;
                         }
                     }
-                    //console.log("TCL: selectService -> baseLayerList", this.baseLayerList)
 
                     for (let i in this.baseLayerList) {
                         if (
@@ -1681,9 +1708,6 @@
                 }
             },
             selectSubService(service, index, id, e) {
-                console.log("TCL: selectSubService -> service, index, id, e", service, index, id, e)
-
-                console.log(this.dynamicSubLayerList);
                 this.dynamicSubLayerList[service.name][id] = !this
                     .dynamicSubLayerList[service.name][id];
                 this.deleteLayers(service, false);
@@ -1755,6 +1779,17 @@
         computed: {
             isTabelVisible() {
                 return this.$store.state.dataTable.isVisible;
+            },
+            tablePaging: {
+                get() {
+                    return this.$store.state.dataTable.paging;
+                },
+                set(value) {
+                    this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
+                }
+            },
+            selectedServiceInfo() {
+                return this.$store.state.dataTable.serviceInfo;
             },
             filterQueryIsSum() {
                 return this.$store.state.filter.filterQueryIsSum;

@@ -2,13 +2,6 @@ import request from "../utils/request";
 import { baseUrl, ACCOUNT_URL } from "../config/baseUrl";
 
 export default {
-  // getToken(params) {
-  //     return request.post("/api.php", {
-  //         action: 'getToken',
-  //         username: params.username,
-  //         password: params.password,
-  //     })
-  // },
   getToken(params) {
     const getUrl = window.location;
     let host = getUrl.hostname;

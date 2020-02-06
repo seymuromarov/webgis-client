@@ -173,7 +173,6 @@ class MapHelpers {
                 self.data.measuremaptooltipElement.className = "maptooltip maptooltip-static " + self.data.featureIDSet;
                 self.data.measuremaptooltip.setOffset([0, -7]);
                 let bbox = e.feature.getGeometry().getExtent();
-                console.log(e.feature.getGeometry().getExtent());
                 store.dispatch("SAVE_DRAW_BBOX", bbox);
             } catch (e) {
                 self.createMeasuremaptooltip();
