@@ -63,7 +63,6 @@ export default {
             }
         },
         labelClick(e) {
-
             if (e.target.checked === true) {
                 document.querySelectorAll(".toggle").forEach(item => {
                     if (

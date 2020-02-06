@@ -1,332 +1,315 @@
 <template>
     <div class="row container-fluid padding-0">
         <!-- Sidebar -->
-        <!-- :dynamicLayerList="dynamicLayerList" -->
-        <Sidebar
-                :selectedLayers="selectedLayers"
-                :dynamicSubLayerList="dynamicSubLayerList"
-                :baseLayerList="baseLayerList"
-                :baseLayersShow="baseLayersShow"
-                :dragOptions="dragOptions"
-                @saveColor="saveColor"
-                @dynamicLayerListOnChange="dynamicLayerList = $event"
-                @selectedLayersOnChange="
-				(e, id) => (selectedLayers[id] = e.target.value)
-			"
-                @dynamicSubLayerListOnChange="
-				(e, name, id) =>
-					(dynamicSubLayerList[name][id] = e.target.value)
-			"
-                @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList"
-                @selectService="selectService"
-                @dynamicLayersReset="dynamicLayersReset"
-                @selectSubService="selectSubService"
-                @getTableData="getTableData"
-                @openColorPicker="OpenColorPicker"
-                @setBaseLayersShow="val => (baseLayersShow = val)"
-                @setBaseLayerList="baseLayerList = $event"
-                @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
-                @basemapLayersReset="basemapLayersReset"
-        />
+        <Sidebar @saveColor="saveColor"
+                 @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList"
+                 @selectService="selectService"
+                 @dynamicLayersReset="dynamicLayersReset"
+                 @selectSubService="selectSubService"
+                 @getTableData="getTableData"
+                 @openColorPicker="OpenColorPicker"
+                 @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
+                 @showSimpleFilterModal="showSimpleFilterModal"
+                 @basemapLayersReset="basemapLayersReset" />
 
         <!-- Main content -->
         <div class="padding-0 map-layout">
             <div id="map">
-                <button
-                        class="action-button-class btn btn-control"
-                        :style="{ top: '15%' }"
-                        title="Search"
-                        @click="cityInputToggle"
+                <!-- Search -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    :style="{ top: '15%' }"
+                    title="Search"
+                    @click="cityInputToggle"
                 >
                     <i class="fas fa-search"></i>
-                </button>
-
-                <div
-                        style="position: absolute;top: 14.2%;right: 60px;z-index: 999"
-                        v-show="citySearchInputShow"
+                </button> -->
+                <!-- Search multiselect -->
+                <!-- <div
+                    style="position: absolute;top: 14.2%;right: 60px;z-index: 999"
+                    v-show="citySearchInputShow"
                 >
                     <multiselect
-                            v-model="citySearchValue"
-                            :options="citySearchOptions"
-                            :custom-label="nameWithCountry"
-                            selectLabel
-                            placeholder="Select City"
-                            label="city"
-                            track-by="city"
-                            @select="onCitySelect"
+                        v-model="citySearchValue"
+                        :options="citySearchOptions"
+                        :custom-label="nameWithCountry"
+                        selectLabel
+                        placeholder="Select City"
+                        label="city"
+                        track-by="city"
+                        @select="onCitySelect"
                     ></multiselect>
-                </div>
-
-                <button
-                        class="action-button-class btn btn-control"
-                        :style="{ top: '65%' }"
-                        title="Delete Feature"
-                        @click="deleteFeatureOn"
+                </div> -->
+                <!-- Delete Feature -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    :style="{ top: '70%' }"
+                    title="Delete Feature"
+                    @click="deleteFeatureOn"
                 >
                     <i class="fas fa-trash"></i>
-                </button>
-                <button
-                        class="action-button-class btn btn-control"
-                        :style="{ top: '70%' }"
-                        title="Reset Features"
-                        @click="resetFeatures"
+                </button> -->
+                <!-- Reset feature -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    :style="{ top: '75%' }"
+                    title="Reset Features"
+                    @click="resetFeatures"
                 >
                     <i class="fas fa-sync-alt"></i>
-                </button>
-                <button
-                        class="action-button-class btn btn-control"
-                        :style="{ top: '75%' }"
-                        title="Color Picker"
-                        @click="eyeDropper"
+                </button> -->
+                <!-- Color Picker -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    :style="{ top: '80%' }"
+                    title="Color Picker"
+                    @click="eyeDropper"
                 >
                     <i class="fas fa-eye-dropper"></i>
-                </button>
-
-                <button
-                        v-for="(item, index) in drawings"
-                        :key="index"
-                        class="action-button-class btn btn-control"
-                        :style="{ top: (index + 1) * 5 + 25 + '%' }"
-                        :title="item.tooltip"
-                        @click="setDrawType(item.name)"
+                </button> -->
+                <!-- Drawings -->
+                <!-- <button
+                    v-for="(item, index) in drawings"
+                    :key="index"
+                    class="action-button-class btn btn-control"
+                    :style="{ top: (index + 1) * 5 + 25 + '%' }"
+                    :title="item.tooltip"
+                    @click="setDrawType(item.name)"
                 >
                     <i :class="item.icon"></i>
-                </button>
-
-                <button
-                        class="action-button-class btn btn-control"
-                        :style="{ top: (drawings.length + 5) * 5 + 25 + '%' }"
-                        title="Change Detection"
-                        @click="changeDetector"
+                </button> -->
+                <!-- NDVI Assessment -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    :style="{ top: (drawings.length + 1) * 5 + 25 + '%' }"
+                    title="NDVI Assessment"
+                    @click="changeDetector"
                 >
                     <i class="fas fa-globe"></i>
-                </button>
-
-                <div
-                        id="mouse-position"
-                        class="latLongShow"
-                        @click="LatLongFormToggle"
-                ></div>
-
-                <div class="latLongShowForm" v-show="latLongFormShow">
+                </button> -->
+                <!-- Lattitude and Longtitude -->
+                <!-- <div
+                    id="mouse-position"
+                    class="latLongShow"
+                    @click="LatLongFormToggle"
+                ></div> -->
+                <!-- Lattitude and Longtitude Form -->
+                <!-- <div class="latLongShowForm" v-show="latLongFormShow">
                     <div @mouseleave="LatLongFormToggle">
                         <div style="width: 300px">
                             <div style="display: inline;float: left;">
                                 Lat:
                                 <input
-                                        v-model="latChange"
-                                        v-on:keyup.enter="changeLocation"
-                                        class="form-control"
-                                        type="text"
-                                        placeholder="Latitude"
-                                        style="display: inline-block;width: 100px;"
+                                    v-model="latChange"
+                                    v-on:keyup.enter="changeLocation"
+                                    class="form-control"
+                                    type="text"
+                                    placeholder="Latitude"
+                                    style="display: inline-block;width: 100px;"
                                 />
                             </div>
                             <div style="display: inline;">
                                 Lng:
                                 <input
-                                        v-model="longChange"
-                                        v-on:keyup.enter="changeLocation"
-                                        class="form-control"
-                                        type="text"
-                                        placeholder="Longitude"
-                                        style="display: inline-block;width: 100px;"
+                                    v-model="longChange"
+                                    v-on:keyup.enter="changeLocation"
+                                    class="form-control"
+                                    type="text"
+                                    placeholder="Longitude"
+                                    style="display: inline-block;width: 100px;"
                                 />
                             </div>
                         </div>
                         <input
-                                class="form-check-input"
-                                type="checkbox"
-                                v-model="isMetricCoordinateSystem"
-                                id="coordinateCheckbox"
-                                aria-label
+                            class="form-check-input"
+                            type="checkbox"
+                            v-model="isMetricCoordinateSystem"
+                            id="coordinateCheckbox"
+                            aria-label
                         />
                         <label class="form-check-label" for="coordinateCheckbox"
-                        >Use metric coordinate system</label
+                            >Use metric coordinate system</label
                         >
                     </div>
-                </div>
-                <div id="info" class="infokml" v-show="this.kmlInfo !== null">
+                </div> -->
+                <!-- KML Info ? -->
+                <!-- <div id="info" class="infokml" v-show="this.kmlInfo !== null">
                     &nbsp;
-                </div>
-
-                <button
-                        class="action-button-class btn btn-control"
-                        style="bottom: 10px;right: 90px;"
-                        @click="dragAndDropToast"
-                        title="Upload file"
-                        v-if="!isTabelVisible"
+                </div> -->
+                <!-- Drag & Drop Toast -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    style="bottom: 10px;right: 90px;"
+                    @click="dragAndDropToast"
+                    title="Upload file"
+                    v-if="!isTabelVisible"
                 >
                     <i class="fas fa-file-upload"></i>
-                </button>
-                <button
-                        class="action-button-class btn btn-control"
-                        style="bottom: 10px;right: 50px;"
-                        @click="selectLayerForm = true"
-                        v-if="!isTabelVisible"
+                </button> -->
+                <!-- Map view -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    style="bottom: 10px;right: 50px;"
+                    @click="selectLayerForm = true"
+                    v-if="!isTabelVisible"
                 >
                     <i class="fas fa-stream"></i>
-                </button>
-                <button
-                        class="action-button-class btn btn-control"
-                        style="bottom: 10px;right: 10px;"
-                        @click="showInfoModal = true"
-                >
-                    <i class="fas fa-info"></i>
-                </button>
-                <div
-                        v-show="selectLayerForm"
-                        @mouseleave="selectLayerForm = false"
-                        class="selectLayerForm"
+                </button> -->
+                <!-- Map view types -->
+                <!-- <div
+                    v-show="!selectLayerForm"
+                    @mouseleave="selectLayerForm = false"
+                    class="selectLayerForm"
                 >
                     <form>
                         <div v-for="(element, index) in baseMaps" :key="index">
                             <input
-                                    type="radio"
-                                    class
-                                    name="baseLayer"
-                                    @click="setBaseLayout(index)"
+                                type="radio"
+                                class
+                                name="baseLayer"
+                                @click="setBaseLayout(index)"
                             />
                             <span style="margin-left: 5px;">{{ index }}</span>
                         </div>
                     </form>
-                </div>
-
-                <button
-                        class="action-button-class btn btn-control"
-                        style="top: 116px;left: .5rem;"
-                        title="Home"
-                        @click="zoomToCenter"
+                </div> -->
+                <!-- Information -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    style="bottom: 10px;right: 10px;"
+                    @click="showInfoModal = true"
+                >
+                    <i class="fas fa-info"></i>
+                </button> -->
+                <!-- Home -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    style="top: 116px;left: .5rem;"
+                    title="Home"
+                    @click="zoomToCenter"
                 >
                     <i class="fas fa-home"></i>
-                </button>
-                <button
-                        class="action-button-class btn btn-control"
-                        style="top: 152px;left: .5rem;"
-                        title="Go next map history"
-                        :disabled="!nextHistoryEvent"
-                        @click="historyNext"
+                </button> -->
+                <!-- History next -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    style="top: 152px;left: .5rem;"
+                    title="Go next map history"
+                    :disabled="!nextHistoryEvent"
+                    @click="historyNext"
                 >
                     <i class="fas fa-arrow-right"></i>
-                </button>
-                <button
-                        class="action-button-class btn btn-control"
-                        style="top: 188px;left: .5rem;"
-                        title="Go previous map history"
-                        :disabled="!previousHistoryEvent"
-                        @click="historyBack"
+                </button> -->
+                <!-- History previous -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    style="top: 188px;left: .5rem;"
+                    title="Go previous map history"
+                    :disabled="!previousHistoryEvent"
+                    @click="historyBack"
                 >
                     <i class="fas fa-arrow-left"></i>
-                </button>
-
-                <button
-                        class="action-button-class btn btn-control"
-                        style="top: 224px;left: .5rem;"
-                        @click="addGraticule"
-                        title="Add Graticule"
-                        v-show="!isTabelVisible"
+                </button> -->
+                <!-- Grid -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    style="top: 224px;left: .5rem;"
+                    @click="addGraticule"
+                    title="Add Graticule"
+                    v-show="!isTabelVisible"
                 >
                     <i class="fas fa-barcode"></i>
-                </button>
-
-                <button
-                        class="action-button-class btn btn-control"
-                        style="bottom: 10px;left: 3rem;"
-                        @click="pngExport"
-                        title="Export to png"
-                        v-show="!isTabelVisible"
+                </button> -->
+                <!-- Export PNG -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    style="bottom: 10px;left: 3rem;"
+                    @click="pngExport"
+                    title="Export to png"
+                    v-show="!isTabelVisible"
                 >
                     <i class="far fa-file-image"></i>
-                </button>
-
-                <button
-                        class="action-button-class btn btn-control"
-                        style="bottom: 10px;left: .5rem;"
-                        @click="exportData"
-                        title="Export to KMZ"
-                        v-show="!isTabelVisible"
+                </button> -->
+                <!-- Export data -->
+                <!-- <button
+                    class="action-button-class btn btn-control"
+                    style="bottom: 10px;left: .5rem;"
+                    @click="exportData"
+                    title="Export to KMZ"
+                    v-show="!isTabelVisible"
                 >
                     <i class="fas fa-file-download"></i>
-                </button>
+                </button> -->
+
+                <MapControls :map="mapLayer"
+                             :mapHelpers="MapHelpers"
+                             :nextHistoryEvent="nextHistoryEvent"
+                             :previousHistoryEvent="previousHistoryEvent" />
             </div>
         </div>
 
-        <DataTable
-                ref="dataTable"
-                @showFilterModal="showFilterModal"
-                @mapSetCenter="mapSetCenter"
-        />
+        <DataTable ref="dataTable"
+                   @showFilterModal="showFilterModal"
+                   @mapSetCenter="mapSetCenter" />
 
         <!-- Report -->
-        <modal
-                name="arithmetic-result-modal"
-                transition="nice-modal-fade"
-                :min-width="200"
-                :min-height="200"
-                :delay="100"
-                :draggable="true"
-        >
-            <Report
-                    :arithmeticDataResult="ArithmeticDataResult"
-            />
+        <modal name="arithmetic-result-modal"
+               transition="nice-modal-fade"
+               :min-width="200"
+               :min-height="200"
+               :delay="100"
+               :draggable="true">
+            <Report :arithmeticDataResult="ArithmeticDataResult" />
         </modal>
 
         <!-- Filter -->
-        <modal
-                name="filter-modal"
-                transition="nice-modal-fade"
-                class="filter-modal-class"
-                :min-width="200"
-                :min-height="200"
-                :delay="100"
-                :draggable="true"
-                :height="540"
-        >
-            <FilterBox
-                    :tableHeader="tableHeader"
-                    :filterQuery="filterQuery"
-                    :filterValues="filterValues"
-                    :tableFeaturesHeader="tableFeaturesHeader"
-                    :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
-                    @appendFilterQuery="filterQuery += $event"
-                    @setFilterQuery="filterQuery = $event.target.value"
-                    @filterSelectedColumn="filterSelectedColumn"
-                    @filterData="filterData"
-            />
+        <modal name="filter-modal"
+               transition="nice-modal-fade"
+               class="filter-modal-class"
+               :min-width="200"
+               :min-height="200"
+               :delay="100"
+               :draggable="true"
+               :height="540">
+            <FilterBox :tableHeader="tableHeader"
+                       :filterQuery="filterQuery"
+                       :filterValues="filterValues"
+                       :tableFeaturesHeader="tableFeaturesHeader"
+                       :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
+                       @appendFilterQuery="filterQuery += $event"
+                       @setFilterQuery="filterQuery = $event.target.value"
+                       @filterSelectedColumn="filterSelectedColumn"
+                       @filterData="filterData" />
         </modal>
 
         <!-- Shape Color Picker -->
-        <modal
-                name="color-picker-modal"
-                transition="nice-modal-fade"
-                class="color-picker-modal-class"
-                :min-width="200"
-                :min-height="200"
-                :delay="100"
-                :draggable="false"
-                :height="400"
-        >
-            <ShapeColorPicker @setShapeColor="setShapeColor"/>
+        <modal name="color-picker-modal"
+               transition="nice-modal-fade"
+               class="color-picker-modal-class"
+               :min-width="200"
+               :min-height="200"
+               :delay="100"
+               :draggable="false"
+               :height="400">
+            <ShapeColorPicker @setShapeColor="setShapeColor" />
         </modal>
 
-        <detector-modal
-                v-if="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
-                v-bind="{ lastBBOXOfShape, token }"
-                @close="
-				($store.state.dataTable.lastBBOXOfShape = []) &
-					(isDrawnShapeForDetection = false)
-			"
-        ></detector-modal>
+        <detector-modal v-if="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
+                        v-bind="{ lastBBOXOfShape, token }"
+                        @close="
+                ($store.state.dataTable.lastBBOXOfShape = []) &
+                    (isDrawnShapeForDetection = false)
+            "></detector-modal>
 
         <!-- Information Modal -->
-        <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false"/>
+        <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
     </div>
 </template>
 
 <script>
     // OpenLayers
-    import {Map, View, Overlay, Feature} from "ol";
-    import {LineString, Polygon, Circle, Point} from "ol/geom.js";
+    import { Map, View, Overlay, Feature } from "ol";
+    import { LineString, Polygon, Circle, Point } from "ol/geom.js";
     import {
         Modify,
         defaults as defaultInteractions,
@@ -334,7 +317,7 @@
         DragAndDrop,
     } from "ol/interaction";
     import TileDebug from "ol/source/TileDebug";
-    import {Circle as CircleStyle, Fill, Stroke, Style, Icon} from "ol/style.js";
+    import { Circle as CircleStyle, Fill, Stroke, Style, Icon } from "ol/style.js";
     import {
         Tile as TileLayer,
         Vector as VectorLayer,
@@ -343,7 +326,7 @@
     import VectorTileLayer from "ol/layer/VectorTile.js";
     import VectorTileSource from "ol/source/VectorTile.js";
     import MVT from "ol/format/MVT.js";
-    import {createXYZ} from "ol/tilegrid";
+    import { createXYZ } from "ol/tilegrid";
     import {
         OSM,
         TileArcGISRest,
@@ -359,17 +342,17 @@
         getTransform,
     } from "ol/proj";
     import XYZ from "ol/source/XYZ.js";
-    import {bbox as bboxStrategy} from "ol/loadingstrategy";
+    import { bbox as bboxStrategy } from "ol/loadingstrategy";
     import {
         ZoomSlider,
         defaults as defaultControls,
         FullScreen,
     } from "ol/control.js";
     import MousePosition from "ol/control/MousePosition.js";
-    import {createStringXY} from "ol/coordinate.js";
-    import {GPX, GeoJSON, IGC, KML, TopoJSON} from "ol/format.js";
-    import {register} from "ol/proj/proj4.js";
-    import {applyTransform} from "ol/extent";
+    import { createStringXY } from "ol/coordinate.js";
+    import { GPX, GeoJSON, IGC, KML, TopoJSON } from "ol/format.js";
+    import { register } from "ol/proj/proj4.js";
+    import { applyTransform } from "ol/extent";
     import * as format from "ol/format";
 
     // Other dependencies
@@ -383,16 +366,17 @@
         Sidebar,
         Filter,
         Report,
+        MapControls,
     } from "@/components/";
     import InfoModal from "@/components/Info/index";
     import DetectorModal from "@/components/modals/ChangeDetector";
 
     // Utils
-    import {URL, MAP_URLS} from "@/config/baseUrl";
-    import {az_json} from "@/assets/json/az";
+    import { URL, MAP_URLS } from "@/config/baseUrl";
+    import cities from "@/data/cities.json";
     import LoginService from "@/services/LoginService";
     import LayerService from "@/services/LayerService";
-    import {Toggler, MapHelpers, ColorPicker, LayerHelper} from "@/helpers";
+    import { Toggler, MapHelpers, ColorPicker, LayerHelper } from "@/helpers";
 
     // Styles
     import "ol/ol.css";
@@ -408,12 +392,12 @@
             Sidebar,
             FilterBox: Filter,
             Report,
+            MapControls,
         },
         data() {
             return {
                 isDrawnShapeForDetection: false,
                 isSimpleModalVisible: false,
-                baseLayersShow: true,
                 latLongFormShow: false,
                 MapHelpers: null,
                 Toggler: null,
@@ -422,7 +406,6 @@
                 longChange: null,
                 lastCoordinates: null,
                 filterQuery: "",
-
                 ArithmeticDataResult: {},
                 dataFilter: {
                     query: "",
@@ -488,9 +471,7 @@
                 vectorSource: null,
                 vectorLayer: null,
                 featureIDSet: 0,
-                sketch: null,
                 typeSelect: null,
-                // isTabelVisible: false,
                 draw: null,
                 stackedTableFeaturesHeader: [],
                 tableFeaturesHeader: [],
@@ -509,9 +490,7 @@
                 graticule: false,
                 graticuleLayer: null,
                 tableHeader: null,
-                dynamicLayerList: [],
                 baseLayerList: [],
-                dynamicSubLayerList: [[]],
                 helpmaptooltipElement: null,
                 helpmaptooltip: null,
                 measuremaptooltipElement: null,
@@ -537,7 +516,6 @@
                         url: "",
                     }),
                 },
-                selectedLayers: {},
                 dynamicForColors: [[]],
                 showInfoModal: false,
                 isHashLoaded: false,
@@ -551,7 +529,7 @@
             this.Toggler = new Toggler(this);
             this.ColorPicker = new ColorPicker(this);
             this.LayerHelper = new LayerHelper(this);
-            this.citySearchOptions = az_json;
+            this.citySearchOptions = cities;
 
             this.source = new VectorSource({
                 wrapX: false,
@@ -588,6 +566,7 @@
                 let zoom = 8;
                 let center = fromLonLat([47.82858, 40.3598414]);
                 let rotation = 0;
+                let selectedLayers = {};
 
                 if (window.location.hash !== "") {
                     let hash = window.location.hash.replace("#shareMap=", "");
@@ -596,17 +575,20 @@
                         zoom = parseInt(parts[0], 10);
                         center = [parseFloat(parts[1]), parseFloat(parts[2])];
                         parts[3].split(",").forEach(element => {
-                            this.selectedLayers[parseInt(element)] = true;
+                            // this.selectedLayers[parseInt(element)] = true;
+                            selectedLayers[parseInt(element)] = true;
                         });
                     }
                 }
+
+                this.$store.dispatch("SET_SELECTED_LAYERS", selectedLayers);
 
                 this.mapLayer = new Map({
                     interactions: defaultInteractions().extend([
                         new DragRotateAndZoom(),
                         dragAndDropInteraction,
                     ]),
-                    controls: defaultControls().extend([new FullScreen()]),
+                    controls: [], // defaultControls(), //.extend([new FullScreen()]),
                     target: "map",
                     layers: this.layers,
                     view: new View({
@@ -615,6 +597,8 @@
                         rotation: rotation,
                     }),
                 });
+
+                console.log(this.mapLayer);
 
                 let modify = new Modify({
                     source: this.source,
@@ -626,7 +610,6 @@
                     self.source.addFeatures(event.features);
                     self.mapLayer.getView().fit(self.source.getExtent());
                 });
-
                 let displayFeatureInfo = function (pixel) {
                     let features = [];
                     self.mapLayer.forEachFeatureAtPixel(pixel, function (feature) {
@@ -667,16 +650,16 @@
                             coord[0].toString().substring(0, 7),
                         ];
                     }
-                    document.getElementById("mouse-position").innerHTML =
-                        "Lat: " +
-                        coord[1].toString() +
-                        " , " +
-                        "Long: " +
-                        coord[0].toString();
+                    //document.getElementById("mouse-position").innerHTML =
+                    //    "Lat: " +
+                    //    coord[1].toString() +
+                    //    " , " +
+                    //    "Long: " +
+                    //    coord[0].toString();
                 });
 
                 this.mapLayer.on("click", function (evt) {
-                    displayFeatureInfo(evt.pixel);
+                    //displayFeatureInfo(evt.pixel);
                     let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
                     if (self.isMarker) {
                         let iconFeature = new Feature({
@@ -711,8 +694,7 @@
                                 );
 
                                 elem[0].className = "hidden";
-                            } catch (e) {
-                            }
+                            } catch (e) { }
                         });
                     }
                     if (self.isColorPick) {
@@ -738,8 +720,7 @@
                                 });
 
                                 feature.setStyle(newStyle);
-                            } catch (e) {
-                            }
+                            } catch (e) { }
                         });
                     }
 
@@ -803,9 +784,9 @@
                     rotation: view.getRotation(),
                 };
 
-                let selectedLayersArr = Object.keys(this.selectedLayers).map(
-                    Number
-                );
+                let selectedLayersArr = Object.keys(
+                    this.$store.getters.selectedLayers
+                ).map(Number);
                 let hash =
                     "#shareMap=" +
                     view.getZoom() +
@@ -854,32 +835,24 @@
                 this.mapLayer.getView().setZoom(11);
                 this.citySearchInputShow = false;
             },
-            nameWithCountry({city, country}) {
+            nameWithCountry({ city, country }) {
                 return `${city} , ${country}`;
             },
-            historyBack() {
-                this.MapHelpers.historyBack(this);
-            },
-            historyNext() {
-                this.MapHelpers.historyNext(this);
-            },
+
             exportData() {
                 this.MapHelpers.exportData(this);
             },
-
             async filterSelectedColumn(column) {
                 this.filterValues = [];
                 let params = {
                     id: this.$store.state.dataTable.serviceInfo.id,
                 };
-                if(this.selectedServiceInfo.resourceType==='local')
-                {
+                if (this.selectedServiceInfo.resourceType === 'local') {
                     let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(params);
                     let result = getLayerColumnsDistinctData.data.result
                     this.filterValues = result[Object.keys(result).find(key => key.toLowerCase() === column.toLowerCase())]
                 }
-                else
-                {
+                else {
                     let keys = Object.keys(this.tableHeadersWithAlias);
                     for (let i = 0; i < keys.length; i++) {
                         if (this.tableHeadersWithAlias[keys[i]] === column) {
@@ -887,7 +860,6 @@
                             break;
                         }
                     }
-
                     for (let i = 0; i < this.tableFeaturesData.length; i++) {
                         if (
                             !this.filterValues.includes(
@@ -900,20 +872,19 @@
                         }
                     }
                 }
-             
-                // if (getLayerColumnsDistinctData.status === 200) {
-                  
-                // } else {
-                    
-                // }
 
+                // if (getLayerColumnsDistinctData.status === 200) {
+
+                // } else {
+
+                // }
             },
             filterData() {
                 this.getTableData(
                     this.tableNextRequest["service"],
                     this.tableNextRequest["layerId"],
                     this.tableNextRequest["layerName"],
-                    this.filterQuery == "" ? {} : {where: this.filterQuery}
+                    this.filterQuery == "" ? {} : { where: this.filterQuery }
                 );
                 this.$modal.hide("filter-modal");
             },
@@ -930,12 +901,6 @@
                         duration: 3500,
                     }
                 );
-            },
-            zoomToCenter() {
-                this.mapLayer
-                    .getView()
-                    .setCenter(fromLonLat([47.82858, 40.3598414]));
-                this.mapLayer.getView().setZoom(8);
             },
             addGraticule() {
                 this.MapHelpers.addGraticule();
@@ -980,20 +945,20 @@
             showColumnsChange() {
                 this.Toggler.showColumnsChange();
             },
-            // showSimpleFilterModal(layerId, layerName) {
-            //     this.$store.dispatch("SAVE_DATATABLE_LAYER_ID", layerId);
-            //     this.$store.dispatch("SAVE_DATATABLE_SERVICE_NAME", layerName);
-            //     this.$refs.reportFilterModal.$modal.show(
-            //         "simple-data-filter-modal",
-            //         null,
-            //         {
-            //             name: "simple-data-filter-modal",
-            //             resizable: false,
-            //             adaptive: true,
-            //             draggable: false,
-            //         }
-            //     );
-            // },
+            showSimpleFilterModal(layerId, layerName) {
+                this.$store.dispatch("SAVE_DATATABLE_LAYER_ID", layerId);
+                this.$store.dispatch("SAVE_DATATABLE_SERVICE_NAME", layerName);
+                this.$refs.reportFilterModal.$modal.show(
+                    "simple-data-filter-modal",
+                    null,
+                    {
+                        name: "simple-data-filter-modal",
+                        resizable: false,
+                        adaptive: true,
+                        draggable: false,
+                    }
+                );
+            },
             mapSetCenter(data) {
                 if (data.geometry.x !== undefined) {
                     this.mapLayer
@@ -1018,10 +983,14 @@
             },
             onMoveCallbackBaseLayerList(evt, originalEvent) {
                 this.layerCounter = 0;
-                this.baseLayerList = this.baseLayerList.map((item, index) =>
+
+                let baseLayerList = this.$store.getters.baseLayerList;
+                baseLayerList = thisbaseLayerList.map((item, index) =>
                     this.recursiveLayerOrder(item)
                 );
-                this.baseLayerList.map((item, index) =>
+                this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);
+
+                baseLayerList.map((item, index) =>
                     this.recursiveLayerIndexes(item)
                 );
             },
@@ -1043,25 +1012,22 @@
             },
             recursiveLayerSet(item, serviceName, subLayers) {
                 if (this.isItemCategory(item, serviceName)) {
-
                     return {
                         ...item,
-                        layers: item.layers.map(item => this.recursiveLayerSet(item, serviceName, subLayers)),
-                    }
-
+                        layers: item.layers.map(item =>
+                            this.recursiveLayerSet(item, serviceName, subLayers)
+                        ),
+                    };
                 } else {
                     if (item.name == serviceName) {
                         item.layers = subLayers.data.layers;
                     }
                     return {
                         ...item,
-                        apiFrom: item.apiFrom
-                            ? item.apiFrom
-                            : "internal",
+                        apiFrom: item.apiFrom ? item.apiFrom : "internal",
                         color: item.color ? item.color : false,
                     };
                 }
-
             },
             recursiveLayerOrder(item) {
                 this.layerCounter++;
@@ -1087,37 +1053,35 @@
                 return item.layers !== undefined && item.children !== undefined;
             },
             recursiveLayerFind(item, name) {
-                if (item.layers !== undefined && item.children !== undefined) //group
-                {
+                if (item.layers !== undefined && item.children !== undefined) {
+                    //group
                     if (item.layers.some(c => c.name === name))
                         return item.layers.find(c => c.name == name);
                     else {
                         item.children.map(item => this.recursiveLayerOrder(item));
                     }
-
-                } else //layer
-                {
+                } //layer
+                else {
                     if (item.name == name) {
                         return item;
                     } else {
                         return null;
                     }
                 }
-
-
             },
             onMoveCallbackDynamicLayerList(evt, originalEvent) {
                 let self = this;
 
-                const list = this.dynamicLayerList.map((item, index) => {
-                    return {
-                        ...item,
-                        order: index + 1,
-                    };
-                });
+                const list = this.$store.getters.dynamicLayerList.map(
+                    (item, index) => {
+                        return {
+                            ...item,
+                            order: index + 1,
+                        };
+                    }
+                );
 
-                this.dynamicLayerList = list
-                this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', list)
+                this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
 
                 this.setDynamicIndexes();
             },
@@ -1183,13 +1147,13 @@
                     this.tableNextRequest["layerName"] = layerName;
 
                     let serviceName = service.name;
-                    let serviceInfo={
-                        id:service.id,
-                        label:service.name,
-                        mapType:service.mapType,
-                        resourceType:service.resourceType,
-                        query:service.query,
-                        isDisabled:service.isDisabled,
+                    let serviceInfo = {
+                        id: service.id,
+                        label: service.name,
+                        mapType: service.mapType,
+                        resourceType: service.resourceType,
+                        query: service.query,
+                        isDisabled: service.isDisabled,
                     }
                     let serviceResourceType = service.resourceType;
                     let tableName = layerName;
@@ -1234,7 +1198,7 @@
                     });
                     await this.$store.dispatch("SAVE_DATATABLE_VISIBLE", false);
                     await this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
-                       
+
                         serviceInfo,
                         totalCount,
                         tableName,
@@ -1245,7 +1209,7 @@
                         target,
                         checkedColumnsData,
                         checkedColumns,
-                    });                   
+                    });
                     await this.$store.dispatch("SAVE_DATATABLE_VISIBLE", true);
                     this.tableFeaturesData = tableData;
                     this.tableFeaturesHeader = tableHeaders;
@@ -1287,7 +1251,7 @@
                 }
             },
             setDynamicIndexes() {
-                this.$store.state.layers.dynamicLayerList.map((item, index) => {
+                this.$store.getters.dynamicLayerList.map((item, index) => {
                     this.mapLayer.getLayers().forEach(function (layer) {
                         if (
                             layer.get("name") != undefined &&
@@ -1307,25 +1271,28 @@
                 );
                 self.gisLayers = response.data;
                 let layers = self.LayerHelper.creator(self.gisLayers);
-                self.baseLayerList = layers.baseLayers;
 
-                self.dynamicLayerList = layers.dynamicLayers;
-                this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', layers.dynamicLayers)
+                self.$store.dispatch("SET_BASE_LAYER_LIST", layers.baseLayers);
 
-                let selectedLayersArr = Object.keys(this.selectedLayers).map(
-                    Number
+                this.$store.dispatch(
+                    "SET_DYNAMIC_LAYER_LIST",
+                    layers.dynamicLayers
                 );
+
+                let selectedLayersArr = Object.keys(
+                    this.$store.getters.selectedLayers
+                ).map(Number);
                 selectedLayersArr.forEach(value => {
-                    this.baseLayerList.forEach(item => {
+                    this.$store.getters.baseLayerList.forEach(item => {
                         this.checkIfLayerNeedsToTurnOn(item, value);
                     });
-                    this.$store.state.layers.dynamicLayerList.forEach(item => {
+                    this.$store.getters.dynamicLayerList.forEach(item => {
                         this.checkIfLayerNeedsToTurnOn(item, value);
                     });
                 });
             },
             checkIfLayerNeedsToTurnOn(layer, value) {
-                let e = {target: {checked: true}};
+                let e = { target: { checked: true } };
 
                 if (layer.hasOwnProperty("children")) {
                     layer.layers.map(async item => {
@@ -1345,9 +1312,13 @@
             },
             selectedLayersIdHolder(isAdd = true, service) {
                 if (isAdd) {
-                    this.selectedLayers[service.id] = true;
+                    let selectedLayers = this.$store.getters.selectedLayers;
+                    selectedLayers[service.id] = true;
+                    this.$store.dispatch("SET_SELECTED_LAYERS", selectedLayers);
                 } else {
-                    delete this.selectedLayers[service.id];
+                    let selectedLayers = this.$store.getters.selectedLayers;
+                    delete selectedLayers[service.id];
+                    this.$store.dispatch("SET_SELECTED_LAYERS", selectedLayers);
                 }
                 this.updateHash();
             },
@@ -1371,7 +1342,9 @@
                 let url = URL + "/api/map/service/" + service.name + "/MapServer/";
                 let new_layer;
                 if (dynamic) {
-                    let layers = this.dynamicSubLayerList[service.name];
+                    let layers = this.$store.getters.dynamicSubLayerList[
+                        service.name
+                    ];
                     let active_layers = "";
                     let hidden_layers = "";
                     let colors = "";
@@ -1381,7 +1354,7 @@
                         colors = "[";
                         this.dynamicForColors[
                             this.colorPicker.colorPicker.layer.name
-                            ].forEach(function (colorLayer) {
+                        ].forEach(function (colorLayer) {
                             colors += colorLayer;
                         });
                         colors += "]";
@@ -1483,10 +1456,10 @@
                 }
             },
             refreshLayer(service) {
-              
+
                 // var layer=this.getLayer(service.id);
                 // if(layer!==null)
-                // {                   
+                // {
                 //     // layer.getSource().changed();
 
                 //     var source = layer.getSource();
@@ -1498,7 +1471,7 @@
                 // }
                 this.deleteLayers(service);
                 this.addLayers(service, service.order, true);
-               
+
 
             },
             getLayer(id) {
@@ -1535,12 +1508,16 @@
                 }
             },
             async basemapLayersReset(service, status) {
-                this.baseLayerList = this.baseLayerList.map((item, index) => {
-                    if (service.name === item.name) {
-                        item.layersVisibility = status;
+                let baseLayerList = this.$store.getters.baseLayerList.map(
+                    (item, index) => {
+                        if (service.name === item.name) {
+                            item.layersVisibility = status;
+                        }
+                        return item;
                     }
-                    return item;
-                });
+                );
+
+                this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);
             },
             async dynamicLayersReset(service, status) {
                 let token;
@@ -1570,20 +1547,19 @@
                         }
                     }
                 }
-                const list = this.$store.state.layers.dynamicLayerList.map((item, index) => {
-                    item.color = item.color ? item.color : false;
-                    var layer = this.recursiveLayerFind(item, service.name);
-                    if (layer) {
-                        layer.layersVisibility = status;
-                        layer.color = colorEnabled;
+                const list = this.$store.getters.dynamicLayerList.map(
+                    (item, index) => {
+                        item.color = item.color ? item.color : false;
+                        var layer = this.recursiveLayerFind(item, service.name);
+                        if (layer) {
+                            layer.layersVisibility = status;
+                            layer.color = colorEnabled;
+                        }
+                        return item;
                     }
-                    return item;
-                });
+                );
 
-                this.dynamicLayerList = list
-                this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', list)
-
-
+                this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
             },
             async getResponseDynamic(service) {
                 let responseDynamic;
@@ -1630,13 +1606,13 @@
 
                     if (
                         (service.mapType === "basemap",
-                        service.unitedDynamicLayerName !== undefined &&
-                        service.unitedDynamicLayerName !== null)
+                            service.unitedDynamicLayerName !== undefined &&
+                            service.unitedDynamicLayerName !== null)
                     ) {
                         subLayers = await this.getResponseDynamic(
                             service.unitedDynamicLayerName
                         );
-                        this.baseLayerList = this.baseLayerList.map(
+                        let baseLayerList = this.$store.getters.baseLayerList.map(
                             (item, index) => {
                                 if (service.name === item.name) {
                                     item.unitedDynamicLayerName.layers =
@@ -1645,77 +1621,119 @@
                                 return item;
                             }
                         );
+
+                        this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);
                     } else {
                         subLayers = await this.getResponseDynamic(service);
-                        const list = this.dynamicLayerList.map(
-                            (item, index) => this.recursiveLayerSet(item, service.name, subLayers));
-                        this.dynamicLayerList = list
-                        this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', list)
+                        const list = this.$store.getters.dynamicLayerList.map(
+                            (item, index) =>
+                                this.recursiveLayerSet(
+                                    item,
+                                    service.name,
+                                    subLayers
+                                )
+                        );
+                        this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
                     }
 
-                    self.dynamicSubLayerList[service.name] = [];
+                    let dynamicSubLayerList = self.$store.getters.dynamicLayerList;
+                    dynamicSubLayerList[service.name] = [];
+
                     subLayers.data.layers.forEach(function (element) {
-                        self.dynamicSubLayerList[service.name][element.id] = true;
+                        dynamicSubLayerList[service.name][element.id] = true;
                     });
+
+                    self.$store.dispatch(
+                        "SET_DYNAMIC_SUBLAYER_LIST",
+                        dynamicSubLayerList
+                    );
 
                     this.addLayers(service, index, dynamic);
 
-                    for (let i in this.dynamicLayerList) {
-                        var item = this.dynamicLayerList[i];
+                    for (let i in this.$store.getters.dynamicLayerList) {
+                        var item = this.$store.getters.dynamicLayerList[i];
                         var result = this.recursiveLayerFind(item, service.name);
                         if (result != null) {
                             result.collapseVisibility = true;
-                            this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', this.dynamicLayerList)
+                            this.$store.dispatch(
+                                "SET_DYNAMIC_LAYER_LIST",
+                                this.$store.getters.dynamicLayerList
+                            );
                             break;
                         }
                     }
 
-                    for (let i in this.baseLayerList) {
+                    for (let i in this.$store.getters.baseLayerList) {
                         if (
-                            this.baseLayerList[i].unitedDynamicLayerName !==
-                            undefined &&
-                            this.baseLayerList[i].unitedDynamicLayerName !== null &&
-                            this.baseLayerList[i].name === service.name
+                            this.$store.getters.baseLayerList[i]
+                                .unitedDynamicLayerName !== undefined &&
+                            this.$store.getters.baseLayerList[i]
+                                .unitedDynamicLayerName !== null &&
+                            this.$store.getters.baseLayerList[i].name ===
+                            service.name
                         ) {
-                            this.baseLayerList[i].collapseVisibility = true;
+                            let list = this.$store.getters.baseLayerList;
+                            list[i].collapseVisibility = true;
+                            this.$store.dispatch("SET_BASE_LAYER_LIST", list);
+
                             break;
                         }
                     }
                 } else {
                     this.deleteLayers(service);
-                    for (let i in this.$store.state.layers.dynamicLayerList) {
-                        if (this.$store.state.layers.dynamicLayerList[i].name === service.name) {
-                            let list = this.$store.state.layers.dynamicLayerList
+                    for (let i in this.$store.getters.dynamicLayerList) {
+                        if (
+                            this.$store.getters.dynamicLayerList[i].name ===
+                            service.name
+                        ) {
+                            let list = this.$store.getters.dynamicLayerList;
                             list[i].collapseVisibility = false;
                             list[i].layersVisibility = false;
-                            this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', list)
+                            this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
 
                             break;
                         }
                     }
-                    for (let i in this.baseLayerList) {
+                    for (let i in this.$store.getters.baseLayerList) {
                         if (
-                            this.baseLayerList[i].unitedDynamicLayerName !==
-                            undefined &&
-                            this.baseLayerList[i].unitedDynamicLayerName !== null &&
-                            this.baseLayerList[i].name === service.name
+                            this.$store.getters.baseLayerList[i]
+                                .unitedDynamicLayerName !== undefined &&
+                            this.$store.getters.baseLayerList[i]
+                                .unitedDynamicLayerName !== null &&
+                            this.$store.getters.baseLayerList[i].name ===
+                            service.name
                         ) {
-                            this.baseLayerList[i].collapseVisibility = false;
-                            this.baseLayerList[i].layersVisibility = false;
+                            let list = this.$store.getters.baseLayerList;
+
+                            list[i].collapseVisibility = false;
+                            list[i].layersVisibility = false;
+
+                            this.$store.dispatch("SET_BASE_LAYER_LIST", list);
                             break;
                         }
                     }
                 }
             },
             selectSubService(service, index, id, e) {
-                this.dynamicSubLayerList[service.name][id] = !this
-                    .dynamicSubLayerList[service.name][id];
+                let dynamicSubLayerList = this.$store.getters.dynamicSubLayerList;
+                dynamicSubLayerList[service.name][id] = !dynamicSubLayerList[
+                    service.name
+                ][id];
+                this.$store.dispatch(
+                    "SET_DYNAMIC_SUBLAYER_LIST",
+                    dynamicSubLayerList
+                );
+
                 this.deleteLayers(service, false);
-                for (let i in this.$store.state.layers.dynamicLayerList) {
-                    if (this.$store.state.layers.dynamicLayerList[i].name === service.name) {
-                        let list = this.$store.state.layers.dynamicLayerList
+
+                for (let i in this.$store.getters.dynamicLayerList) {
+                    if (
+                        this.$store.getters.dynamicLayerList[i].name ===
+                        service.name
+                    ) {
+                        let list = this.$store.getters.dynamicLayerList;
                         list[i].layersVisibility = true;
-                        this.$store.dispatch('SET_DYNAMIC_LAYER_LIST', list)
+                        this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
 
                         break;
                     }
@@ -1748,16 +1766,16 @@
 
                 if (
                     typeof this.dynamicForColors[
-                        this.colorPicker.colorPicker.layer.name
-                        ] === "undefined"
+                    this.colorPicker.colorPicker.layer.name
+                    ] === "undefined"
                 ) {
                     this.dynamicForColors[
                         this.colorPicker.colorPicker.layer.name
-                        ] = [];
+                    ] = [];
                 }
                 this.dynamicForColors[this.colorPicker.colorPicker.layer.name][
                     this.colorPicker.colorPicker.sublayer
-                    ] = layerDyn;
+                ] = layerDyn;
 
                 this.addLayers(
                     this.colorPicker.colorPicker.layer,
@@ -1825,22 +1843,6 @@
             lastBBOXOfShape() {
                 return this.$store.state.dataTable.lastBBOXOfShape;
             },
-            dragOptions() {
-                return {
-                    animation: 0,
-                    group: "baseDragger",
-                    disabled: false,
-                    ghostClass: "ghost",
-                };
-            },
-            dragOptionsDynamic() {
-                return {
-                    animation: 0,
-                    group: "dynamicDragger",
-                    disabled: false,
-                    ghostClass: "ghost",
-                };
-            },
             featuresToExcel() {
                 let features = [];
                 for (let i = 0; i < this.tableFeaturesData.length; i++) {
@@ -1858,7 +1860,7 @@
                     ) {
                         columns[
                             this.tableFeaturesHeader[column]
-                            ] = this.stackedTableFeaturesHeader[column];
+                        ] = this.stackedTableFeaturesHeader[column];
                     }
                 }
                 return columns;
