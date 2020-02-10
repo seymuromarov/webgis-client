@@ -12,7 +12,7 @@
                     :class="{ 'search__input--expanded': searchExpanded }"
                     v-model="searchInputValue"
                 />
-                <div class="search__results">
+                <div class="search__results custom-scrollbar">
                     <ul>
                         <li
                             v-for="(city, index) in citiesToShow"
@@ -82,7 +82,7 @@ export default {
     },
     data() {
         return {
-            searchExpanded: true,
+            searchExpanded: false,
             cities,
             searchInputValue: "",
         };
@@ -206,24 +206,6 @@ export default {
                 border-bottom-right-radius: 5px;
                 overflow: hidden;
                 transition: max-height 0.1s ease-in-out;
-
-                &::-webkit-scrollbar {
-                    width: 5px;
-                }
-
-                &::-webkit-scrollbar-track {
-                    background: #1b2537;
-                }
-
-                &::-webkit-scrollbar-thumb {
-                    background: #9096a1;
-                    border-radius: 5px;
-                    height: 30px;
-                }
-
-                &::-webkit-scrollbar-thumb:hover {
-                    background: #555;
-                }
 
                 ul {
                     margin: 0;

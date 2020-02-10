@@ -90,6 +90,10 @@ export default {
                 }
             },
             set(e) {
+                if (e.target.checked === false) {
+                    this.subListVisibility = false;
+                }
+
                 this.selectLayer(e);
             },
         },

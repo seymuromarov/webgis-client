@@ -4,7 +4,11 @@
         <div class="menu">
             <div class="menu--top">
                 <div class="menu__item" v-for="item in topMenu" :key="item.key">
-                    <button class="menu__item__button" @click="item.click">
+                    <button
+                        class="menu__item__button"
+                        @click="item.click"
+                        :title="item.label"
+                    >
                         <img
                             :src="
                                 require(`../../../assets/images/icons/${item.image}`)
@@ -21,7 +25,11 @@
                     v-for="item in bottomMenu"
                     :key="item.key"
                 >
-                    <button class="menu__item__button" @click="item.click">
+                    <button
+                        class="menu__item__button"
+                        @click="item.click"
+                        :title="item.label"
+                    >
                         <img
                             :src="
                                 require(`../../../assets/images/icons/${item.image}`)
@@ -43,17 +51,22 @@
 
         <!-- Layer Types -->
         <div class="layer-types" v-show="activeMenu === 'layerTypes'">
-            <div class="layer-types__item">None</div>
-            <div class="layer-types__item">Satellite</div>
-            <div class="layer-types__item">Cray</div>
-            <div class="layer-types__item">Street</div>
+            <div
+                v-for="(layer, key) in baseMaps"
+                :key="key"
+                class="layer-types__item"
+                :class="{ active: activeLayerType === key }"
+                @click="setBaseLayout(key)"
+            >
+                {{ capitalize(key) }}
+            </div>
         </div>
 
         <!-- Dynamic Layers -->
         <div class="map-list layers" v-show="activeMenu === 'dynamicLayers'">
             <div class="list__header">Dynamic layers</div>
 
-            <ul class="list__content list__content--parent">
+            <ul class="list__content list__content--parent custom-scrollbar">
                 <LayerTree
                     v-for="(layer, index) in dynamicLayersList"
                     :key="index"
@@ -69,7 +82,7 @@
         <div class="map-list layers" v-show="activeMenu === 'baseMap'">
             <div class="list__header">Basemaps</div>
 
-            <ul class="list__content list__content--parent">
+            <ul class="list__content list__content--parent custom-scrollbar">
                 <LayerTree
                     v-for="(layer, index) in baselayerList"
                     :key="index"
@@ -78,6 +91,28 @@
                     @selectSubLayer="selectSubLayer"
                     @getTableData="getTableData"
                 />
+            </ul>
+        </div>
+
+        <!-- Tools -->
+        <div class="map-list tools" v-show="activeMenu === 'tools'">
+            <div class="list__header">Tools</div>
+
+            <ul class="list__content list__content--parent custom-scrollbar">
+                <li class="list__item" v-for="tool in toolList" :key="tool.key">
+                    <div class="item__header" @click="tool.click">
+                        <span class="title">
+                            <img
+                                :src="
+                                    require(`../../../assets/images/icons/${tool.image}`)
+                                "
+                                alt=""
+                                class="pre"
+                            />
+                            {{ tool.label }}
+                        </span>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
@@ -91,9 +126,13 @@ export default {
     components: {
         LayerTree,
     },
+    props: {
+        baseMaps: { type: Object },
+    },
     data() {
         return {
             activeMenu: "",
+            activeLayerType: "gray",
             layerTypesVisible: false,
         };
     },
@@ -112,10 +151,12 @@ export default {
                     },
                 },
                 {
-                    key: "edit",
-                    label: "Edit",
+                    key: "tools",
+                    label: "Tools",
                     image: "pencil.svg",
-                    click: () => {},
+                    click: () => {
+                        this.toggleActiveMenu("tools");
+                    },
                 },
                 {
                     key: "dynamicLayers",
@@ -141,7 +182,7 @@ export default {
                     key: "information",
                     label: "Information",
                     image: "information.svg",
-                    click: () => {},
+                    click: this.showInfoModal,
                 },
                 {
                     key: "layerTypes",
@@ -152,16 +193,16 @@ export default {
                     },
                 },
                 {
-                    key: "picture",
-                    label: "picture",
+                    key: "exportPNG",
+                    label: "Export PNG",
                     image: "picture.svg",
-                    click: () => {},
+                    click: this.exportPNG,
                 },
                 {
-                    key: "fileDownload",
-                    label: "File download",
+                    key: "exportGeojson",
+                    label: "Export GeoJSON",
                     image: "file_download.svg",
-                    click: () => {},
+                    click: this.exportData,
                 },
                 {
                     key: "fullscreen",
@@ -176,6 +217,90 @@ export default {
         },
         baselayerList() {
             return this.$store.getters.baseLayerList;
+        },
+        toolList() {
+            return [
+                {
+                    key: "mouse",
+                    label: "Mouse",
+                    image: "mouse.svg",
+                    click: () => {
+                        this.setDrawType("None");
+                    },
+                },
+                {
+                    key: "addPoint",
+                    label: "Add point",
+                    image: "point.svg",
+                    click: () => {
+                        this.setDrawType("Point");
+                    },
+                },
+                {
+                    key: "rectangle",
+                    label: "Rectangle",
+                    image: "rectangle.svg",
+                    click: () => {
+                        this.setDrawType("Box");
+                    },
+                },
+                {
+                    key: "square",
+                    label: "Square",
+                    image: "square.svg",
+                    click: () => {
+                        this.setDrawType("Square");
+                    },
+                },
+                {
+                    key: "circle",
+                    label: "Circle",
+                    image: "circle.svg",
+                    click: () => {
+                        this.setDrawType("Circle");
+                    },
+                },
+                {
+                    key: "polygon",
+                    label: "Polygon",
+                    image: "polygon.svg",
+                    click: () => {
+                        this.setDrawType("Polygon");
+                    },
+                },
+                {
+                    key: "line",
+                    label: "Line",
+                    image: "line.svg",
+                    click: () => {
+                        this.setDrawType("LineString");
+                    },
+                },
+                {
+                    key: "addPlace",
+                    label: "Add place",
+                    image: "place.svg",
+                    click: () => {},
+                },
+                {
+                    key: "reset",
+                    label: "Reset",
+                    image: "reset.svg",
+                    click: this.reset,
+                },
+                {
+                    key: "delete",
+                    label: "Delete",
+                    image: "delete.svg",
+                    click: this.delete,
+                },
+                {
+                    key: "pickColor",
+                    label: "Pick color",
+                    image: "world.svg",
+                    click: this.pickColor,
+                },
+            ];
         },
     },
     methods: {
@@ -211,6 +336,34 @@ export default {
         getTableData(parent, itemId, itemName, query) {
             this.$emit("getTableData", parent, itemId, itemName, query);
         },
+        showInfoModal() {
+            this.$emit("showInfoModal");
+        },
+        exportPNG() {
+            this.$emit("exportPNG");
+        },
+        exportData() {
+            this.$emit("exportData");
+        },
+        setBaseLayout(key) {
+            this.activeLayerType = key;
+            this.$emit("setBaseLayout", key);
+        },
+        setDrawType(key) {
+            this.$emit("setDrawType", key);
+        },
+        pickColor() {
+            this.$emit("pickColor");
+        },
+        delete() {
+            this.$emit("delete");
+        },
+        reset() {
+            this.$emit("reset");
+        },
+        capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        },
     },
 };
 </script>
@@ -234,7 +387,7 @@ export default {
         right: 56px;
         top: 0;
         border-bottom-left-radius: 5px;
-        background-color: rgba(27, 37, 55, 0.85);
+        background-color: #1b2537;
         padding: 16px;
         text-align: left;
         display: flex;
@@ -292,15 +445,16 @@ export default {
     .layer-types {
         position: absolute;
         right: 60px;
-        bottom: 82px;
+        bottom: 70px;
         border-radius: 5px;
         background-color: rgba(27, 37, 55, 0.85);
         padding: 5px 0;
         .layer-types__item {
             padding: 0 12px;
-            font-size: 12px;
+            font-size: 14px;
             text-align: left;
-            &:hover {
+            &:hover,
+            &.active {
                 background-color: rgba(255, 255, 255, 0.15);
                 cursor: pointer;
             }
@@ -330,24 +484,6 @@ export default {
             padding: 0;
             margin: 0;
             // border-bottom-left-radius: 5px;
-
-            &::-webkit-scrollbar {
-                width: 5px;
-            }
-
-            &::-webkit-scrollbar-track {
-                background: #1b2537;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                background: #9096a1;
-                border-radius: 5px;
-                height: 30px;
-            }
-
-            &::-webkit-scrollbar-thumb:hover {
-                background: #555;
-            }
 
             &.list__content--parent {
                 max-height: calc(100vh - 44px);

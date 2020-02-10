@@ -352,7 +352,8 @@ hr {
 }
 
 .howMuchWidthHaveMap {
-    width: calc(100% - 300px) !important;
+    //wtf?
+    width: calc(100% - 56px) !important;
 }
 
 .selectLayerForm {
@@ -602,5 +603,26 @@ hr {
     .list-group-item {
         border: none;
         padding: 0.2rem 0;
+    }
+}
+
+.custom-scrollbar {
+    &::-webkit-scrollbar {
+        width: 5px;
+        height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #1b2537;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #9096a1;
+        border-radius: 5px;
+        height: 30px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
     }
 }
