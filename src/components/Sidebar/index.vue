@@ -175,7 +175,7 @@ export default {
                 this.$store.dispatch("SET_BASE_LAYER_LIST", val);
             },
         },
-        
+
         selectedLayers() {
             return this.$store.getters.selectedLayers;
         },
@@ -196,6 +196,14 @@ export default {
             this.$router.push("/login");
         },
         selectService(service, index, dynamic, e, isHashLoaded) {
+            console.log(
+                "selectService",
+                service,
+                index,
+                dynamic,
+                e,
+                isHashLoaded
+            );
             this.$emit(
                 "selectService",
                 service,

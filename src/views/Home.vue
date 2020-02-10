@@ -1,16 +1,18 @@
 <template>
     <div class="row container-fluid padding-0">
         <!-- Sidebar -->
-        <Sidebar @saveColor="saveColor"
-                 @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList"
-                 @selectService="selectService"
-                 @dynamicLayersReset="dynamicLayersReset"
-                 @selectSubService="selectSubService"
-                 @getTableData="getTableData"
-                 @openColorPicker="OpenColorPicker"
-                 @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
-                 @showSimpleFilterModal="showSimpleFilterModal"
-                 @basemapLayersReset="basemapLayersReset" />
+        <!-- <Sidebar
+            @saveColor="saveColor"
+            @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList"
+            @selectService="selectService"
+            @dynamicLayersReset="dynamicLayersReset"
+            @selectSubService="selectSubService"
+            @getTableData="getTableData"
+            @openColorPicker="OpenColorPicker"
+            @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
+            @showSimpleFilterModal="showSimpleFilterModal"
+            @basemapLayersReset="basemapLayersReset"
+        /> -->
 
         <!-- Main content -->
         <div class="padding-0 map-layout">
@@ -241,10 +243,17 @@
                     <i class="fas fa-file-download"></i>
                 </button> -->
 
-                <MapControls :map="mapLayer"
-                             :mapHelpers="MapHelpers"
-                             :nextHistoryEvent="nextHistoryEvent"
-                             :previousHistoryEvent="previousHistoryEvent" />
+                <MapControls
+                    :map="mapLayer"
+                    :mapHelpers="MapHelpers"
+                    :nextHistoryEvent="nextHistoryEvent"
+                    :previousHistoryEvent="previousHistoryEvent"
+                />
+                <NewSidebar
+                    @selectLayer="selectService"
+                    @selectSubLayer="selectSubService"
+                    @getTableData="getTableData"
+                />
             </div>
         </div>
 
@@ -359,17 +368,18 @@
     import proj4 from "proj4";
     import Multiselect from "vue-multiselect";
 
-    // Custom components
-    import {
-        ShapeColorPicker,
-        DataTable,
-        Sidebar,
-        Filter,
-        Report,
-        MapControls,
-    } from "@/components/";
-    import InfoModal from "@/components/Info/index";
-    import DetectorModal from "@/components/modals/ChangeDetector";
+// Custom components
+import {
+    ShapeColorPicker,
+    DataTable,
+    Sidebar,
+    NewSidebar,
+    Filter,
+    Report,
+    MapControls,
+} from "@/components/";
+import InfoModal from "@/components/Info/index";
+import DetectorModal from "@/components/modals/ChangeDetector";
 
     // Utils
     import { URL, MAP_URLS } from "@/config/baseUrl";
@@ -381,149 +391,151 @@
     // Styles
     import "ol/ol.css";
 
-    export default {
-        name: "Home",
-        components: {
-            ShapeColorPicker,
-            Multiselect,
-            DataTable,
-            DetectorModal,
-            InfoModal,
-            Sidebar,
-            FilterBox: Filter,
-            Report,
-            MapControls,
-        },
-        data() {
-            return {
-                isDrawnShapeForDetection: false,
-                isSimpleModalVisible: false,
-                latLongFormShow: false,
-                MapHelpers: null,
-                Toggler: null,
-                ColorPicker: null,
-                latChange: null,
-                longChange: null,
-                lastCoordinates: null,
-                filterQuery: "",
-                ArithmeticDataResult: {},
-                dataFilter: {
-                    query: "",
-                    arithmeticType: 0,
+export default {
+    name: "Home",
+    components: {
+        ShapeColorPicker,
+        Multiselect,
+        DataTable,
+        DetectorModal,
+        InfoModal,
+        Sidebar,
+        NewSidebar,
+        FilterBox: Filter,
+        Report,
+        MapControls,
+    },
+    data() {
+        return {
+            isDrawnShapeForDetection: false,
+            isSimpleModalVisible: false,
+            latLongFormShow: false,
+            MapHelpers: null,
+            Toggler: null,
+            ColorPicker: null,
+            latChange: null,
+            longChange: null,
+            lastCoordinates: null,
+            filterQuery: "",
+            ArithmeticDataResult: {},
+            dataFilter: {
+                query: "",
+                arithmeticType: 0,
+            },
+            filterValues: [],
+            mapLayer: null,
+            tableQuery: null,
+            selectLayerForm: false,
+            showColumnsBoolean: false,
+            value: [],
+            checkedColumns: [],
+            checkedColumnsData: [],
+            drawings: [
+                {
+                    name: "Point",
+                    icon: "fas fa-circle",
+                    tooltip: "Add Point",
                 },
-                filterValues: [],
-                mapLayer: null,
-                tableQuery: null,
-                selectLayerForm: false,
-                showColumnsBoolean: false,
-                value: [],
-                checkedColumns: [],
-                checkedColumnsData: [],
-                drawings: [
-                    {
-                        name: "Point",
-                        icon: "fas fa-circle",
-                        tooltip: "Add Point",
-                    },
-                    {
-                        name: "LineString",
-                        icon: "fas fa-long-arrow-alt-right",
-                        tooltip: "Add LineString",
-                    },
-                    {
-                        name: "Polygon",
-                        icon: "fas fa-draw-polygon",
-                        tooltip: "Add Polygon",
-                    },
-                    {
-                        name: "Circle",
-                        icon: "far fa-circle",
-                        tooltip: "Add Circle",
-                    },
-                    {
-                        name: "Box",
-                        icon: "far fa-calendar",
-                        tooltip: "Add Rectangle",
-                    },
-                    {
-                        name: "Square",
-                        icon: "far fa-square",
-                        tooltip: "Add Square",
-                    },
-                    {
-                        name: "None",
-                        icon: "fas fa-mouse-pointer",
-                        tooltip: "Mouse",
-                    },
-                ],
-                options: [],
-                layers: [],
-                layerCounter: 0,
-                isMarker: false,
-                isRemove: false,
-                isColorPick: false,
-                gisLayers: [],
-                token: null,
-                emlakToken: null,
-                kmlInfo: null,
-                source: null,
-                vector: null,
-                vectorSource: null,
-                vectorLayer: null,
-                featureIDSet: 0,
-                typeSelect: null,
-                draw: null,
-                stackedTableFeaturesHeader: [],
-                tableFeaturesHeader: [],
-                tableFeaturesData: [],
-                tableFeatureData: [],
-                tableNextRequest: [],
-                citySearchOptions: [],
-                citySearchValue: null,
-                citySearchInputShow: false,
-                historyUpdate: true,
-                nextHistoryEvent: false,
-                previousHistoryEvent: false,
-                historyEvents: [],
-                historyEventsIndex: 0,
-                tableFeaturesHeaderWithAlias: [],
-                graticule: false,
-                graticuleLayer: null,
-                tableHeader: null,
-                baseLayerList: [],
-                helpmaptooltipElement: null,
-                helpmaptooltip: null,
-                measuremaptooltipElement: null,
-                measuremaptooltip: null,
-                isMetricCoordinateSystem: false,
-                baseMaps: {
-                    sat: new XYZ({
-                        name: "sat",
-                        url:
-                            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-                    }),
-                    street: new XYZ({
-                        url:
-                            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-                    }),
-                    gray: new XYZ({
-                        crossOrigin: "Anonymous",
-                        url:
-                            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-                    }),
-                    none: new XYZ({
-                        crossOrigin: "Anonymous",
-                        url: "",
-                    }),
+                {
+                    name: "LineString",
+                    icon: "fas fa-long-arrow-alt-right",
+                    tooltip: "Add LineString",
                 },
-                dynamicForColors: [[]],
-                showInfoModal: false,
-                isHashLoaded: false,
-            };
-        },
-        mounted() {
-            this.token = this.$cookie.get("token");
-            if (this.token === null) this.$router.push("/login");
+                {
+                    name: "Polygon",
+                    icon: "fas fa-draw-polygon",
+                    tooltip: "Add Polygon",
+                },
+                {
+                    name: "Circle",
+                    icon: "far fa-circle",
+                    tooltip: "Add Circle",
+                },
+                {
+                    name: "Box",
+                    icon: "far fa-calendar",
+                    tooltip: "Add Rectangle",
+                },
+                {
+                    name: "Square",
+                    icon: "far fa-square",
+                    tooltip: "Add Square",
+                },
+                {
+                    name: "None",
+                    icon: "fas fa-mouse-pointer",
+                    tooltip: "Mouse",
+                },
+            ],
+            options: [],
+            layers: [],
+            layerCounter: 0,
+            isMarker: false,
+            isRemove: false,
+            isColorPick: false,
+            gisLayers: [],
+            token: null,
+            emlakToken: null,
+            kmlInfo: null,
+            source: null,
+            vector: null,
+            vectorSource: null,
+            vectorLayer: null,
+            featureIDSet: 0,
+            sketch: null,
+            typeSelect: null,
+            draw: null,
+            stackedTableFeaturesHeader: [],
+            tableFeaturesHeader: [],
+            tableFeaturesData: [],
+            tableFeatureData: [],
+            tableNextRequest: [],
+            citySearchOptions: [],
+            citySearchValue: null,
+            citySearchInputShow: false,
+            historyUpdate: true,
+            nextHistoryEvent: false,
+            previousHistoryEvent: false,
+            historyEvents: [],
+            historyEventsIndex: 0,
+            tableFeaturesHeaderWithAlias: [],
+            graticule: false,
+            graticuleLayer: null,
+            tableHeader: null,
+            baseLayerList: [],
+            helpmaptooltipElement: null,
+            helpmaptooltip: null,
+            measuremaptooltipElement: null,
+            measuremaptooltip: null,
+            isMetricCoordinateSystem: false,
+            baseMaps: {
+                sat: new XYZ({
+                    name: "sat",
+                    url:
+                        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                }),
+                street: new XYZ({
+                    url:
+                        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+                }),
+                gray: new XYZ({
+                    crossOrigin: "Anonymous",
+                    url:
+                        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+                }),
+                none: new XYZ({
+                    crossOrigin: "Anonymous",
+                    url: "",
+                }),
+            },
+            dynamicForColors: [[]],
+            showInfoModal: false,
+            isHashLoaded: false,
+        };
+    },
+    mounted() {
+        this.token = this.$cookie.get("token");
+        if (this.token === null) this.$router.push("/login");
 
             this.MapHelpers = new MapHelpers(this);
             this.Toggler = new Toggler(this);
@@ -632,31 +644,31 @@
                     }
                 };
 
-                this.mapLayer.on("pointermove", function (evt) {
-                    if (evt.dragging) {
-                        return;
-                    }
-                    let pixel = self.mapLayer.getEventPixel(evt.originalEvent);
-                    let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
-                    if (self.isMetricCoordinateSystem) {
-                        coord = fromLonLat([coord[0], coord[1]]);
-                        coord = [
-                            coord[1].toString().substring(0, 10),
-                            coord[0].toString().substring(0, 10),
-                        ];
-                    } else {
-                        coord = [
-                            coord[1].toString().substring(0, 7),
-                            coord[0].toString().substring(0, 7),
-                        ];
-                    }
-                    //document.getElementById("mouse-position").innerHTML =
-                    //    "Lat: " +
-                    //    coord[1].toString() +
-                    //    " , " +
-                    //    "Long: " +
-                    //    coord[0].toString();
-                });
+            this.mapLayer.on("pointermove", function(evt) {
+                if (evt.dragging) {
+                    return;
+                }
+                let pixel = self.mapLayer.getEventPixel(evt.originalEvent);
+                let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
+                if (self.isMetricCoordinateSystem) {
+                    coord = fromLonLat([coord[0], coord[1]]);
+                    coord = [
+                        coord[1].toString().substring(0, 10),
+                        coord[0].toString().substring(0, 10),
+                    ];
+                } else {
+                    coord = [
+                        coord[1].toString().substring(0, 7),
+                        coord[0].toString().substring(0, 7),
+                    ];
+                }
+                // document.getElementById("mouse-position").innerHTML =
+                //     "Lat: " +
+                //     coord[1].toString() +
+                //     " , " +
+                //     "Long: " +
+                //     coord[0].toString();
+            });
 
                 this.mapLayer.on("click", function (evt) {
                     //displayFeatureInfo(evt.pixel);
