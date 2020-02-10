@@ -51,14 +51,14 @@
                 @click="historyBack"
                 :disabled="!previousHistoryEvent"
             >
-                <img src="../assets/images/icons/arrow_up.svg" alt="Back" />
+                <img src="../assets/images/icons/arrow_left.svg" alt="Back" />
             </button>
             <button
                 class="control__button"
                 @click="historyNext"
                 :disabled="!nextHistoryEvent"
             >
-                <img src="../assets/images/icons/arrow_down.svg" alt="Next" />
+                <img src="../assets/images/icons/arrow_right.svg" alt="Next" />
             </button>
         </div>
     </div>

@@ -5,7 +5,9 @@ const baseUrl = server_url;
 const emlakUrl = getUrl.protocol + "//webgis.azercosmos.az/emlak";
 
 const SERVER_URL = "http://webgis1.azercosmos.az";
+// const SERVER_URL = "http://715c2cc5.ngrok.io";
 const LOCAL_URL = "https://localhost:5001";
+// const LOCAL_URL = "http://715c2cc5.ngrok.io";
 const URL = SERVER_URL;
 
 const ACCOUNT_URL = {

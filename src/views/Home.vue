@@ -1,7 +1,7 @@
 <template>
     <div class="row container-fluid padding-0">
         <!-- Sidebar -->
-        <Sidebar
+        <!-- <Sidebar
             @saveColor="saveColor"
             @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList"
             @selectService="selectService"
@@ -12,7 +12,7 @@
             @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
             @showSimpleFilterModal="showSimpleFilterModal"
             @basemapLayersReset="basemapLayersReset"
-        />
+        /> -->
 
         <!-- Main content -->
         <div class="padding-0 map-layout">
@@ -268,6 +268,11 @@
                     :nextHistoryEvent="nextHistoryEvent"
                     :previousHistoryEvent="previousHistoryEvent"
                 />
+                <NewSidebar
+                    @selectLayer="selectService"
+                    @selectSubLayer="selectSubService"
+                    @getTableData="getTableData"
+                />
             </div>
         </div>
 
@@ -399,6 +404,7 @@ import {
     ShapeColorPicker,
     DataTable,
     Sidebar,
+    NewSidebar,
     Filter,
     Report,
     MapControls,
@@ -425,6 +431,7 @@ export default {
         DetectorModal,
         InfoModal,
         Sidebar,
+        NewSidebar,
         FilterBox: Filter,
         Report,
         MapControls,
@@ -687,12 +694,12 @@ export default {
                         coord[0].toString().substring(0, 7),
                     ];
                 }
-                document.getElementById("mouse-position").innerHTML =
-                    "Lat: " +
-                    coord[1].toString() +
-                    " , " +
-                    "Long: " +
-                    coord[0].toString();
+                // document.getElementById("mouse-position").innerHTML =
+                //     "Lat: " +
+                //     coord[1].toString() +
+                //     " , " +
+                //     "Long: " +
+                //     coord[0].toString();
             });
 
             this.mapLayer.on("click", function(evt) {
@@ -1124,6 +1131,7 @@ export default {
             this.setDynamicIndexes();
         },
         async getTableData(service, layerId, layerName, query) {
+            console.log(service, layerId, layerName, query);
             var layer = this.getLayer(service.id);
             let token;
             if (service.apiFrom === "emlak") {
@@ -1612,6 +1620,7 @@ export default {
             return responseDynamic;
         },
         async selectService(service, index, dynamic, e, isHashLoaded = true) {
+            console.log("TCL", service, index, dynamic, e);
             if (e.target.checked) {
                 let self = this;
                 let subLayers;
@@ -1728,6 +1737,13 @@ export default {
             }
         },
         selectSubService(service, index, id, e) {
+            console.log(
+                "TCL: selectSubService -> service, index, id, e",
+                service,
+                index,
+                id,
+                e
+            );
             let dynamicSubLayerList = this.$store.getters.dynamicSubLayerList;
             dynamicSubLayerList[service.name][id] = !dynamicSubLayerList[
                 service.name
