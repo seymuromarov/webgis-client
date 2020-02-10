@@ -8,6 +8,7 @@ import Sidebar from "./Sidebar/index";
 import Filter from "./Filter";
 import Report from "./Report";
 import MapControls from "./MapControls";
+import NewSidebar from "./Sidebar/New";
 
 export {
     LayerColorPicker,
@@ -20,4 +21,5 @@ export {
     Filter,
     Report,
     MapControls,
+    NewSidebar,
 };
