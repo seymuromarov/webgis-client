@@ -34,6 +34,13 @@
             </div>
         </div>
 
+        <div class="user-profile" v-show="activeMenu === 'profile'">
+            <div class="user__name">{{ userName }}</div>
+            <div class="logout" @click="logout">
+                <i title="Log out" class="fas fa-power-off"></i>
+            </div>
+        </div>
+
         <!-- Layer Types -->
         <div class="layer-types" v-show="activeMenu === 'layerTypes'">
             <div class="layer-types__item">None</div>
@@ -43,7 +50,7 @@
         </div>
 
         <!-- Dynamic Layers -->
-        <div class="map-list layers" v-if="activeMenu === 'dynamicLayers'">
+        <div class="map-list layers" v-show="activeMenu === 'dynamicLayers'">
             <div class="list__header">Dynamic layers</div>
 
             <ul class="list__content list__content--parent">
@@ -59,7 +66,7 @@
         </div>
 
         <!-- Basemaps -->
-        <div class="map-list layers" v-if="activeMenu === 'baseMap'">
+        <div class="map-list layers" v-show="activeMenu === 'baseMap'">
             <div class="list__header">Basemaps</div>
 
             <ul class="list__content list__content--parent">
@@ -91,13 +98,18 @@ export default {
         };
     },
     computed: {
+        userName() {
+            return this.$cookie.get("username");
+        },
         topMenu() {
             return [
                 {
                     key: "profile",
                     label: "Profile",
                     image: "user.svg",
-                    click: () => {},
+                    click: () => {
+                        this.toggleActiveMenu("profile");
+                    },
                 },
                 {
                     key: "edit",
@@ -151,12 +163,11 @@ export default {
                     image: "file_download.svg",
                     click: () => {},
                 },
-
                 {
                     key: "fullscreen",
                     label: "Full screen",
                     image: "fullscreen.svg",
-                    click: () => {},
+                    click: this.fullScreen,
                 },
             ];
         },
@@ -168,6 +179,21 @@ export default {
         },
     },
     methods: {
+        logout() {
+            this.$cookie.delete("token");
+            this.$cookie.delete("username");
+            this.$router.push("/login");
+        },
+        fullScreen() {
+            if (
+                window.innerWidth == screen.width &&
+                window.innerHeight == screen.height
+            ) {
+                document.exitFullscreen();
+            } else {
+                document.querySelector("body").requestFullscreen();
+            }
+        },
         toggleActiveMenu(menu) {
             if (this.activeMenu === menu) {
                 this.activeMenu = "";
@@ -202,6 +228,29 @@ export default {
     background-color: #1b2537;
     box-shadow: -2px 0 4px rgba(0, 0, 0, 0.25);
     color: #ffffff;
+
+    .user-profile {
+        position: absolute;
+        right: 56px;
+        top: 0;
+        border-bottom-left-radius: 5px;
+        background-color: rgba(27, 37, 55, 0.85);
+        padding: 16px;
+        text-align: left;
+        display: flex;
+        align-items: center;
+
+        .user__name {
+            margin-right: 16px;
+            white-space: nowrap;
+        }
+
+        .logout {
+            padding: 4px;
+            line-height: 16px;
+            cursor: pointer;
+        }
+    }
 
     .menu {
         height: 100%;
