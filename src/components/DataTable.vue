@@ -122,11 +122,9 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import { Toggler } from "../helpers";
 import Multiselect from "vue-multiselect";
 import LayerService from "../services/LayerService";
-import { getToken } from "../utils/token";
 export default {
   name: "DataTable",
   props: {},
@@ -161,9 +159,6 @@ export default {
       const table = document.getElementById("dataTable");
       table.scrollTo(0, 0);
     },
-    isDataFetched() {
-      return this.paging.page * this.paging.limit == this.tableData.count;
-    },
     isEndOfData() {
       return this.paging.page * this.paging.limit > this.totalCount;
     },
@@ -195,7 +190,16 @@ export default {
         isBusy
       };
     },
- 
+    async getDatas() {
+      var params = {
+        layerId: this.serviceInfo.id,
+        ...this.serviceInfo.query,
+        ...this.paging
+      };
+      var response = await LayerService.getLocalTableData(params);
+      var data = response.data.features;
+      this.tableData = [...this.tableData, ...data];
+    },
     resetPaging() {
       this.paging = {
         isBusy: false,
@@ -346,9 +350,6 @@ export default {
     // },
     lastBBOXOfShape() {
       return this.$store.state.dataTable.lastBBOXOfShape;
-    },
-    token() {
-      return getToken();
     }
   }
 };
