@@ -178,8 +178,7 @@ export default {
             isIncludeBBOX: false
         };
     },
-    mounted() {
-    },
+
     methods: {
         showSimpleFilterModal() {
             this.$modal.show("simple-data-filter-modal", null, {
