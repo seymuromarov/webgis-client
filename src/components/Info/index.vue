@@ -15,13 +15,18 @@
                     <div class="modal-header">
                         <ul class="nav nav-tabs">
                             <!-- List item -->
-                            <li class="nav-item" v-for="tab in tabs" :key="tab.key">
+                            <li
+                                class="nav-item"
+                                v-for="tab in tabs"
+                                :key="tab.key"
+                            >
                                 <a
                                     class="nav-link"
-                                    :class="{'active': tab.key === activeTab}"
+                                    :class="{ active: tab.key === activeTab }"
                                     href="#"
                                     @click="changeTab(tab.key)"
-                                >{{ tab.text }}</a>
+                                    >{{ tab.text }}</a
+                                >
                             </li>
 
                             <!-- Close button -->
@@ -66,13 +71,13 @@ export default {
         FAQ,
         ReleaseNotes,
         Contact,
-        Forum
+        Forum,
     },
     props: {
         isOpen: {
             required: true,
-            type: Boolean
-        }
+            type: Boolean,
+        },
     },
     data() {
         return {
@@ -80,32 +85,32 @@ export default {
             tabs: [
                 {
                     key: "about",
-                    text: "About"
+                    text: "About",
                 },
                 {
                     key: "faq",
-                    text: "FAQ"
+                    text: "FAQ",
                 },
                 {
                     key: "releaseNotes",
-                    text: "Release notes"
+                    text: "Release notes",
                 },
                 {
                     key: "forum",
-                    text: "Forum"
+                    text: "Forum",
                 },
                 {
                     key: "contact",
-                    text: "Contact us"
-                }
-            ]
+                    text: "Contact us",
+                },
+            ],
         };
     },
     methods: {
         changeTab(tab) {
             this.activeTab = tab;
-        }
-    }
+        },
+    },
 };
 </script>
 
@@ -119,22 +124,24 @@ export default {
     .modal-dialog {
         max-width: 650px;
         .modal-content {
-            border: 1px solid #d3d3d3;
+            border: 1px solid #1b2537;
             .modal-header {
                 padding: 0px;
                 border-bottom: 0;
                 position: relative;
-                background-color: #f5f5f5;
+                background-color: #1b2537;
                 .nav {
                     width: 100%;
 
                     &.nav-tabs {
                         border-bottom: 1px solid #dee2e6;
                         .nav-link {
-                            color: #5a5a5a;
+                            color: #ffffff;
                             padding: 0.35rem 1rem;
                             &.active {
-                                border-color: #d3d3d3 #d3d3d3 #fff;
+                                border-color: #1b2537 #1b2537 #fff;
+                                color: #1b2537;
+                                font-weight: 500;
                             }
                         }
                     }
@@ -144,6 +151,8 @@ export default {
                         height: 100%;
                         padding: 0;
                         margin: 0;
+                        color: #fff;
+                        opacity: 1;
 
                         &:focus {
                             outline: none;
