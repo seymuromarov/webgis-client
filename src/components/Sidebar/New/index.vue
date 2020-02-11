@@ -260,9 +260,7 @@ export default {
                     key: "addPoint",
                     label: "Add point",
                     image: "point.svg",
-                    click: () => {
-                        this.setDrawType("Point");
-                    },
+                    click: this.addPlace,
                 },
                 {
                     key: "rectangle",
@@ -432,6 +430,9 @@ export default {
         },
         addGraticule() {
             this.$emit("addGraticule");
+        },
+        addPlace() {
+            this.$emit("addPlace");
         },
         delete() {
             this.$emit("delete");

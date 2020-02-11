@@ -283,6 +283,7 @@
                     @pickColor="eyeDropper"
                     @changeDetector="changeDetector"
                     @addGraticule="addGraticule"
+                    @addPlace="setMarkerTrue"
                     @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
                     @onMoveCallbackDynamicLayerList="
                         onMoveCallbackDynamicLayerList
