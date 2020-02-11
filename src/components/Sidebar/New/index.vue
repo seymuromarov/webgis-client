@@ -42,6 +42,7 @@
             </div>
         </div>
 
+        <!-- User Profile -->
         <div class="user-profile" v-show="activeMenu === 'profile'">
             <div class="user__name">{{ userName }}</div>
             <div class="logout" @click="logout">
@@ -67,14 +68,26 @@
             <div class="list__header">Dynamic layers</div>
 
             <ul class="list__content list__content--parent custom-scrollbar">
-                <LayerTree
-                    v-for="(layer, index) in dynamicLayersList"
-                    :key="index"
-                    :data="layer"
-                    @selectLayer="selectLayer"
-                    @selectSubLayer="selectSubLayer"
-                    @getTableData="getTableData"
-                />
+                <transition name="slide-fade">
+                    <Draggable
+                        key="dynamicLayer"
+                        v-bind="dragOptionsDynamic"
+                        v-model="dynamicLayerListModel"
+                        @start="isDragging = true"
+                        @end="$emit('onMoveCallbackDynamicLayerList', $event)"
+                    >
+                        <transition-group type="transition" name="flip-list">
+                            <LayerTree
+                                v-for="(layer, index) in dynamicLayersList"
+                                :key="layer.name + index"
+                                :data="layer"
+                                @selectLayer="selectLayer"
+                                @selectSubLayer="selectSubLayer"
+                                @getTableData="getTableData"
+                            />
+                        </transition-group>
+                    </Draggable>
+                </transition>
             </ul>
         </div>
 
@@ -83,14 +96,26 @@
             <div class="list__header">Basemaps</div>
 
             <ul class="list__content list__content--parent custom-scrollbar">
-                <LayerTree
-                    v-for="(layer, index) in baselayerList"
-                    :key="index"
-                    :data="layer"
-                    @selectLayer="selectLayer"
-                    @selectSubLayer="selectSubLayer"
-                    @getTableData="getTableData"
-                />
+                <transition name="slide-fade">
+                    <Draggable
+                        key="baseLayers"
+                        v-model="baseLayerListModel"
+                        v-bind="dragOptions"
+                        @start="isDragging = true"
+                        @end="$emit('onMoveCallbackBaseLayerList', $event)"
+                    >
+                        <transition-group type="transition" name="flip-list">
+                            <LayerTree
+                                v-for="(layer, index) in baselayerList"
+                                :key="layer.name + index"
+                                :data="layer"
+                                @selectLayer="selectLayer"
+                                @selectSubLayer="selectSubLayer"
+                                @getTableData="getTableData"
+                            />
+                        </transition-group>
+                    </Draggable>
+                </transition>
             </ul>
         </div>
 
@@ -120,11 +145,13 @@
 
 <script>
 import LayerTree from "./LayerTree";
+import Draggable from "vuedraggable";
 
 export default {
     name: "NewSidebar",
     components: {
         LayerTree,
+        Draggable,
     },
     props: {
         baseMaps: { type: Object },
@@ -134,6 +161,7 @@ export default {
             activeMenu: "",
             activeLayerType: "gray",
             layerTypesVisible: false,
+            isDragging: false,
         };
     },
     computed: {
@@ -297,10 +325,54 @@ export default {
                 {
                     key: "pickColor",
                     label: "Pick color",
-                    image: "world.svg",
+                    image: "color_picker.svg",
                     click: this.pickColor,
                 },
+                {
+                    key: "changeDetection",
+                    label: "Change detection",
+                    image: "world.svg",
+                    click: this.changeDetector,
+                },
+                {
+                    key: "graticule",
+                    label: "Graticule",
+                    image: "grid.svg",
+                    click: this.addGraticule,
+                },
             ];
+        },
+        dragOptionsDynamic() {
+            return {
+                animation: 0,
+                group: "dynamicDragger",
+                disabled: false,
+                ghostClass: "ghost",
+            };
+        },
+        dragOptions() {
+            return {
+                animation: 0,
+                group: "baseDragger",
+                disabled: false,
+                ghostClass: "ghost",
+            };
+        },
+        dynamicLayerListModel: {
+            get() {
+                return this.dynamicLayerList;
+            },
+            set(val) {
+                this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", val);
+            },
+        },
+        baseLayerListModel: {
+            get() {
+                return this.$store.getters.baseLayerList;
+            },
+            set(val) {
+                this.$store.dispatch("SET_BASE_LAYER_LIST", val);
+            },
         },
     },
     methods: {
@@ -354,6 +426,12 @@ export default {
         },
         pickColor() {
             this.$emit("pickColor");
+        },
+        changeDetector() {
+            this.$emit("changeDetector");
+        },
+        addGraticule() {
+            this.$emit("addGraticule");
         },
         delete() {
             this.$emit("delete");

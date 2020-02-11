@@ -365,37 +365,41 @@ export default {
       font-weight: 600;
     }
 
-    .table__operations {
-      display: flex;
-      align-items: center;
-      & > *:not(:first-child) {
-        margin-left: 1rem;
-      }
+        .table__operations {
+            display: flex;
+            align-items: center;
+            color: #1b2537;
+            & i {
+                color: #ffffff;
+            }
+            & > *:not(:first-child) {
+                margin-left: 1rem;
+            }
+        }
     }
-  }
-  .selfTable {
-    thead {
-      background-color: #586276;
-      color: #ffffff;
-      th {
-        font-weight: 400;
-        border: 0;
-      }
+    .selfTable {
+        thead {
+            background-color: #586276;
+            color: #ffffff;
+            th {
+                font-weight: 400;
+                border: 0;
+            }
+        }
+        tbody {
+            background: #2a354b;
+            color: #fff;
+        }
+        th,
+        td {
+            font-size: 14px;
+            padding: 4px 20px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        td {
+            border-color: #586276;
+        }
     }
-    tbody {
-      background: #2a354b;
-      color: #fff;
-    }
-    th,
-    td {
-      font-size: 14px;
-      padding: 4px 20px;
-      text-align: left;
-      vertical-align: middle;
-    }
-    td {
-      border-color: #586276;
-    }
-  }
 }
 </style>

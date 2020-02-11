@@ -1,33 +1,35 @@
 <template>
-  <div class="padding-0 sup-bar-layout Sidebar">
-    <!-- Logo -->
-    <img src="@/assets/logo-en.png" alt="logo" class="azc-cosmos-logo" />
+    <div class="padding-0 sup-bar-layout Sidebar">
+        <!-- Logo -->
+        <img src="@/assets/logo-en.png" alt="logo" class="azc-cosmos-logo" />
 
-    <!-- User -->
-    <div class="userNameLabel">
-      <span class>{{ userName }}</span>
-      <i
-        @click="logout"
-        title="Log out"
-        class="logOutIcon fas fa-power-off"
-        style="margin-left: 10px;"
-      ></i>
-    </div>
+        <!-- User -->
+        <div class="userNameLabel">
+            <span class>{{ userName }}</span>
+            <i
+                @click="logout"
+                title="Log out"
+                class="logOutIcon fas fa-power-off"
+                style="margin-left: 10px;"
+            ></i>
+        </div>
 
-    <hr />
+        <hr />
 
-    <h5 class="text-left-layer" v-if="dynamicLayerList.length > 0">
-      Dynamic Layers
-      <span>
-        <i
-          @click="dynamicLayersShow = !dynamicLayersShow"
-          class="fas makeMePoint"
-          :class="dynamicLayersShow ? 'fa-caret-down' : 'fa-caret-left'"
-        />
-      </span>
-    </h5>
+        <h5 class="text-left-layer" v-if="dynamicLayerList.length > 0">
+            Dynamic Layers
+            <span>
+                <i
+                    @click="dynamicLayersShow = !dynamicLayersShow"
+                    class="fas makeMePoint"
+                    :class="
+                        dynamicLayersShow ? 'fa-caret-down' : 'fa-caret-left'
+                    "
+                />
+            </span>
+        </h5>
 
-    <LayerColorPicker @saveColor="$emit('saveColor')" />
+        <LayerColorPicker @saveColor="$emit('saveColor')" />
 
         <transition name="slide-fade">
             <Draggable
@@ -66,9 +68,9 @@
             </Draggable>
         </transition>
 
-    <SimpleFilterModal ref="reportFilterModal" />
+        <SimpleFilterModal ref="reportFilterModal" />
 
-    <hr />
+        <hr />
 
         <h5 class="text-left-layer" v-if="baseLayerList.length > 0">
             Basemaps
@@ -116,10 +118,10 @@
 
 <script>
 import {
-  LayerColorPicker,
-  SimpleFilterModal,
-  BaseLayerTree,
-  DynamicLayerTree
+    LayerColorPicker,
+    SimpleFilterModal,
+    BaseLayerTree,
+    DynamicLayerTree,
 } from "../index";
 import Draggable from "vuedraggable";
 
