@@ -242,26 +242,30 @@
                     <i class="fas fa-file-download"></i>
                 </button> -->
 
-                <MapControls :map="mapLayer"
-                             :mapHelpers="MapHelpers"
-                             :nextHistoryEvent="nextHistoryEvent"
-                             :previousHistoryEvent="previousHistoryEvent" />
-                <NewSidebar :baseMaps="baseMaps"
-                            @selectLayer="selectService"
-                            @selectSubLayer="selectSubService"
-                            @getTableData="getTableData"
-                            @showInfoModal="showInfoModal = true"
-                            @exportPNG="pngExport"
-                            @exportData="exportData"
-                            @setBaseLayout="setBaseLayout"
-                            @setDrawType="setDrawType"
-                            @delete="deleteFeatureOn"
-                            @reset="resetFeatures"
-                            @pickColor="eyeDropper"
-                            @changeDetector="changeDetector"
-                            @addGraticule="addGraticule"
-                            @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
-                            @onMoveCallbackDynamicLayerList="
+                <MapControls
+                    :map="mapLayer"
+                    :mapHelpers="MapHelpers"
+                    :nextHistoryEvent="nextHistoryEvent"
+                    :previousHistoryEvent="previousHistoryEvent"
+                />
+                <NewSidebar
+                    :baseMaps="baseMaps"
+                    @selectLayer="selectService"
+                    @selectSubLayer="selectSubService"
+                    @getTableData="getTableData"
+                    @showInfoModal="showInfoModal = true"
+                    @exportPNG="pngExport"
+                    @exportData="exportData"
+                    @setBaseLayout="setBaseLayout"
+                    @setDrawType="setDrawType"
+                    @delete="deleteFeatureOn"
+                    @reset="resetFeatures"
+                    @pickColor="eyeDropper"
+                    @changeDetector="changeDetector"
+                    @addGraticule="addGraticule"
+                    @addPlace="setMarkerTrue"
+                    @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
+                    @onMoveCallbackDynamicLayerList="
                         onMoveCallbackDynamicLayerList
                     " />
             </div>
@@ -1126,45 +1130,49 @@
                 }
                 let response;
 
-                if (service.resourceType === "azcArcgis") {
-                    let params = {
-                        token: token,
-                        name: service.name,
-                        layer: layerId,
-                        ...query,
-                    };
-                    response = await LayerService.getTableData(params);
-                } else {
-                    this.tablePaging = {
-                        isBusy: false,
-                        page: 1,
-                        limit: 25,
-                    };
-                    let params = {
-                        layerId: service.id,
-                        ...query,
-                        ...this.tablePaging,
-                    };
+            this.$store.dispatch("SAVE_DATATABLE_VISIBLE", true);
+            this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
 
-                    service.query = query;
-                    if (this.filterQueryIsSum && service.resourceType === "local") {
-                        params.isSum = this.filterQueryIsSum;
-                        params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
-                        response = await LayerService.getLocalArithmeticData(
-                            params
-                        );
-                        this.ArithmeticDataResult = response.data.result;
-                        this.$modal.show("arithmetic-result-modal", null, {
-                            name: "arithmetic-result-modal",
-                            resizable: true,
-                            adaptive: true,
-                            draggable: true,
-                        });
-                    } else {
-                        response = await LayerService.getLocalTableData(params);
-                    }
-                    this.refreshLayer(service);
+            if (service.resourceType === "azcArcgis") {
+                let params = {
+                    token: token,
+                    name: service.name,
+                    layer: layerId,
+                    ...query,
+                };
+                response = await LayerService.getTableData(params);
+            } else {
+                this.tablePaging = {
+                    isBusy: false,
+                    page: 1,
+                    limit: 25,
+                };
+                let params = {
+                    layerId: service.id,
+                    ...query,
+                    ...this.tablePaging,
+                };
+
+                service.query = query;
+                if (this.filterQueryIsSum && service.resourceType === "local") {
+                    params.isSum = this.filterQueryIsSum;
+                    params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
+                    response = await LayerService.getLocalArithmeticData(
+                        params
+                    );
+                    this.ArithmeticDataResult = response.data.result;
+                    this.$modal.show("arithmetic-result-modal", null, {
+                        name: "arithmetic-result-modal",
+                        resizable: true,
+                        adaptive: true,
+                        draggable: true,
+                    });
+                } else {
+                    response = await LayerService.getLocalTableData(params);
                 }
+                this.refreshLayer(service);
+            }
+            this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
 
                 if (response.data.error !== undefined) {
                     return;

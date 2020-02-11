@@ -47,7 +47,13 @@
             </div>
         </div>
         <div class="tableContent custom-scrollbar" id="dataTable">
-            <table class="selfTable table">
+            <!-- Loader -->
+            <div class="loader" v-if="loading">
+                <img src="@/assets/loading.svg" alt />
+            </div>
+
+            <!-- Table -->
+            <table class="selfTable table" v-else>
                 <thead>
                     <tr>
                         <th v-show="checkedColumns.includes(alias)"
@@ -258,77 +264,86 @@
                 }
             }
         },
-
-        computed: {
-            isVisible() {
-                return this.$store.state.dataTable.isVisible;
+    },
+    computed: {
+        isVisible() {
+            return this.$store.state.dataTable.isVisible;
+        },
+        loading() {
+            return this.$store.getters.dataTableLoading;
+        },
+        totalCount() {
+            return this.$store.state.dataTable.totalCount;
+        },
+        paging: {
+            get() {
+                return this.$store.state.dataTable.paging;
             },
-            totalCount() {
-                return this.$store.state.dataTable.totalCount;
+            set(value) {
+                this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
             },
-            paging: {
-                get() {
-                    return this.$store.state.dataTable.paging;
-                },
-                set(value) {
-                    this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
-                }
+        },
+        serviceInfo() {
+            return this.$store.state.dataTable.serviceInfo;
+        },
+        tableName() {
+            return this.$store.state.dataTable.tableName;
+        },
+        tableHeaders() {
+            return this.$store.state.dataTable.tableHeaders;
+        },
+        tableStackedHeaders: {
+            get() {
+                return this.$store.state.dataTable.tableStackedHeaders;
             },
-            serviceInfo() {
-                return this.$store.state.dataTable.serviceInfo;
+            set(value) {
+                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
             },
-            tableName() {
-                return this.$store.state.dataTable.tableName;
+        },
+        tableHeadersWithAlias() {
+            return this.$store.state.dataTable.tableHeadersWithAlias;
+        },
+        // tableData() {
+        //   return this.$store.state.dataTable.tableData;
+        // },
+        tableData: {
+            get() {
+                return this.$store.state.dataTable.tableData;
             },
-            tableHeaders() {
-                return this.$store.state.dataTable.tableHeaders;
+            set(value) {
+                this.$store.dispatch("SAVE_DATATABLE_DATA", value);
             },
-            tableStackedHeaders: {
-                get() {
-                    return this.$store.state.dataTable.tableStackedHeaders;
-                },
-                set(value) {
-                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-                }
+        },
+        target() {
+            return this.$store.state.dataTable.target;
+        },
+        checkedColumnsData: {
+            get() {
+                return this.$store.state.dataTable.checkedColumnsData;
             },
-            tableHeadersWithAlias() {
-                return this.$store.state.dataTable.tableHeadersWithAlias;
+            set(value) {
+                this.$store.dispatch(
+                    "SAVE_DATATABLE_CHECKED_COLUMNS_DATA",
+                    value
+                );
             },
-            tableData: {
-                get() {
-                    return this.$store.state.dataTable.tableData;
-                },
-                set(value) {
-                    this.$store.dispatch("SAVE_DATATABLE_DATA", value);
-                }
+        },
+        checkedColumns: {
+            get() {
+                return this.$store.state.dataTable.checkedColumns;
             },
-            target() {
-                return this.$store.state.dataTable.target;
+            set(value) {
+                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
             },
-            checkedColumnsData: {
-                get() {
-                    return this.$store.state.dataTable.checkedColumnsData;
-                },
-                set(value) {
-                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", value);
-                }
-            },
-            checkedColumns: {
-                get() {
-                    return this.$store.state.dataTable.checkedColumns;
-                },
-                set(value) {
-                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-                }
-            },
-            // checkedColumns() {
-            //     return this.$store.state.dataTable.checkedColumns;
-            // },
-            lastBBOXOfShape() {
-                return this.$store.state.dataTable.lastBBOXOfShape;
-            }
-        }
-    };
+        },
+        // checkedColumns() {
+        //     return this.$store.state.dataTable.checkedColumns;
+        // },
+        lastBBOXOfShape() {
+            return this.$store.state.dataTable.lastBBOXOfShape;
+        },
+    },
+};
 </script>
 
 <style lang="scss">
@@ -367,7 +382,26 @@
 
     }
     }
+    .tableContent {
+        background-color: #2a354b;
 
+        .loader {
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+
+            left: 0;
+            bottom: 0;
+            top: 0;
+            right: 0;
+            position: absolute;
+            img {
+                width: 60px;
+            }
+        }
+    }
     .selfTable {
         thead
 
