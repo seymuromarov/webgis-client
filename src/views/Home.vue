@@ -3,13 +3,13 @@
         <!-- Sidebar -->
         <!-- <Sidebar
             @saveColor="saveColor"
-            @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList"
+          
             @selectService="selectService"
             @dynamicLayersReset="dynamicLayersReset"
             @selectSubService="selectSubService"
             @getTableData="getTableData"
             @openColorPicker="OpenColorPicker"
-            @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
+        
             @showSimpleFilterModal="showSimpleFilterModal"
             @basemapLayersReset="basemapLayersReset"
         /> -->
@@ -281,10 +281,12 @@
                     @delete="deleteFeatureOn"
                     @reset="resetFeatures"
                     @pickColor="eyeDropper"
+                    @changeDetector="changeDetector"
+                    @addGraticule="addGraticule"
+                    @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
                     @onMoveCallbackDynamicLayerList="
                         onMoveCallbackDynamicLayerList
                     "
-                    @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
                 />
             </div>
         </div>
@@ -653,8 +655,6 @@ export default {
                     rotation: rotation,
                 }),
             });
-
-            console.log(this.mapLayer);
 
             let modify = new Modify({
                 source: this.source,
@@ -1132,20 +1132,19 @@ export default {
             }
         },
         onMoveCallbackDynamicLayerList(evt, originalEvent) {
-            let self = this;
+            this.layerCounter = 0;
 
-            const list = this.$store.getters.dynamicLayerList.map(
-                (item, index) => {
-                    return {
-                        ...item,
-                        order: index + 1,
-                    };
-                }
+            let dynamicLayerList = this.$store.getters.dynamicLayerList;
+            dynamicLayerList.map((item, index) =>
+                this.recursiveLayerOrder(item)
             );
+            console.log(dynamicLayerList);
+            this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", dynamicLayerList);
 
-            this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
-
-            this.setDynamicIndexes();
+            dynamicLayerList.map((item, index) =>
+                this.recursiveLayerIndexes(item)
+            );
+            console.log(dynamicLayerList);
         },
         async getTableData(service, layerId, layerName, query) {
             var layer = this.getLayer(service.id);
@@ -1567,6 +1566,7 @@ export default {
         async basemapLayersReset(service, status) {
             let baseLayerList = this.$store.getters.baseLayerList.map(
                 (item, index) => {
+                    console.log("basemapLayersReset");
                     if (service.name === item.name) {
                         item.layersVisibility = status;
                     }
@@ -1608,6 +1608,7 @@ export default {
                 (item, index) => {
                     item.color = item.color ? item.color : false;
                     var layer = this.recursiveLayerFind(item, service.name);
+                    console.log("dynamicLayersReset");
                     if (layer) {
                         layer.layersVisibility = status;
                         layer.color = colorEnabled;
@@ -1789,6 +1790,7 @@ export default {
                     service.name
                 ) {
                     let list = this.$store.getters.dynamicLayerList;
+                    console.log(list);
                     list[i].layersVisibility = true;
                     this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
 

@@ -19,18 +19,18 @@
                 </download-excel>
                 <i
                     title="Filter"
-                    class="fas fa-filter tableFilter makeMePoint"
+                    class="fas fa-filter tableFilter makeMePoint icon"
                     @click="showFilterModal"
                 />
                 <i
                     title="Show/Hide Table Columns"
-                    class="fas fa-columns tableColumns makeMePoint"
+                    class="fas fa-columns tableColumns makeMePointicon"
                     @click="togglePopup"
                 >
                 </i>
                 <i
                     title="Close"
-                    class="fas fa-times tableClose makeMePoint"
+                    class="fas fa-times tableClose makeMePoint icon"
                     @click="toggleIsVisible"
                 />
                 <!-- 
@@ -383,6 +383,10 @@ export default {
         .table__operations {
             display: flex;
             align-items: center;
+            color: #1b2537;
+            & i {
+                color: #ffffff;
+            }
             & > *:not(:first-child) {
                 margin-left: 1rem;
             }

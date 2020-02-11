@@ -3,7 +3,7 @@
         <span class="item__header" :style="`padding-left: ${paddingLeft}`">
             <span class="title">
                 <ToggleSwitch
-                    v-if="!data.hasOwnProperty('children')"
+                    v-if="!isCategory"
                     class="pre"
                     v-model="switchModel"
                 />
@@ -41,13 +41,24 @@
         </span>
         <ul v-if="data.layers && subListVisibility" class="list__content">
             <LayerTree
+                v-for="(children, index) in data.children"
+                :key="children.name + index"
+                :data="children"
+                :parent="data"
+                :loop="loop + 1"
+                @selectSubLayer="selectSubLayer"
+                @selectLayer="selectLayer"
+                @getTableData="getTableData"
+            />
+
+            <LayerTree
                 v-for="(layer, index) in data.layers"
                 :key="layer.name + index"
                 :data="layer"
                 :parent="data"
                 :loop="loop + 1"
-                @selectLayer="selectLayer"
                 @selectSubLayer="selectSubLayer"
+                @selectLayer="selectLayer"
                 @getTableData="getTableData"
             />
         </ul>
@@ -94,23 +105,27 @@ export default {
                     this.subListVisibility = false;
                 }
 
-                this.selectLayer(e);
+                this.layerPicker(e);
             },
         },
         paddingLeft() {
             return this.loop * 16 + "px";
         },
+        isCategory() {
+            return this.data.hasOwnProperty("children");
+        },
         showCaretIcons() {
             return (
-                this.data.hasOwnProperty("children") ||
+                this.isCategory ||
                 (this.data.layers && this.data.collapseVisibility)
             );
         },
         showOperationIcons() {
             return (
+                this.data.mapType !== "basemap" &&
                 this.loop > 1 &&
                 !this.data.layers &&
-                !this.data.hasOwnProperty("children")
+                !this.isCategory
             );
         },
     },
@@ -118,7 +133,8 @@ export default {
         toggleSubList() {
             this.subListVisibility = !this.subListVisibility;
         },
-        selectLayer(event) {
+
+        layerPicker(event) {
             if (!this.data.hasOwnProperty("parentLayerId")) {
                 this.$emit(
                     "selectLayer",
@@ -127,7 +143,6 @@ export default {
                     this.data.mapType === "dynamic",
                     event
                 );
-                console.log("selectLayer");
             } else {
                 this.$emit(
                     "selectSubLayer",
@@ -136,14 +151,15 @@ export default {
                     this.data.id,
                     event
                 );
-                console.log("selectSubLayer");
             }
+        },
+        selectLayer(item, order, itemId, event) {
+            this.$emit("selectLayer", item, order, itemId, event);
         },
         selectSubLayer(parent, order, itemId, event) {
             this.$emit("selectSubLayer", parent, order, itemId, event);
         },
         getTableData(parent, layerId, layerName, query) {
-            console.log("yo");
             this.$emit("getTableData", parent, layerId, layerName, query);
         },
     },

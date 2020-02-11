@@ -325,8 +325,20 @@ export default {
                 {
                     key: "pickColor",
                     label: "Pick color",
-                    image: "world.svg",
+                    image: "color_picker.svg",
                     click: this.pickColor,
+                },
+                {
+                    key: "changeDetection",
+                    label: "Change detection",
+                    image: "world.svg",
+                    click: this.changeDetector,
+                },
+                {
+                    key: "graticule",
+                    label: "Graticule",
+                    image: "grid.svg",
+                    click: this.addGraticule,
                 },
             ];
         },
@@ -414,6 +426,12 @@ export default {
         },
         pickColor() {
             this.$emit("pickColor");
+        },
+        changeDetector() {
+            this.$emit("changeDetector");
+        },
+        addGraticule() {
+            this.$emit("addGraticule");
         },
         delete() {
             this.$emit("delete");
