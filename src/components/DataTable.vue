@@ -264,86 +264,86 @@
                 }
             }
         },
-    },
-    computed: {
-        isVisible() {
-            return this.$store.state.dataTable.isVisible;
-        },
-        loading() {
-            return this.$store.getters.dataTableLoading;
-        },
-        totalCount() {
-            return this.$store.state.dataTable.totalCount;
-        },
-        paging: {
-            get() {
-                return this.$store.state.dataTable.paging;
+
+        computed: {
+            isVisible() {
+                return this.$store.state.dataTable.isVisible;
             },
-            set(value) {
-                this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
+            loading() {
+                return this.$store.getters.dataTableLoading;
+            },
+            totalCount() {
+                return this.$store.state.dataTable.totalCount;
+            },
+            paging: {
+                get() {
+                    return this.$store.state.dataTable.paging;
+                },
+                set(value) {
+                    this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
+                },
+            },
+            serviceInfo() {
+                return this.$store.state.dataTable.serviceInfo;
+            },
+            tableName() {
+                return this.$store.state.dataTable.tableName;
+            },
+            tableHeaders() {
+                return this.$store.state.dataTable.tableHeaders;
+            },
+            tableStackedHeaders: {
+                get() {
+                    return this.$store.state.dataTable.tableStackedHeaders;
+                },
+                set(value) {
+                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
+                },
+            },
+            tableHeadersWithAlias() {
+                return this.$store.state.dataTable.tableHeadersWithAlias;
+            },
+            // tableData() {
+            //   return this.$store.state.dataTable.tableData;
+            // },
+            tableData: {
+                get() {
+                    return this.$store.state.dataTable.tableData;
+                },
+                set(value) {
+                    this.$store.dispatch("SAVE_DATATABLE_DATA", value);
+                },
+            },
+            target() {
+                return this.$store.state.dataTable.target;
+            },
+            checkedColumnsData: {
+                get() {
+                    return this.$store.state.dataTable.checkedColumnsData;
+                },
+                set(value) {
+                    this.$store.dispatch(
+                        "SAVE_DATATABLE_CHECKED_COLUMNS_DATA",
+                        value
+                    );
+                },
+            },
+            checkedColumns: {
+                get() {
+                    return this.$store.state.dataTable.checkedColumns;
+                },
+                set(value) {
+                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
+                },
+            },
+            // checkedColumns() {
+            //     return this.$store.state.dataTable.checkedColumns;
+            // },
+            lastBBOXOfShape() {
+                return this.$store.state.dataTable.lastBBOXOfShape;
             },
         },
-        serviceInfo() {
-            return this.$store.state.dataTable.serviceInfo;
-        },
-        tableName() {
-            return this.$store.state.dataTable.tableName;
-        },
-        tableHeaders() {
-            return this.$store.state.dataTable.tableHeaders;
-        },
-        tableStackedHeaders: {
-            get() {
-                return this.$store.state.dataTable.tableStackedHeaders;
-            },
-            set(value) {
-                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-            },
-        },
-        tableHeadersWithAlias() {
-            return this.$store.state.dataTable.tableHeadersWithAlias;
-        },
-        // tableData() {
-        //   return this.$store.state.dataTable.tableData;
-        // },
-        tableData: {
-            get() {
-                return this.$store.state.dataTable.tableData;
-            },
-            set(value) {
-                this.$store.dispatch("SAVE_DATATABLE_DATA", value);
-            },
-        },
-        target() {
-            return this.$store.state.dataTable.target;
-        },
-        checkedColumnsData: {
-            get() {
-                return this.$store.state.dataTable.checkedColumnsData;
-            },
-            set(value) {
-                this.$store.dispatch(
-                    "SAVE_DATATABLE_CHECKED_COLUMNS_DATA",
-                    value
-                );
-            },
-        },
-        checkedColumns: {
-            get() {
-                return this.$store.state.dataTable.checkedColumns;
-            },
-            set(value) {
-                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-            },
-        },
-        // checkedColumns() {
-        //     return this.$store.state.dataTable.checkedColumns;
-        // },
-        lastBBOXOfShape() {
-            return this.$store.state.dataTable.lastBBOXOfShape;
-        },
-    },
-};
+    };
 </script>
 
 <style lang="scss">
@@ -382,26 +382,31 @@
 
     }
     }
+
     .tableContent {
         background-color: #2a354b;
+        .loader
 
-        .loader {
-            font-size: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-grow: 1;
+    {
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        left: 0;
+        bottom: 0;
+        top: 0;
+        right: 0;
+        position: absolute;
+        img
 
-            left: 0;
-            bottom: 0;
-            top: 0;
-            right: 0;
-            position: absolute;
-            img {
-                width: 60px;
-            }
-        }
+    {
+        width: 60px;
     }
+
+    }
+    }
+
     .selfTable {
         thead
 
