@@ -3,7 +3,9 @@ import { emlakUsers } from "../constants/permissions";
 class LayerHelper {
     constructor(self) {
         this.data = self;
-        this.counter = 0;
+        this.baseCounter = 0;
+        this.dynamicCounter = 0;
+
     }
 
     basemapMapping(val) {
@@ -11,7 +13,7 @@ class LayerHelper {
             id: val.id,
             name: val.label,
             showingLabel: val.showingLabel,
-            order: this.counter++,
+            order: this.baseCounter++,
             spatial: val.spatial,
             minZoomLevel: val.minZoomLevel,
             maxZoomLevel: val.maxZoomLevel,
@@ -28,12 +30,12 @@ class LayerHelper {
             layers: null,
         };
     }
-    dynamicMapping(val, index) {
+    dynamicMapping(val) {
         return {
             id: val.resourceTypeId.trim() === "local" ? val.id : val.id,
             name: val.label,
             showingLabel: val.showingLabel,
-            order: index + 1,
+            order: this.dynamicCounter++,
             minZoomLevel: val.minZoomLevel,
             maxZoomLevel: val.maxZoomLevel,
             extent: val.extent,
@@ -52,7 +54,6 @@ class LayerHelper {
         if (val.layers !== undefined) {
             return {
                 name: val.label,
-                order: this.counter++,
                 mapTypeId: val.mapTypeId,
                 children: val.children.map((val, i) =>
                     this.recursiveMap(val, index)
@@ -60,33 +61,36 @@ class LayerHelper {
                 layers: val.layers.map((val, i) =>
                     val.mapTypeId == "basemap"
                         ? this.basemapMapping(val)
-                        : this.dynamicMapping(val, index)
+                        : this.dynamicMapping(val)
                 ),
             };
         } else
             return val.mapTypeId == "basemap"
                 ? this.basemapMapping(val)
-                : this.dynamicMapping(val, index);
+                : this.dynamicMapping(val);
     };
 
     creator = layers => {
         let baseLayers = layers
             .filter(c => c.mapTypeId === "basemap")
-            .map((val, index) => this.recursiveMap(val, index));
+            .map((val, index) => this.recursiveMap(val));
 
         let dynamicLayers = layers
             .filter(c => c.mapTypeId === "dynamic")
-            .map((val, index) => this.recursiveMap(val, index));
-        return {
+            .map((val, index) => this.recursiveMap(val));
+
+        var mapResult = {
             baseLayers,
             dynamicLayers,
         };
+        console.log(mapResult);
+        return mapResult;
     };
 
-    add = () => {};
-    delete = () => {};
-    setColor = () => {};
-    setLayout = () => {};
+    add = () => { };
+    delete = () => { };
+    setColor = () => { };
+    setLayout = () => { };
 }
 
 export default LayerHelper;
