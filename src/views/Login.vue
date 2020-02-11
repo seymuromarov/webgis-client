@@ -36,15 +36,19 @@ export default {
   methods: {
     login() {
       const { username, password } = this;
-      this.LayerService(username, password);
+      this.loginService(username, password);
     },
-    async LayerService(username, password) {
+    async loginService(username, password) {
       const response = await LoginService.getToken({
         username: username,
         password: password
       });
+      console.log(response);
+      if (response.status === 400) {
+        this.error = response.data;
+      }
       // response.data.username = username
-      if (!response.data.hasOwnProperty("error")) {
+      else {
         // this.$store.commit('getToken', response.data)
         this.$cookie.set("username", username, { expires: "1D" });
         this.$store.dispatch("SAVE_AUTH_TOKEN", response.data.token);

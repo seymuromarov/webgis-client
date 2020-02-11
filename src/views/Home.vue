@@ -574,6 +574,7 @@ export default {
     };
   },
   mounted() {
+    console.log(this.$store);
     this.token = this.$cookie.get("token");
     if (this.token === null) this.$router.push("/login");
 
@@ -1005,14 +1006,21 @@ export default {
       );
     },
     mapSetCenter(data) {
+      let geometry = [];
       if (data.geometry.x !== undefined) {
-        this.mapLayer
-          .getView()
-          .setCenter(fromLonLat([data.geometry.x, data.geometry.y]));
-      } else {
-        this.mapLayer
-          .getView()
-          .setCenter(fromLonLat(data.geometry.rings[0][0]));
+        geometry = [data.geometry.x, data.geometry.y];
+      } else if (data.geometry.rings !== undefined) {
+        geometry = data.geometry.rings[0];
+      }
+
+      if (geometry.length > 0) {
+        geometry = geometry.map((item, index) => fromLonLat(item));
+        var extent = new Polygon([geometry]);
+        this.mapLayer.getView().fit(extent, {
+          padding: [-50, 50, 30, 150],
+          size: [50, 100],
+          maxZoom: 16
+        });
       }
     },
     showFilterModal() {
