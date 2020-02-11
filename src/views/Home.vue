@@ -1157,6 +1157,9 @@ export default {
             }
             let response;
 
+            this.$store.dispatch("SAVE_DATATABLE_VISIBLE", true);
+            this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
+
             if (service.resourceType === "azcArcgis") {
                 let params = {
                     token: token,
@@ -1196,6 +1199,7 @@ export default {
                 }
                 this.refreshLayer(service);
             }
+            this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
 
             if (response.data.error !== undefined) {
                 return;

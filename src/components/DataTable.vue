@@ -62,7 +62,13 @@
             </div>
         </div>
         <div class="tableContent custom-scrollbar">
-            <table class="selfTable table">
+            <!-- Loader -->
+            <div class="loader" v-if="loading">
+                <img src="@/assets/loading.svg" alt />
+            </div>
+
+            <!-- Table -->
+            <table class="selfTable table" v-else>
                 <thead>
                     <tr>
                         <th
@@ -145,8 +151,6 @@ export default {
     mounted() {
         this.scrollHandler();
     },
-    created() {},
-
     watch: {
         isVisible: {
             handler(val) {
@@ -285,10 +289,12 @@ export default {
             }
         },
     },
-
     computed: {
         isVisible() {
             return this.$store.state.dataTable.isVisible;
+        },
+        loading() {
+            return this.$store.getters.dataTableLoading;
         },
         totalCount() {
             return this.$store.state.dataTable.totalCount;
@@ -389,6 +395,26 @@ export default {
             }
             & > *:not(:first-child) {
                 margin-left: 1rem;
+            }
+        }
+    }
+    .tableContent {
+        background-color: #2a354b;
+
+        .loader {
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+
+            left: 0;
+            bottom: 0;
+            top: 0;
+            right: 0;
+            position: absolute;
+            img {
+                width: 60px;
             }
         }
     }
