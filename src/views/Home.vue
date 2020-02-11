@@ -281,6 +281,10 @@
                     @delete="deleteFeatureOn"
                     @reset="resetFeatures"
                     @pickColor="eyeDropper"
+                    @onMoveCallbackDynamicLayerList="
+                        onMoveCallbackDynamicLayerList
+                    "
+                    @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
                 />
             </div>
         </div>
@@ -1043,7 +1047,7 @@ export default {
             this.layerCounter = 0;
 
             let baseLayerList = this.$store.getters.baseLayerList;
-            baseLayerList = thisbaseLayerList.map((item, index) =>
+            baseLayerList = baseLayerList.map((item, index) =>
                 this.recursiveLayerOrder(item)
             );
             this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);

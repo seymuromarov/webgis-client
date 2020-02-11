@@ -42,7 +42,7 @@
         <ul v-if="data.layers && subListVisibility" class="list__content">
             <LayerTree
                 v-for="(layer, index) in data.layers"
-                :key="index"
+                :key="layer.name + index"
                 :data="layer"
                 :parent="data"
                 :loop="loop + 1"
