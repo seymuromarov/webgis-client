@@ -3,9 +3,11 @@ import Stroke from "ol/style/Stroke";
 import Graticule from "ol/Graticule";
 import { shiftKeyOnly } from "ol/events/condition";
 import Draw, { createRegularPolygon, createBox } from "ol/interaction/Draw.js";
-import { Map, View, Overlay, Feature } from "ol";
-import { getArea, getLength, getDistance } from "ol/sphere.js";
-import { LineString, Polygon, Circle, Point } from "ol/geom.js";
+import { Overlay, Feature } from "ol";
+import { Vector as VectorLayer } from "ol/layer.js";
+import { Vector as VectorSource } from "ol/source.js";
+import { getArea, getLength } from "ol/sphere.js";
+import { LineString, Polygon, Circle } from "ol/geom.js";
 import { unByKey } from "ol/Observable.js";
 import Style from "ol/style/Style";
 import CircleStyle from "ol/style/Circle";
@@ -225,6 +227,27 @@ class MapHelpers {
       },
       this
     );
+  }
+
+  renderPolygonVector(coordinates) {
+    var polygon = new Polygon([coordinates]);
+    var feature = new Feature({
+      geometry: polygon
+    });
+    var vectorSource = new VectorSource();
+    vectorSource.addFeature(feature);
+
+    var style = new Style({
+      stroke: new Stroke({
+        color: "#FF0000",
+        width: 3
+      })
+    });
+    var vectorLayer = new VectorLayer({
+      source: vectorSource,
+      style: style
+    });
+    return vectorLayer;
   }
 
   createHelpmaptooltip() {
