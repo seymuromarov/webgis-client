@@ -1,7 +1,7 @@
 <template>
   <div class="detector-wrapper">
     <div class="detector">
-      <p class="detector-title">NDVI Assessment</p>
+      <p class="detector-title">Change detection</p>
       <button @click="$emit('close')">&#x2715;</button>
       <multiselect
         v-model="selectedLayers"

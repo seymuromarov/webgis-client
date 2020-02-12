@@ -1,39 +1,61 @@
 <template>
-    <div v-show="isVisible" class="tableDiv howMuchWidthHaveMap">
-        <div class="tableHeader">
-            <p class="table__title">
-                {{ tableName }}
-            </p>
-            <div class="table__operations">
-                <download-excel
-                    v-if="tableHeaders"
-                    :data="featuresToExcel()"
-                    :fields="checkedColumnsToExcel()"
-                    type="xls"
-                    :name="'test' + '_report.xls'"
-                >
-                    <i
-                        title="Export As Excel"
-                        class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
-                    ></i>
-                </download-excel>
-                <i
-                    title="Filter"
-                    class="fas fa-filter tableFilter makeMePoint icon"
-                    @click="showFilterModal"
-                />
-                <i
-                    title="Show/Hide Table Columns"
-                    class="fas fa-columns tableColumns makeMePointicon"
-                    @click="togglePopup"
-                >
-                </i>
-                <i
-                    title="Close"
-                    class="fas fa-times tableClose makeMePoint icon"
-                    @click="toggleIsVisible"
-                />
-                <!-- 
+    <div class="table-wrapper">
+        <Resizable
+            class="resizable"
+            ref="resizable"
+            :active="resize.handlers"
+            :fit-parent="resize.fit"
+            :max-width="resize.maxW | checkEmpty"
+            :max-height="resize.maxH | checkEmpty"
+            :min-width="resize.minW | checkEmpty"
+            :min-height="resize.minH | checkEmpty"
+            :width="resize.width"
+            :height="resize.height"
+            :left="resize.left"
+            :top="resize.top"
+            @mount="resizeHandler"
+            @resize:move="resizeHandler"
+            @resize:start="resizeHandler"
+            @resize:end="resizeHandler"
+            @drag:move="resizeHandler"
+            @drag:start="resizeHandler"
+            @drag:end="resizeHandler"
+        >
+            <div v-show="isVisible" class="tableDiv howMuchWidthHaveMap">
+                <div class="tableHeader">
+                    <p class="table__title">
+                        {{ tableName }}
+                    </p>
+                    <div class="table__operations">
+                        <download-excel
+                            v-if="tableHeaders"
+                            :data="featuresToExcel()"
+                            :fields="checkedColumnsToExcel()"
+                            type="xls"
+                            :name="'test' + '_report.xls'"
+                        >
+                            <i
+                                title="Export As Excel"
+                                class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
+                            ></i>
+                        </download-excel>
+                        <i
+                            title="Filter"
+                            class="fas fa-filter tableFilter makeMePoint icon"
+                            @click="showFilterModal"
+                        />
+                        <i
+                            title="Show/Hide Table Columns"
+                            class="fas fa-columns tableColumns makeMePointicon"
+                            @click="togglePopup"
+                        >
+                        </i>
+                        <i
+                            title="Close"
+                            class="fas fa-times tableClose makeMePoint icon"
+                            @click="toggleIsVisible"
+                        />
+                        <!-- 
                     <i
                             v-if="tableName.trim() == 'CropMap2019_vector'"
                             class="fas fa-filter tableSimpleFilter makeMePoint"
@@ -41,92 +63,103 @@
                             @click="showSimpleFilterModal"
                     /> -->
 
-                <div class="tableShowColumns" v-if="isColumnPopupShowing">
-                    <div class="columnsDiv">
                         <div
-                            v-for="(alias, index) in tableHeaders"
-                            :key="index"
+                            class="tableShowColumns"
+                            v-if="isColumnPopupShowing"
                         >
-                            <input
-                                @click="selectColumns(alias, index, $event)"
-                                type="checkbox"
-                                :id="alias"
-                                :value="alias"
-                                v-model="checkedColumns"
-                                checked="checked"
-                            />
-                            <label> {{ alias }} </label>
+                            <div class="columnsDiv">
+                                <div
+                                    v-for="(alias, index) in tableHeaders"
+                                    :key="index"
+                                >
+                                    <input
+                                        @click="
+                                            selectColumns(alias, index, $event)
+                                        "
+                                        type="checkbox"
+                                        :id="alias"
+                                        :value="alias"
+                                        v-model="checkedColumns"
+                                        checked="checked"
+                                    />
+                                    <label> {{ alias }} </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="tableContent custom-scrollbar">
-            <!-- Loader -->
-            <div class="loader" v-if="loading">
-                <img src="@/assets/loading.svg" alt />
-            </div>
+                <div class="tableContent custom-scrollbar">
+                    <!-- Loader -->
+                    <div class="loader" v-if="loading">
+                        <img src="@/assets/loading.svg" alt />
+                    </div>
 
-            <!-- Table -->
-            <table class="selfTable table" v-else>
-                <thead>
-                    <tr>
-                        <th
-                            v-show="checkedColumns.includes(alias)"
-                            v-for="(alias, index) in tableHeaders"
-                            :key="index"
+                    <!-- Table -->
+                    <table class="selfTable table" v-else>
+                        <thead>
+                            <tr>
+                                <th
+                                    v-show="checkedColumns.includes(alias)"
+                                    v-for="(alias, index) in tableHeaders"
+                                    :key="index"
+                                >
+                                    {{ alias }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody
+                            class="tableBody custom-scrollbar"
+                            id="dataTable"
                         >
-                            {{ alias }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="tableBody custom-scrollbar" id="dataTable">
-                    <tr v-for="(data, index) in tableData" :key="index">
-                        <td
-                            class="makeMePoint"
-                            @click="showDataModal(data)"
-                            v-show="checkedColumnsData.includes(key)"
-                            v-for="(attr, key) in data.attributes"
-                            :key="key"
-                        >
-                            {{ attr }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                            <tr v-for="(data, index) in tableData" :key="index">
+                                <td
+                                    class="makeMePoint"
+                                    @click="showDataModal(data)"
+                                    v-show="checkedColumnsData.includes(key)"
+                                    v-for="(attr, key) in data.attributes"
+                                    :key="key"
+                                >
+                                    {{ attr }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-        <modal
-            name="data-modal"
-            transition="nice-modal-fade"
-            :min-width="200"
-            :min-height="200"
-            :delay="100"
-            :draggable="true"
-        >
-            <p class="tableModalHeader">{{ tableName }}</p>
-            <div class="row" style="overflow: auto">
-                <table class="table popupTable">
-                    <thead>
-                        <tr class="fields">
-                            <th class="paddingLeft">Field</th>
-                            <th class="paddingRight">Value</th>
-                        </tr>
-                    </thead>
-                    <tbody class="popupTableBody">
-                        <tr
-                            v-for="(value, key) in selectedData.attributes"
-                            :key="key"
-                        >
-                            <td class="paddingLeft">
-                                {{ tableHeadersWithAlias[key] }}
-                            </td>
-                            <td class="paddingRight">{{ value }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <modal
+                    name="data-modal"
+                    transition="nice-modal-fade"
+                    :min-width="200"
+                    :min-height="200"
+                    :delay="100"
+                    :draggable="true"
+                >
+                    <p class="tableModalHeader">{{ tableName }}</p>
+                    <div class="row" style="overflow: auto">
+                        <table class="table popupTable">
+                            <thead>
+                                <tr class="fields">
+                                    <th class="paddingLeft">Field</th>
+                                    <th class="paddingRight">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody class="popupTableBody">
+                                <tr
+                                    v-for="(value,
+                                    key) in selectedData.attributes"
+                                    :key="key"
+                                >
+                                    <td class="paddingLeft">
+                                        {{ tableHeadersWithAlias[key] }}
+                                    </td>
+                                    <td class="paddingRight">{{ value }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </modal>
             </div>
-        </modal>
+        </Resizable>
     </div>
 </template>
 
@@ -134,22 +167,45 @@
 import { Toggler } from "../helpers";
 import Multiselect from "vue-multiselect";
 import LayerService from "../services/LayerService";
+import Resizable from "vue-resizable";
+
 export default {
     name: "DataTable",
     props: {},
     components: {
         Multiselect,
+        Resizable,
     },
     data() {
         return {
             Toggler: null,
             isColumnPopupShowing: false,
             selectedData: [],
+
+            resize: {
+                handlers: ["t"],
+                left: 0,
+                top: window.innerHeight - 200,
+                height: window.innerHeight,
+                width: window.innerWidth,
+                maxW: 10000,
+                maxH: window.innerHeight,
+                minW: 150,
+                minH: 200,
+                fit: true,
+                event: "",
+            },
         };
     },
 
     mounted() {
         this.scrollHandler();
+    },
+    created() {
+        window.addEventListener("resize", this.update);
+    },
+    destroyed() {
+        window.removeEventListener("resize", this.update);
     },
     watch: {
         isVisible: {
@@ -288,6 +344,24 @@ export default {
                 );
             }
         },
+        resizeHandler(data) {
+            this.resize.width = data.width;
+            this.resize.height = data.height;
+            this.resize.left = data.left;
+            this.resize.top = data.top;
+            this.resize.event = data.eventName;
+            if (data.eventName === "mount") {
+                this.resize.height = 200;
+            }
+        },
+        update() {
+            this.resize.top = window.innerHeight - 200;
+            this.resize.height = 200;
+            this.resize.width = window.innerWidth;
+            this.resize.maxH = window.innerHeight;
+
+            this.$forceUpdate();
+        },
     },
     computed: {
         isVisible() {
@@ -367,11 +441,36 @@ export default {
             return this.$store.state.dataTable.lastBBOXOfShape;
         },
     },
+    filters: {
+        checkEmpty(value) {
+            return typeof value !== "number" ? 0 : value;
+        },
+    },
 };
 </script>
 
 <style lang="scss">
+.table-wrapper {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    display: flex;
+    align-items: flex-end;
+    pointer-events: none;
+
+    & > * {
+        pointer-events: all;
+    }
+}
+
+.resizable {
+    position: absolute !important;
+}
+
 .tableDiv {
+    top: 0;
     .tableHeader {
         background-color: #1b2537;
         color: #ffffff;
