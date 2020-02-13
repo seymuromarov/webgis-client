@@ -2,6 +2,7 @@
     <li class="list__item">
         <span class="item__header" :style="`padding-left: ${paddingLeft}`">
             <span class="title">
+                <!-- Switch -->
                 <ToggleSwitch
                     v-if="!isCategory"
                     class="pre"
@@ -12,7 +13,7 @@
             </span>
 
             <!-- Caret icons -->
-            <span v-if="showCaretIcons">
+            <span v-if="caretIconsVisibility">
                 <i
                     class="fas fa-caret-down"
                     v-show="subListVisibility"
@@ -26,9 +27,15 @@
             </span>
 
             <!-- Color and Table icons -->
-            <span v-if="showOperationIcons" class="icons">
-                <!-- <img src="@/assets/images/icons/color_fill.svg" alt="" /> -->
+            <span v-if="operationsVisibility" class="icons">
                 <img
+                    v-if="colorIconVisibility"
+                    src="@/assets/images/icons/color_fill.svg"
+                    alt=""
+                    @click="toggleColorPicker"
+                />
+                <img
+                    v-if="tableIconVisibility"
                     src="@/assets/images/icons/list.svg"
                     alt=""
                     @click="
@@ -39,6 +46,10 @@
                 />
             </span>
         </span>
+
+        <!-- Color Picker -->
+        <LayerColorPicker v-if="colorPickerVisibility" />
+
         <ul v-if="data.layers && subListVisibility" class="list__content">
             <LayerTree
                 v-for="(children, index) in data.children"
@@ -66,12 +77,14 @@
 </template>
 
 <script>
-import ToggleSwitch from "../../common/ToggleSwitch";
+import ToggleSwitch from "../common/ToggleSwitch";
+import LayerColorPicker from "../LayerColorPicker";
 
 export default {
     name: "LayerTree",
     components: {
         ToggleSwitch,
+        LayerColorPicker,
     },
     props: {
         data: {
@@ -114,19 +127,36 @@ export default {
         isCategory() {
             return this.data.hasOwnProperty("children");
         },
-        showCaretIcons() {
+        caretIconsVisibility() {
             return (
                 this.isCategory ||
                 (this.data.layers && this.data.collapseVisibility)
             );
         },
-        showOperationIcons() {
+        tableIconVisibility() {
             return (
                 this.data.mapType !== "basemap" &&
                 this.loop > 1 &&
                 !this.data.layers &&
                 !this.isCategory
             );
+        },
+        colorIconVisibility() {
+            return this.data.resourceType === "azcArcgis"; // && this.color;
+        },
+        operationsVisibility() {
+            return this.tableIconVisibility || this.colorIconVisibility;
+        },
+        colorPickerVisibility() {
+            return this.activeColorPickerId === this.data.id;
+        },
+        activeColorPickerId: {
+            get() {
+                return this.$store.getters.activeColorPickerId;
+            },
+            set(value) {
+                this.$store.dispatch("SAVE_ACTIVE_COLOR_PICKER_ID", value);
+            },
         },
     },
     methods: {
@@ -161,6 +191,13 @@ export default {
         },
         getTableData(parent, layerId, layerName, query) {
             this.$emit("getTableData", parent, layerId, layerName, query);
+        },
+        toggleColorPicker() {
+            if (this.activeColorPickerId === this.data.id) {
+                this.activeColorPickerId = null;
+            } else {
+                this.activeColorPickerId = this.data.id;
+            }
         },
     },
 };

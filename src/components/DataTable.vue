@@ -1,5 +1,5 @@
 <template>
-    <div class="table-wrapper">
+    <div v-show="isVisible" class="table-wrapper">
         <Resizable
             class="resizable"
             ref="resizable"
@@ -21,7 +21,7 @@
             @drag:start="resizeHandler"
             @drag:end="resizeHandler"
         >
-            <div v-show="isVisible" class="tableDiv howMuchWidthHaveMap">
+            <div class="tableDiv howMuchWidthHaveMap">
                 <div class="tableHeader">
                     <p class="table__title">
                         {{ tableName }}
@@ -46,7 +46,7 @@
                         />
                         <i
                             title="Show/Hide Table Columns"
-                            class="fas fa-columns tableColumns makeMePointicon"
+                            class="fas fa-columns tableColumns makeMePoint icon"
                             @click="togglePopup"
                         >
                         </i>
@@ -64,13 +64,15 @@
                     /> -->
 
                         <div
-                            class="tableShowColumns"
-                            v-if="isColumnPopupShowing"
+                            id="table-columns"
+                            class="tableShowColumns custom-scrollbar"
+                            v-show="isColumnPopupShowing"
                         >
                             <div class="columnsDiv">
                                 <div
                                     v-for="(alias, index) in tableHeaders"
                                     :key="index"
+                                    class="table__column"
                                 >
                                     <input
                                         @click="
@@ -81,14 +83,17 @@
                                         :value="alias"
                                         v-model="checkedColumns"
                                         checked="checked"
+                                        class="column__checkbox"
                                     />
-                                    <label> {{ alias }} </label>
+                                    <label class="column__name">
+                                        {{ alias }}
+                                    </label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="tableContent custom-scrollbar">
+                <div class="tableContent custom-scrollbar" id="dataTable">
                     <!-- Loader -->
                     <div class="loader" v-if="loading">
                         <img src="@/assets/loading.svg" alt />
@@ -107,10 +112,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody
-                            class="tableBody custom-scrollbar"
-                            id="dataTable"
-                        >
+                        <tbody class="tableBody custom-scrollbar">
                             <tr v-for="(data, index) in tableData" :key="index">
                                 <td
                                     class="makeMePoint"
@@ -274,8 +276,25 @@ export default {
         toggleIsVisible() {
             this.$store.dispatch("SAVE_DATATABLE_VISIBLE", !this.isVisible);
         },
-        togglePopup() {
+        togglePopup(e) {
             this.isColumnPopupShowing = !this.isColumnPopupShowing;
+
+            // const handleClick = event => {
+            //     var eventId = event.target.getAttribute("id");
+            //     var tagId = "table-columns";
+
+            //     console.log({ eventId, tagId });
+
+            //     if (eventId !== tagId) {
+            //         this.isColumnPopupShowing = false;
+            //     }
+            // };
+
+            // if (!this.isColumnPopupShowing) {
+            //     document.addEventListener("click", handleClick);
+            // } else {
+            //     document.removeEventListener("click", handleClick);
+            // }
         },
         showFilterModal() {
             this.$emit("showFilterModal");
@@ -467,6 +486,12 @@ export default {
 
 .resizable {
     position: absolute !important;
+    .resizable-t {
+        z-index: 10 !important;
+        &:hover {
+            background-color: #2a354baa;
+        }
+    }
 }
 
 .tableDiv {

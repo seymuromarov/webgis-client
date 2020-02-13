@@ -5,8 +5,8 @@ const state = {
             r: 255,
             g: 255,
             b: 255,
-            a: 0
-        }
+            a: 0,
+        },
     },
     borderColor: {
         hex: "#000000",
@@ -14,8 +14,8 @@ const state = {
             r: 255,
             g: 255,
             b: 255,
-            a: 1
-        }
+            a: 1,
+        },
     },
     shapeFillColor: {
         hex8: "#ffffff00",
@@ -23,8 +23,8 @@ const state = {
             r: 255,
             g: 255,
             b: 255,
-            a: 1
-        }
+            a: 1,
+        },
     },
     shapeBorderColor: {
         hex8: "#000000",
@@ -32,19 +32,23 @@ const state = {
             r: 255,
             g: 255,
             b: 255,
-            a: 1
-        }
+            a: 1,
+        },
     },
     colorPicker: {
         visibility: false,
         layer: null,
-        borderTab: true
-    }
+        borderTab: true,
+    },
+    activeColorPickerId: null,
 };
 const getters = {
     colorPicker: state => {
         return state.colorPicker;
-    }
+    },
+    activeColorPickerId: state => {
+        return state.activeColorPickerId;
+    },
 };
 const mutations = {
     SET_COLORPICKER(state, payload) {
@@ -71,7 +75,10 @@ const mutations = {
     },
     SET_COLORPICKER_SHAPEFILLCOLOR(state, payload) {
         state.shapeFillColor = payload;
-    }
+    },
+    SET_ACTIVE_COLOR_PICKER_ID(state, payload) {
+        state.activeColorPickerId = payload;
+    },
 };
 const actions = {
     SAVE_COLORPICKER(context, payload) {
@@ -97,6 +104,9 @@ const actions = {
     },
     SAVE_COLORPICKER_SHAPEBORDERCOLOR(context, payload) {
         context.commit("SET_COLORPICKER_SHAPEBORDERCOLOR", payload);
-    }
+    },
+    SAVE_ACTIVE_COLOR_PICKER_ID(context, payload) {
+        context.commit("SET_ACTIVE_COLOR_PICKER_ID", payload);
+    },
 };
-export default {state, mutations, actions, getters};
+export default { state, mutations, actions, getters };

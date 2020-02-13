@@ -1,274 +1,15 @@
 <template>
     <div class="row container-fluid padding-0">
-        <!-- Sidebar -->
-        <!-- <Sidebar
-            @saveColor="saveColor"
-          
-            @selectService="selectService"
-            @dynamicLayersReset="dynamicLayersReset"
-            @selectSubService="selectSubService"
-            @getTableData="getTableData"
-            @openColorPicker="OpenColorPicker"
-        
-            @showSimpleFilterModal="showSimpleFilterModal"
-            @basemapLayersReset="basemapLayersReset"
-        /> -->
-
         <!-- Main content -->
         <div class="padding-0 map-layout">
             <div id="map">
-                <!-- Search -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    :style="{ top: '15%' }"
-                    title="Search"
-                    @click="cityInputToggle"
-                >
-                    <i class="fas fa-search"></i>
-                </button> -->
-
-                <!-- Search multiselect -->
-                <!-- <div
-                    style="position: absolute;top: 14.2%;right: 60px;z-index: 999"
-                    v-show="citySearchInputShow"
-                >
-                    <multiselect
-                        v-model="citySearchValue"
-                        :options="citySearchOptions"
-                        :custom-label="nameWithCountry"
-                        selectLabel
-                        placeholder="Select City"
-                        label="city"
-                        track-by="city"
-                        @select="onCitySelect"
-                    ></multiselect>
-                </div> -->
-
-                <!-- Delete Feature -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    :style="{ top: '70%' }"
-                    title="Delete Feature"
-                    @click="deleteFeatureOn"
-                >
-                    <i class="fas fa-trash"></i>
-                </button> -->
-
-                <!-- Reset feature -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    :style="{ top: '75%' }"
-                    title="Reset Features"
-                    @click="resetFeatures"
-                >
-                    <i class="fas fa-sync-alt"></i>
-                </button> -->
-
-                <!-- Color Picker -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    :style="{ top: '80%' }"
-                    title="Color Picker"
-                    @click="eyeDropper"
-                >
-                    <i class="fas fa-eye-dropper"></i>
-                </button> -->
-
-                <!-- Drawings -->
-                <!-- <button
-                    v-for="(item, index) in drawings"
-                    :key="index"
-                    class="action-button-class btn btn-control"
-                    :style="{ top: (index + 1) * 5 + 25 + '%' }"
-                    :title="item.tooltip"
-                    @click="setDrawType(item.name)"
-                >
-                    <i :class="item.icon"></i>
-                </button> -->
-
-                <!-- NDVI Assessment -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    :style="{ top: (drawings.length + 1) * 5 + 25 + '%' }"
-                    title="NDVI Assessment"
-                    @click="changeDetector"
-                >
-                    <i class="fas fa-globe"></i>
-                </button> -->
-
-                <!-- Lattitude and Longtitude -->
-                <!-- <div
-                    id="mouse-position"
-                    class="latLongShow"
-                    @click="LatLongFormToggle"
-                ></div> -->
-
-                <!-- Lattitude and Longtitude Form -->
-                <!-- <div class="latLongShowForm" v-show="latLongFormShow">
-                    <div @mouseleave="LatLongFormToggle">
-                        <div style="width: 300px">
-                            <div style="display: inline;float: left;">
-                                Lat:
-                                <input
-                                    v-model="latChange"
-                                    v-on:keyup.enter="changeLocation"
-                                    class="form-control"
-                                    type="text"
-                                    placeholder="Latitude"
-                                    style="display: inline-block;width: 100px;"
-                                />
-                            </div>
-                            <div style="display: inline;">
-                                Lng:
-                                <input
-                                    v-model="longChange"
-                                    v-on:keyup.enter="changeLocation"
-                                    class="form-control"
-                                    type="text"
-                                    placeholder="Longitude"
-                                    style="display: inline-block;width: 100px;"
-                                />
-                            </div>
-                        </div>
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            v-model="isMetricCoordinateSystem"
-                            id="coordinateCheckbox"
-                            aria-label
-                        />
-                        <label class="form-check-label" for="coordinateCheckbox"
-                            >Use metric coordinate system</label
-                        >
-                    </div>
-                </div> -->
-
-                <!-- KML Info ? -->
-                <!-- <div id="info" class="infokml" v-show="this.kmlInfo !== null">
-                    &nbsp;
-                </div> -->
-
-                <!-- Drag & Drop Toast -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="bottom: 10px;right: 90px;"
-                    @click="dragAndDropToast"
-                    title="Upload file"
-                    v-if="!isTabelVisible"
-                >
-                    <i class="fas fa-file-upload"></i>
-                </button> -->
-
-                <!-- Map view -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="bottom: 10px;right: 50px;"
-                    @click="selectLayerForm = true"
-                    v-if="!isTabelVisible"
-                >
-                    <i class="fas fa-stream"></i>
-                </button> -->
-
-                <!-- Map view types -->
-                <!-- <div
-                    v-show="!selectLayerForm"
-                    @mouseleave="selectLayerForm = false"
-                    class="selectLayerForm"
-                >
-                    <form>
-                        <div v-for="(element, index) in baseMaps" :key="index">
-                            <input
-                                type="radio"
-                                class
-                                name="baseLayer"
-                                @click="setBaseLayout(index)"
-                            />
-                            <span style="margin-left: 5px;">{{ index }}</span>
-                        </div>
-                    </form>
-                </div> -->
-
-                <!-- Information -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="bottom: 10px;right: 10px;"
-                    @click="showInfoModal = true"
-                >
-                    <i class="fas fa-info"></i>
-                </button> -->
-
-                <!-- Home -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="top: 116px;left: .5rem;"
-                    title="Home"
-                    @click="zoomToCenter"
-                >
-                    <i class="fas fa-home"></i>
-                </button> -->
-
-                <!-- History next -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="top: 152px;left: .5rem;"
-                    title="Go next map history"
-                    :disabled="!nextHistoryEvent"
-                    @click="historyNext"
-                >
-                    <i class="fas fa-arrow-right"></i>
-                </button> -->
-
-                <!-- History previous -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="top: 188px;left: .5rem;"
-                    title="Go previous map history"
-                    :disabled="!previousHistoryEvent"
-                    @click="historyBack"
-                >
-                    <i class="fas fa-arrow-left"></i>
-                </button> -->
-
-                <!-- Grid -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="top: 224px;left: .5rem;"
-                    @click="addGraticule"
-                    title="Add Graticule"
-                    v-show="!isTabelVisible"
-                >
-                    <i class="fas fa-barcode"></i>
-                </button> -->
-
-                <!-- Export PNG -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="bottom: 10px;left: 3rem;"
-                    @click="pngExport"
-                    title="Export to png"
-                    v-show="!isTabelVisible"
-                >
-                    <i class="far fa-file-image"></i>
-                </button> -->
-
-                <!-- Export data -->
-                <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="bottom: 10px;left: .5rem;"
-                    @click="exportData"
-                    title="Export to KMZ"
-                    v-show="!isTabelVisible"
-                >
-                    <i class="fas fa-file-download"></i>
-                </button> -->
-
                 <MapControls
                     :map="mapLayer"
                     :mapHelpers="MapHelpers"
                     :nextHistoryEvent="nextHistoryEvent"
                     :previousHistoryEvent="previousHistoryEvent"
                 />
-                <NewSidebar
+                <Sidebar
                     :baseMaps="baseMaps"
                     @selectLayer="selectService"
                     @selectSubLayer="selectSubService"
@@ -292,6 +33,7 @@
             </div>
         </div>
 
+        <!-- Data table -->
         <DataTable
             ref="dataTable"
             @showFilterModal="showFilterModal"
@@ -319,7 +61,7 @@
             :min-height="200"
             :delay="100"
             :draggable="true"
-            :height="540"
+            :height="'auto'"
         >
             <FilterBox
                 :tableHeader="tableHeader"
@@ -348,6 +90,7 @@
             <ShapeColorPicker @setShapeColor="setShapeColor" />
         </modal>
 
+        <!-- Change Detection -->
         <detector-modal
             v-if="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
             v-bind="{ lastBBOXOfShape, token }"
@@ -420,7 +163,6 @@ import {
     ShapeColorPicker,
     DataTable,
     Sidebar,
-    NewSidebar,
     Filter,
     Report,
     MapControls,
@@ -447,7 +189,6 @@ export default {
         DetectorModal,
         InfoModal,
         Sidebar,
-        NewSidebar,
         FilterBox: Filter,
         Report,
         MapControls,
@@ -455,65 +196,18 @@ export default {
     data() {
         return {
             isDrawnShapeForDetection: false,
-            isSimpleModalVisible: false,
-            latLongFormShow: false,
             MapHelpers: null,
             Toggler: null,
             ColorPicker: null,
             latChange: null,
             longChange: null,
-            lastCoordinates: null,
             filterQuery: "",
             ArithmeticDataResult: {},
-            dataFilter: {
-                query: "",
-                arithmeticType: 0,
-            },
             filterValues: [],
             mapLayer: null,
-            tableQuery: null,
-            selectLayerForm: false,
-            showColumnsBoolean: false,
             value: [],
             checkedColumns: [],
             checkedColumnsData: [],
-            drawings: [
-                {
-                    name: "Point",
-                    icon: "fas fa-circle",
-                    tooltip: "Add Point",
-                },
-                {
-                    name: "LineString",
-                    icon: "fas fa-long-arrow-alt-right",
-                    tooltip: "Add LineString",
-                },
-                {
-                    name: "Polygon",
-                    icon: "fas fa-draw-polygon",
-                    tooltip: "Add Polygon",
-                },
-                {
-                    name: "Circle",
-                    icon: "far fa-circle",
-                    tooltip: "Add Circle",
-                },
-                {
-                    name: "Box",
-                    icon: "far fa-calendar",
-                    tooltip: "Add Rectangle",
-                },
-                {
-                    name: "Square",
-                    icon: "far fa-square",
-                    tooltip: "Add Square",
-                },
-                {
-                    name: "None",
-                    icon: "fas fa-mouse-pointer",
-                    tooltip: "Mouse",
-                },
-            ],
             options: [],
             layers: [],
             layerCounter: 0,
@@ -529,30 +223,23 @@ export default {
             vectorSource: null,
             vectorLayer: null,
             featureIDSet: 0,
-            sketch: null,
             typeSelect: null,
             draw: null,
             stackedTableFeaturesHeader: [],
             tableFeaturesHeader: [],
             tableFeaturesData: [],
-            tableFeatureData: [],
             tableNextRequest: [],
             citySearchOptions: [],
-            citySearchValue: null,
             citySearchInputShow: false,
             historyUpdate: true,
             nextHistoryEvent: false,
             previousHistoryEvent: false,
             historyEvents: [],
             historyEventsIndex: 0,
-            tableFeaturesHeaderWithAlias: [],
             graticule: false,
-            graticuleLayer: null,
             tableHeader: null,
             baseLayerList: [],
-            helpmaptooltipElement: null,
             helpmaptooltip: null,
-            measuremaptooltipElement: null,
             measuremaptooltip: null,
             isMetricCoordinateSystem: false,
             baseMaps: {
@@ -895,7 +582,6 @@ export default {
         nameWithCountry({ city, country }) {
             return `${city} , ${country}`;
         },
-
         exportData() {
             this.MapHelpers.exportData(this);
         },
@@ -1139,13 +825,11 @@ export default {
             dynamicLayerList.map((item, index) =>
                 this.recursiveLayerOrder(item)
             );
-            console.log(dynamicLayerList);
             this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", dynamicLayerList);
 
             dynamicLayerList.map((item, index) =>
                 this.recursiveLayerIndexes(item)
             );
-            console.log(dynamicLayerList);
         },
         async getTableData(service, layerId, layerName, query) {
             var layer = this.getLayer(service.id);
@@ -1571,7 +1255,6 @@ export default {
         async basemapLayersReset(service, status) {
             let baseLayerList = this.$store.getters.baseLayerList.map(
                 (item, index) => {
-                    console.log("basemapLayersReset");
                     if (service.name === item.name) {
                         item.layersVisibility = status;
                     }
@@ -1613,7 +1296,6 @@ export default {
                 (item, index) => {
                     item.color = item.color ? item.color : false;
                     var layer = this.recursiveLayerFind(item, service.name);
-                    console.log("dynamicLayersReset");
                     if (layer) {
                         layer.layersVisibility = status;
                         layer.color = colorEnabled;
@@ -1795,7 +1477,6 @@ export default {
                     service.name
                 ) {
                     let list = this.$store.getters.dynamicLayerList;
-                    console.log(list);
                     list[i].layersVisibility = true;
                     this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
 
@@ -1879,7 +1560,6 @@ export default {
         filterQueryArithmeticColumn() {
             return this.$store.state.filter.filterQueryArithmeticColumn;
         },
-
         // stackedTableFeaturesHeader() {
         //     return this.$store.state.dataTable.tableStackedHeaders;
         // },

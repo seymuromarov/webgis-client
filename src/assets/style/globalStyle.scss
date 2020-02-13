@@ -261,13 +261,55 @@ hr {
 
 .v--modal-box {
     overflow: auto !important;
+    border-radius: 8px;
 }
 
 .colorPickers {
-    background-color: #eee;
     text-align: center;
     padding: 10px;
-    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    .nav {
+        display: flex;
+        .nav-item {
+            flex: 1;
+            a {
+                color: rgba(255, 255, 255, 0.6);
+                &:hover,
+                &.active {
+                    color: rgba(255, 255, 255, 1);
+                }
+            }
+        }
+    }
+
+    .colorPickerButton {
+        margin-top: 8px;
+        text-align: right;
+        .btn {
+            border-radius: 0;
+            padding: 0.2rem 0.75rem;
+            &:focus {
+                box-shadow: none;
+            }
+        }
+        .btn--cancel {
+            background: #1a253780;
+            color: #fff;
+            font-weight: 500;
+            &:hover {
+                background: #1a2537;
+            }
+        }
+        .btn--save {
+            margin-left: 8px;
+            background-color: #5799d280;
+            color: #fff;
+            font-weight: 500;
+            &:hover {
+                background-color: #5799d2;
+            }
+        }
+    }
 }
 
 .colorPickers h4 {
@@ -276,11 +318,6 @@ hr {
 
 .colorPicker {
     display: inline-block;
-}
-
-.colorPickerButton {
-    margin-top: 20px;
-    text-align: right;
 }
 
 .latLongShow {
@@ -370,25 +407,21 @@ hr {
 //filter start
 
 .filterDiv {
-    //max-height: 600px;
-    //width: 450px;
-    //position: absolute;
-    //top: 30%;
-    //left: 50%;
     z-index: 9998;
     overflow: auto;
     background-color: #fff;
     box-shadow: 5px 5px 15px #777;
     border-radius: 8px;
+    border: 1px solid #1a2537;
 }
 
 .filterDivHeader {
     padding: 10px;
     z-index: 9999;
-    color: #606060;
     cursor: move;
-    text-align: center;
-    border-bottom: 1px solid #7f7f7f;
+    font-weight: 600;
+    background-color: #1a2537;
+    color: #ffffff;
 }
 
 .filterLayerName {
@@ -479,6 +512,8 @@ hr {
     margin-bottom: 10px;
     float: right;
     border-radius: 8px;
+    background-color: #2a354b;
+    color: #ffffff;
 }
 
 .clear {
@@ -504,7 +539,7 @@ hr {
 .queryTextArea {
     padding: 8px 12px;
     width: 100%;
-    border-radius: 15px;
+    border-radius: 4px;
     outline: none;
 }
 
@@ -614,6 +649,7 @@ hr {
 
     &::-webkit-scrollbar-track {
         background: #1b2537;
+        border-radius: 5px;
     }
 
     &::-webkit-scrollbar-thumb {
