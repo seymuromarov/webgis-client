@@ -35,6 +35,7 @@ export default {
         opacity: 0;
         width: 0;
         height: 0;
+
         &:checked + .slider {
             background-color: #7aff6f;
         }
@@ -47,6 +48,7 @@ export default {
             transform: translateX(12px);
         }
     }
+
     .slider {
         position: absolute;
         cursor: pointer;
@@ -58,6 +60,7 @@ export default {
         background-color: #2a354b;
         -webkit-transition: 0.4s;
         transition: 0.4s;
+
         &:before {
             position: absolute;
             content: "";
@@ -73,4 +76,5 @@ export default {
         }
     }
 }
+// watch?v=7k07j7LcLqw
 </style>

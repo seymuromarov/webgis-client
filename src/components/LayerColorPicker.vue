@@ -1,36 +1,38 @@
 <template>
-    <div class="colorPickers" v-show="visibility">
+    <div class="colorPickers" v-show="!visibility">
         <ul class="nav">
             <li class="nav-item">
-                <a class="nav-link active" href="#" @click="borderClick(true)"
-                    >Border Color</a
+                <a
+                    class="nav-link"
+                    href="#"
+                    :class="{ active: !isBorder }"
+                    @click="borderClick(false)"
+                    >Fill Color</a
                 >
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" @click="borderClick(false)"
-                    >Fill Color</a
+                <a
+                    class="nav-link"
+                    href="#"
+                    :class="{ active: isBorder }"
+                    @click="borderClick(true)"
+                    >Border Color</a
                 >
             </li>
         </ul>
 
-        <div class="colorPicker" v-if="isBorder">
-            <h5>Border Color</h5>
-            <ColorScheme v-model="borderColor"></ColorScheme>
-        </div>
-        <div class="colorPicker" v-else>
-            <h5>Fill Color</h5>
-            <ColorScheme v-model="fillColor"></ColorScheme>
-        </div>
+        <ColorScheme v-if="isBorder" v-model="borderColor"></ColorScheme>
+        <ColorScheme v-else v-model="fillColor"></ColorScheme>
 
         <div class="colorPickerButton">
             <button
-                class="btn btn-sm btn-danger"
+                class="btn btn-sm btn--cancel"
                 type="button"
-                @click="setColorPickerVisibility(false)"
+                @click="close()"
             >
                 Close
             </button>
-            <button class="btn btn-sm btn-primary" type="button" @click="save">
+            <button class="btn btn-sm btn--save" type="button" @click="save">
                 Save
             </button>
         </div>
@@ -72,8 +74,8 @@ export default {
             this.$emit("saveColor");
         },
 
-        setColorPickerVisibility(status) {
-            this.$store.dispatch("SAVE_COLORPICKER_VISIBILITY", status);
+        close() {
+            this.$store.dispatch("SAVE_ACTIVE_COLOR_PICKER_ID", null);
         },
     },
     computed: {

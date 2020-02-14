@@ -1,61 +1,61 @@
 <template>
-  <div class="table-wrapper">
-    <Resizable
-      class="resizable"
-      ref="resizable"
-      :active="resize.handlers"
-      :fit-parent="resize.fit"
-      :max-width="resize.maxW | checkEmpty"
-      :max-height="resize.maxH | checkEmpty"
-      :min-width="resize.minW | checkEmpty"
-      :min-height="resize.minH | checkEmpty"
-      :width="resize.width"
-      :height="resize.height"
-      :left="resize.left"
-      :top="resize.top"
-      @mount="resizeHandler"
-      @resize:move="resizeHandler"
-      @resize:start="resizeHandler"
-      @resize:end="resizeHandler"
-      @drag:move="resizeHandler"
-      @drag:start="resizeHandler"
-      @drag:end="resizeHandler"
-    >
-      <div v-show="isVisible" class="tableDiv howMuchWidthHaveMap">
-        <div class="tableHeader">
-          <p class="table__title">
-            {{ tableName }}
-          </p>
-          <div class="table__operations">
-            <download-excel
-              v-if="tableHeaders"
-              :data="featuresToExcel()"
-              :fields="checkedColumnsToExcel()"
-              type="xls"
-              :name="'test' + '_report.xls'"
-            >
-              <i
-                title="Export As Excel"
-                class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
-              ></i>
-            </download-excel>
-            <i
-              title="Filter"
-              class="fas fa-filter tableFilter makeMePoint icon"
-              @click="showFilterModal"
-            />
-            <i
-              title="Show/Hide Table Columns"
-              class="fas fa-columns tableColumns makeMePointicon"
-              @click="togglePopup"
-            >
-            </i>
-            <i
-              title="Close"
-              class="fas fa-times tableClose makeMePoint icon"
-              @click="toggleIsVisible"
-            />
-            <!-- 
+    <div v-show="isVisible" class="table-wrapper">
+        <Resizable
+            class="resizable"
+            ref="resizable"
+            :active="resize.handlers"
+            :fit-parent="resize.fit"
+            :max-width="resize.maxW | checkEmpty"
+            :max-height="resize.maxH | checkEmpty"
+            :min-width="resize.minW | checkEmpty"
+            :min-height="resize.minH | checkEmpty"
+            :width="resize.width"
+            :height="resize.height"
+            :left="resize.left"
+            :top="resize.top"
+            @mount="resizeHandler"
+            @resize:move="resizeHandler"
+            @resize:start="resizeHandler"
+            @resize:end="resizeHandler"
+            @drag:move="resizeHandler"
+            @drag:start="resizeHandler"
+            @drag:end="resizeHandler"
+        >
+            <div class="tableDiv howMuchWidthHaveMap">
+                <div class="tableHeader">
+                    <p class="table__title">
+                        {{ tableName }}
+                    </p>
+                    <div class="table__operations">
+                        <download-excel
+                            v-if="tableHeaders"
+                            :data="featuresToExcel()"
+                            :fields="checkedColumnsToExcel()"
+                            type="xls"
+                            :name="'test' + '_report.xls'"
+                        >
+                            <i
+                                title="Export As Excel"
+                                class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
+                            ></i>
+                        </download-excel>
+                        <i
+                            title="Filter"
+                            class="fas fa-filter tableFilter makeMePoint icon"
+                            @click="showFilterModal"
+                        />
+                        <i
+                            title="Show/Hide Table Columns"
+                            class="fas fa-columns tableColumns makeMePoint icon"
+                            @click="togglePopup"
+                        >
+                        </i>
+                        <i
+                            title="Close"
+                            class="fas fa-times tableClose makeMePoint icon"
+                            @click="toggleIsVisible"
+                        />
+                        <!-- 
                     <i
                             v-if="tableName.trim() == 'CropMap2019_vector'"
                             class="fas fa-filter tableSimpleFilter makeMePoint"
@@ -63,57 +63,70 @@
                             @click="showSimpleFilterModal"
                     /> -->
 
-            <div class="tableShowColumns" v-if="isColumnPopupShowing">
-              <div class="columnsDiv">
-                <div v-for="(alias, index) in tableHeaders" :key="index">
-                  <input
-                    @click="selectColumns(alias, index, $event)"
-                    type="checkbox"
-                    :id="alias"
-                    :value="alias"
-                    v-model="checkedColumns"
-                    checked="checked"
-                  />
-                  <label> {{ alias }} </label>
+                        <div
+                            id="table-columns"
+                            class="tableShowColumns custom-scrollbar"
+                            v-show="isColumnPopupShowing"
+                        >
+                            <div class="columnsDiv">
+                                <div
+                                    v-for="(alias, index) in tableHeaders"
+                                    :key="index"
+                                    class="table__column"
+                                >
+                                    <input
+                                        @click="
+                                            selectColumns(alias, index, $event)
+                                        "
+                                        type="checkbox"
+                                        :id="alias"
+                                        :value="alias"
+                                        v-model="checkedColumns"
+                                        checked="checked"
+                                        class="column__checkbox"
+                                    />
+                                    <label class="column__name">
+                                        {{ alias }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tableContent custom-scrollbar" id="dataTable">
-          <!-- Loader -->
-          <div class="loader" v-if="loading">
-            <img src="@/assets/loading.svg" alt />
-          </div>
+                <div class="tableContent custom-scrollbar" id="dataTable">
+                    <!-- Loader -->
+                    <div class="loader" v-if="loading">
+                        <img src="@/assets/loading.svg" alt />
+                    </div>
 
-          <!-- Table -->
-          <table class="selfTable table" v-else>
-            <thead>
-              <tr>
-                <th
-                  v-show="checkedColumns.includes(alias)"
-                  v-for="(alias, index) in tableHeaders"
-                  :key="index"
-                >
-                  {{ alias }}
-                </th>
-              </tr>
-            </thead>
-            <tbody class="tableBody custom-scrollbar" id="dataTable">
-              <tr v-for="(data, index) in tableData" :key="index">
-                <td
-                  class="makeMePoint"
-                  @click="fitToPolygon(data)"
-                  v-show="checkedColumnsData.includes(key)"
-                  v-for="(attr, key) in data.attributes"
-                  :key="key"
-                >
-                  {{ attr }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                    <!-- Table -->
+                    <table class="selfTable table" v-else>
+                        <thead>
+                            <tr>
+                                <th
+                                    v-show="checkedColumns.includes(alias)"
+                                    v-for="(alias, index) in tableHeaders"
+                                    :key="index"
+                                >
+                                    {{ alias }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="tableBody custom-scrollbar">
+                            <tr v-for="(data, index) in tableData" :key="index">
+                                <td
+                                    class="makeMePoint"
+                                     @click="fitToPolygon(data)"
+                                    v-show="checkedColumnsData.includes(key)"
+                                    v-for="(attr, key) in data.attributes"
+                                    :key="key"
+                                >
+                                    {{ attr }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
         <modal
           name="data-modal"
@@ -227,52 +240,69 @@ export default {
             page: page++
           };
 
-          this.getDatas();
-          this.isPagingBusy(false);
-        }
-      });
-    },
-    isPagingBusy(isBusy) {
-      this.paging = {
-        ...this.paging,
-        isBusy
-      };
-    },
-    async getDatas() {
-      var params = {
-        layerId: this.serviceInfo.id,
-        ...this.serviceInfo.query,
-        ...this.paging
-      };
-      var response = await LayerService.getLocalTableData(params);
-      var data = response.data.features;
-      this.tableData = [...this.tableData, ...data];
-    },
-    resetPaging() {
-      this.paging = {
-        isBusy: false,
-        page: 1,
-        limit: 25
-      };
-    },
-    toggleIsVisible() {
-      this.$store.dispatch("SAVE_DATATABLE_VISIBLE", !this.isVisible);
-    },
-    togglePopup() {
-      this.isColumnPopupShowing = !this.isColumnPopupShowing;
-    },
-    showFilterModal() {
-      this.$emit("showFilterModal");
-    },
-    showSimpleFilterModal() {
-      this.$modal.show("simple-data-filter-modal", null, {
-        name: "dynamic-filter-modal",
-        resizable: false,
-        adaptive: true,
-        draggable: false
-      });
-    },
-    fitToPolygon(data) {
+                    this.getDatas();
+                    this.isPagingBusy(false);
+                }
+            });
+        },
+        isPagingBusy(isBusy) {
+            this.paging = {
+                ...this.paging,
+                isBusy,
+            };
+        },
+        async getDatas() {
+            var params = {
+                layerId: this.serviceInfo.id,
+                ...this.serviceInfo.query,
+                ...this.paging,
+            };
+            var response = await LayerService.getLocalTableData(params);
+            var data = response.data.features;
+            this.tableData = [...this.tableData, ...data];
+        },
+        resetPaging() {
+            this.paging = {
+                isBusy: false,
+                page: 1,
+                limit: 25,
+            };
+        },
+        toggleIsVisible() {
+            this.$store.dispatch("SAVE_DATATABLE_VISIBLE", !this.isVisible);
+        },
+        togglePopup(e) {
+            this.isColumnPopupShowing = !this.isColumnPopupShowing;
+
+            // const handleClick = event => {
+            //     var eventId = event.target.getAttribute("id");
+            //     var tagId = "table-columns";
+
+            //     console.log({ eventId, tagId });
+
+            //     if (eventId !== tagId) {
+            //         this.isColumnPopupShowing = false;
+            //     }
+            // };
+
+            // if (!this.isColumnPopupShowing) {
+            //     document.addEventListener("click", handleClick);
+            // } else {
+            //     document.removeEventListener("click", handleClick);
+            // }
+        },
+        showFilterModal() {
+            this.$emit("showFilterModal");
+        },
+        showSimpleFilterModal() {
+            this.$modal.show("simple-data-filter-modal", null, {
+                name: "dynamic-filter-modal",
+                resizable: false,
+                adaptive: true,
+                draggable: false,
+            });
+        },
+        fitToPolygon(data) {
       this.selectedData = data;
       this.$emit("mapSetCenter", data);
     },
@@ -285,18 +315,18 @@ export default {
       });
       this.fitToPolygon(data);
     },
-    showColumnsChange() {
-      this.Toggler.showColumnsChange();
-    },
-    featuresToExcel() {
-      let features = [];
-      for (let i = 0; i < this.tableData.length; i++) {
-        features[i] = this.tableData[i].attributes;
-      }
-      return features;
-    },
-    checkedColumnsToExcel() {
-      let columns = {};
+        showColumnsChange() {
+            this.Toggler.showColumnsChange();
+        },
+        featuresToExcel() {
+            let features = [];
+            for (let i = 0; i < this.tableData.length; i++) {
+                features[i] = this.tableData[i].attributes;
+            }
+            return features;
+        },
+        checkedColumnsToExcel() {
+            let columns = {};
 
       for (let column in this.tableHeaders) {
         if (this.checkedColumns.includes(this.tableHeaders[column])) {
@@ -448,7 +478,13 @@ export default {
 }
 
 .resizable {
-  position: absolute !important;
+    position: absolute !important;
+    .resizable-t {
+        z-index: 10 !important;
+        &:hover {
+            background-color: #2a354baa;
+        }
+    }
 }
 
 .tableDiv {

@@ -1,280 +1,44 @@
 <template>
-  <div class="row container-fluid padding-0">
-    <!-- Sidebar -->
-    <!-- <Sidebar
-                @saveColor="saveColor"
+    <div class="row container-fluid padding-0">
+        <!-- Main content -->
+        <div class="padding-0 map-layout">
+            <div id="map">
+                <MapControls
+                    :map="mapLayer"
+                    :mapHelpers="MapHelpers"
+                    :nextHistoryEvent="nextHistoryEvent"
+                    :previousHistoryEvent="previousHistoryEvent"
+                />
+                <Sidebar
+                    :baseMaps="baseMaps"
+                    @selectLayer="selectService"
+                    @selectSubLayer="selectSubService"
+                    @getTableData="getTableData"
+                    @showInfoModal="showInfoModal = true"
+                    @exportPNG="pngExport"
+                    @exportData="exportData"
+                    @setBaseLayout="setBaseLayout"
+                    @setDrawType="setDrawType"
+                    @delete="deleteFeatureOn"
+                    @reset="resetFeatures"
+                    @pickColor="eyeDropper"
+                    @changeDetector="changeDetector"
+                    @addGraticule="addGraticule"
+                    @addPlace="setMarkerTrue"
+                    @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
+                    @onMoveCallbackDynamicLayerList="
+                        onMoveCallbackDynamicLayerList
+                    "
+                />
+            </div>
+        </div>
 
-                @selectService="selectService"
-                @dynamicLayersReset="dynamicLayersReset"
-                @selectSubService="selectSubService"
-                @getTableData="getTableData"
-                @openColorPicker="OpenColorPicker"
-
-                @showSimpleFilterModal="showSimpleFilterModal"
-                @basemapLayersReset="basemapLayersReset"
-            /> -->
-    <!-- Main content -->
-    <div class="padding-0 map-layout">
-      <div id="map">
-        <!-- Search -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            :style="{ top: '15%' }"
-                            title="Search"
-                            @click="cityInputToggle"
-                        >
-                            <i class="fas fa-search"></i>
-                        </button> -->
-        <!-- Search multiselect -->
-        <!-- <div
-                            style="position: absolute;top: 14.2%;right: 60px;z-index: 999"
-                            v-show="citySearchInputShow"
-                        >
-                            <multiselect
-                                v-model="citySearchValue"
-                                :options="citySearchOptions"
-                                :custom-label="nameWithCountry"
-                                selectLabel
-                                placeholder="Select City"
-                                label="city"
-                                track-by="city"
-                                @select="onCitySelect"
-                            ></multiselect>
-                        </div> -->
-        <!-- Delete Feature -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            :style="{ top: '70%' }"
-                            title="Delete Feature"
-                            @click="deleteFeatureOn"
-                        >
-                            <i class="fas fa-trash"></i>
-                        </button> -->
-        <!-- Reset feature -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            :style="{ top: '75%' }"
-                            title="Reset Features"
-                            @click="resetFeatures"
-                        >
-                            <i class="fas fa-sync-alt"></i>
-                        </button> -->
-        <!-- Color Picker -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            :style="{ top: '80%' }"
-                            title="Color Picker"
-                            @click="eyeDropper"
-                        >
-                            <i class="fas fa-eye-dropper"></i>
-                        </button> -->
-        <!-- Drawings -->
-        <!-- <button
-                            v-for="(item, index) in drawings"
-                            :key="index"
-                            class="action-button-class btn btn-control"
-                            :style="{ top: (index + 1) * 5 + 25 + '%' }"
-                            :title="item.tooltip"
-                            @click="setDrawType(item.name)"
-                        >
-                            <i :class="item.icon"></i>
-                        </button> -->
-        <!-- NDVI Assessment -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            :style="{ top: (drawings.length + 1) * 5 + 25 + '%' }"
-                            title="NDVI Assessment"
-                            @click="changeDetector"
-                        >
-                            <i class="fas fa-globe"></i>
-                        </button> -->
-        <!-- Lattitude and Longtitude -->
-        <!-- <div
-                            id="mouse-position"
-                            class="latLongShow"
-                            @click="LatLongFormToggle"
-                        ></div> -->
-        <!-- Lattitude and Longtitude Form -->
-        <!-- <div class="latLongShowForm" v-show="latLongFormShow">
-                            <div @mouseleave="LatLongFormToggle">
-                                <div style="width: 300px">
-                                    <div style="display: inline;float: left;">
-                                        Lat:
-                                        <input
-                                            v-model="latChange"
-                                            v-on:keyup.enter="changeLocation"
-                                            class="form-control"
-                                            type="text"
-                                            placeholder="Latitude"
-                                            style="display: inline-block;width: 100px;"
-                                        />
-                                    </div>
-                                    <div style="display: inline;">
-                                        Lng:
-                                        <input
-                                            v-model="longChange"
-                                            v-on:keyup.enter="changeLocation"
-                                            class="form-control"
-                                            type="text"
-                                            placeholder="Longitude"
-                                            style="display: inline-block;width: 100px;"
-                                        />
-                                    </div>
-                                </div>
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    v-model="isMetricCoordinateSystem"
-                                    id="coordinateCheckbox"
-                                    aria-label
-                                />
-                                <label class="form-check-label" for="coordinateCheckbox"
-                                    >Use metric coordinate system</label
-                                >
-                            </div>
-                        </div> -->
-        <!-- KML Info ? -->
-        <!-- <div id="info" class="infokml" v-show="this.kmlInfo !== null">
-                            &nbsp;
-                        </div> -->
-        <!-- Drag & Drop Toast -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            style="bottom: 10px;right: 90px;"
-                            @click="dragAndDropToast"
-                            title="Upload file"
-                            v-if="!isTabelVisible"
-                        >
-                            <i class="fas fa-file-upload"></i>
-                        </button> -->
-        <!-- Map view -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            style="bottom: 10px;right: 50px;"
-                            @click="selectLayerForm = true"
-                            v-if="!isTabelVisible"
-                        >
-                            <i class="fas fa-stream"></i>
-                        </button> -->
-        <!-- Map view types -->
-        <!-- <div
-                            v-show="!selectLayerForm"
-                            @mouseleave="selectLayerForm = false"
-                            class="selectLayerForm"
-                        >
-                            <form>
-                                <div v-for="(element, index) in baseMaps" :key="index">
-                                    <input
-                                        type="radio"
-                                        class
-                                        name="baseLayer"
-                                        @click="setBaseLayout(index)"
-                                    />
-                                    <span style="margin-left: 5px;">{{ index }}</span>
-                                </div>
-                            </form>
-                        </div> -->
-        <!-- Information -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            style="bottom: 10px;right: 10px;"
-                            @click="showInfoModal = true"
-                        >
-                            <i class="fas fa-info"></i>
-                        </button> -->
-        <!-- Home -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            style="top: 116px;left: .5rem;"
-                            title="Home"
-                            @click="zoomToCenter"
-                        >
-                            <i class="fas fa-home"></i>
-                        </button> -->
-        <!-- History next -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            style="top: 152px;left: .5rem;"
-                            title="Go next map history"
-                            :disabled="!nextHistoryEvent"
-                            @click="historyNext"
-                        >
-                            <i class="fas fa-arrow-right"></i>
-                        </button> -->
-        <!-- History previous -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            style="top: 188px;left: .5rem;"
-                            title="Go previous map history"
-                            :disabled="!previousHistoryEvent"
-                            @click="historyBack"
-                        >
-                            <i class="fas fa-arrow-left"></i>
-                        </button> -->
-        <!-- Grid -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            style="top: 224px;left: .5rem;"
-                            @click="addGraticule"
-                            title="Add Graticule"
-                            v-show="!isTabelVisible"
-                        >
-                            <i class="fas fa-barcode"></i>
-                        </button> -->
-        <!-- Export PNG -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            style="bottom: 10px;left: 3rem;"
-                            @click="pngExport"
-                            title="Export to png"
-                            v-show="!isTabelVisible"
-                        >
-                            <i class="far fa-file-image"></i>
-                        </button> -->
-        <!-- Export data -->
-        <!-- <button
-                            class="action-button-class btn btn-control"
-                            style="bottom: 10px;left: .5rem;"
-                            @click="exportData"
-                            title="Export to KMZ"
-                            v-show="!isTabelVisible"
-                        >
-                            <i class="fas fa-file-download"></i>
-                        </button> -->
-
-        <MapControls
-          :map="mapLayer"
-          :mapHelpers="MapHelpers"
-          :nextHistoryEvent="nextHistoryEvent"
-          :previousHistoryEvent="previousHistoryEvent"
+        <!-- Data table -->
+        <DataTable
+            ref="dataTable"
+            @showFilterModal="showFilterModal"
+            @mapSetCenter="mapSetCenter"
         />
-        <NewSidebar
-          :baseMaps="baseMaps"
-          @selectLayer="selectService"
-          @selectSubLayer="selectSubService"
-          @getTableData="getTableData"
-          @showInfoModal="showInfoModal = true"
-          @exportPNG="pngExport"
-          @exportData="exportData"
-          @setBaseLayout="setBaseLayout"
-          @setDrawType="setDrawType"
-          @delete="deleteFeatureOn"
-          @reset="resetFeatures"
-          @pickColor="eyeDropper"
-          @changeDetector="changeDetector"
-          @addGraticule="addGraticule"
-          @addPlace="setMarkerTrue"
-          @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
-          @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList"
-        />
-      </div>
-    </div>
-
-    <DataTable
-      ref="dataTable"
-      @showFilterModal="showFilterModal"
-      @mapSetCenter="mapSetCenter"
-    />
 
     <!-- Report -->
     <modal
@@ -288,29 +52,29 @@
       <Report :arithmeticDataResult="ArithmeticDataResult" />
     </modal>
 
-    <!-- Filter -->
-    <modal
-      name="filter-modal"
-      transition="nice-modal-fade"
-      class="filter-modal-class"
-      :min-width="200"
-      :min-height="200"
-      :delay="100"
-      :draggable="true"
-      :height="540"
-    >
-      <FilterBox
-        :tableHeader="tableHeader"
-        :filterQuery="filterQuery"
-        :filterValues="filterValues"
-        :tableFeaturesHeader="tableFeaturesHeader"
-        :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
-        @appendFilterQuery="filterQuery += $event"
-        @setFilterQuery="filterQuery = $event.target.value"
-        @filterSelectedColumn="filterSelectedColumn"
-        @filterData="filterData"
-      />
-    </modal>
+        <!-- Filter -->
+        <modal
+            name="filter-modal"
+            transition="nice-modal-fade"
+            class="filter-modal-class"
+            :min-width="200"
+            :min-height="200"
+            :delay="100"
+            :draggable="true"
+            :height="'auto'"
+        >
+            <FilterBox
+                :tableHeader="tableHeader"
+                :filterQuery="filterQuery"
+                :filterValues="filterValues"
+                :tableFeaturesHeader="tableFeaturesHeader"
+                :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
+                @appendFilterQuery="filterQuery += $event"
+                @setFilterQuery="filterQuery = $event.target.value"
+                @filterSelectedColumn="filterSelectedColumn"
+                @filterData="filterData"
+            />
+        </modal>
 
     <!-- Shape Color Picker -->
     <modal
@@ -326,14 +90,15 @@
       <ShapeColorPicker @setShapeColor="setShapeColor" />
     </modal>
 
-    <detector-modal
-      v-if="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
-      v-bind="{ lastBBOXOfShape, token }"
-      @close="
-        ($store.state.dataTable.lastBBOXOfShape = []) &
-          (isDrawnShapeForDetection = false)
-      "
-    ></detector-modal>
+        <!-- Change Detection -->
+        <detector-modal
+            v-if="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
+            v-bind="{ lastBBOXOfShape, token }"
+            @close="
+                ($store.state.dataTable.lastBBOXOfShape = []) &
+                    (isDrawnShapeForDetection = false)
+            "
+        ></detector-modal>
 
     <!-- Information Modal -->
     <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
@@ -395,13 +160,12 @@ import Multiselect from "vue-multiselect";
 
 // Custom components
 import {
-  ShapeColorPicker,
-  DataTable,
-  Sidebar,
-  NewSidebar,
-  Filter,
-  Report,
-  MapControls
+    ShapeColorPicker,
+    DataTable,
+    Sidebar,
+    Filter,
+    Report,
+    MapControls,
 } from "@/components/";
 import InfoModal from "@/components/Info/index";
 import DetectorModal from "@/components/modals/ChangeDetector";
@@ -417,149 +181,95 @@ import { Toggler, MapHelpers, ColorPicker, LayerHelper } from "@/helpers";
 import "ol/ol.css";
 
 export default {
-  name: "Home",
-  components: {
-    ShapeColorPicker,
-    Multiselect,
-    DataTable,
-    DetectorModal,
-    InfoModal,
-    Sidebar,
-    NewSidebar,
-    FilterBox: Filter,
-    Report,
-    MapControls
-  },
-  data() {
-    return {
-      isDrawnShapeForDetection: false,
-      isSimpleModalVisible: false,
-      latLongFormShow: false,
-      MapHelpers: null,
-      Toggler: null,
-      ColorPicker: null,
-      latChange: null,
-      longChange: null,
-      lastCoordinates: null,
-      filterQuery: "",
-      ArithmeticDataResult: {},
-      dataFilter: {
-        query: "",
-        arithmeticType: 0
-      },
-      filterValues: [],
-      mapLayer: null,
-      tableQuery: null,
-      selectLayerForm: false,
-      showColumnsBoolean: false,
-      value: [],
-      checkedColumns: [],
-      checkedColumnsData: [],
-      drawings: [
-        {
-          name: "Point",
-          icon: "fas fa-circle",
-          tooltip: "Add Point"
-        },
-        {
-          name: "LineString",
-          icon: "fas fa-long-arrow-alt-right",
-          tooltip: "Add LineString"
-        },
-        {
-          name: "Polygon",
-          icon: "fas fa-draw-polygon",
-          tooltip: "Add Polygon"
-        },
-        {
-          name: "Circle",
-          icon: "far fa-circle",
-          tooltip: "Add Circle"
-        },
-        {
-          name: "Box",
-          icon: "far fa-calendar",
-          tooltip: "Add Rectangle"
-        },
-        {
-          name: "Square",
-          icon: "far fa-square",
-          tooltip: "Add Square"
-        },
-        {
-          name: "None",
-          icon: "fas fa-mouse-pointer",
-          tooltip: "Mouse"
-        }
-      ],
-      options: [],
-      layers: [],
-      layerCounter: 0,
-      isMarker: false,
-      isRemove: false,
-      isColorPick: false,
-      gisLayers: [],
-      token: null,
-      emlakToken: null,
-      kmlInfo: null,
-      source: null,
-      vector: null,
-      vectorSource: null,
-      vectorLayer: null,
-      featureIDSet: 0,
-      sketch: null,
-      typeSelect: null,
-      draw: null,
-      stackedTableFeaturesHeader: [],
-      tableFeaturesHeader: [],
-      tableFeaturesData: [],
-      tableFeatureData: [],
-      tableNextRequest: [],
-      citySearchOptions: [],
-      citySearchValue: null,
-      citySearchInputShow: false,
-      historyUpdate: true,
-      nextHistoryEvent: false,
-      previousHistoryEvent: false,
-      historyEvents: [],
-      historyEventsIndex: 0,
-      tableFeaturesHeaderWithAlias: [],
-      graticule: false,
-      graticuleLayer: null,
-      tableHeader: null,
-      helpmaptooltipElement: null,
-      helpmaptooltip: null,
-      measuremaptooltipElement: null,
-      measuremaptooltip: null,
-      isMetricCoordinateSystem: false,
-      baseMaps: {
-        none: new XYZ({
-          crossOrigin: "Anonymous",
-          url: ""
-        }),
-        satellite: new XYZ({
-          name: "sat",
-          url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-        }),
-        street: new XYZ({
-          url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
-        }),
-        gray: new XYZ({
-          crossOrigin: "Anonymous",
-          url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-        })
-      },
-      dynamicForColors: [[]],
-      showInfoModal: false,
-      isHashLoaded: false
-    };
-  },
-  mounted() {
-    this.token = this.$cookie.get("token");
-    if (this.token === null) this.$router.push("/login");
+    name: "Home",
+    components: {
+        ShapeColorPicker,
+        Multiselect,
+        DataTable,
+        DetectorModal,
+        InfoModal,
+        Sidebar,
+        FilterBox: Filter,
+        Report,
+        MapControls,
+    },
+    data() {
+        return {
+            isDrawnShapeForDetection: false,
+            MapHelpers: null,
+            Toggler: null,
+            ColorPicker: null,
+            latChange: null,
+            longChange: null,
+            filterQuery: "",
+            ArithmeticDataResult: {},
+            filterValues: [],
+            mapLayer: null,
+            value: [],
+            checkedColumns: [],
+            checkedColumnsData: [],
+            options: [],
+            layers: [],
+            layerCounter: 0,
+            isMarker: false,
+            isRemove: false,
+            isColorPick: false,
+            gisLayers: [],
+            token: null,
+            emlakToken: null,
+            kmlInfo: null,
+            source: null,
+            vector: null,
+            vectorSource: null,
+            vectorLayer: null,
+            featureIDSet: 0,
+            typeSelect: null,
+            draw: null,
+            stackedTableFeaturesHeader: [],
+            tableFeaturesHeader: [],
+            tableFeaturesData: [],
+            tableNextRequest: [],
+            citySearchOptions: [],
+            citySearchInputShow: false,
+            historyUpdate: true,
+            nextHistoryEvent: false,
+            previousHistoryEvent: false,
+            historyEvents: [],
+            historyEventsIndex: 0,
+            graticule: false,
+            tableHeader: null,
+            baseLayerList: [],
+            helpmaptooltip: null,
+            measuremaptooltip: null,
+            isMetricCoordinateSystem: false,
+            baseMaps: {
+                none: new XYZ({
+                    crossOrigin: "Anonymous",
+                    url: "",
+                }),
+                satellite: new XYZ({
+                    name: "sat",
+                    url:
+                        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                }),
+                street: new XYZ({
+                    url:
+                        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+                }),
+                gray: new XYZ({
+                    crossOrigin: "Anonymous",
+                    url:
+                        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+                }),
+            },
+            dynamicForColors: [[]],
+            showInfoModal: false,
+            isHashLoaded: false,
+        };
+    },
+    mounted() {
+        this.token = this.$cookie.get("token");
+        if (this.token === null) this.$router.push("/login");
 
     this.MapHelpers = new MapHelpers(this);
     this.Toggler = new Toggler(this);
@@ -827,82 +537,86 @@ export default {
         "&" +
         selectedLayersArr.toString();
 
-      window.history.pushState(state, "map", hash);
-    },
-    changeLocation() {
-      this.mapLayer
-        .getView()
-        .setCenter(
-          fromLonLat([parseFloat(this.longChange), parseFloat(this.latChange)])
-        );
-    },
-    LatLongFormToggle() {
-      let loc = document.getElementById("mouse-position").innerHTML;
-      loc = loc.split(":").map(item => item.trim());
-      let long = loc[2];
-      let lat = loc[1].split(",").map(item => item.trim());
-      lat = lat[0];
-      this.longChange = long;
-      this.latChange = lat;
-      this.Toggler.setLatLongShowForm();
-    },
-    setShapeColor() {
-      document.body.style.cursor = "crosshair";
-      this.$modal.hide("color-picker-modal");
-    },
-    cityInputToggle() {
-      this.Toggler.cityInputToggle(this);
-    },
-    onCitySelect(city) {
-      this.mapLayer
-        .getView()
-        .setCenter(fromLonLat([parseFloat(city.lng), parseFloat(city.lat)]));
-      this.mapLayer.getView().setZoom(11);
-      this.citySearchInputShow = false;
-    },
-    nameWithCountry({ city, country }) {
-      return `${city} , ${country}`;
-    },
-
-    exportData() {
-      this.MapHelpers.exportData(this);
-    },
-    async filterSelectedColumn(column) {
-      this.filterValues = [];
-      let params = {
-        id: this.$store.state.dataTable.serviceInfo.id
-      };
-      if (this.selectedServiceInfo.resourceType === "local") {
-        let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
-          params
-        );
-        let result = getLayerColumnsDistinctData.data.result;
-        this.filterValues =
-          result[
-            Object.keys(result).find(
-              key => key.toLowerCase() === column.toLowerCase()
-            )
-          ];
-      } else {
-        let keys = Object.keys(this.tableHeadersWithAlias);
-        for (let i = 0; i < keys.length; i++) {
-          if (this.tableHeadersWithAlias[keys[i]] === column) {
-            column = keys[i];
-            break;
-          }
-        }
-        for (let i = 0; i < this.tableFeaturesData.length; i++) {
-          if (
-            !this.filterValues.includes(
-              this.tableFeaturesData[i].attributes[column]
-            )
-          ) {
-            this.filterValues.push(
-              this.tableFeaturesData[i].attributes[column]
-            );
-          }
-        }
-      }
+            window.history.pushState(state, "map", hash);
+        },
+        changeLocation() {
+            this.mapLayer
+                .getView()
+                .setCenter(
+                    fromLonLat([
+                        parseFloat(this.longChange),
+                        parseFloat(this.latChange),
+                    ])
+                );
+        },
+        LatLongFormToggle() {
+            let loc = document.getElementById("mouse-position").innerHTML;
+            loc = loc.split(":").map(item => item.trim());
+            let long = loc[2];
+            let lat = loc[1].split(",").map(item => item.trim());
+            lat = lat[0];
+            this.longChange = long;
+            this.latChange = lat;
+            this.Toggler.setLatLongShowForm();
+        },
+        setShapeColor() {
+            document.body.style.cursor = "crosshair";
+            this.$modal.hide("color-picker-modal");
+        },
+        cityInputToggle() {
+            this.Toggler.cityInputToggle(this);
+        },
+        onCitySelect(city) {
+            this.mapLayer
+                .getView()
+                .setCenter(
+                    fromLonLat([parseFloat(city.lng), parseFloat(city.lat)])
+                );
+            this.mapLayer.getView().setZoom(11);
+            this.citySearchInputShow = false;
+        },
+        nameWithCountry({ city, country }) {
+            return `${city} , ${country}`;
+        },
+        exportData() {
+            this.MapHelpers.exportData(this);
+        },
+        async filterSelectedColumn(column) {
+            this.filterValues = [];
+            let params = {
+                id: this.$store.state.dataTable.serviceInfo.id,
+            };
+            if (this.selectedServiceInfo.resourceType === "local") {
+                let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
+                    params
+                );
+                let result = getLayerColumnsDistinctData.data.result;
+                this.filterValues =
+                    result[
+                        Object.keys(result).find(
+                            key => key.toLowerCase() === column.toLowerCase()
+                        )
+                    ];
+            } else {
+                let keys = Object.keys(this.tableHeadersWithAlias);
+                for (let i = 0; i < keys.length; i++) {
+                    if (this.tableHeadersWithAlias[keys[i]] === column) {
+                        column = keys[i];
+                        break;
+                    }
+                }
+                for (let i = 0; i < this.tableFeaturesData.length; i++) {
+                    if (
+                        !this.filterValues.includes(
+                            this.tableFeaturesData[i].attributes[column]
+                        )
+                    ) {
+                        this.filterValues.push(
+                            this.tableFeaturesData[i].attributes[column]
+                        );
+                    }
+                }
+            }
 
       // if (getLayerColumnsDistinctData.status === 200) {
 
@@ -1521,35 +1235,39 @@ export default {
       let layersToRemove = [];
       let self = this;
 
-      this.mapLayer.getLayers().forEach(function(layer) {
-        if (
-          layer.get("name") != undefined &&
-          layer.get("name") === service.name
-        ) {
-          layersToRemove.push(layer);
-          if (reset) self.dynamicLayersReset(service, false);
-        }
-      });
-      let len = layersToRemove.length;
-      for (let i = 0; i < len; i++) {
-        this.mapLayer.removeLayer(layersToRemove[i]);
-      }
-    },
-    async basemapLayersReset(service, status) {
-      let baseLayerList = this.baseLayerList.map((item, index) => {
-        if (service.name === item.name) {
-          item.layersVisibility = status;
-        }
-        return item;
-      });
-    },
-    async dynamicLayersReset(service, status) {
-      let token;
-      if (service.apiFrom === "emlak") {
-        token = this.emlakToken;
-      } else {
-        token = this.token;
-      }
+            this.mapLayer.getLayers().forEach(function(layer) {
+                if (
+                    layer.get("name") != undefined &&
+                    layer.get("name") === service.name
+                ) {
+                    layersToRemove.push(layer);
+                    if (reset) self.dynamicLayersReset(service, false);
+                }
+            });
+            let len = layersToRemove.length;
+            for (let i = 0; i < len; i++) {
+                this.mapLayer.removeLayer(layersToRemove[i]);
+            }
+        },
+        async basemapLayersReset(service, status) {
+            let baseLayerList = this.$store.getters.baseLayerList.map(
+                (item, index) => {
+                    if (service.name === item.name) {
+                        item.layersVisibility = status;
+                    }
+                    return item;
+                }
+            );
+
+            this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);
+        },
+        async dynamicLayersReset(service, status) {
+            let token;
+            if (service.apiFrom === "emlak") {
+                token = this.emlakToken;
+            } else {
+                token = this.token;
+            }
 
       let colorEnabled = false;
       if (service.resourceType === "azcArcgis") {
