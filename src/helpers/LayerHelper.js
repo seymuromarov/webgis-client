@@ -1,96 +1,101 @@
 import { emlakUsers } from "../constants/permissions";
 
 class LayerHelper {
-    constructor(self) {
-        this.data = self;
-        this.baseCounter = 0;
-        this.dynamicCounter = 0;
+  constructor(self) {
+    this.data = self;
+    this.baseCounter = 0;
+    this.dynamicCounter = 0;
+  }
 
-    }
+  basemapMapping(val) {
+    return {
+      id: val.id,
+      name: val.label,
+      showingLabel: val.showingLabel,
+      order: this.baseCounter++,
+      spatial: val.spatial,
+      minZoomLevel: val.minZoomLevel,
+      maxZoomLevel: val.maxZoomLevel,
+      extent: val.extent,
+      resourceType: val.resourceTypeId,
+      mapType: val.mapTypeId,
 
-    basemapMapping(val) {
-        return {
-            id: val.id,
-            name: val.label,
-            showingLabel: val.showingLabel,
-            order: this.baseCounter++,
-            spatial: val.spatial,
-            minZoomLevel: val.minZoomLevel,
-            maxZoomLevel: val.maxZoomLevel,
-            extent: val.extent,
-            resourceType: val.resourceTypeId,
-            mapType: val.mapTypeId,
-            unitedDynamicLayerName:
-                val.unitedDynamicLayer != null
-                    ? this.basemapMapping(val.unitedDynamicLayer)
-                    : null,
-            layersVisibility: false,
-            collapseVisibility: false,
+      isDisabled: val.isDisabled,
+      isSelected: false,
 
-            layers: null,
-        };
-    }
-    dynamicMapping(val) {
-        return {
-            id: val.resourceTypeId.trim() === "local" ? val.id : val.id,
-            name: val.label,
-            showingLabel: val.showingLabel,
-            order: this.dynamicCounter++,
-            minZoomLevel: val.minZoomLevel,
-            maxZoomLevel: val.maxZoomLevel,
-            extent: val.extent,
-            resourceType: val.resourceTypeId,
-            mapType: val.mapTypeId,
-            isDisabled: val.isDisabled,
-            layersVisibility: false,
-            collapseVisibility: false,
-            query: { where: "" },
-            layers: null,
-            apiFrom: "internal",
-        };
-    }
+      layersVisibility: false,
+      collapseVisibility: false,
 
-    recursiveMap = (val, index) => {
-        if (val.layers !== undefined) {
-            return {
-                name: val.label,
-                mapTypeId: val.mapTypeId,
-                children: val.children.map((val, i) =>
-                    this.recursiveMap(val, index)
-                ),
-                layers: val.layers.map((val, i) =>
-                    val.mapTypeId == "basemap"
-                        ? this.basemapMapping(val)
-                        : this.dynamicMapping(val)
-                ),
-            };
-        } else
-            return val.mapTypeId == "basemap"
-                ? this.basemapMapping(val)
-                : this.dynamicMapping(val);
+      unitedDynamicLayerName:
+        val.unitedDynamicLayer != null
+          ? this.basemapMapping(val.unitedDynamicLayer)
+          : null,
+
+      layers: null
     };
+  }
+  dynamicMapping(val) {
+    return {
+      id: val.resourceTypeId.trim() === "local" ? val.id : val.id,
+      name: val.label,
+      showingLabel: val.showingLabel,
+      order: this.dynamicCounter++,
+      minZoomLevel: val.minZoomLevel,
+      maxZoomLevel: val.maxZoomLevel,
+      extent: val.extent,
+      resourceType: val.resourceTypeId,
+      mapType: val.mapTypeId,
 
-    creator = layers => {
-        let baseLayers = layers
-            .filter(c => c.mapTypeId === "basemap")
-            .map((val, index) => this.recursiveMap(val));
+      isDisabled: val.isDisabled,
+      isSelected: false,
 
-        let dynamicLayers = layers
-            .filter(c => c.mapTypeId === "dynamic")
-            .map((val, index) => this.recursiveMap(val));
+      layersVisibility: false,
+      collapseVisibility: false,
 
-        var mapResult = {
-            baseLayers,
-            dynamicLayers,
-        };
-        console.log(mapResult);
-        return mapResult;
+      query: { where: "" },
+      layers: null,
+      apiFrom: "internal"
     };
+  }
 
-    add = () => { };
-    delete = () => { };
-    setColor = () => { };
-    setLayout = () => { };
+  recursiveMap = (val, index) => {
+    if (val.layers !== undefined) {
+      return {
+        name: val.label,
+        mapTypeId: val.mapTypeId,
+        children: val.children.map((val, i) => this.recursiveMap(val, index)),
+        layers: val.layers.map((val, i) =>
+          val.mapTypeId == "basemap"
+            ? this.basemapMapping(val)
+            : this.dynamicMapping(val)
+        )
+      };
+    } else
+      return val.mapTypeId == "basemap"
+        ? this.basemapMapping(val)
+        : this.dynamicMapping(val);
+  };
+
+  creator = layers => {
+    let baseLayers = layers
+      .filter(c => c.mapTypeId === "basemap")
+      .map((val, index) => this.recursiveMap(val));
+
+    let dynamicLayers = layers
+      .filter(c => c.mapTypeId === "dynamic")
+      .map((val, index) => this.recursiveMap(val));
+
+    var mapResult = {
+      baseLayers,
+      dynamicLayers
+    };
+    return mapResult;
+  };
+
+  add = () => {};
+  delete = () => {};
+  setColor = () => {};
+  setLayout = () => {};
 }
 
 export default LayerHelper;

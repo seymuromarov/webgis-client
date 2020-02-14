@@ -1,61 +1,61 @@
 <template>
-    <div class="table-wrapper">
-        <Resizable
-            class="resizable"
-            ref="resizable"
-            :active="resize.handlers"
-            :fit-parent="resize.fit"
-            :max-width="resize.maxW | checkEmpty"
-            :max-height="resize.maxH | checkEmpty"
-            :min-width="resize.minW | checkEmpty"
-            :min-height="resize.minH | checkEmpty"
-            :width="resize.width"
-            :height="resize.height"
-            :left="resize.left"
-            :top="resize.top"
-            @mount="resizeHandler"
-            @resize:move="resizeHandler"
-            @resize:start="resizeHandler"
-            @resize:end="resizeHandler"
-            @drag:move="resizeHandler"
-            @drag:start="resizeHandler"
-            @drag:end="resizeHandler"
-        >
-            <div v-show="isVisible" class="tableDiv howMuchWidthHaveMap">
-                <div class="tableHeader">
-                    <p class="table__title">
-                        {{ tableName }}
-                    </p>
-                    <div class="table__operations">
-                        <download-excel
-                            v-if="tableHeaders"
-                            :data="featuresToExcel()"
-                            :fields="checkedColumnsToExcel()"
-                            type="xls"
-                            :name="'test' + '_report.xls'"
-                        >
-                            <i
-                                title="Export As Excel"
-                                class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
-                            ></i>
-                        </download-excel>
-                        <i
-                            title="Filter"
-                            class="fas fa-filter tableFilter makeMePoint icon"
-                            @click="showFilterModal"
-                        />
-                        <i
-                            title="Show/Hide Table Columns"
-                            class="fas fa-columns tableColumns makeMePointicon"
-                            @click="togglePopup"
-                        >
-                        </i>
-                        <i
-                            title="Close"
-                            class="fas fa-times tableClose makeMePoint icon"
-                            @click="toggleIsVisible"
-                        />
-                        <!-- 
+  <div class="table-wrapper">
+    <Resizable
+      class="resizable"
+      ref="resizable"
+      :active="resize.handlers"
+      :fit-parent="resize.fit"
+      :max-width="resize.maxW | checkEmpty"
+      :max-height="resize.maxH | checkEmpty"
+      :min-width="resize.minW | checkEmpty"
+      :min-height="resize.minH | checkEmpty"
+      :width="resize.width"
+      :height="resize.height"
+      :left="resize.left"
+      :top="resize.top"
+      @mount="resizeHandler"
+      @resize:move="resizeHandler"
+      @resize:start="resizeHandler"
+      @resize:end="resizeHandler"
+      @drag:move="resizeHandler"
+      @drag:start="resizeHandler"
+      @drag:end="resizeHandler"
+    >
+      <div v-show="isVisible" class="tableDiv howMuchWidthHaveMap">
+        <div class="tableHeader">
+          <p class="table__title">
+            {{ tableName }}
+          </p>
+          <div class="table__operations">
+            <download-excel
+              v-if="tableHeaders"
+              :data="featuresToExcel()"
+              :fields="checkedColumnsToExcel()"
+              type="xls"
+              :name="'test' + '_report.xls'"
+            >
+              <i
+                title="Export As Excel"
+                class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
+              ></i>
+            </download-excel>
+            <i
+              title="Filter"
+              class="fas fa-filter tableFilter makeMePoint icon"
+              @click="showFilterModal"
+            />
+            <i
+              title="Show/Hide Table Columns"
+              class="fas fa-columns tableColumns makeMePointicon"
+              @click="togglePopup"
+            >
+            </i>
+            <i
+              title="Close"
+              class="fas fa-times tableClose makeMePoint icon"
+              @click="toggleIsVisible"
+            />
+            <!-- 
                     <i
                             v-if="tableName.trim() == 'CropMap2019_vector'"
                             class="fas fa-filter tableSimpleFilter makeMePoint"
@@ -63,104 +63,89 @@
                             @click="showSimpleFilterModal"
                     /> -->
 
-                        <div
-                            class="tableShowColumns"
-                            v-if="isColumnPopupShowing"
-                        >
-                            <div class="columnsDiv">
-                                <div
-                                    v-for="(alias, index) in tableHeaders"
-                                    :key="index"
-                                >
-                                    <input
-                                        @click="
-                                            selectColumns(alias, index, $event)
-                                        "
-                                        type="checkbox"
-                                        :id="alias"
-                                        :value="alias"
-                                        v-model="checkedColumns"
-                                        checked="checked"
-                                    />
-                                    <label> {{ alias }} </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="tableShowColumns" v-if="isColumnPopupShowing">
+              <div class="columnsDiv">
+                <div v-for="(alias, index) in tableHeaders" :key="index">
+                  <input
+                    @click="selectColumns(alias, index, $event)"
+                    type="checkbox"
+                    :id="alias"
+                    :value="alias"
+                    v-model="checkedColumns"
+                    checked="checked"
+                  />
+                  <label> {{ alias }} </label>
                 </div>
-                <div class="tableContent custom-scrollbar"  id="dataTable">
-                    <!-- Loader -->
-                    <div class="loader" v-if="loading">
-                        <img src="@/assets/loading.svg" alt />
-                    </div>
-
-                    <!-- Table -->
-                    <table class="selfTable table" v-else>
-                        <thead>
-                            <tr>
-                                <th
-                                    v-show="checkedColumns.includes(alias)"
-                                    v-for="(alias, index) in tableHeaders"
-                                    :key="index"
-                                >
-                                    {{ alias }}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody
-                            class="tableBody custom-scrollbar"
-                            id="dataTable"
-                        >
-                            <tr v-for="(data, index) in tableData" :key="index">
-                                <td
-                                    class="makeMePoint"
-                                    @click="fitToPolygon(data)"
-                                    v-show="checkedColumnsData.includes(key)"
-                                    v-for="(attr, key) in data.attributes"
-                                    :key="key"
-                                >
-                                    {{ attr }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <modal
-                    name="data-modal"
-                    transition="nice-modal-fade"
-                    :min-width="200"
-                    :min-height="200"
-                    :delay="100"
-                    :draggable="true"
-                >
-                    <p class="tableModalHeader">{{ tableName }}</p>
-                    <div class="row" style="overflow: auto">
-                        <table class="table popupTable">
-                            <thead>
-                                <tr class="fields">
-                                    <th class="paddingLeft">Field</th>
-                                    <th class="paddingRight">Value</th>
-                                </tr>
-                            </thead>
-                            <tbody class="popupTableBody">
-                                <tr
-                                    v-for="(value,
-                                    key) in selectedData.attributes"
-                                    :key="key"
-                                >
-                                    <td class="paddingLeft">
-                                        {{ tableHeadersWithAlias[key] }}
-                                    </td>
-                                    <td class="paddingRight">{{ value }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </modal>
+              </div>
             </div>
-        </Resizable>
-    </div>
+          </div>
+        </div>
+        <div class="tableContent custom-scrollbar" id="dataTable">
+          <!-- Loader -->
+          <div class="loader" v-if="loading">
+            <img src="@/assets/loading.svg" alt />
+          </div>
+
+          <!-- Table -->
+          <table class="selfTable table" v-else>
+            <thead>
+              <tr>
+                <th
+                  v-show="checkedColumns.includes(alias)"
+                  v-for="(alias, index) in tableHeaders"
+                  :key="index"
+                >
+                  {{ alias }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="tableBody custom-scrollbar" id="dataTable">
+              <tr v-for="(data, index) in tableData" :key="index">
+                <td
+                  class="makeMePoint"
+                  @click="fitToPolygon(data)"
+                  v-show="checkedColumnsData.includes(key)"
+                  v-for="(attr, key) in data.attributes"
+                  :key="key"
+                >
+                  {{ attr }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <modal
+          name="data-modal"
+          transition="nice-modal-fade"
+          :min-width="200"
+          :min-height="200"
+          :delay="100"
+          :draggable="true"
+        >
+          <p class="tableModalHeader">{{ tableName }}</p>
+          <div class="row" style="overflow: auto">
+            <table class="table popupTable">
+              <thead>
+                <tr class="fields">
+                  <th class="paddingLeft">Field</th>
+                  <th class="paddingRight">Value</th>
+                </tr>
+              </thead>
+              <tbody class="popupTableBody">
+                <tr v-for="(value, key) in selectedData.attributes" :key="key">
+                  <td class="paddingLeft">
+                    {{ tableHeadersWithAlias[key] }}
+                  </td>
+                  <td class="paddingRight">{{ value }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </modal>
+      </div>
+    </Resizable>
+  </div>
 </template>
 
 <script>
@@ -170,78 +155,77 @@ import LayerService from "../services/LayerService";
 import Resizable from "vue-resizable";
 
 export default {
-    name: "DataTable",
-    props: {},
-    components: {
-        Multiselect,
-        Resizable,
-    },
-    data() {
-        return {
-            Toggler: null,
-            isColumnPopupShowing: false,
-            selectedData: [],
+  name: "DataTable",
+  props: {},
+  components: {
+    Multiselect,
+    Resizable
+  },
+  data() {
+    return {
+      Toggler: null,
+      isColumnPopupShowing: false,
+      selectedData: [],
 
-            resize: {
-                handlers: ["t"],
-                left: 0,
-                top: window.innerHeight - 200,
-                height: window.innerHeight,
-                width: window.innerWidth,
-                maxW: 10000,
-                maxH: window.innerHeight,
-                minW: 150,
-                minH: 200,
-                fit: true,
-                event: "",
-            },
-        };
-    },
+      resize: {
+        handlers: ["t"],
+        left: 0,
+        top: window.innerHeight - 200,
+        height: window.innerHeight,
+        width: window.innerWidth,
+        maxW: 10000,
+        maxH: window.innerHeight,
+        minW: 150,
+        minH: 200,
+        fit: true,
+        event: ""
+      }
+    };
+  },
 
-    mounted() {
-        this.scrollHandler();
+  mounted() {
+    this.scrollHandler();
+  },
+  created() {
+    window.addEventListener("resize", this.update);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.update);
+  },
+  watch: {
+    isVisible: {
+      handler(val) {
+        this.resetScroll();
+        this.resetPaging();
+      },
+      deep: true,
+      immediate: false
+    }
+  },
+  methods: {
+    resetScroll() {
+      const table = document.getElementById("dataTable");
+      table.scrollTo(0, 0);
     },
-    created() {
-        window.addEventListener("resize", this.update);
+    isEndOfData() {
+      return this.paging.page * this.paging.limit > this.totalCount;
     },
-    destroyed() {
-        window.removeEventListener("resize", this.update);
-    },
-    watch: {
-        isVisible: {
-            handler(val) {
-                this.resetScroll();
-                this.resetPaging();
-            },
-            deep: true,
-            immediate: false,
-        },
-    },
-    methods: {
-        resetScroll() {
-            const table = document.getElementById("dataTable");
-            table.scrollTo(0, 0);
-        },
-        isEndOfData() {
-            return this.paging.page * this.paging.limit > this.totalCount;
-        },
-        scrollHandler() {
-            const table = document.getElementById("dataTable");
-            table.addEventListener("scroll", e => {
-                if (
-                    table.scrollTop + table.clientHeight >=
-                        table.scrollHeight &&
-                    !this.paging.isBusy &&
-                    !this.isEndOfData() &&
-                    this.serviceInfo.resourceType === "local"
-                ) {
-                    var page = this.paging.page;
-                    page += 1;
-                    this.isPagingBusy(true);
-                    this.paging = {
-                        ...this.paging,
-                        page: page++,
-                    };
+    scrollHandler() {
+      const table = document.getElementById("dataTable");
+      table.addEventListener("scroll", e => {
+        if (
+          table.scrollTop + table.clientHeight >= table.scrollHeight &&
+          !this.paging.isBusy &&
+          !this.isEndOfData() &&
+          this.serviceInfo.resourceType === "local"
+        ) {
+          var page = this.paging.page;
+          page += 1;
+          this.isPagingBusy(true);
+          this.paging = {
+            ...this.paging,
+            page: page++
+          };
 
           this.getDatas();
           this.isPagingBusy(false);
@@ -340,151 +324,148 @@ export default {
           data => data.toLowerCase() != alias.toLowerCase()
         );
 
-                this.checkedColumns = this.checkedColumns.filter(
-                    data => data.toLowerCase() != alias.toLowerCase()
-                );
-            }
-        },
-        resizeHandler(data) {
-            this.resize.width = data.width;
-            this.resize.height = data.height;
-            this.resize.left = data.left;
-            this.resize.top = data.top;
-            this.resize.event = data.eventName;
-            if (data.eventName === "mount") {
-                this.resize.height = 200;
-            }
-        },
-        update() {
-            this.resize.top = window.innerHeight - 200;
-            this.resize.height = 200;
-            this.resize.width = window.innerWidth;
-            this.resize.maxH = window.innerHeight;
+        this.checkedColumns = this.checkedColumns.filter(
+          data => data.toLowerCase() != alias.toLowerCase()
+        );
+      }
+    },
+    resizeHandler(data) {
+      this.resize.width = data.width;
+      this.resize.height = data.height;
+      this.resize.left = data.left;
+      this.resize.top = data.top;
+      this.resize.event = data.eventName;
+      if (data.eventName === "mount") {
+        this.resize.height = 200;
+      }
+    },
+    update() {
+      this.resize.top = window.innerHeight - 200;
+      this.resize.height = 200;
+      this.resize.width = window.innerWidth;
+      this.resize.maxH = window.innerHeight;
 
-            this.$forceUpdate();
-        },
+      this.$forceUpdate();
+    }
+  },
+  computed: {
+    isVisible() {
+      return this.$store.state.dataTable.isVisible;
     },
-    computed: {
-        isVisible() {
-            return this.$store.state.dataTable.isVisible;
-        },
-        loading() {
-            return this.$store.getters.dataTableLoading;
-        },
-        totalCount() {
-            return this.$store.state.dataTable.totalCount;
-        },
-        paging: {
-            get() {
-                return this.$store.state.dataTable.paging;
-            },
-            set(value) {
-                this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
-            },
-        },
-        serviceInfo() {
-            return this.$store.state.dataTable.serviceInfo;
-        },
-        tableName() {
-            return this.$store.state.dataTable.tableName;
-        },
-        tableHeaders() {
-            return this.$store.state.dataTable.tableHeaders;
-        },
-        tableStackedHeaders: {
-            get() {
-                return this.$store.state.dataTable.tableStackedHeaders;
-            },
-            set(value) {
-                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-            },
-        },
-        tableHeadersWithAlias() {
-            return this.$store.state.dataTable.tableHeadersWithAlias;
-        },
-        // tableData() {
-        //   return this.$store.state.dataTable.tableData;
-        // },
-        tableData: {
-            get() {
-                return this.$store.state.dataTable.tableData;
-            },
-            set(value) {
-                this.$store.dispatch("SAVE_DATATABLE_DATA", value);
-            },
-        },
-        target() {
-            return this.$store.state.dataTable.target;
-        },
-        checkedColumnsData: {
-            get() {
-                return this.$store.state.dataTable.checkedColumnsData;
-            },
-            set(value) {
-                this.$store.dispatch(
-                    "SAVE_DATATABLE_CHECKED_COLUMNS_DATA",
-                    value
-                );
-            },
-        },
-        checkedColumns: {
-            get() {
-                return this.$store.state.dataTable.checkedColumns;
-            },
-            set(value) {
-                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-            },
-        },
-        // checkedColumns() {
-        //     return this.$store.state.dataTable.checkedColumns;
-        // },
-        lastBBOXOfShape() {
-            return this.$store.state.dataTable.lastBBOXOfShape;
-        },
+    loading() {
+      return this.$store.getters.dataTableLoading;
     },
-    filters: {
-        checkEmpty(value) {
-            return typeof value !== "number" ? 0 : value;
-        },
+    totalCount() {
+      return this.$store.state.dataTable.totalCount;
     },
+    paging: {
+      get() {
+        return this.$store.state.dataTable.paging;
+      },
+      set(value) {
+        this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
+      }
+    },
+    serviceInfo() {
+      return this.$store.state.dataTable.serviceInfo;
+    },
+    tableName() {
+      return this.$store.state.dataTable.tableName;
+    },
+    tableHeaders() {
+      return this.$store.state.dataTable.tableHeaders;
+    },
+    tableStackedHeaders: {
+      get() {
+        return this.$store.state.dataTable.tableStackedHeaders;
+      },
+      set(value) {
+        this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
+      }
+    },
+    tableHeadersWithAlias() {
+      return this.$store.state.dataTable.tableHeadersWithAlias;
+    },
+    // tableData() {
+    //   return this.$store.state.dataTable.tableData;
+    // },
+    tableData: {
+      get() {
+        return this.$store.state.dataTable.tableData;
+      },
+      set(value) {
+        this.$store.dispatch("SAVE_DATATABLE_DATA", value);
+      }
+    },
+    target() {
+      return this.$store.state.dataTable.target;
+    },
+    checkedColumnsData: {
+      get() {
+        return this.$store.state.dataTable.checkedColumnsData;
+      },
+      set(value) {
+        this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", value);
+      }
+    },
+    checkedColumns: {
+      get() {
+        return this.$store.state.dataTable.checkedColumns;
+      },
+      set(value) {
+        this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
+      }
+    },
+    // checkedColumns() {
+    //     return this.$store.state.dataTable.checkedColumns;
+    // },
+    lastBBOXOfShape() {
+      return this.$store.state.dataTable.lastBBOXOfShape;
+    }
+  },
+  filters: {
+    checkEmpty(value) {
+      return typeof value !== "number" ? 0 : value;
+    }
+  }
 };
 </script>
 
 <style lang="scss">
 .table-wrapper {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    bottom: 0;
-    top: 0;
-    display: flex;
-    align-items: flex-end;
-    pointer-events: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
 
-    & > * {
-        pointer-events: all;
-    }
+  & > * {
+    pointer-events: all;
+  }
 }
 
 .resizable {
-    position: absolute !important;
+  position: absolute !important;
 }
 
 .tableDiv {
-    top: 0;
-    .tableHeader {
-        background-color: #1b2537;
-        color: #ffffff;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        .table__title {
-            margin: 0;
-            font-size: 16px;
-            font-weight: 600;
-        }
+  top: 0;
+  .tableHeader {
+    background-color: #1b2537;
+    color: #ffffff;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    .table__title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
 
     .table__operations {
       display: flex;

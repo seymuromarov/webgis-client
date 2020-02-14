@@ -2,245 +2,245 @@
   <div class="row container-fluid padding-0">
     <!-- Sidebar -->
     <!-- <Sidebar
-            @saveColor="saveColor"
+                @saveColor="saveColor"
 
-            @selectService="selectService"
-            @dynamicLayersReset="dynamicLayersReset"
-            @selectSubService="selectSubService"
-            @getTableData="getTableData"
-            @openColorPicker="OpenColorPicker"
+                @selectService="selectService"
+                @dynamicLayersReset="dynamicLayersReset"
+                @selectSubService="selectSubService"
+                @getTableData="getTableData"
+                @openColorPicker="OpenColorPicker"
 
-            @showSimpleFilterModal="showSimpleFilterModal"
-            @basemapLayersReset="basemapLayersReset"
-        /> -->
+                @showSimpleFilterModal="showSimpleFilterModal"
+                @basemapLayersReset="basemapLayersReset"
+            /> -->
     <!-- Main content -->
     <div class="padding-0 map-layout">
       <div id="map">
         <!-- Search -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    :style="{ top: '15%' }"
-                    title="Search"
-                    @click="cityInputToggle"
-                >
-                    <i class="fas fa-search"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            :style="{ top: '15%' }"
+                            title="Search"
+                            @click="cityInputToggle"
+                        >
+                            <i class="fas fa-search"></i>
+                        </button> -->
         <!-- Search multiselect -->
         <!-- <div
-                    style="position: absolute;top: 14.2%;right: 60px;z-index: 999"
-                    v-show="citySearchInputShow"
-                >
-                    <multiselect
-                        v-model="citySearchValue"
-                        :options="citySearchOptions"
-                        :custom-label="nameWithCountry"
-                        selectLabel
-                        placeholder="Select City"
-                        label="city"
-                        track-by="city"
-                        @select="onCitySelect"
-                    ></multiselect>
-                </div> -->
+                            style="position: absolute;top: 14.2%;right: 60px;z-index: 999"
+                            v-show="citySearchInputShow"
+                        >
+                            <multiselect
+                                v-model="citySearchValue"
+                                :options="citySearchOptions"
+                                :custom-label="nameWithCountry"
+                                selectLabel
+                                placeholder="Select City"
+                                label="city"
+                                track-by="city"
+                                @select="onCitySelect"
+                            ></multiselect>
+                        </div> -->
         <!-- Delete Feature -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    :style="{ top: '70%' }"
-                    title="Delete Feature"
-                    @click="deleteFeatureOn"
-                >
-                    <i class="fas fa-trash"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            :style="{ top: '70%' }"
+                            title="Delete Feature"
+                            @click="deleteFeatureOn"
+                        >
+                            <i class="fas fa-trash"></i>
+                        </button> -->
         <!-- Reset feature -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    :style="{ top: '75%' }"
-                    title="Reset Features"
-                    @click="resetFeatures"
-                >
-                    <i class="fas fa-sync-alt"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            :style="{ top: '75%' }"
+                            title="Reset Features"
+                            @click="resetFeatures"
+                        >
+                            <i class="fas fa-sync-alt"></i>
+                        </button> -->
         <!-- Color Picker -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    :style="{ top: '80%' }"
-                    title="Color Picker"
-                    @click="eyeDropper"
-                >
-                    <i class="fas fa-eye-dropper"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            :style="{ top: '80%' }"
+                            title="Color Picker"
+                            @click="eyeDropper"
+                        >
+                            <i class="fas fa-eye-dropper"></i>
+                        </button> -->
         <!-- Drawings -->
         <!-- <button
-                    v-for="(item, index) in drawings"
-                    :key="index"
-                    class="action-button-class btn btn-control"
-                    :style="{ top: (index + 1) * 5 + 25 + '%' }"
-                    :title="item.tooltip"
-                    @click="setDrawType(item.name)"
-                >
-                    <i :class="item.icon"></i>
-                </button> -->
+                            v-for="(item, index) in drawings"
+                            :key="index"
+                            class="action-button-class btn btn-control"
+                            :style="{ top: (index + 1) * 5 + 25 + '%' }"
+                            :title="item.tooltip"
+                            @click="setDrawType(item.name)"
+                        >
+                            <i :class="item.icon"></i>
+                        </button> -->
         <!-- NDVI Assessment -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    :style="{ top: (drawings.length + 1) * 5 + 25 + '%' }"
-                    title="NDVI Assessment"
-                    @click="changeDetector"
-                >
-                    <i class="fas fa-globe"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            :style="{ top: (drawings.length + 1) * 5 + 25 + '%' }"
+                            title="NDVI Assessment"
+                            @click="changeDetector"
+                        >
+                            <i class="fas fa-globe"></i>
+                        </button> -->
         <!-- Lattitude and Longtitude -->
         <!-- <div
-                    id="mouse-position"
-                    class="latLongShow"
-                    @click="LatLongFormToggle"
-                ></div> -->
+                            id="mouse-position"
+                            class="latLongShow"
+                            @click="LatLongFormToggle"
+                        ></div> -->
         <!-- Lattitude and Longtitude Form -->
         <!-- <div class="latLongShowForm" v-show="latLongFormShow">
-                    <div @mouseleave="LatLongFormToggle">
-                        <div style="width: 300px">
-                            <div style="display: inline;float: left;">
-                                Lat:
+                            <div @mouseleave="LatLongFormToggle">
+                                <div style="width: 300px">
+                                    <div style="display: inline;float: left;">
+                                        Lat:
+                                        <input
+                                            v-model="latChange"
+                                            v-on:keyup.enter="changeLocation"
+                                            class="form-control"
+                                            type="text"
+                                            placeholder="Latitude"
+                                            style="display: inline-block;width: 100px;"
+                                        />
+                                    </div>
+                                    <div style="display: inline;">
+                                        Lng:
+                                        <input
+                                            v-model="longChange"
+                                            v-on:keyup.enter="changeLocation"
+                                            class="form-control"
+                                            type="text"
+                                            placeholder="Longitude"
+                                            style="display: inline-block;width: 100px;"
+                                        />
+                                    </div>
+                                </div>
                                 <input
-                                    v-model="latChange"
-                                    v-on:keyup.enter="changeLocation"
-                                    class="form-control"
-                                    type="text"
-                                    placeholder="Latitude"
-                                    style="display: inline-block;width: 100px;"
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    v-model="isMetricCoordinateSystem"
+                                    id="coordinateCheckbox"
+                                    aria-label
                                 />
+                                <label class="form-check-label" for="coordinateCheckbox"
+                                    >Use metric coordinate system</label
+                                >
                             </div>
-                            <div style="display: inline;">
-                                Lng:
-                                <input
-                                    v-model="longChange"
-                                    v-on:keyup.enter="changeLocation"
-                                    class="form-control"
-                                    type="text"
-                                    placeholder="Longitude"
-                                    style="display: inline-block;width: 100px;"
-                                />
-                            </div>
-                        </div>
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            v-model="isMetricCoordinateSystem"
-                            id="coordinateCheckbox"
-                            aria-label
-                        />
-                        <label class="form-check-label" for="coordinateCheckbox"
-                            >Use metric coordinate system</label
-                        >
-                    </div>
-                </div> -->
+                        </div> -->
         <!-- KML Info ? -->
         <!-- <div id="info" class="infokml" v-show="this.kmlInfo !== null">
-                    &nbsp;
-                </div> -->
+                            &nbsp;
+                        </div> -->
         <!-- Drag & Drop Toast -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="bottom: 10px;right: 90px;"
-                    @click="dragAndDropToast"
-                    title="Upload file"
-                    v-if="!isTabelVisible"
-                >
-                    <i class="fas fa-file-upload"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            style="bottom: 10px;right: 90px;"
+                            @click="dragAndDropToast"
+                            title="Upload file"
+                            v-if="!isTabelVisible"
+                        >
+                            <i class="fas fa-file-upload"></i>
+                        </button> -->
         <!-- Map view -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="bottom: 10px;right: 50px;"
-                    @click="selectLayerForm = true"
-                    v-if="!isTabelVisible"
-                >
-                    <i class="fas fa-stream"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            style="bottom: 10px;right: 50px;"
+                            @click="selectLayerForm = true"
+                            v-if="!isTabelVisible"
+                        >
+                            <i class="fas fa-stream"></i>
+                        </button> -->
         <!-- Map view types -->
         <!-- <div
-                    v-show="!selectLayerForm"
-                    @mouseleave="selectLayerForm = false"
-                    class="selectLayerForm"
-                >
-                    <form>
-                        <div v-for="(element, index) in baseMaps" :key="index">
-                            <input
-                                type="radio"
-                                class
-                                name="baseLayer"
-                                @click="setBaseLayout(index)"
-                            />
-                            <span style="margin-left: 5px;">{{ index }}</span>
-                        </div>
-                    </form>
-                </div> -->
+                            v-show="!selectLayerForm"
+                            @mouseleave="selectLayerForm = false"
+                            class="selectLayerForm"
+                        >
+                            <form>
+                                <div v-for="(element, index) in baseMaps" :key="index">
+                                    <input
+                                        type="radio"
+                                        class
+                                        name="baseLayer"
+                                        @click="setBaseLayout(index)"
+                                    />
+                                    <span style="margin-left: 5px;">{{ index }}</span>
+                                </div>
+                            </form>
+                        </div> -->
         <!-- Information -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="bottom: 10px;right: 10px;"
-                    @click="showInfoModal = true"
-                >
-                    <i class="fas fa-info"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            style="bottom: 10px;right: 10px;"
+                            @click="showInfoModal = true"
+                        >
+                            <i class="fas fa-info"></i>
+                        </button> -->
         <!-- Home -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="top: 116px;left: .5rem;"
-                    title="Home"
-                    @click="zoomToCenter"
-                >
-                    <i class="fas fa-home"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            style="top: 116px;left: .5rem;"
+                            title="Home"
+                            @click="zoomToCenter"
+                        >
+                            <i class="fas fa-home"></i>
+                        </button> -->
         <!-- History next -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="top: 152px;left: .5rem;"
-                    title="Go next map history"
-                    :disabled="!nextHistoryEvent"
-                    @click="historyNext"
-                >
-                    <i class="fas fa-arrow-right"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            style="top: 152px;left: .5rem;"
+                            title="Go next map history"
+                            :disabled="!nextHistoryEvent"
+                            @click="historyNext"
+                        >
+                            <i class="fas fa-arrow-right"></i>
+                        </button> -->
         <!-- History previous -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="top: 188px;left: .5rem;"
-                    title="Go previous map history"
-                    :disabled="!previousHistoryEvent"
-                    @click="historyBack"
-                >
-                    <i class="fas fa-arrow-left"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            style="top: 188px;left: .5rem;"
+                            title="Go previous map history"
+                            :disabled="!previousHistoryEvent"
+                            @click="historyBack"
+                        >
+                            <i class="fas fa-arrow-left"></i>
+                        </button> -->
         <!-- Grid -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="top: 224px;left: .5rem;"
-                    @click="addGraticule"
-                    title="Add Graticule"
-                    v-show="!isTabelVisible"
-                >
-                    <i class="fas fa-barcode"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            style="top: 224px;left: .5rem;"
+                            @click="addGraticule"
+                            title="Add Graticule"
+                            v-show="!isTabelVisible"
+                        >
+                            <i class="fas fa-barcode"></i>
+                        </button> -->
         <!-- Export PNG -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="bottom: 10px;left: 3rem;"
-                    @click="pngExport"
-                    title="Export to png"
-                    v-show="!isTabelVisible"
-                >
-                    <i class="far fa-file-image"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            style="bottom: 10px;left: 3rem;"
+                            @click="pngExport"
+                            title="Export to png"
+                            v-show="!isTabelVisible"
+                        >
+                            <i class="far fa-file-image"></i>
+                        </button> -->
         <!-- Export data -->
         <!-- <button
-                    class="action-button-class btn btn-control"
-                    style="bottom: 10px;left: .5rem;"
-                    @click="exportData"
-                    title="Export to KMZ"
-                    v-show="!isTabelVisible"
-                >
-                    <i class="fas fa-file-download"></i>
-                </button> -->
+                            class="action-button-class btn btn-control"
+                            style="bottom: 10px;left: .5rem;"
+                            @click="exportData"
+                            title="Export to KMZ"
+                            v-show="!isTabelVisible"
+                        >
+                            <i class="fas fa-file-download"></i>
+                        </button> -->
 
         <MapControls
           :map="mapLayer"
@@ -527,7 +527,6 @@ export default {
       graticule: false,
       graticuleLayer: null,
       tableHeader: null,
-      baseLayerList: [],
       helpmaptooltipElement: null,
       helpmaptooltip: null,
       measuremaptooltipElement: null,
@@ -1034,27 +1033,28 @@ export default {
     onMoveCallbackDynamicLayerList(evt, originalEvent) {
       this.layerCounter = 0;
 
-      let dynamicLayerList = this.$store.getters.dynamicLayerList;
-      dynamicLayerList.map((item, index) => this.recursiveLayerOrder(item));
-      console.log(dynamicLayerList);
-      this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", dynamicLayerList);
+      let dynamicLayerList = this.dynamicLayerList;
 
-      dynamicLayerList.map((item, index) => this.recursiveLayerIndexes(item));
-      console.log(dynamicLayerList);
+      dynamicLayerList = dynamicLayerList.map((item, index) => {
+        return this.recursiveLayerOrder(item);
+      });
+
+      dynamicLayerList.map((item, index) => {
+        this.recursiveLayerIndexes(item);
+      });
     },
     onMoveCallbackBaseLayerList(evt, originalEvent) {
       this.layerCounter = 0;
 
-      let baseLayerList = this.$store.getters.baseLayerList;
-      baseLayerList = baseLayerList.map((item, index) =>
-        this.recursiveLayerOrder(item)
-      );
-      this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);
-
-      baseLayerList.map((item, index) => this.recursiveLayerIndexes(item));
+      let baseLayerList = this.baseLayerList;
+      baseLayerList = baseLayerList.map((item, index) => {
+        return this.recursiveLayerOrder(item);
+      });
+      baseLayerList.map((item, index) => {
+        this.recursiveLayerIndexes(item);
+      });
     },
     recursiveLayerOrder(item) {
-      this.layerCounter++;
       if (this.isItemCategory(item))
         return {
           ...item,
@@ -1105,20 +1105,27 @@ export default {
     },
 
     isItemCategory(item) {
-      return item.layers !== undefined && item.children !== undefined;
+      return item.layers && item.children;
     },
     recursiveLayerFind(item, name) {
-      if (item.layers !== undefined && item.children !== undefined) {
+      var isCategory = this.isItemCategory(item);
+      if (isCategory) {
         //group
-        if (item.layers.some(c => c.name === name))
-          return item.layers.find(c => c.name == name);
-        else {
-          item.children.map(item => this.recursiveLayerOrder(item));
+        if (item.layers.some(c => c.name === name)) {
+          return item.layers.find(c => c.name === name);
+        } else {
+          if (item.children && item.children.length > 0) {
+            item.children.map(item => this.recursiveLayerFind(item));
+          } else {
+            return null;
+          }
         }
       } //layer
       else {
         if (item.name == name) {
-          return item;
+          {
+            return item;
+          }
         } else {
           return null;
         }
@@ -1287,7 +1294,7 @@ export default {
       }
     },
     setDynamicIndexes() {
-      this.$store.getters.dynamicLayerList.map((item, index) => {
+      this.dynamicLayerList.map((item, index) => {
         this.mapLayer.getLayers().forEach(function(layer) {
           if (
             layer.get("name") != undefined &&
@@ -1305,19 +1312,17 @@ export default {
       });
       self.gisLayers = response.data;
       let layers = self.LayerHelper.creator(self.gisLayers);
-
-      self.$store.dispatch("SET_BASE_LAYER_LIST", layers.baseLayers);
-
-      this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", layers.dynamicLayers);
+      this.baseLayerList = layers.baseLayers;
+      this.dynamicLayerList = layers.dynamicLayers;
 
       let selectedLayersArr = Object.keys(
         this.$store.getters.selectedLayers
       ).map(Number);
       selectedLayersArr.forEach(value => {
-        this.$store.getters.baseLayerList.forEach(item => {
+        this.baseLayerList.forEach(item => {
           this.checkIfLayerNeedsToTurnOn(item, value);
         });
-        this.$store.getters.dynamicLayerList.forEach(item => {
+        this.dynamicLayerList.forEach(item => {
           this.checkIfLayerNeedsToTurnOn(item, value);
         });
       });
@@ -1531,17 +1536,12 @@ export default {
       }
     },
     async basemapLayersReset(service, status) {
-      let baseLayerList = this.$store.getters.baseLayerList.map(
-        (item, index) => {
-          console.log("basemapLayersReset");
-          if (service.name === item.name) {
-            item.layersVisibility = status;
-          }
-          return item;
+      let baseLayerList = this.baseLayerList.map((item, index) => {
+        if (service.name === item.name) {
+          item.layersVisibility = status;
         }
-      );
-
-      this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);
+        return item;
+      });
     },
     async dynamicLayersReset(service, status) {
       let token;
@@ -1570,18 +1570,15 @@ export default {
           }
         }
       }
-      const list = this.$store.getters.dynamicLayerList.map((item, index) => {
+      const list = this.dynamicLayerList.map((item, index) => {
         item.color = item.color ? item.color : false;
         var layer = this.recursiveLayerFind(item, service.name);
-        console.log("dynamicLayersReset");
-        if (layer) {
+        if (layer != null) {
           layer.layersVisibility = status;
           layer.color = colorEnabled;
         }
         return item;
       });
-
-      this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
     },
     async getResponseDynamic(service) {
       let responseDynamic;
@@ -1620,6 +1617,17 @@ export default {
 
       return responseDynamic;
     },
+    recursiveLayerProcess(layerArr, service, callback) {
+      for (var i = 0; i < layerArr.length; i++) {
+        var item = layerArr[i];
+
+        var layer = this.recursiveLayerFind(item, service.name);
+        if (callback && typeof callback === "function") {
+          callback(layer);
+        }
+      }
+      return layerArr;
+    },
     async selectService(service, index, dynamic, e, isHashLoaded = true) {
       if (e.target.checked) {
         let self = this;
@@ -1634,22 +1642,17 @@ export default {
           subLayers = await this.getResponseDynamic(
             service.unitedDynamicLayerName
           );
-          let baseLayerList = this.$store.getters.baseLayerList.map(
-            (item, index) => {
-              if (service.name === item.name) {
-                item.unitedDynamicLayerName.layers = subLayers.data.layers;
-              }
-              return item;
+          let baseLayerList = this.baseLayerList.map((item, index) => {
+            if (service.name === item.name) {
+              item.unitedDynamicLayerName.layers = subLayers.data.layers;
             }
-          );
-
-          this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);
+            return item;
+          });
         } else {
           subLayers = await this.getResponseDynamic(service);
-          const list = this.$store.getters.dynamicLayerList.map((item, index) =>
+          const list = this.dynamicLayerList.map((item, index) =>
             this.recursiveLayerSet(item, service.name, subLayers)
           );
-          this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
         }
 
         let dynamicSubLayerList = self.$store.getters.dynamicLayerList;
@@ -1663,63 +1666,94 @@ export default {
 
         this.addLayers(service, index, dynamic);
 
-        for (let i in this.$store.getters.dynamicLayerList) {
-          var item = this.$store.getters.dynamicLayerList[i];
-          var result = this.recursiveLayerFind(item, service.name);
-          if (result != null) {
-            result.collapseVisibility = true;
-            this.$store.dispatch(
-              "SET_DYNAMIC_LAYER_LIST",
-              this.$store.getters.dynamicLayerList
-            );
-            break;
+        this.dynamicLayerList = this.recursiveLayerProcess(
+          this.dynamicLayerList,
+          service,
+          function(layer) {
+            if (layer != null) {
+              layer.isSelected = true;
+              layer.collapseVisibility = true;
+            }
           }
-        }
-
-        for (let i in this.$store.getters.baseLayerList) {
-          if (
-            this.$store.getters.baseLayerList[i].unitedDynamicLayerName !==
-              undefined &&
-            this.$store.getters.baseLayerList[i].unitedDynamicLayerName !==
-              null &&
-            this.$store.getters.baseLayerList[i].name === service.name
-          ) {
-            let list = this.$store.getters.baseLayerList;
-            list[i].collapseVisibility = true;
-            this.$store.dispatch("SET_BASE_LAYER_LIST", list);
-
-            break;
+        );
+        this.baseLayerList = this.recursiveLayerProcess(
+          this.baseLayerList,
+          service,
+          function(layer) {
+            if (layer != null) {
+              layer.isSelected = true;
+              layer.collapseVisibility = true;
+            }
           }
-        }
+        );
+
+        // this.baseLayerList = this.recursiveLayerProcess(
+        //   this.baseLayerList,
+        //   service,
+        //   function(layer) {
+        //         if (
+        //     layer.unitedDynamicLayerName !== undefined &&
+        //     layer.unitedDynamicLayerName !== null &&
+        //     layer.name === service.name
+        //   ) {
+        //     let list = this.baseLayerList;
+        //     list[i].collapseVisibility = true;
+
+        //     break;
+        //   }
+        //   }
+        // );
+        // for (let i in this.dynamicLayerList) {
+        //   var item = this.dynamicLayerList[i];
+        //   var result = this.recursiveLayerFind(item, service.name);
+        //   if (result != null) {
+        //     result.collapseVisibility = true;
+        //     this.$store.dispatch(
+        //       "SET_DYNAMIC_LAYER_LIST",
+        //       this.dynamicLayerList
+        //     );
+        //     break;
+        //   }
+        // }
+
+        // for (let i in this.baseLayerList) {
+        //   if (
+        //     this.baseLayerList[i].unitedDynamicLayerName !== undefined &&
+        //     this.baseLayerList[i].unitedDynamicLayerName !== null &&
+        //     this.baseLayerList[i].name === service.name
+        //   ) {
+        //     let list = this.baseLayerList;
+        //     list[i].collapseVisibility = true;
+
+        //     break;
+        //   }
+        // }
       } else {
         this.deleteLayers(service);
-        for (let i in this.$store.getters.dynamicLayerList) {
-          if (this.$store.getters.dynamicLayerList[i].name === service.name) {
-            let list = this.$store.getters.dynamicLayerList;
-            list[i].collapseVisibility = false;
-            list[i].layersVisibility = false;
-            this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
-
-            break;
+        this.dynamicLayerList = this.recursiveLayerProcess(
+          this.dynamicLayerList,
+          service,
+          function(layer) {
+            if (layer != null) {
+              layer.isSelected = false;
+              layer.collapseVisibility = false;
+            }
           }
-        }
-        for (let i in this.$store.getters.baseLayerList) {
-          if (
-            this.$store.getters.baseLayerList[i].unitedDynamicLayerName !==
-              undefined &&
-            this.$store.getters.baseLayerList[i].unitedDynamicLayerName !==
-              null &&
-            this.$store.getters.baseLayerList[i].name === service.name
-          ) {
-            let list = this.$store.getters.baseLayerList;
+        );
+        // for (let i in this.baseLayerList) {
+        //   if (
+        //     this.baseLayerList[i].unitedDynamicLayerName !== undefined &&
+        //     this.baseLayerList[i].unitedDynamicLayerName !== null &&
+        //     this.baseLayerList[i].name === service.name
+        //   ) {
+        //     let list = this.baseLayerList;
 
-            list[i].collapseVisibility = false;
-            list[i].layersVisibility = false;
+        //     list[i].collapseVisibility = false;
+        //     list[i].layersVisibility = false;
 
-            this.$store.dispatch("SET_BASE_LAYER_LIST", list);
-            break;
-          }
-        }
+        //     break;
+        //   }
+        // }
       }
     },
     selectSubService(service, index, id, e) {
@@ -1731,12 +1765,10 @@ export default {
 
       this.deleteLayers(service, false);
 
-      for (let i in this.$store.getters.dynamicLayerList) {
-        if (this.$store.getters.dynamicLayerList[i].name === service.name) {
-          let list = this.$store.getters.dynamicLayerList;
-          console.log(list);
+      for (let i in this.dynamicLayerList) {
+        if (this.dynamicLayerList[i].name === service.name) {
+          let list = this.dynamicLayerList;
           list[i].layersVisibility = true;
-          this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", list);
 
           break;
         }
@@ -1824,7 +1856,22 @@ export default {
     filterQueryArithmeticColumn() {
       return this.$store.state.filter.filterQueryArithmeticColumn;
     },
-
+    dynamicLayerList: {
+      get() {
+        return this.$store.getters.dynamicLayerList;
+      },
+      set(val) {
+        this.$store.dispatch("SET_DYNAMIC_LAYER_LIST", val);
+      }
+    },
+    baseLayerList: {
+      get() {
+        return this.$store.getters.baseLayerList;
+      },
+      set(val) {
+        this.$store.dispatch("SET_BASE_LAYER_LIST", val);
+      }
+    },
     // stackedTableFeaturesHeader() {
     //     return this.$store.state.dataTable.tableStackedHeaders;
     // },
