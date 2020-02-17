@@ -1,5 +1,5 @@
 <template>
-  <div class="colorPickers">
+  <div class="colorPickers  colorPickers--dark">
     <ul class="nav">
       <li class="nav-item">
         <a

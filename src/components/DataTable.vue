@@ -55,13 +55,12 @@
                             class="fas fa-times tableClose makeMePoint icon"
                             @click="toggleIsVisible"
                         />
-                        <!-- 
-                    <i
-                            v-if="tableName.trim() == 'CropMap2019_vector'"
-                            class="fas fa-filter tableSimpleFilter makeMePoint"
-                            style="color:blue"
-                            @click="showSimpleFilterModal"
-                    /> -->
+                        <!-- <i
+                                v-if="tableName.trim() == 'CropMap2019_vector'"
+                                class="fas fa-filter tableSimpleFilter makeMePoint"
+                                style="color:blue"
+                                @click="showSimpleFilterModal"
+                        /> -->
 
                         <div
                             id="table-columns"
@@ -127,38 +126,33 @@
                         </tbody>
                     </table>
                 </div>
-
-        <modal
-          name="data-modal"
-          transition="nice-modal-fade"
-          :min-width="200"
-          :min-height="200"
-          :delay="100"
-          :draggable="true"
-        >
-          <p class="tableModalHeader">{{ tableName }}</p>
-          <div class="row" style="overflow: auto">
-            <table class="table popupTable">
-              <thead>
-                <tr class="fields">
-                  <th class="paddingLeft">Field</th>
-                  <th class="paddingRight">Value</th>
-                </tr>
-              </thead>
-              <tbody class="popupTableBody">
-                <tr v-for="(value, key) in selectedData.attributes" :key="key">
-                  <td class="paddingLeft">
-                    {{ tableHeadersWithAlias[key] }}
-                  </td>
-                  <td class="paddingRight">{{ value }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </modal>
-      </div>
-    </Resizable>
-  </div>
+            </div>
+        </Resizable>
+        <CustomModal ref="data-modal" :minWidth="200" :minHeight="200">
+            <p class="tableModalHeader">{{ tableName }}</p>
+            <div class="row" style="overflow: auto">
+                <table class="table popupTable">
+                    <thead>
+                        <tr class="fields">
+                            <th class="paddingLeft">Field</th>
+                            <th class="paddingRight">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody class="popupTableBody">
+                        <tr
+                            v-for="(value, key) in selectedData.attributes"
+                            :key="key"
+                        >
+                            <td class="paddingLeft">
+                                {{ tableHeadersWithAlias[key] }}
+                            </td>
+                            <td class="paddingRight">{{ value }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </CustomModal>
+    </div>
 </template>
 
 <script>
@@ -166,19 +160,21 @@ import { Toggler } from "../helpers";
 import Multiselect from "vue-multiselect";
 import LayerService from "../services/LayerService";
 import Resizable from "vue-resizable";
+import CustomModal from "./common/Modal";
 
 export default {
-  name: "DataTable",
-  props: {},
-  components: {
-    Multiselect,
-    Resizable
-  },
-  data() {
-    return {
-      Toggler: null,
-      isColumnPopupShowing: false,
-      selectedData: [],
+    name: "DataTable",
+    props: {},
+    components: {
+        Multiselect,
+        Resizable,
+        CustomModal,
+    },
+    data() {
+        return {
+            Toggler: null,
+            isColumnPopupShowing: false,
+            selectedData: [],
 
       resize: {
         handlers: ["t"],
@@ -295,12 +291,7 @@ export default {
             this.$emit("showFilterModal");
         },
         showSimpleFilterModal() {
-            this.$modal.show("simple-data-filter-modal", null, {
-                name: "dynamic-filter-modal",
-                resizable: false,
-                adaptive: true,
-                draggable: false,
-            });
+            this.$refs["data-modal"].show();
         },
         fitToPolygon(data) {
       this.selectedData = data;

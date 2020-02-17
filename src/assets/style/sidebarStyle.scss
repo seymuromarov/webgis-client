@@ -144,10 +144,11 @@
                     .icons {
                         & > * {
                             margin-left: 8px;
-                        }
-
-                        &:hover {
-                            cursor: pointer;
+                            height: 18px;
+                            width: 16px;
+                            &:hover {
+                                cursor: pointer;
+                            }
                         }
                     }
                 }

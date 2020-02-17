@@ -1,9 +1,9 @@
 <template>
     <div id="filterDiv" class="filterDiv">
-        <div id="filterDivHeader" class="filterDivHeader">
-            <!-- <label class="filterLayerName">{{ tableHeader }}</label> -->
-            <label class="filterLayerName">Filter</label>
-        </div>
+        <!-- <div id="filterDivHeader" class="filterDivHeader"> -->
+        <!-- <label class="filterLayerName">{{ tableHeader }}</label> -->
+        <!-- <label class="filterLayerName">Filter</label> -->
+        <!-- </div> -->
 
         <div class="filterFieldsListDiv">
             <ul class="filterFieldsList">

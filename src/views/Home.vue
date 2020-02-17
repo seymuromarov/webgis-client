@@ -40,65 +40,44 @@
       @mapSetCenter="mapSetCenter"
     />
 
-    <!-- Report -->
-    <modal
-      name="arithmetic-result-modal"
-      transition="nice-modal-fade"
-      :min-width="200"
-      :min-height="200"
-      :delay="100"
-      :draggable="true"
-    >
-      <Report :arithmeticDataResult="ArithmeticDataResult" />
-    </modal>
+        <!-- Report -->
+        <CustomModal ref="arithmetic-result-modal" :maxWidth="600">
+            <Report :arithmeticDataResult="ArithmeticDataResult" />
+        </CustomModal>
 
-    <!-- Filter -->
-    <modal
-      name="filter-modal"
-      transition="nice-modal-fade"
-      class="filter-modal-class"
-      :min-width="200"
-      :min-height="200"
-      :delay="100"
-      :draggable="true"
-      :height="'auto'"
-    >
-      <FilterBox
-        :tableHeader="tableHeader"
-        :filterQuery="filterQuery"
-        :filterValues="filterValues"
-        :tableFeaturesHeader="tableFeaturesHeader"
-        :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
-        @appendFilterQuery="filterQuery += $event"
-        @setFilterQuery="filterQuery = $event.target.value"
-        @filterSelectedColumn="filterSelectedColumn"
-        @filterData="filterData"
-      />
-    </modal>
+        <!-- Filter -->
+        <CustomModal ref="filter-modal" title="Filter" :maxWidth="600">
+            <FilterBox
+                :tableHeader="tableHeader"
+                :filterQuery="filterQuery"
+                :filterValues="filterValues"
+                :tableFeaturesHeader="tableFeaturesHeader"
+                :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
+                @appendFilterQuery="filterQuery += $event"
+                @setFilterQuery="filterQuery = $event.target.value"
+                @filterSelectedColumn="filterSelectedColumn"
+                @filterData="filterData"
+            />
+        </CustomModal>
 
-    <!-- Shape Color Picker -->
-    <modal
-      name="color-picker-modal"
-      transition="nice-modal-fade"
-      class="color-picker-modal-class"
-      :min-width="200"
-      :min-height="200"
-      :delay="100"
-      :draggable="false"
-      :height="400"
-    >
-      <ShapeColorPicker @setShapeColor="setShapeColor" />
-    </modal>
+        <!-- Shape Color Picker -->
+        <CustomModal
+            ref="color-picker-modal"
+            title="Color picker"
+            :minWidth="300"
+        >
+            <ShapeColorPicker @setShapeColor="setShapeColor" />
+        </CustomModal>
 
-    <!-- Change Detection -->
-    <detector-modal
-      v-if="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
-      v-bind="{ lastBBOXOfShape, token }"
-      @close="
-        ($store.state.dataTable.lastBBOXOfShape = []) &
-          (isDrawnShapeForDetection = false)
-      "
-    ></detector-modal>
+        <!-- Change Detection -->
+        <detector-modal
+            :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
+            v-bind="{ lastBBOXOfShape, token }"
+            @close="
+                ($store.state.dataTable.lastBBOXOfShape = []) &
+                    (isDrawnShapeForDetection = false)
+            "
+        ></detector-modal>
 
     <!-- Information Modal -->
     <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
@@ -160,14 +139,15 @@ import Multiselect from "vue-multiselect";
 
 // Custom components
 import {
-  ShapeColorPicker,
-  DataTable,
-  Sidebar,
-  Filter,
-  Report,
-  MapControls
+    ShapeColorPicker,
+    DataTable,
+    Sidebar,
+    Filter,
+    Report,
+    MapControls,
+    InfoModal,
+    Modal as CustomModal,
 } from "@/components/";
-import InfoModal from "@/components/Info/index";
 import DetectorModal from "@/components/modals/ChangeDetector";
 
 // Utils
@@ -181,92 +161,96 @@ import { Toggler, MapHelpers, ColorPicker, LayerHelper } from "@/helpers";
 import "ol/ol.css";
 
 export default {
-  name: "Home",
-  components: {
-    ShapeColorPicker,
-    Multiselect,
-    DataTable,
-    DetectorModal,
-    InfoModal,
-    Sidebar,
-    FilterBox: Filter,
-    Report,
-    MapControls
-  },
-  data() {
-    return {
-      isDrawnShapeForDetection: false,
-      MapHelpers: null,
-      Toggler: null,
-      latChange: null,
-      longChange: null,
-      filterQuery: "",
-      ArithmeticDataResult: {},
-      filterValues: [],
-      mapLayer: null,
-      value: [],
-      checkedColumns: [],
-      checkedColumnsData: [],
-      options: [],
-      layers: [],
-      layerCounter: 0,
-      isMarker: false,
-      isRemove: false,
-      isColorPick: false,
-      token: null,
-      emlakToken: null,
-      kmlInfo: null,
-      source: null,
-      vector: null,
-      vectorSource: null,
-      vectorLayer: null,
-      featureIDSet: 0,
-      typeSelect: null,
-      draw: null,
-      stackedTableFeaturesHeader: [],
-      tableFeaturesHeader: [],
-      tableFeaturesData: [],
-      tableNextRequest: [],
-      citySearchOptions: [],
-      citySearchInputShow: false,
-      historyUpdate: true,
-      nextHistoryEvent: false,
-      previousHistoryEvent: false,
-      historyEvents: [],
-      historyEventsIndex: 0,
-      graticule: false,
-      tableHeader: null,
-      helpmaptooltip: null,
-      measuremaptooltip: null,
-      isMetricCoordinateSystem: false,
-      baseMaps: {
-        none: new XYZ({
-          crossOrigin: "Anonymous",
-          url: ""
-        }),
-        satellite: new XYZ({
-          name: "sat",
-          url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-        }),
-        street: new XYZ({
-          url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
-        }),
-        gray: new XYZ({
-          crossOrigin: "Anonymous",
-          url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-        })
-      },
-      dynamicForColors: [[]],
-      showInfoModal: false,
-      isHashLoaded: false
-    };
-  },
-  mounted() {
-    this.token = this.$cookie.get("token");
-    if (this.token === null) this.$router.push("/login");
+    name: "Home",
+    components: {
+        ShapeColorPicker,
+        Multiselect,
+        DataTable,
+        DetectorModal,
+        InfoModal,
+        Sidebar,
+        FilterBox: Filter,
+        Report,
+        MapControls,
+        CustomModal,
+    },
+    data() {
+        return {
+            isDrawnShapeForDetection: false,
+            MapHelpers: null,
+            Toggler: null,
+            ColorPicker: null,
+            latChange: null,
+            longChange: null,
+            filterQuery: "",
+            ArithmeticDataResult: {},
+            filterValues: [],
+            mapLayer: null,
+            value: [],
+            checkedColumns: [],
+            checkedColumnsData: [],
+            options: [],
+            layers: [],
+            layerCounter: 0,
+            isMarker: false,
+            isRemove: false,
+            isColorPick: false,
+            gisLayers: [],
+            token: null,
+            emlakToken: null,
+            kmlInfo: null,
+            source: null,
+            vector: null,
+            vectorSource: null,
+            vectorLayer: null,
+            featureIDSet: 0,
+            typeSelect: null,
+            draw: null,
+            stackedTableFeaturesHeader: [],
+            tableFeaturesHeader: [],
+            tableFeaturesData: [],
+            tableNextRequest: [],
+            citySearchOptions: [],
+            citySearchInputShow: false,
+            historyUpdate: true,
+            nextHistoryEvent: false,
+            previousHistoryEvent: false,
+            historyEvents: [],
+            historyEventsIndex: 0,
+            graticule: false,
+            tableHeader: null,
+            baseLayerList: [],
+            helpmaptooltip: null,
+            measuremaptooltip: null,
+            isMetricCoordinateSystem: false,
+            baseMaps: {
+                none: new XYZ({
+                    crossOrigin: "Anonymous",
+                    url: "",
+                }),
+                satellite: new XYZ({
+                    name: "sat",
+                    url:
+                        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                }),
+                street: new XYZ({
+                    url:
+                        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+                }),
+                gray: new XYZ({
+                    crossOrigin: "Anonymous",
+                    url:
+                        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+                }),
+            },
+            dynamicForColors: [[]],
+            showInfoModal: false,
+            isHashLoaded: false,
+        };
+    },
+    mounted() {
+        this.token = this.$cookie.get("token");
+        if (this.token === null) this.$router.push("/login");
 
     this.MapHelpers = new MapHelpers(this);
     this.Toggler = new Toggler(this);
@@ -472,52 +456,61 @@ export default {
         }
       });
 
-      let view = this.mapLayer.getView();
-      let updateHistoryMap = function() {
-        if (self.historyUpdate) {
-          let state = {
-            zoom: view.getZoom(),
-            center: view.getCenter(),
-            rotation: view.getRotation()
-          };
-          self.updateHash();
-          self.historyEvents.push(state);
-          self.historyEventsIndex = self.historyEvents.length;
-          self.nextHistoryEvent = false;
-          if (self.historyEventsIndex !== 1) {
-            self.previousHistoryEvent = true;
-          }
-        } else {
-          self.historyUpdate = true;
-        }
-      };
-      self.mapLayer.on("moveend", updateHistoryMap);
-      window.addEventListener("popstate", function(event) {
-        if (event.state === null) {
-          return;
-        }
-        self.mapLayer.getView().setCenter(event.state.center);
-        self.mapLayer.getView().setZoom(event.state.zoom);
-        self.mapLayer.getView().setRotation(event.state.rotation);
-      });
-    });
-  },
-  methods: {
-    objectToQueryString(obj) {
-      var str = [];
-      for (var p in obj)
-        if (obj.hasOwnProperty(p)) {
-          str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-        }
-      return "?" + str.join("&");
+            let view = this.mapLayer.getView();
+            let updateHistoryMap = function() {
+                if (self.historyUpdate) {
+                    let state = {
+                        zoom: view.getZoom(),
+                        center: view.getCenter(),
+                        rotation: view.getRotation(),
+                    };
+                    self.updateHash();
+                    self.historyEvents.push(state);
+                    self.historyEventsIndex = self.historyEvents.length;
+                    self.nextHistoryEvent = false;
+                    if (self.historyEventsIndex !== 1) {
+                        self.previousHistoryEvent = true;
+                    }
+                } else {
+                    self.historyUpdate = true;
+                }
+            };
+            self.mapLayer.on("moveend", updateHistoryMap);
+            window.addEventListener("popstate", function(event) {
+                if (event.state === null) {
+                    return;
+                }
+                self.mapLayer.getView().setCenter(event.state.center);
+                self.mapLayer.getView().setZoom(event.state.zoom);
+                self.mapLayer.getView().setRotation(event.state.rotation);
+            });
+        });
     },
-    updateHash() {
-      let view = this.mapLayer.getView();
-      let state = {
-        zoom: view.getZoom(),
-        center: view.getCenter(),
-        rotation: view.getRotation()
-      };
+    methods: {
+        btnclick(val) {
+            if (val) {
+                this.$refs["moodal"].show();
+            } else {
+                this.$refs["moodal"].hide();
+            }
+        },
+        objectToQueryString(obj) {
+            var str = [];
+            for (var p in obj)
+                if (obj.hasOwnProperty(p)) {
+                    str.push(
+                        encodeURIComponent(p) + "=" + encodeURIComponent(obj[p])
+                    );
+                }
+            return "?" + str.join("&");
+        },
+        updateHash() {
+            let view = this.mapLayer.getView();
+            let state = {
+                zoom: view.getZoom(),
+                center: view.getCenter(),
+                rotation: view.getRotation(),
+            };
 
       let selectedLayersArr = Object.keys(
         this.$store.getters.selectedLayers
@@ -532,210 +525,190 @@ export default {
         "&" +
         selectedLayersArr.toString();
 
-      window.history.pushState(state, "map", hash);
-    },
-    changeLocation() {
-      this.mapLayer
-        .getView()
-        .setCenter(
-          fromLonLat([parseFloat(this.longChange), parseFloat(this.latChange)])
-        );
-    },
-    LatLongFormToggle() {
-      let loc = document.getElementById("mouse-position").innerHTML;
-      loc = loc.split(":").map(item => item.trim());
-      let long = loc[2];
-      let lat = loc[1].split(",").map(item => item.trim());
-      lat = lat[0];
-      this.longChange = long;
-      this.latChange = lat;
-      this.Toggler.setLatLongShowForm();
-    },
-    setShapeColor() {
-      document.body.style.cursor = "crosshair";
-      this.$modal.hide("color-picker-modal");
-    },
-    cityInputToggle() {
-      this.Toggler.cityInputToggle(this);
-    },
-    onCitySelect(city) {
-      this.mapLayer
-        .getView()
-        .setCenter(fromLonLat([parseFloat(city.lng), parseFloat(city.lat)]));
-      this.mapLayer.getView().setZoom(11);
-      this.citySearchInputShow = false;
-    },
-    nameWithCountry({ city, country }) {
-      return `${city} , ${country}`;
-    },
-    exportData() {
-      this.MapHelpers.exportData(this);
-    },
-    async filterSelectedColumn(column) {
-      this.filterValues = [];
-      let params = {
-        id: this.$store.state.dataTable.serviceInfo.id
-      };
-      if (this.selectedServiceInfo.resourceType === "local") {
-        let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
-          params
-        );
-        let result = getLayerColumnsDistinctData.data.result;
-        this.filterValues =
-          result[
-            Object.keys(result).find(
-              key => key.toLowerCase() === column.toLowerCase()
-            )
-          ];
-      } else {
-        let keys = Object.keys(this.tableHeadersWithAlias);
-        for (let i = 0; i < keys.length; i++) {
-          if (this.tableHeadersWithAlias[keys[i]] === column) {
-            column = keys[i];
-            break;
-          }
-        }
-        for (let i = 0; i < this.tableFeaturesData.length; i++) {
-          if (
-            !this.filterValues.includes(
-              this.tableFeaturesData[i].attributes[column]
-            )
-          ) {
-            this.filterValues.push(
-              this.tableFeaturesData[i].attributes[column]
-            );
-          }
-        }
-      }
+            window.history.pushState(state, "map", hash);
+        },
+        changeLocation() {
+            this.mapLayer
+                .getView()
+                .setCenter(
+                    fromLonLat([
+                        parseFloat(this.longChange),
+                        parseFloat(this.latChange),
+                    ])
+                );
+        },
+        LatLongFormToggle() {
+            let loc = document.getElementById("mouse-position").innerHTML;
+            loc = loc.split(":").map(item => item.trim());
+            let long = loc[2];
+            let lat = loc[1].split(",").map(item => item.trim());
+            lat = lat[0];
+            this.longChange = long;
+            this.latChange = lat;
+            this.Toggler.setLatLongShowForm();
+        },
+        setShapeColor() {
+            document.body.style.cursor = "crosshair";
+            this.$refs["color-picker-modal"].hide();
+        },
+        cityInputToggle() {
+            this.Toggler.cityInputToggle(this);
+        },
+        onCitySelect(city) {
+            this.mapLayer
+                .getView()
+                .setCenter(
+                    fromLonLat([parseFloat(city.lng), parseFloat(city.lat)])
+                );
+            this.mapLayer.getView().setZoom(11);
+            this.citySearchInputShow = false;
+        },
+        nameWithCountry({ city, country }) {
+            return `${city} , ${country}`;
+        },
+        exportData() {
+            this.MapHelpers.exportData(this);
+        },
+        async filterSelectedColumn(column) {
+            this.filterValues = [];
+            let params = {
+                id: this.$store.state.dataTable.serviceInfo.id,
+            };
+            if (this.selectedServiceInfo.resourceType === "local") {
+                let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
+                    params
+                );
+                let result = getLayerColumnsDistinctData.data.result;
+                this.filterValues =
+                    result[
+                        Object.keys(result).find(
+                            key => key.toLowerCase() === column.toLowerCase()
+                        )
+                    ];
+            } else {
+                let keys = Object.keys(this.tableHeadersWithAlias);
+                for (let i = 0; i < keys.length; i++) {
+                    if (this.tableHeadersWithAlias[keys[i]] === column) {
+                        column = keys[i];
+                        break;
+                    }
+                }
+                for (let i = 0; i < this.tableFeaturesData.length; i++) {
+                    if (
+                        !this.filterValues.includes(
+                            this.tableFeaturesData[i].attributes[column]
+                        )
+                    ) {
+                        this.filterValues.push(
+                            this.tableFeaturesData[i].attributes[column]
+                        );
+                    }
+                }
+            }
 
       // if (getLayerColumnsDistinctData.status === 200) {
 
       // } else {
 
-      // }
-    },
-    filterData() {
-      this.getTableData(
-        this.tableNextRequest["service"],
-        this.tableNextRequest["layerId"],
-        this.tableNextRequest["layerName"],
-        this.filterQuery == "" ? {} : { where: this.filterQuery }
-      );
-      this.$modal.hide("filter-modal");
-    },
-    addValueToQuery(value) {
-      if (typeof value == "string") value = "'" + value + "'";
-      this.filterQuery += value + " ";
-    },
-    dragAndDropToast() {
-      let toast = this.$toasted.show(
-        "Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map",
-        {
-          theme: "outline",
-          position: "bottom-center",
-          duration: 3500
-        }
-      );
-    },
-    addGraticule() {
-      this.MapHelpers.addGraticule();
-    },
-    pngExport() {
-      this.MapHelpers.pngExport();
-    },
-    setMarkerTrue() {
-      this.setDrawType("None");
-      this.isMarker = true;
-    },
-    eyeDropper() {
-      this.setDrawType("None");
-      this.$modal.show("color-picker-modal", null, {
-        name: "dynamic-modal"
-      });
-      this.isColorPick = true;
-    },
-    changeDetector() {
-      this.$store.state.dataTable.lastBBOXOfShape = [];
-      this.setDrawType("Box");
-      this.isDrawnShapeForDetection = true;
-    },
-    deleteFeatureOn() {
-      this.setDrawType("None");
-      this.isRemove = true;
-    },
-    resetFeatures() {
-      this.MapHelpers.resetFeatures();
-    },
-    selectColumns(alias, key, e) {
-      if (e.target.checked) {
-        this.checkedColumnsData.push(this.stackedTableFeaturesHeader[key]);
-      } else {
-        this.checkedColumnsData = this.checkedColumnsData.filter(
-          data => data != alias
-        );
-      }
-    },
-    showColumnsChange() {
-      this.Toggler.showColumnsChange();
-    },
-    showSimpleFilterModal(layerId, layerName) {
-      this.$store.dispatch("SAVE_DATATABLE_LAYER_ID", layerId);
-      this.$store.dispatch("SAVE_DATATABLE_SERVICE_NAME", layerName);
-      this.$refs.reportFilterModal.$modal.show(
-        "simple-data-filter-modal",
-        null,
-        {
-          name: "simple-data-filter-modal",
-          resizable: false,
-          adaptive: true,
-          draggable: false
-        }
-      );
-    },
-
-    mapSetCenter(data) {
-      let geometry = [];
-      if (data.geometry.x !== undefined) {
-        geometry = [data.geometry.x, data.geometry.y];
-      } else if (data.geometry.rings !== undefined) {
-        geometry = data.geometry.rings[0];
-      }
-
-      if (geometry.length > 0) {
-        geometry = geometry.map((item, index) => fromLonLat(item));
-        var extent = new Polygon([geometry]);
-        this.mapLayer.getView().fit(extent, {
-          padding: [-50, 50, 30, 150],
-          size: [50, 100],
-          maxZoom: 16
-        });
-
-        var vectorLayer = this.MapHelpers.renderPolygonVector(geometry);
-        this.mapSetFocusedPolygon(vectorLayer);
-      }
-    },
-    mapSetFocusedPolygon(vectorLayer) {
-      //if last vector exist
-      if (this.focusedPolygonVector != null)
-        //reset
-        this.mapLayer.removeLayer(this.focusedPolygonVector);
-      //set new vector
-      this.focusedPolygonVector = vectorLayer;
-      this.mapLayer.addLayer(vectorLayer);
-    },
-    showFilterModal() {
-      this.$modal.show("filter-modal", null, {
-        name: "dynamic-modal",
-        resizable: true,
-        adaptive: true,
-        draggable: true
-      });
-    },
-    addInteraction() {
-      this.MapHelpers.addInteraction();
-    },
-    onMoveCallbackDynamicLayerList(evt, originalEvent) {
-      this.layerCounter = 0;
+            // }
+        },
+        filterData() {
+            this.getTableData(
+                this.tableNextRequest["service"],
+                this.tableNextRequest["layerId"],
+                this.tableNextRequest["layerName"],
+                this.filterQuery == "" ? {} : { where: this.filterQuery }
+            );
+            this.$refs["filter-modal"].hide();
+        },
+        addValueToQuery(value) {
+            if (typeof value == "string") value = "'" + value + "'";
+            this.filterQuery += value + " ";
+        },
+        dragAndDropToast() {
+            let toast = this.$toasted.show(
+                "Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map",
+                {
+                    theme: "outline",
+                    position: "bottom-center",
+                    duration: 3500,
+                }
+            );
+        },
+        addGraticule() {
+            this.MapHelpers.addGraticule();
+        },
+        pngExport() {
+            this.MapHelpers.pngExport();
+        },
+        setMarkerTrue() {
+            this.setDrawType("None");
+            this.isMarker = true;
+        },
+        eyeDropper() {
+            this.setDrawType("None");
+            this.$refs["color-picker-modal"].show();
+            this.isColorPick = true;
+        },
+        changeDetector() {
+            this.$store.state.dataTable.lastBBOXOfShape = [];
+            this.setDrawType("Box");
+            this.isDrawnShapeForDetection = true;
+        },
+        deleteFeatureOn() {
+            this.setDrawType("None");
+            this.isRemove = true;
+        },
+        resetFeatures() {
+            this.MapHelpers.resetFeatures();
+        },
+        selectColumns(alias, key, e) {
+            if (e.target.checked) {
+                this.checkedColumnsData.push(
+                    this.stackedTableFeaturesHeader[key]
+                );
+            } else {
+                this.checkedColumnsData = this.checkedColumnsData.filter(
+                    data => data != alias
+                );
+            }
+        },
+        showColumnsChange() {
+            this.Toggler.showColumnsChange();
+        },
+        showSimpleFilterModal(layerId, layerName) {
+            this.$store.dispatch("SAVE_DATATABLE_LAYER_ID", layerId);
+            this.$store.dispatch("SAVE_DATATABLE_SERVICE_NAME", layerName);
+            this.$refs.reportFilterModal.$modal.show(
+                "simple-data-filter-modal",
+                null,
+                {
+                    name: "simple-data-filter-modal",
+                    resizable: false,
+                    adaptive: true,
+                    draggable: false,
+                }
+            );
+        },
+        mapSetCenter(data) {
+            if (data.geometry.x !== undefined) {
+                this.mapLayer
+                    .getView()
+                    .setCenter(fromLonLat([data.geometry.x, data.geometry.y]));
+            } else {
+                this.mapLayer
+                    .getView()
+                    .setCenter(fromLonLat(data.geometry.rings[0][0]));
+            }
+        },
+        showFilterModal() {
+            this.$refs["filter-modal"].show();
+        },
+        addInteraction() {
+            this.MapHelpers.addInteraction();
+        },
+        onMoveCallbackBaseLayerList(evt, originalEvent) {
+            this.layerCounter = 0;
 
       let dynamicLayerList = this.dynamicLayerList;
 
@@ -869,24 +842,21 @@ export default {
           ...this.tablePaging
         };
 
-        service.query = query;
-        if (this.filterQueryIsSum && service.resourceType === "local") {
-          params.isSum = this.filterQueryIsSum;
-          params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
-          response = await LayerService.getLocalArithmeticData(params);
-          this.ArithmeticDataResult = response.data.result;
-          this.$modal.show("arithmetic-result-modal", null, {
-            name: "arithmetic-result-modal",
-            resizable: true,
-            adaptive: true,
-            draggable: true
-          });
-        } else {
-          response = await LayerService.getLocalTableData(params);
-        }
-        this.refreshLayer(service);
-      }
-      this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
+                service.query = query;
+                if (this.filterQueryIsSum && service.resourceType === "local") {
+                    params.isSum = this.filterQueryIsSum;
+                    params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
+                    response = await LayerService.getLocalArithmeticData(
+                        params
+                    );
+                    this.ArithmeticDataResult = response.data.result;
+                    this.$refs["arithmetic-result-modal"].show();
+                } else {
+                    response = await LayerService.getLocalTableData(params);
+                }
+                this.refreshLayer(service);
+            }
+            this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
 
       if (response.data.error !== undefined) {
         return;
