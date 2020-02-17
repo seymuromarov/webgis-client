@@ -268,16 +268,33 @@ hr {
     text-align: center;
     padding: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+    &.colorPickers--dark {
+        .nav-item a {
+            color: rgba(255, 255, 255, 0.6);
+            &:hover,
+            &.active {
+                color: rgba(255, 255, 255, 1);
+            }
+        }
+    }
+
+    &.colorPickers--light {
+        .nav-item a {
+            color: rgba(0, 0, 0, 0.6);
+            &:hover,
+            &.active {
+                color: rgba(0, 0, 0, 1);
+            }
+        }
+    }
+
     .nav {
         display: flex;
         .nav-item {
             flex: 1;
             a {
-                color: rgba(255, 255, 255, 0.6);
-                &:hover,
-                &.active {
-                    color: rgba(255, 255, 255, 1);
-                }
+                padding: 0.5rem;
             }
         }
     }
@@ -409,10 +426,10 @@ hr {
 .filterDiv {
     z-index: 9998;
     overflow: auto;
-    background-color: #fff;
-    box-shadow: 5px 5px 15px #777;
-    border-radius: 8px;
-    border: 1px solid #1a2537;
+    // background-color: #fff;
+    // box-shadow: 5px 5px 15px #777;
+    // border-radius: 8px;
+    // border: 1px solid #1a2537;
 }
 
 .filterDivHeader {

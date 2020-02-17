@@ -1,5 +1,5 @@
 <template>
-    <div class="colorPickers" v-show="!visibility">
+    <div class="colorPickers colorPickers--dark" v-show="!visibility">
         <ul class="nav">
             <li class="nav-item">
                 <a

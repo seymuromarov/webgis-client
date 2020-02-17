@@ -5,7 +5,7 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: rgba(0,0,0,.5);
+        background-color: rgba(0, 0, 0, 0.5);
         z-index: 99999;
         display: flex;
         justify-content: center;
@@ -18,14 +18,14 @@
         text-align: center;
     }
 
-    width: 90%;
-    min-height: 60%;
-    background-color: white;
-    border-radius: 7px;
-    padding: 20px;
-    position: relative;
-    max-height: 90%;
-    overflow-y: scroll;
+    // width: 90%;
+    // min-height: 60%;
+    // background-color: white;
+    // border-radius: 7px;
+    // padding: 20px;
+    // position: relative;
+    // max-height: 90%;
+    // overflow-y: scroll;
 
     & > button {
         position: absolute;
@@ -34,7 +34,7 @@
         border: none;
         background-color: transparent;
         outline: none;
-        transition: transform .3s;
+        transition: transform 0.3s;
 
         &:hover {
             transform: scale(1.3);

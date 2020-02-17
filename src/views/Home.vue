@@ -41,28 +41,12 @@
         />
 
         <!-- Report -->
-        <modal
-            name="arithmetic-result-modal"
-            transition="nice-modal-fade"
-            :min-width="200"
-            :min-height="200"
-            :delay="100"
-            :draggable="true"
-        >
+        <CustomModal ref="arithmetic-result-modal" :maxWidth="600">
             <Report :arithmeticDataResult="ArithmeticDataResult" />
-        </modal>
+        </CustomModal>
 
         <!-- Filter -->
-        <modal
-            name="filter-modal"
-            transition="nice-modal-fade"
-            class="filter-modal-class"
-            :min-width="200"
-            :min-height="200"
-            :delay="100"
-            :draggable="true"
-            :height="'auto'"
-        >
+        <CustomModal ref="filter-modal" title="Filter" :maxWidth="600">
             <FilterBox
                 :tableHeader="tableHeader"
                 :filterQuery="filterQuery"
@@ -74,25 +58,20 @@
                 @filterSelectedColumn="filterSelectedColumn"
                 @filterData="filterData"
             />
-        </modal>
+        </CustomModal>
 
         <!-- Shape Color Picker -->
-        <modal
-            name="color-picker-modal"
-            transition="nice-modal-fade"
-            class="color-picker-modal-class"
-            :min-width="200"
-            :min-height="200"
-            :delay="100"
-            :draggable="false"
-            :height="400"
+        <CustomModal
+            ref="color-picker-modal"
+            title="Color picker"
+            :minWidth="300"
         >
             <ShapeColorPicker @setShapeColor="setShapeColor" />
-        </modal>
+        </CustomModal>
 
         <!-- Change Detection -->
         <detector-modal
-            v-if="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
+            :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
             v-bind="{ lastBBOXOfShape, token }"
             @close="
                 ($store.state.dataTable.lastBBOXOfShape = []) &
@@ -166,8 +145,9 @@ import {
     Filter,
     Report,
     MapControls,
+    InfoModal,
+    Modal as CustomModal,
 } from "@/components/";
-import InfoModal from "@/components/Info/index";
 import DetectorModal from "@/components/modals/ChangeDetector";
 
 // Utils
@@ -192,6 +172,7 @@ export default {
         FilterBox: Filter,
         Report,
         MapControls,
+        CustomModal,
     },
     data() {
         return {
@@ -510,6 +491,13 @@ export default {
         });
     },
     methods: {
+        btnclick(val) {
+            if (val) {
+                this.$refs["moodal"].show();
+            } else {
+                this.$refs["moodal"].hide();
+            }
+        },
         objectToQueryString(obj) {
             var str = [];
             for (var p in obj)
@@ -565,7 +553,7 @@ export default {
         },
         setShapeColor() {
             document.body.style.cursor = "crosshair";
-            this.$modal.hide("color-picker-modal");
+            this.$refs["color-picker-modal"].hide();
         },
         cityInputToggle() {
             this.Toggler.cityInputToggle(this);
@@ -635,7 +623,7 @@ export default {
                 this.tableNextRequest["layerName"],
                 this.filterQuery == "" ? {} : { where: this.filterQuery }
             );
-            this.$modal.hide("filter-modal");
+            this.$refs["filter-modal"].hide();
         },
         addValueToQuery(value) {
             if (typeof value == "string") value = "'" + value + "'";
@@ -663,9 +651,7 @@ export default {
         },
         eyeDropper() {
             this.setDrawType("None");
-            this.$modal.show("color-picker-modal", null, {
-                name: "dynamic-modal",
-            });
+            this.$refs["color-picker-modal"].show();
             this.isColorPick = true;
         },
         changeDetector() {
@@ -720,12 +706,7 @@ export default {
             }
         },
         showFilterModal() {
-            this.$modal.show("filter-modal", null, {
-                name: "dynamic-modal",
-                resizable: true,
-                adaptive: true,
-                draggable: true,
-            });
+            this.$refs["filter-modal"].show();
         },
         addInteraction() {
             this.MapHelpers.addInteraction();
@@ -872,12 +853,7 @@ export default {
                         params
                     );
                     this.ArithmeticDataResult = response.data.result;
-                    this.$modal.show("arithmetic-result-modal", null, {
-                        name: "arithmetic-result-modal",
-                        resizable: true,
-                        adaptive: true,
-                        draggable: true,
-                    });
+                    this.$refs["arithmetic-result-modal"].show();
                 } else {
                     response = await LayerService.getLocalTableData(params);
                 }

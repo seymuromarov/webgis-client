@@ -447,5 +447,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./style.scss";
+@import "@/assets/style/sidebarStyle.scss";
 </style>
