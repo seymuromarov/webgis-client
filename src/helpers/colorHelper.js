@@ -1,4 +1,4 @@
-const ColorPicker = {
+const colorHelper = {
   renderColor: (id, fillColor, borderColor) => {
     let colors = [];
     let outlines = [];
@@ -46,4 +46,4 @@ const ColorPicker = {
   }
 };
 
-export default ColorPicker;
+export default colorHelper;

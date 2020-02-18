@@ -8,15 +8,8 @@ export default new Vuex.Store({
   state: {},
   getters: {},
   mutations: {
-    getToken(state, response) {
-      // state.token = response.token
-      // state.auth = response
-    },
     deleteToken(state, token) {
       state.token = null;
-    },
-    test() {
-      console.log("test");
     }
   },
   actions: {},

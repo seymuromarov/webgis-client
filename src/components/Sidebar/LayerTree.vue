@@ -82,7 +82,7 @@
 <script>
 import ToggleSwitch from "../common/ToggleSwitch";
 import LayerColorPicker from "../LayerColorPicker";
-import { LayerHelper } from "@/helpers";
+import { layerHelper } from "@/helpers";
 
 export default {
   name: "LayerTree",
@@ -129,38 +129,40 @@ export default {
       return this.loop * 16 + "px";
     },
     isCategory() {
-      return LayerHelper.isCategory(this.data);
+      return layerHelper.isCategory(this.data);
     },
     caretIconsVisibility() {
       return (
         this.isCategory ||
-        (LayerHelper.isLayer(this.data) &&
-          LayerHelper.isDynamicFromArcgis(this.data) &&
+        (layerHelper.isLayer(this.data) &&
+          layerHelper.isDynamicFromArcgis(this.data) &&
           this.data.isSelected)
       );
     },
     tableIconVisibility() {
       return (
         this.data.isSelected &&
-        (LayerHelper.isSublayer(this.data) ||
-          (LayerHelper.isLayer(this.data) &&
-            LayerHelper.isDynamicFromLocal(this.data)))
+        (layerHelper.isSublayer(this.data) ||
+          (layerHelper.isLayer(this.data) &&
+            layerHelper.isDynamicFromLocal(this.data)))
       );
     },
     colorIconVisibility() {
       return (
         this.data.isSelected &&
         this.data.isColorEnabled &&
-        (LayerHelper.isSublayer(this.data) ||
-          (LayerHelper.isLayer(this.data) &&
-            LayerHelper.isDynamicFromLocal(this.data)))
+        (layerHelper.isSublayer(this.data) ||
+          (layerHelper.isLayer(this.data) &&
+            layerHelper.isDynamicFromLocal(this.data)))
       ); // && this.color;
     },
     operationsVisibility() {
       return this.tableIconVisibility || this.colorIconVisibility;
     },
     colorPickerVisibility() {
-      return this.activeColorPickerId === this.getLayerId();
+      return (
+        this.data.isSelected && this.activeColorPickerId === this.getLayerId()
+      );
     },
     activeColorPickerId: {
       get() {
@@ -216,16 +218,16 @@ export default {
       this.$emit("dynamicLayersReset", data, status);
     },
     getTableData(data, layerId, layerName, query) {
-      var service = LayerHelper.isSublayer(data) ? data.parent : data;
+      var service = layerHelper.isSublayer(data) ? data.parent : data;
       this.$emit("getTableData", service, layerId, layerName, query);
     },
     getLayerId() {
       var id = 0;
-      if (LayerHelper.isSublayer(this.data)) {
+      if (layerHelper.isSublayer(this.data)) {
         id = this.data.uid;
       } else if (
-        LayerHelper.isLayer(this.data) &&
-        LayerHelper.isDynamicFromLocal(this.data)
+        layerHelper.isLayer(this.data) &&
+        layerHelper.isDynamicFromLocal(this.data)
       ) {
         id = this.data.id;
       }

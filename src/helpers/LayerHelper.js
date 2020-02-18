@@ -1,16 +1,15 @@
-import { emlakUsers } from "../constants/permissions";
 import { layerTypeEnum } from "../constants/enums/layerEnums";
 
 let baseCounter = 0;
 let dynamicCounter = 0;
 
-const LayerHelper = {
+const layerHelper = {
   basemapMapping: val => {
     return {
       id: val.id,
       name: val.label,
       showingLabel: val.showingLabel,
-      order: LayerHelper.baseCounter++,
+      order: layerHelper.baseCounter++,
       spatial: val.spatial,
       minZoomLevel: val.minZoomLevel,
       maxZoomLevel: val.maxZoomLevel,
@@ -26,7 +25,7 @@ const LayerHelper = {
 
       unitedDynamicLayerName:
         val.unitedDynamicLayer != null
-          ? LayerHelper.basemapMapping(val.unitedDynamicLayer)
+          ? layerHelper.basemapMapping(val.unitedDynamicLayer)
           : null,
 
       layers: null
@@ -37,7 +36,7 @@ const LayerHelper = {
       id: val.resourceTypeId === "local" ? val.id : val.id,
       name: val.label,
       showingLabel: val.showingLabel,
-      order: LayerHelper.dynamicCounter++,
+      order: layerHelper.dynamicCounter++,
       minZoomLevel: val.minZoomLevel,
       maxZoomLevel: val.maxZoomLevel,
       extent: val.extent,
@@ -64,30 +63,31 @@ const LayerHelper = {
         name: val.label,
         mapTypeId: val.mapTypeId,
         children: val.children.map((val, i) =>
-          LayerHelper.recursiveMap(val, index)
+          layerHelper.recursiveMap(val, index)
         ),
         type: layerTypeEnum.CATEGORY,
         layers: val.layers.map((val, i) =>
           val.mapTypeId == "basemap"
-            ? LayerHelper.basemapMapping(val)
-            : LayerHelper.dynamicMapping(val)
+            ? layerHelper.basemapMapping(val)
+            : layerHelper.dynamicMapping(val)
         )
       };
     } else
       return val.mapTypeId == "basemap"
-        ? LayerHelper.basemapMapping(val)
-        : LayerHelper.dynamicMapping(val);
+        ? layerHelper.basemapMapping(val)
+        : layerHelper.dynamicMapping(val);
   },
+
   mapLayers: layers => {
     baseCounter = 0;
     dynamicCounter = 0;
     let baseLayers = layers
       .filter(c => c.mapTypeId === "basemap")
-      .map((val, index) => LayerHelper.recursiveMap(val));
+      .map((val, index) => layerHelper.recursiveMap(val));
 
     let dynamicLayers = layers
       .filter(c => c.mapTypeId === "dynamic")
-      .map((val, index) => LayerHelper.recursiveMap(val));
+      .map((val, index) => layerHelper.recursiveMap(val));
 
     var mapResult = {
       baseLayers,
@@ -95,7 +95,8 @@ const LayerHelper = {
     };
     return mapResult;
   },
-  mapSubLayer: (item, layer) => {
+
+  subLayerMapping: (item, layer) => {
     item.color = null;
     item.type = layerTypeEnum.SUBLAYER;
     item.isSelected = true;
@@ -120,12 +121,12 @@ const LayerHelper = {
 
   isDynamicFromArcgis(service) {
     return (
-      LayerHelper.isArcgisService(service) && LayerHelper.isDynamic(service)
+      layerHelper.isArcgisService(service) && layerHelper.isDynamic(service)
     );
   },
   isDynamicFromLocal(service) {
     return (
-      LayerHelper.isLocalService(service) && LayerHelper.isDynamic(service)
+      layerHelper.isLocalService(service) && layerHelper.isDynamic(service)
     );
   },
 
@@ -162,4 +163,4 @@ const LayerHelper = {
   }
 };
 
-export default LayerHelper;
+export default layerHelper;

@@ -14,7 +14,7 @@ import CircleStyle from "ol/style/Circle";
 import Fill from "ol/style/Fill";
 import store from "../store/store";
 
-class MapHelpers {
+class MapHelper {
   constructor(self) {
     this.data = self;
   }
@@ -318,4 +318,4 @@ class MapHelpers {
   }
 }
 
-export default MapHelpers;
+export default MapHelper;

@@ -1,186 +1,189 @@
 <template>
-    <div>
-        <!-- Back button -->
-        <button type="button" class="btn btn-light back-btn" @click="back">
-            <i class="fas fa-arrow-left"></i> Back
-        </button>
+  <div>
+    <!-- Back button -->
+    <button type="button" class="btn btn-light back-btn" @click="back">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
 
-        <!-- Loader -->
-        <Loader v-if="loading" />
+    <!-- Loader -->
+    <Loader v-if="loading" />
 
-        <div class="issue-details" v-if="issue">
-            <!-- Issue header -->
-            <div class="issue__header">
-                <i
-                    class="fas fa-exclamation-circle issue-icon issue-icon--open"
-                    v-if="issue.status === 1"
-                ></i>
-                <i class="far fa-check-circle issue-icon issue-icon--closed" v-else></i>
-                <div>
-                    <h3 class="issue__title">
-                        {{ issue.title }}
-                        <div class="btn-group">
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-success"
-                                v-if="showCloseBtn(issue)"
-                                @click="closeIssue"
-                            >Close</button>
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-light"
-                                v-if="showDeleteBtn"
-                                @click="deletePost(issue.id)"
-                            >
-                                <i class="far fa-trash-alt"></i>
-                            </button>
-                        </div>
-                    </h3>
-                    <div>
-                        <span class="issue__author">{{ issue.user.userName }}</span>
-                        <span
-                            class="issue__date"
-                            :title="formatDateTime(issue.dateCreated)"
-                        >{{ formatDate(issue.dateCreated) }}</span>
-                    </div>
-                </div>
+    <div class="issue-details" v-if="issue">
+      <!-- Issue header -->
+      <div class="issue__header">
+        <i
+          class="fas fa-exclamation-circle issue-icon issue-icon--open"
+          v-if="issue.status === 1"
+        ></i>
+        <i class="far fa-check-circle issue-icon issue-icon--closed" v-else></i>
+        <div>
+          <h3 class="issue__title">
+            {{ issue.title }}
+            <div class="btn-group">
+              <button
+                type="button"
+                class="btn btn-sm btn-success"
+                v-if="showCloseBtn(issue)"
+                @click="closeIssue"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm btn-light"
+                v-if="showDeleteBtn"
+                @click="deletePost(issue.id)"
+              >
+                <i class="far fa-trash-alt"></i>
+              </button>
             </div>
-
-            <!-- Issue content -->
-            <div class="issue__content" v-html="issue.content"></div>
-
-            <Comments :rawComments="issue.comments" :postId="issue.id" />
+          </h3>
+          <div>
+            <span class="issue__author">{{ issue.user.userName }}</span>
+            <span
+              class="issue__date"
+              :title="formatDateTime(issue.dateCreated)"
+              >{{ formatDate(issue.dateCreated) }}</span
+            >
+          </div>
         </div>
+      </div>
+
+      <!-- Issue content -->
+      <div class="issue__content" v-html="issue.content"></div>
+
+      <Comments :rawComments="issue.comments" :postId="issue.id" />
     </div>
+  </div>
 </template>
 
 <script>
 import API from "../../../services/ForumService";
-import DateFormatter from "../../../helpers/DateFormatter";
+import { dateFormatter } from "@/helpers";
 import Comments from "./Comments";
 import Loader from "../parts/Loader";
 
 export default {
-    name: "IssueDetailed",
-    components: {
-        Comments,
-        Loader
-    },
-    props: {
-        openIssueId: {
-            type: Number
-        }
-    },
-    data() {
-        return {
-            loading: false,
-            issue: null
-        };
-    },
-    methods: {
-        getIssueById(id) {
-            this.loading = true;
-
-            API.getIssueById(id)
-                .then(response => {
-                    if (response.data) {
-                        this.issue = response.data;
-                    }
-                    this.loading = false;
-                })
-                .catch();
-        },
-        closeIssue() {
-            API.closeIssue(this.issue.id)
-                .then(response => {
-                    if (response.data) {
-                        this.issue = response.data;
-                        this.$store.commit("SET_OPEN_ISSUES", []);
-                        this.$store.commit("SET_CLOSED_ISSUES", []);
-                    }
-                })
-                .catch();
-        },
-        back() {
-            this.issue = null;
-            this.$emit("back");
-        },
-        showCloseBtn(issue) {
-            return this.$cookie.get("isAdmin") && issue.status === 1;
-        },
-        deletePost(id) {
-            this.$swal({
-                title: "Are you sure?",
-                text: "You won't be able to revert this!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, delete it!"
-            }).then(result => {
-                if (result.value) {
-                    this.loading = true;
-
-                    API.deleteIssue(id)
-                        .then(response => {
-                            if (response.status === 200) {
-                                if (this.issue.status === 1) {
-                                    this.$store.commit("SET_OPEN_ISSUES", []);
-                                }
-                                if (this.issue.status === 2) {
-                                    this.$store.commit("SET_CLOSED_ISSUES", []);
-                                }
-                                this.back();
-                            }
-                            this.loading = false;
-                        })
-                        .catch();
-                }
-            });
-        },
-        formatDate: DateFormatter.formatDate,
-        formatDateTime: DateFormatter.formatDateTime
-    },
-    computed: {
-        showDeleteBtn() {
-            return this.$cookie.get("isAdmin");
-        }
-    },
-    mounted() {
-        if (this.openIssueId) {
-            this.getIssueById(this.openIssueId);
-        }
+  name: "IssueDetailed",
+  components: {
+    Comments,
+    Loader
+  },
+  props: {
+    openIssueId: {
+      type: Number
     }
+  },
+  data() {
+    return {
+      loading: false,
+      issue: null
+    };
+  },
+  methods: {
+    getIssueById(id) {
+      this.loading = true;
+
+      API.getIssueById(id)
+        .then(response => {
+          if (response.data) {
+            this.issue = response.data;
+          }
+          this.loading = false;
+        })
+        .catch();
+    },
+    closeIssue() {
+      API.closeIssue(this.issue.id)
+        .then(response => {
+          if (response.data) {
+            this.issue = response.data;
+            this.$store.commit("SET_OPEN_ISSUES", []);
+            this.$store.commit("SET_CLOSED_ISSUES", []);
+          }
+        })
+        .catch();
+    },
+    back() {
+      this.issue = null;
+      this.$emit("back");
+    },
+    showCloseBtn(issue) {
+      return this.$cookie.get("isAdmin") && issue.status === 1;
+    },
+    deletePost(id) {
+      this.$swal({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.loading = true;
+
+          API.deleteIssue(id)
+            .then(response => {
+              if (response.status === 200) {
+                if (this.issue.status === 1) {
+                  this.$store.commit("SET_OPEN_ISSUES", []);
+                }
+                if (this.issue.status === 2) {
+                  this.$store.commit("SET_CLOSED_ISSUES", []);
+                }
+                this.back();
+              }
+              this.loading = false;
+            })
+            .catch();
+        }
+      });
+    },
+    formatDate: dateFormatter.formatDate,
+    formatDateTime: dateFormatter.formatDateTime
+  },
+  computed: {
+    showDeleteBtn() {
+      return this.$cookie.get("isAdmin");
+    }
+  },
+  mounted() {
+    if (this.openIssueId) {
+      this.getIssueById(this.openIssueId);
+    }
+  }
 };
 </script>
 
 <style lang="scss">
 .issue-details {
-    --content-gap: 3rem;
+  --content-gap: 3rem;
 
-    .issue__header {
-        display: flex;
-        align-items: baseline;
-        .issue-icon {
-            font-size: 1.75rem;
-            margin-right: 1rem;
-            width: 24px;
-        }
-        .issue__title {
-            color: #000000;
-            margin-right: var(--content-gap);
-        }
+  .issue__header {
+    display: flex;
+    align-items: baseline;
+    .issue-icon {
+      font-size: 1.75rem;
+      margin-right: 1rem;
+      width: 24px;
     }
+    .issue__title {
+      color: #000000;
+      margin-right: var(--content-gap);
+    }
+  }
 
-    .issue__content {
-        margin: 1.5rem var(--content-gap) 0;
-        padding-bottom: 1.5rem;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        img {
-            width: 100%;
-            border-radius: 4px;
-            margin: 1rem 0;
-        }
+  .issue__content {
+    margin: 1.5rem var(--content-gap) 0;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    img {
+      width: 100%;
+      border-radius: 4px;
+      margin: 1rem 0;
     }
+  }
 }
 </style>

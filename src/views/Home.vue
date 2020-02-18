@@ -5,7 +5,7 @@
       <div id="map">
         <MapControls
           :map="mapLayer"
-          :mapHelpers="MapHelpers"
+          :mapHelpers="mapHelper"
           :nextHistoryEvent="nextHistoryEvent"
           :previousHistoryEvent="previousHistoryEvent"
         />
@@ -40,44 +40,40 @@
       @mapSetCenter="mapSetCenter"
     />
 
-        <!-- Report -->
-        <CustomModal ref="arithmetic-result-modal" :maxWidth="600">
-            <Report :arithmeticDataResult="ArithmeticDataResult" />
-        </CustomModal>
+    <!-- Report -->
+    <CustomModal ref="arithmetic-result-modal" :maxWidth="600">
+      <Report :arithmeticDataResult="ArithmeticDataResult" />
+    </CustomModal>
 
-        <!-- Filter -->
-        <CustomModal ref="filter-modal" title="Filter" :maxWidth="600">
-            <FilterBox
-                :tableHeader="tableHeader"
-                :filterQuery="filterQuery"
-                :filterValues="filterValues"
-                :tableFeaturesHeader="tableFeaturesHeader"
-                :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
-                @appendFilterQuery="filterQuery += $event"
-                @setFilterQuery="filterQuery = $event.target.value"
-                @filterSelectedColumn="filterSelectedColumn"
-                @filterData="filterData"
-            />
-        </CustomModal>
+    <!-- Filter -->
+    <CustomModal ref="filter-modal" title="Filter" :maxWidth="600">
+      <FilterBox
+        :tableHeader="tableHeader"
+        :filterQuery="filterQuery"
+        :filterValues="filterValues"
+        :tableFeaturesHeader="tableFeaturesHeader"
+        :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
+        @appendFilterQuery="filterQuery += $event"
+        @setFilterQuery="filterQuery = $event.target.value"
+        @filterSelectedColumn="filterSelectedColumn"
+        @filterData="filterData"
+      />
+    </CustomModal>
 
-        <!-- Shape Color Picker -->
-        <CustomModal
-            ref="color-picker-modal"
-            title="Color picker"
-            :minWidth="300"
-        >
-            <ShapeColorPicker @setShapeColor="setShapeColor" />
-        </CustomModal>
+    <!-- Shape Color Picker -->
+    <CustomModal ref="color-picker-modal" title="Color picker" :minWidth="300">
+      <ShapeColorPicker @setShapeColor="setShapeColor" />
+    </CustomModal>
 
-        <!-- Change Detection -->
-        <detector-modal
-            :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
-            v-bind="{ lastBBOXOfShape, token }"
-            @close="
-                ($store.state.dataTable.lastBBOXOfShape = []) &
-                    (isDrawnShapeForDetection = false)
-            "
-        ></detector-modal>
+    <!-- Change Detection -->
+    <detector-modal
+      :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
+      v-bind="{ lastBBOXOfShape, token }"
+      @close="
+        ($store.state.dataTable.lastBBOXOfShape = []) &
+          (isDrawnShapeForDetection = false)
+      "
+    ></detector-modal>
 
     <!-- Information Modal -->
     <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
@@ -95,7 +91,14 @@ import {
   DragAndDrop
 } from "ol/interaction";
 import TileDebug from "ol/source/TileDebug";
-import { Circle as CircleStyle, Fill, Stroke, Style, Icon } from "ol/style.js";
+import {
+  Circle as CircleStyle,
+  Text,
+  Fill,
+  Stroke,
+  Style,
+  Icon
+} from "ol/style.js";
 import {
   Tile as TileLayer,
   Vector as VectorLayer,
@@ -139,14 +142,14 @@ import Multiselect from "vue-multiselect";
 
 // Custom components
 import {
-    ShapeColorPicker,
-    DataTable,
-    Sidebar,
-    Filter,
-    Report,
-    MapControls,
-    InfoModal,
-    Modal as CustomModal,
+  ShapeColorPicker,
+  DataTable,
+  Sidebar,
+  Filter,
+  Report,
+  MapControls,
+  InfoModal,
+  Modal as CustomModal
 } from "@/components/";
 import DetectorModal from "@/components/modals/ChangeDetector";
 
@@ -155,105 +158,103 @@ import { URL, MAP_URLS } from "@/config/baseUrl";
 import cities from "@/data/cities.json";
 import LoginService from "@/services/LoginService";
 import LayerService from "@/services/LayerService";
-import { Toggler, MapHelpers, ColorPicker, LayerHelper } from "@/helpers";
+import { toggler, mapHelper, colorHelper, layerHelper } from "@/helpers";
 
 // Styles
 import "ol/ol.css";
 
 export default {
-    name: "Home",
-    components: {
-        ShapeColorPicker,
-        Multiselect,
-        DataTable,
-        DetectorModal,
-        InfoModal,
-        Sidebar,
-        FilterBox: Filter,
-        Report,
-        MapControls,
-        CustomModal,
-    },
-    data() {
-        return {
-            isDrawnShapeForDetection: false,
-            MapHelpers: null,
-            Toggler: null,
-            ColorPicker: null,
-            latChange: null,
-            longChange: null,
-            filterQuery: "",
-            ArithmeticDataResult: {},
-            filterValues: [],
-            mapLayer: null,
-            value: [],
-            checkedColumns: [],
-            checkedColumnsData: [],
-            options: [],
-            layers: [],
-            layerCounter: 0,
-            isMarker: false,
-            isRemove: false,
-            isColorPick: false,
-            gisLayers: [],
-            token: null,
-            emlakToken: null,
-            kmlInfo: null,
-            source: null,
-            vector: null,
-            vectorSource: null,
-            vectorLayer: null,
-            featureIDSet: 0,
-            typeSelect: null,
-            draw: null,
-            stackedTableFeaturesHeader: [],
-            tableFeaturesHeader: [],
-            tableFeaturesData: [],
-            tableNextRequest: [],
-            citySearchOptions: [],
-            citySearchInputShow: false,
-            historyUpdate: true,
-            nextHistoryEvent: false,
-            previousHistoryEvent: false,
-            historyEvents: [],
-            historyEventsIndex: 0,
-            graticule: false,
-            tableHeader: null,
-            baseLayerList: [],
-            helpmaptooltip: null,
-            measuremaptooltip: null,
-            isMetricCoordinateSystem: false,
-            baseMaps: {
-                none: new XYZ({
-                    crossOrigin: "Anonymous",
-                    url: "",
-                }),
-                satellite: new XYZ({
-                    name: "sat",
-                    url:
-                        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-                }),
-                street: new XYZ({
-                    url:
-                        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-                }),
-                gray: new XYZ({
-                    crossOrigin: "Anonymous",
-                    url:
-                        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-                }),
-            },
-            dynamicForColors: [[]],
-            showInfoModal: false,
-            isHashLoaded: false,
-        };
-    },
-    mounted() {
-        this.token = this.$cookie.get("token");
-        if (this.token === null) this.$router.push("/login");
+  name: "Home",
+  components: {
+    ShapeColorPicker,
+    Multiselect,
+    DataTable,
+    DetectorModal,
+    InfoModal,
+    Sidebar,
+    FilterBox: Filter,
+    Report,
+    MapControls,
+    CustomModal
+  },
+  data() {
+    return {
+      isDrawnShapeForDetection: false,
+      mapHelper: null,
+      toggler: null,
+      latChange: null,
+      longChange: null,
+      filterQuery: "",
+      ArithmeticDataResult: {},
+      filterValues: [],
+      mapLayer: null,
+      value: [],
+      checkedColumns: [],
+      checkedColumnsData: [],
+      options: [],
+      layers: [],
+      layerCounter: 0,
+      isMarker: false,
+      isRemove: false,
+      isColorPick: false,
+      gisLayers: [],
+      token: null,
+      emlakToken: null,
+      kmlInfo: null,
+      source: null,
+      vector: null,
+      vectorSource: null,
+      vectorLayer: null,
+      featureIDSet: 0,
+      typeSelect: null,
+      draw: null,
+      stackedTableFeaturesHeader: [],
+      tableFeaturesHeader: [],
+      tableFeaturesData: [],
+      tableNextRequest: [],
+      citySearchOptions: [],
+      citySearchInputShow: false,
+      historyUpdate: true,
+      nextHistoryEvent: false,
+      previousHistoryEvent: false,
+      historyEvents: [],
+      historyEventsIndex: 0,
+      graticule: false,
+      tableHeader: null,
+      helpmaptooltip: null,
+      measuremaptooltip: null,
+      isMetricCoordinateSystem: false,
+      baseMaps: {
+        none: new XYZ({
+          crossOrigin: "Anonymous",
+          url: ""
+        }),
+        satellite: new XYZ({
+          name: "sat",
+          url:
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        }),
+        street: new XYZ({
+          url:
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+        }),
+        gray: new XYZ({
+          crossOrigin: "Anonymous",
+          url:
+            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+        })
+      },
+      dynamicForColors: [[]],
+      showInfoModal: false,
+      isHashLoaded: false
+    };
+  },
+  mounted() {
+    this.token = this.$cookie.get("token");
+    if (this.token === null) this.$router.push("/login");
 
-    this.MapHelpers = new MapHelpers(this);
-    this.Toggler = new Toggler(this);
+    this.mapHelper = new mapHelper(this);
+    this.toggler = new toggler(this);
     this.citySearchOptions = cities;
 
     this.source = new VectorSource({
@@ -444,8 +445,7 @@ export default {
             } catch (e) {}
           });
         }
-
-        if (self.isTabelVisible) {
+        if (self.dataTableVisibility) {
           self.getGeometryData(
             self.tableNextRequest["service"],
             self.tableNextRequest["layerId"],
@@ -456,61 +456,59 @@ export default {
         }
       });
 
-            let view = this.mapLayer.getView();
-            let updateHistoryMap = function() {
-                if (self.historyUpdate) {
-                    let state = {
-                        zoom: view.getZoom(),
-                        center: view.getCenter(),
-                        rotation: view.getRotation(),
-                    };
-                    self.updateHash();
-                    self.historyEvents.push(state);
-                    self.historyEventsIndex = self.historyEvents.length;
-                    self.nextHistoryEvent = false;
-                    if (self.historyEventsIndex !== 1) {
-                        self.previousHistoryEvent = true;
-                    }
-                } else {
-                    self.historyUpdate = true;
-                }
-            };
-            self.mapLayer.on("moveend", updateHistoryMap);
-            window.addEventListener("popstate", function(event) {
-                if (event.state === null) {
-                    return;
-                }
-                self.mapLayer.getView().setCenter(event.state.center);
-                self.mapLayer.getView().setZoom(event.state.zoom);
-                self.mapLayer.getView().setRotation(event.state.rotation);
-            });
-        });
+      let view = this.mapLayer.getView();
+      let updateHistoryMap = function() {
+        if (self.historyUpdate) {
+          let state = {
+            zoom: view.getZoom(),
+            center: view.getCenter(),
+            rotation: view.getRotation()
+          };
+          self.updateHash();
+          self.historyEvents.push(state);
+          self.historyEventsIndex = self.historyEvents.length;
+          self.nextHistoryEvent = false;
+          if (self.historyEventsIndex !== 1) {
+            self.previousHistoryEvent = true;
+          }
+        } else {
+          self.historyUpdate = true;
+        }
+      };
+      self.mapLayer.on("moveend", updateHistoryMap);
+      window.addEventListener("popstate", function(event) {
+        if (event.state === null) {
+          return;
+        }
+        self.mapLayer.getView().setCenter(event.state.center);
+        self.mapLayer.getView().setZoom(event.state.zoom);
+        self.mapLayer.getView().setRotation(event.state.rotation);
+      });
+    });
+  },
+  methods: {
+    btnclick(val) {
+      if (val) {
+        this.$refs["moodal"].show();
+      } else {
+        this.$refs["moodal"].hide();
+      }
     },
-    methods: {
-        btnclick(val) {
-            if (val) {
-                this.$refs["moodal"].show();
-            } else {
-                this.$refs["moodal"].hide();
-            }
-        },
-        objectToQueryString(obj) {
-            var str = [];
-            for (var p in obj)
-                if (obj.hasOwnProperty(p)) {
-                    str.push(
-                        encodeURIComponent(p) + "=" + encodeURIComponent(obj[p])
-                    );
-                }
-            return "?" + str.join("&");
-        },
-        updateHash() {
-            let view = this.mapLayer.getView();
-            let state = {
-                zoom: view.getZoom(),
-                center: view.getCenter(),
-                rotation: view.getRotation(),
-            };
+    objectToQueryString(obj) {
+      var str = [];
+      for (var p in obj)
+        if (obj.hasOwnProperty(p)) {
+          str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        }
+      return "?" + str.join("&");
+    },
+    updateHash() {
+      let view = this.mapLayer.getView();
+      let state = {
+        zoom: view.getZoom(),
+        center: view.getCenter(),
+        rotation: view.getRotation()
+      };
 
       let selectedLayersArr = Object.keys(
         this.$store.getters.selectedLayers
@@ -525,190 +523,183 @@ export default {
         "&" +
         selectedLayersArr.toString();
 
-            window.history.pushState(state, "map", hash);
-        },
-        changeLocation() {
-            this.mapLayer
-                .getView()
-                .setCenter(
-                    fromLonLat([
-                        parseFloat(this.longChange),
-                        parseFloat(this.latChange),
-                    ])
-                );
-        },
-        LatLongFormToggle() {
-            let loc = document.getElementById("mouse-position").innerHTML;
-            loc = loc.split(":").map(item => item.trim());
-            let long = loc[2];
-            let lat = loc[1].split(",").map(item => item.trim());
-            lat = lat[0];
-            this.longChange = long;
-            this.latChange = lat;
-            this.Toggler.setLatLongShowForm();
-        },
-        setShapeColor() {
-            document.body.style.cursor = "crosshair";
-            this.$refs["color-picker-modal"].hide();
-        },
-        cityInputToggle() {
-            this.Toggler.cityInputToggle(this);
-        },
-        onCitySelect(city) {
-            this.mapLayer
-                .getView()
-                .setCenter(
-                    fromLonLat([parseFloat(city.lng), parseFloat(city.lat)])
-                );
-            this.mapLayer.getView().setZoom(11);
-            this.citySearchInputShow = false;
-        },
-        nameWithCountry({ city, country }) {
-            return `${city} , ${country}`;
-        },
-        exportData() {
-            this.MapHelpers.exportData(this);
-        },
-        async filterSelectedColumn(column) {
-            this.filterValues = [];
-            let params = {
-                id: this.$store.state.dataTable.serviceInfo.id,
-            };
-            if (this.selectedServiceInfo.resourceType === "local") {
-                let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
-                    params
-                );
-                let result = getLayerColumnsDistinctData.data.result;
-                this.filterValues =
-                    result[
-                        Object.keys(result).find(
-                            key => key.toLowerCase() === column.toLowerCase()
-                        )
-                    ];
-            } else {
-                let keys = Object.keys(this.tableHeadersWithAlias);
-                for (let i = 0; i < keys.length; i++) {
-                    if (this.tableHeadersWithAlias[keys[i]] === column) {
-                        column = keys[i];
-                        break;
-                    }
-                }
-                for (let i = 0; i < this.tableFeaturesData.length; i++) {
-                    if (
-                        !this.filterValues.includes(
-                            this.tableFeaturesData[i].attributes[column]
-                        )
-                    ) {
-                        this.filterValues.push(
-                            this.tableFeaturesData[i].attributes[column]
-                        );
-                    }
-                }
-            }
+      window.history.pushState(state, "map", hash);
+    },
+    changeLocation() {
+      this.mapLayer
+        .getView()
+        .setCenter(
+          fromLonLat([parseFloat(this.longChange), parseFloat(this.latChange)])
+        );
+    },
+    LatLongFormToggle() {
+      let loc = document.getElementById("mouse-position").innerHTML;
+      loc = loc.split(":").map(item => item.trim());
+      let long = loc[2];
+      let lat = loc[1].split(",").map(item => item.trim());
+      lat = lat[0];
+      this.longChange = long;
+      this.latChange = lat;
+      this.toggler.setLatLongShowForm();
+    },
+    setShapeColor() {
+      document.body.style.cursor = "crosshair";
+      this.$refs["color-picker-modal"].hide();
+    },
+    cityInputToggle() {
+      this.toggler.cityInputToggle(this);
+    },
+    onCitySelect(city) {
+      this.mapLayer
+        .getView()
+        .setCenter(fromLonLat([parseFloat(city.lng), parseFloat(city.lat)]));
+      this.mapLayer.getView().setZoom(11);
+      this.citySearchInputShow = false;
+    },
+    nameWithCountry({ city, country }) {
+      return `${city} , ${country}`;
+    },
+    exportData() {
+      this.mapHelper.exportData(this);
+    },
+    async filterSelectedColumn(column) {
+      this.filterValues = [];
+      let params = {
+        id: this.$store.state.dataTable.serviceInfo.id
+      };
+      if (this.selectedServiceInfo.resourceType === "local") {
+        let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
+          params
+        );
+        let result = getLayerColumnsDistinctData.data.result;
+        this.filterValues =
+          result[
+            Object.keys(result).find(
+              key => key.toLowerCase() === column.toLowerCase()
+            )
+          ];
+      } else {
+        let keys = Object.keys(this.tableHeadersWithAlias);
+        for (let i = 0; i < keys.length; i++) {
+          if (this.tableHeadersWithAlias[keys[i]] === column) {
+            column = keys[i];
+            break;
+          }
+        }
+        for (let i = 0; i < this.tableFeaturesData.length; i++) {
+          if (
+            !this.filterValues.includes(
+              this.tableFeaturesData[i].attributes[column]
+            )
+          ) {
+            this.filterValues.push(
+              this.tableFeaturesData[i].attributes[column]
+            );
+          }
+        }
+      }
 
       // if (getLayerColumnsDistinctData.status === 200) {
 
       // } else {
 
-            // }
-        },
-        filterData() {
-            this.getTableData(
-                this.tableNextRequest["service"],
-                this.tableNextRequest["layerId"],
-                this.tableNextRequest["layerName"],
-                this.filterQuery == "" ? {} : { where: this.filterQuery }
-            );
-            this.$refs["filter-modal"].hide();
-        },
-        addValueToQuery(value) {
-            if (typeof value == "string") value = "'" + value + "'";
-            this.filterQuery += value + " ";
-        },
-        dragAndDropToast() {
-            let toast = this.$toasted.show(
-                "Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map",
-                {
-                    theme: "outline",
-                    position: "bottom-center",
-                    duration: 3500,
-                }
-            );
-        },
-        addGraticule() {
-            this.MapHelpers.addGraticule();
-        },
-        pngExport() {
-            this.MapHelpers.pngExport();
-        },
-        setMarkerTrue() {
-            this.setDrawType("None");
-            this.isMarker = true;
-        },
-        eyeDropper() {
-            this.setDrawType("None");
-            this.$refs["color-picker-modal"].show();
-            this.isColorPick = true;
-        },
-        changeDetector() {
-            this.$store.state.dataTable.lastBBOXOfShape = [];
-            this.setDrawType("Box");
-            this.isDrawnShapeForDetection = true;
-        },
-        deleteFeatureOn() {
-            this.setDrawType("None");
-            this.isRemove = true;
-        },
-        resetFeatures() {
-            this.MapHelpers.resetFeatures();
-        },
-        selectColumns(alias, key, e) {
-            if (e.target.checked) {
-                this.checkedColumnsData.push(
-                    this.stackedTableFeaturesHeader[key]
-                );
-            } else {
-                this.checkedColumnsData = this.checkedColumnsData.filter(
-                    data => data != alias
-                );
-            }
-        },
-        showColumnsChange() {
-            this.Toggler.showColumnsChange();
-        },
-        showSimpleFilterModal(layerId, layerName) {
-            this.$store.dispatch("SAVE_DATATABLE_LAYER_ID", layerId);
-            this.$store.dispatch("SAVE_DATATABLE_SERVICE_NAME", layerName);
-            this.$refs.reportFilterModal.$modal.show(
-                "simple-data-filter-modal",
-                null,
-                {
-                    name: "simple-data-filter-modal",
-                    resizable: false,
-                    adaptive: true,
-                    draggable: false,
-                }
-            );
-        },
-        mapSetCenter(data) {
-            if (data.geometry.x !== undefined) {
-                this.mapLayer
-                    .getView()
-                    .setCenter(fromLonLat([data.geometry.x, data.geometry.y]));
-            } else {
-                this.mapLayer
-                    .getView()
-                    .setCenter(fromLonLat(data.geometry.rings[0][0]));
-            }
-        },
-        showFilterModal() {
-            this.$refs["filter-modal"].show();
-        },
-        addInteraction() {
-            this.MapHelpers.addInteraction();
-        },
-        onMoveCallbackBaseLayerList(evt, originalEvent) {
-            this.layerCounter = 0;
+      // }
+    },
+    filterData() {
+      this.getTableData(
+        this.tableNextRequest["service"],
+        this.tableNextRequest["layerId"],
+        this.tableNextRequest["layerName"],
+        this.filterQuery == "" ? {} : { where: this.filterQuery }
+      );
+      this.$refs["filter-modal"].hide();
+    },
+    addValueToQuery(value) {
+      if (typeof value == "string") value = "'" + value + "'";
+      this.filterQuery += value + " ";
+    },
+    dragAndDropToast() {
+      let toast = this.$toasted.show(
+        "Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map",
+        {
+          theme: "outline",
+          position: "bottom-center",
+          duration: 3500
+        }
+      );
+    },
+    addGraticule() {
+      this.mapHelper.addGraticule();
+    },
+    pngExport() {
+      this.mapHelper.pngExport();
+    },
+    setMarkerTrue() {
+      this.setDrawType("None");
+      this.isMarker = true;
+    },
+    eyeDropper() {
+      this.setDrawType("None");
+      this.$refs["color-picker-modal"].show();
+      this.isColorPick = true;
+    },
+    changeDetector() {
+      this.$store.state.dataTable.lastBBOXOfShape = [];
+      this.setDrawType("Box");
+      this.isDrawnShapeForDetection = true;
+    },
+    deleteFeatureOn() {
+      this.setDrawType("None");
+      this.isRemove = true;
+    },
+    resetFeatures() {
+      this.mapHelper.resetFeatures();
+    },
+    selectColumns(alias, key, e) {
+      if (e.target.checked) {
+        this.checkedColumnsData.push(this.stackedTableFeaturesHeader[key]);
+      } else {
+        this.checkedColumnsData = this.checkedColumnsData.filter(
+          data => data != alias
+        );
+      }
+    },
+    showColumnsChange() {
+      this.toggler.showColumnsChange();
+    },
+    showSimpleFilterModal(layerId, layerName) {
+      this.$store.dispatch("SAVE_DATATABLE_LAYER_ID", layerId);
+      this.$store.dispatch("SAVE_DATATABLE_SERVICE_NAME", layerName);
+      this.$refs.reportFilterModal.$modal.show(
+        "simple-data-filter-modal",
+        null,
+        {
+          name: "simple-data-filter-modal",
+          resizable: false,
+          adaptive: true,
+          draggable: false
+        }
+      );
+    },
+    mapSetCenter(data) {
+      if (data.geometry.x !== undefined) {
+        this.mapLayer
+          .getView()
+          .setCenter(fromLonLat([data.geometry.x, data.geometry.y]));
+      } else {
+        this.mapLayer
+          .getView()
+          .setCenter(fromLonLat(data.geometry.rings[0][0]));
+      }
+    },
+    showFilterModal() {
+      this.$refs["filter-modal"].show();
+    },
+    addInteraction() {
+      this.mapHelper.addInteraction();
+    },
+    onMoveCallbackDynamicLayerList(evt, originalEvent) {
+      this.layerCounter = 0;
 
       let dynamicLayerList = this.dynamicLayerList;
 
@@ -811,20 +802,15 @@ export default {
 
     async getTableData(service, layerId, layerName, query) {
       var layer = this.getLayer(service.id);
-      let token;
-      if (service.apiFrom === "emlak") {
-        token = this.emlakToken;
-      } else {
-        token = this.token;
-      }
-      let response;
 
-      this.$store.dispatch("SAVE_DATATABLE_VISIBLE", true);
+      let response;
+      this.dataTableVisibility = true;
+      // this.$store.dispatch("SAVE_DATATABLE_VISIBLE", true);
       this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
 
       if (service.resourceType === "azcArcgis") {
         let params = {
-          token: token,
+          token: this.token,
           name: service.name,
           layer: layerId,
           ...query
@@ -842,21 +828,20 @@ export default {
           ...this.tablePaging
         };
 
-                service.query = query;
-                if (this.filterQueryIsSum && service.resourceType === "local") {
-                    params.isSum = this.filterQueryIsSum;
-                    params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
-                    response = await LayerService.getLocalArithmeticData(
-                        params
-                    );
-                    this.ArithmeticDataResult = response.data.result;
-                    this.$refs["arithmetic-result-modal"].show();
-                } else {
-                    response = await LayerService.getLocalTableData(params);
-                }
-                this.refreshLayer(service);
-            }
-            this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
+        service.query = query;
+        if (this.filterQueryIsSum && service.resourceType === "local") {
+          params.isSum = this.filterQueryIsSum;
+          params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
+          response = await LayerService.getLocalArithmeticData(params);
+          this.ArithmeticDataResult = response.data.result;
+          this.$refs["arithmetic-result-modal"].show();
+          this.filterQueryIsSum = false;
+        } else {
+          response = await LayerService.getLocalTableData(params);
+        }
+        this.refreshLayer(service);
+      }
+      this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
 
       if (response.data.error !== undefined) {
         return;
@@ -916,7 +901,7 @@ export default {
         checkedColumns = checkedColumns.map((item, index) => {
           return tableHeadersWithAlias[item];
         });
-        await this.$store.dispatch("SAVE_DATATABLE_VISIBLE", false);
+        this.dataTableVisibility = false;
         await this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
           serviceInfo,
           totalCount,
@@ -929,7 +914,7 @@ export default {
           checkedColumnsData,
           checkedColumns
         });
-        await this.$store.dispatch("SAVE_DATATABLE_VISIBLE", true);
+        this.dataTableVisibility = true;
         this.tableFeaturesData = tableData;
         this.tableFeaturesHeader = tableHeaders;
         this.stackedTableFeaturesHeader = tableHeaders;
@@ -984,7 +969,7 @@ export default {
         token: this.token
       });
 
-      let layers = LayerHelper.mapLayers(response.data);
+      let layers = layerHelper.mapLayers(response.data);
 
       this.baseLayerList = layers.baseLayers;
       this.dynamicLayerList = layers.dynamicLayers;
@@ -1027,7 +1012,7 @@ export default {
         let subLayer = layer.layers[i];
 
         if (subLayer.color !== undefined && subLayer.color !== null) {
-          let colorString = ColorPicker.renderColor(
+          let colorString = colorHelper.renderColor(
             subLayer.id,
             subLayer.color.fill,
             subLayer.color.border
@@ -1049,18 +1034,29 @@ export default {
       } else {
         color = this.defaultColorObject;
       }
-
+      console.log(color);
       var style = new Style({
         fill: new Fill({
           color: color.fill.hex8
         }),
         stroke: new Stroke({
           color: color.border.hex8,
-          width: 1
+          width: 0.5
+        }),
+        image: new CircleStyle({
+          radius: 7,
+          fill: new Fill({
+            color: color.fill.hex8
+          }),
+          stroke: new Stroke({
+            color: color.border.hex8,
+            width: 0.5
+          })
         })
       });
       return style;
     },
+
     getLayerZoomLevelOptions(service) {
       return {
         maxResolution: createXYZ().getResolution(service.minZoomLevel) * 1.01,
@@ -1081,18 +1077,19 @@ export default {
     // },
 
     renderNewLayer(service) {
-      var isDynamic = LayerHelper.isDynamic(service);
+      var isDynamic = layerHelper.isDynamic(service);
       let zoomLevelProperties = this.getLayerZoomLevelOptions(service);
       let new_layer;
       let url = URL + "/api/map/service/" + service.name + "/MapServer/";
       if (isDynamic) {
-        if (LayerHelper.isLocalService(service)) {
+        if (layerHelper.isLocalService(service)) {
           new_layer = new VectorTileLayer({
             id: service.id,
-            declutter: false,
             ...zoomLevelProperties,
             source: new VectorTileSource({
-              format: new MVT(),
+              format: new MVT({
+                geometryName: "geom"
+              }),
               url:
                 URL +
                 "/" +
@@ -1112,7 +1109,7 @@ export default {
               crossOrigin: "Anonymous",
               params: {
                 token: this.token,
-                layers: LayerHelper.makeArcgisSublayerConfig(service),
+                layers: layerHelper.makeArcgisSublayerConfig(service),
                 dynamicLayers: this.getSubLayersColorString(service)
               }
             })
@@ -1188,8 +1185,6 @@ export default {
     },
 
     deleteLayers(service, reset) {
-      console.log("TCL: deleteLayers -> service", service);
-      // this.selectedLayersIdHolder(false, service);
       let layersToRemove = [];
       let self = this;
 
@@ -1237,7 +1232,7 @@ export default {
       return isColorEnabled;
     },
     async dynamicLayersReset(service, status) {
-      if (LayerHelper.isDynamicFromArcgis(service)) {
+      if (layerHelper.isDynamicFromArcgis(service)) {
         var isColorEnabled = await this.isLayerColorEnabled(service);
         this.dynamicLayerList = this.recursiveLayerProcess(
           this.dynamicLayerList,
@@ -1257,7 +1252,7 @@ export default {
     },
     async getResponseDynamic(service) {
       let responseDynamic = null;
-      if (LayerHelper.isDynamicFromArcgis(service)) {
+      if (layerHelper.isDynamicFromArcgis(service)) {
         responseDynamic = await LayerService.getDynamicLayers({
           token: this.token,
           name: service.name
@@ -1284,9 +1279,9 @@ export default {
 
       this.isHashLoaded = isHashLoaded;
 
-      if (LayerHelper.isDynamic(service)) {
+      if (layerHelper.isDynamic(service)) {
         let subLayers = null;
-        if (isChecked && LayerHelper.isDynamicFromArcgis(service)) {
+        if (isChecked && layerHelper.isDynamicFromArcgis(service)) {
           let subLayerResponse;
           subLayerResponse = await this.getResponseDynamic(service);
           subLayers = subLayerResponse.data.layers;
@@ -1300,15 +1295,15 @@ export default {
               layer.isSelected = isChecked;
               layer.collapseVisibility = isChecked;
 
-              if (isChecked && LayerHelper.isDynamicFromArcgis(layer)) {
+              if (isChecked && layerHelper.isDynamicFromArcgis(layer)) {
                 layer.layers = subLayers.map(item =>
-                  LayerHelper.mapSubLayer(item, layer)
+                  layerHelper.subLayerMapping(item, layer)
                 );
               }
             }
           }
         );
-      } else if (LayerHelper.isBasemap(service)) {
+      } else if (layerHelper.isBasemap(service)) {
         this.baseLayerList = this.recursiveLayerProcess(
           this.baseLayerList,
           service,
@@ -1325,7 +1320,6 @@ export default {
       else this.deleteLayers(service);
     },
     async selectSubService(service, index, id, e) {
-      console.log("TCL: selectSubService -> service", service);
       let isChecked = e.target.checked;
 
       this.dynamicLayerList = this.recursiveLayerProcess(
@@ -1374,7 +1368,7 @@ export default {
     },
     saveColor(service, colorObj) {
       const { fillColor, borderColor } = colorObj;
-      var isSubLayer = LayerHelper.isSublayer(service);
+      var isSubLayer = layerHelper.isSublayer(service);
       var layer = isSubLayer ? service.parent : service;
 
       this.deleteLayers(layer);
@@ -1404,13 +1398,19 @@ export default {
     defaultColorObject() {
       var fill = this.$store.state.colorPicker.fill;
       var border = this.$store.state.colorPicker.border;
-      console.log(fill);
       return { fill, border };
     },
-
-    isTabelVisible() {
-      return this.$store.state.dataTable.isVisible;
+    dataTableVisibility: {
+      get() {
+        console.log("get");
+        return this.$store.state.dataTable.isVisible;
+      },
+      set(value) {
+        // this.filterQueryIsSum = false;
+        this.$store.dispatch("SAVE_DATATABLE_VISIBLE", value);
+      }
     },
+
     focusedPolygonVector: {
       get() {
         return this.$store.state.layers.focusedPolygonVector;
@@ -1430,9 +1430,15 @@ export default {
     selectedServiceInfo() {
       return this.$store.state.dataTable.serviceInfo;
     },
-    filterQueryIsSum() {
-      return this.$store.state.filter.filterQueryIsSum;
+    filterQueryIsSum: {
+      get() {
+        return this.$store.state.filter.filterQueryIsSum;
+      },
+      set(value) {
+        this.$store.dispatch("SAVE_FILTER_QUERY_IS_SUM", value);
+      }
     },
+
     filterQueryArithmeticColumn() {
       return this.$store.state.filter.filterQueryArithmeticColumn;
     },
