@@ -1,4 +1,4 @@
-import toggler from "../helpers/toggler";
+import toggler from "./toggler";
 import mapHelper from "../helpers/mapHelper";
 import colorHelper from "../helpers/colorHelper";
 import layerHelper from "./layerHelper";
