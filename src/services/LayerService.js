@@ -1,27 +1,6 @@
 import request from "../utils/request";
 import { emlakUrl, URL } from "../config/urls";
 
-const parseParams = params => {
-  const keys = Object.keys(params);
-  let options = "";
-
-  keys.forEach(key => {
-    const isParamTypeObject = typeof params[key] === "object";
-    const isParamTypeArray = isParamTypeObject && params[key].length >= 0;
-
-    if (!isParamTypeObject) {
-      options += `${key}=${params[key]}&`;
-    }
-
-    if (isParamTypeObject && isParamTypeArray) {
-      params[key].forEach(element => {
-        options += `${key}=${element}&`;
-      });
-    }
-  });
-
-  return options ? options.slice(0, -1) : options;
-};
 export default {
   getUserRelatedLayers() {
     return request.get(URL + "/api/userlayer/getuserlayers");
@@ -33,6 +12,14 @@ export default {
         f: "json"
       }
     });
+  },
+  getData(url, params) {
+    return request.get(url, {
+      params
+    });
+  },
+  postData(url, params) {
+    return request.post(url, params);
   },
   getLayerColumnsDistinctData(params) {
     return request.get(URL + "/api/DataTable/GetDistinctValues/" + params.id, {

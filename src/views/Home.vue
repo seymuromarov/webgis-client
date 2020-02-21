@@ -287,6 +287,34 @@ export default {
     var dynamics = this.dynamicLayerList;
     this.getLayers();
     this.$nextTick(function() {
+      // var vectorGetTest = new VectorTileLayer({
+      //   id: 999,
+      //   source: new VectorTileSource({
+      //     format: new MVT({
+      //       geometryName: "geom"
+      //     }),
+      //     url: URL + "/api/Tile/VectorPost",
+      //     tileLoadFunction: function(tile, url) {
+      //       console.log(url);
+      //       var params = {
+      //         a: "test"
+      //       };
+      //       tile.setLoader(function(extent, resolution, projection) {
+      //         LayerService.postData(url, params).then(function(response) {
+      //           response.arrayBuffer().then(function(data) {
+      //             const format = tile.getFormat(); // ol/format/MVT configured as source format
+      //             const features = format.readFeatures(data, {
+      //               extent: extent,
+      //               featureProjection: projection
+      //             });
+      //             tile.setFeatures(features);
+      //           });
+      //         });
+      //       });
+      //     }
+      //   })
+      // });
+
       let dragAndDropInteraction = new DragAndDrop({
         formatConstructors: [GPX, GeoJSON, IGC, KML, TopoJSON]
       });
@@ -685,18 +713,6 @@ export default {
           let center = [parseFloat(parts[1]), parseFloat(parts[2])];
           let selectedLayers = parts[3].split(",").map(Number);
           return { zoom, center, selectedLayers };
-          // console.log(ids);
-          // console.log(this.dynamicLayerList);
-          // var selecteds = layerHelper.recursiveLayerMapping(
-          //   this.dynamicLayerList,
-          //   function(layer) {
-          //     console.log(ids.includes(layer.id));
-          //     if (ids.includes(layer.id)) {
-          //       console.log("setted true");
-          //       layer.isSelected = true;
-          //     }
-          //   }
-          // );
         }
       }
 
