@@ -1,0 +1,1 @@
+let hashPrefix = "#shareMap";

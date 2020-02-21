@@ -1,5 +1,5 @@
 import request from "../utils/request";
-import { baseUrl, ACCOUNT_URL } from "../config/baseUrl";
+import { baseUrl, ACCOUNT_URL } from "../config/urls";
 
 export default {
   getToken(params) {

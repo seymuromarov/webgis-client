@@ -111,8 +111,8 @@ export default {
   computed: {
     switchModel: {
       get() {
-        if (this.data.hasOwnProperty("collapseVisibility")) {
-          return this.data.collapseVisibility;
+        if (layerHelper.isLayer(this.data)) {
+          return this.data.isSelected;
         } else {
           return this.data.defaultVisibility;
         }

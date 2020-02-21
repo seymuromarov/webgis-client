@@ -1,112 +1,112 @@
 <template>
-    <CustomModal
-        ref="detector-modal"
-        title="Change detection"
-        :minWidth="600"
-        :minHeight="400"
-        @afterHide="$emit('close')"
-    >
-        <!-- <div class="detector-wrapper"> -->
-        <div class="detector">
-            <!-- <p class="detector-title"></p> -->
-            <!-- <button @click="$emit('close')">&#x2715;</button> -->
-            <multiselect
-                v-model="selectedLayers"
-                :options="baseLayerList"
-                placeholder="Layers"
-                :close-on-select="false"
-                :multiple="true"
-                label="showingLabel"
-                track-by="label"
-                style="margin: 15px 0;"
-            ></multiselect>
-            <div class="detector-list">
-                <div
-                    :key="index"
-                    v-for="(exported, index) in exportedImages"
-                    class="detector-list-item"
-                >
-                    <p>{{ exported.label }}</p>
-                    <div class="image-wrapper">
-                        <img :src="exported.image" />
-                    </div>
-                </div>
-            </div>
+  <CustomModal
+    ref="detector-modal"
+    title="Change detection"
+    :minWidth="600"
+    :minHeight="400"
+    @afterHide="$emit('close')"
+  >
+    <!-- <div class="detector-wrapper"> -->
+    <div class="detector">
+      <!-- <p class="detector-title"></p> -->
+      <!-- <button @click="$emit('close')">&#x2715;</button> -->
+      <multiselect
+        v-model="selectedLayers"
+        :options="baseLayerList"
+        placeholder="Layers"
+        :close-on-select="false"
+        :multiple="true"
+        label="showingLabel"
+        track-by="label"
+        style="margin: 15px 0;"
+      ></multiselect>
+      <div class="detector-list">
+        <div
+          :key="index"
+          v-for="(exported, index) in exportedImages"
+          class="detector-list-item"
+        >
+          <p>{{ exported.label }}</p>
+          <div class="image-wrapper">
+            <img :src="exported.image" />
+          </div>
         </div>
-        <!-- </div> -->
-    </CustomModal>
+      </div>
+    </div>
+    <!-- </div> -->
+  </CustomModal>
 </template>
 
 <script>
 import Multiselect from "vue-multiselect";
 import LayerService from "@/services/LayerService";
-import { URL } from "@/config/baseUrl";
+import { URL } from "@/config/urls";
 import { Modal as CustomModal } from "../";
 
 export default {
-    components: {
-        Multiselect,
-        CustomModal,
+  components: {
+    Multiselect,
+    CustomModal
+  },
+  props: {
+    lastBBOXOfShape: {
+      required: true,
+      type: Array
     },
-    props: {
-        lastBBOXOfShape: {
-            required: true,
-            type: Array,
-        },
-        token: {
-            // required: true,
-            type: String,
-        },
-        visible: {
-            type: Boolean,
-        },
+    token: {
+      // required: true,
+      type: String
     },
-    watch: {
-        selectedLayers: async function(layers) {
-            this.exportedImages = [];
+    visible: {
+      type: Boolean
+    }
+  },
+  watch: {
+    selectedLayers: async function(layers) {
+      this.exportedImages = [];
 
-            for (let layer of layers) {
-                let url =
-                    URL +
-                    "/api/map/service/" +
-                    layer.label +
-                    "/MapServer/export" +
-                    "?" +
-                    `token=${this.token}&` +
-                    `f=image&` +
-                    `format=png8&` +
-                    `transparent=true&` +
-                    `size=1024,1024&` +
-                    `bbox=${this.lastBBOXOfShape.toString()}&` +
-                    `bboxsr=3857&` +
-                    `imagesr=3857&` +
-                    `dpi=90`;
+      for (let layer of layers) {
+        let url =
+          URL +
+          "/api/map/service/" +
+          layer.label +
+          "/MapServer/export" +
+          "?" +
+          `token=${this.token}&` +
+          `f=image&` +
+          `format=png8&` +
+          `transparent=true&` +
+          `size=1024,1024&` +
+          `bbox=${this.lastBBOXOfShape.toString()}&` +
+          `bboxsr=3857&` +
+          `imagesr=3857&` +
+          `dpi=90`;
 
-                this.exportedImages.push({
-                    image: url,
-                    label: layer.showingLabel,
-                });
-            }
-        },
-        visible(value) {
-            if (value) {
-                this.$refs["detector-modal"].show();
-            } else {
-                this.$refs["detector-modal"].hide();
-            }
-        },
+        this.exportedImages.push({
+          image: url,
+          label: layer.showingLabel
+        });
+      }
     },
-    created: async function() {
-        let response = await LayerService.getUserRelatedLayers();
-        this.baseLayerList = response.data;
-    },
-    data() {
-        return {
-            selectedLayers: [],
-            baseLayerList: [],
-            exportedImages: [],
-        };
-    },
+    visible(value) {
+      if (value) {
+        this.$refs["detector-modal"].show();
+      } else {
+        this.$refs["detector-modal"].hide();
+      }
+    }
+  },
+  created: async function() {
+    let response = await LayerService.getUserRelatedLayers();
+    this.baseLayerList = response.data;
+  },
+  data() {
+    return {
+      selectedLayers: [],
+      baseLayerList: [],
+      exportedImages: []
+    };
+  }
 };
 </script>
 

@@ -1,15 +1,13 @@
 import { layerTypeEnum } from "../constants/enums/layerEnums";
-
-let baseCounter = 0;
-let dynamicCounter = 0;
-
-const layerHelper = {
-  basemapMapping: val => {
+import { colorHelper } from "@/helpers";
+const mapper = {
+  basemapMapping: (val, counter) => {
+    counter += 1;
     return {
       id: val.id,
       name: val.label,
       showingLabel: val.showingLabel,
-      order: layerHelper.baseCounter++,
+      order: counter,
       spatial: val.spatial,
       minZoomLevel: val.minZoomLevel,
       maxZoomLevel: val.maxZoomLevel,
@@ -25,18 +23,19 @@ const layerHelper = {
 
       unitedDynamicLayerName:
         val.unitedDynamicLayer != null
-          ? layerHelper.basemapMapping(val.unitedDynamicLayer)
+          ? mapper.basemapMapping(val.unitedDynamicLayer)
           : null,
 
       layers: null
     };
   },
-  dynamicMapping: val => {
+  dynamicMapping: (val, counter) => {
+    counter += 1;
     return {
       id: val.resourceTypeId === "local" ? val.id : val.id,
       name: val.label,
       showingLabel: val.showingLabel,
-      order: layerHelper.dynamicCounter++,
+      order: counter,
       minZoomLevel: val.minZoomLevel,
       maxZoomLevel: val.maxZoomLevel,
       extent: val.extent,
@@ -57,45 +56,26 @@ const layerHelper = {
       apiFrom: "internal"
     };
   },
-  recursiveMap: (val, index) => {
+  recursiveMap: (val, counter) => {
     if (val.layers !== undefined) {
       return {
         name: val.label,
         mapTypeId: val.mapTypeId,
         children: val.children.map((val, i) =>
-          layerHelper.recursiveMap(val, index)
+          mapper.recursiveMap(val, counter)
         ),
         type: layerTypeEnum.CATEGORY,
         layers: val.layers.map((val, i) =>
           val.mapTypeId == "basemap"
-            ? layerHelper.basemapMapping(val)
-            : layerHelper.dynamicMapping(val)
+            ? mapper.basemapMapping(val, counter)
+            : mapper.dynamicMapping(val, counter)
         )
       };
     } else
       return val.mapTypeId == "basemap"
-        ? layerHelper.basemapMapping(val)
-        : layerHelper.dynamicMapping(val);
+        ? mapper.basemapMapping(val, counter)
+        : mapper.dynamicMapping(val, counter);
   },
-
-  mapLayers: layers => {
-    baseCounter = 0;
-    dynamicCounter = 0;
-    let baseLayers = layers
-      .filter(c => c.mapTypeId === "basemap")
-      .map((val, index) => layerHelper.recursiveMap(val));
-
-    let dynamicLayers = layers
-      .filter(c => c.mapTypeId === "dynamic")
-      .map((val, index) => layerHelper.recursiveMap(val));
-
-    var mapResult = {
-      baseLayers,
-      dynamicLayers
-    };
-    return mapResult;
-  },
-
   subLayerMapping: (item, layer) => {
     item.color = null;
     item.type = layerTypeEnum.SUBLAYER;
@@ -104,7 +84,60 @@ const layerHelper = {
     item.parent = layer;
     return item;
   },
+  mapLayers: layers => {
+    let baseCounter = 0;
+    let dynamicCounter = 0;
+    let baseLayers = layers
+      .filter(c => c.mapTypeId === "basemap")
+      .map(val => mapper.recursiveMap(val, baseCounter));
 
+    let dynamicLayers = layers
+      .filter(c => c.mapTypeId === "dynamic")
+      .map(val => mapper.recursiveMap(val, dynamicCounter));
+
+    var mapResult = {
+      baseLayers,
+      dynamicLayers
+    };
+    return mapResult;
+  },
+
+  recursiveLayerMapping: (layerArr, callback) => {
+    for (var i = 0; i < layerArr.length; i++) {
+      var item = layerArr[i];
+      mapper.recursiveMapping(item, callback);
+    }
+    return layerArr;
+  },
+
+  recursiveMapping: (item, callback) => {
+    var isCategory = checker.isCategory(item);
+    if (isCategory) {
+      //group
+
+      if (item.children && item.children.length > 0) {
+        for (var i = 0; i < item.children.length; i++) {
+          var child = item.children[i];
+          mapper.recursiveMapping(child, callback);
+        }
+      }
+
+      if (item.layers && item.layers.length > 0) {
+        for (var i = 0; i < item.layers.length; i++) {
+          var layer = item.layers[i];
+          mapper.recursiveMapping(layer, callback);
+        }
+      }
+    } //layer
+    else {
+      if (callback && typeof callback === "function") {
+        callback(item);
+      }
+    }
+  }
+};
+
+const checker = {
   isLocalService: service => {
     return service.resourceType === "local";
   },
@@ -120,14 +153,10 @@ const layerHelper = {
   },
 
   isDynamicFromArcgis(service) {
-    return (
-      layerHelper.isArcgisService(service) && layerHelper.isDynamic(service)
-    );
+    return checker.isArcgisService(service) && checker.isDynamic(service);
   },
   isDynamicFromLocal(service) {
-    return (
-      layerHelper.isLocalService(service) && layerHelper.isDynamic(service)
-    );
+    return checker.isLocalService(service) && checker.isDynamic(service);
   },
 
   isCategory: service => {
@@ -138,9 +167,22 @@ const layerHelper = {
   },
   isSublayer: service => {
     return service.type === layerTypeEnum.SUBLAYER;
+  }
+};
+
+const functions = {
+  getSelectedLayers() {
+    var selectedLayers = [];
+    var layers = [...this.dynamicLayerList, ...this.baseLayerList];
+    this.recursiveLayerMapping(layers, function(layer) {
+      if (layer.isSelected) {
+        selectedLayers.push(layer);
+      }
+    });
+    return selectedLayers;
   },
 
-  makeArcgisSublayerConfig: service => {
+  renderArcgisSublayerConfig: service => {
     var subLayers = service.layers;
     var activeLayers = subLayers
       .filter(c => c.isSelected)
@@ -160,7 +202,32 @@ const layerHelper = {
     }
 
     return config;
+  },
+  renderSubLayersColorString: layer => {
+    var colorStringArr = [];
+    for (var i = 0; i < layer.layers.length; i++) {
+      let subLayer = layer.layers[i];
+
+      if (subLayer.color !== undefined && subLayer.color !== null) {
+        let colorString = colorHelper.renderColor(
+          subLayer.id,
+          subLayer.color.fill,
+          subLayer.color.border
+        );
+
+        colorStringArr.push(colorString);
+      }
+    }
+    var result = "";
+    if (colorStringArr.length > 0)
+      result = "[" + colorStringArr.join(" , ") + "]";
+
+    return result;
   }
 };
 
-export default layerHelper;
+export default {
+  ...functions,
+  ...checker,
+  ...mapper
+};

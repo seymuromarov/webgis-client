@@ -154,11 +154,12 @@ import {
 import DetectorModal from "@/components/modals/ChangeDetector";
 
 // Utils
-import { URL, MAP_URLS } from "@/config/baseUrl";
+import { URL, MAP_URLS } from "@/config/urls";
+import { layerSettings } from "@/config/settings";
 import cities from "@/data/cities.json";
 import LoginService from "@/services/LoginService";
 import LayerService from "@/services/LayerService";
-import { toggler, mapHelper, colorHelper, layerHelper } from "@/helpers";
+import { toggler, mapHelper, layerHelper } from "@/helpers";
 
 // Styles
 import "ol/ol.css";
@@ -193,13 +194,10 @@ export default {
       checkedColumnsData: [],
       options: [],
       layers: [],
-      layerCounter: 0,
       isMarker: false,
       isRemove: false,
       isColorPick: false,
-      gisLayers: [],
       token: null,
-      emlakToken: null,
       kmlInfo: null,
       source: null,
       vector: null,
@@ -208,6 +206,9 @@ export default {
       featureIDSet: 0,
       typeSelect: null,
       draw: null,
+
+      hashResolveResult: [],
+
       stackedTableFeaturesHeader: [],
       tableFeaturesHeader: [],
       tableFeaturesData: [],
@@ -221,8 +222,6 @@ export default {
       historyEventsIndex: 0,
       graticule: false,
       tableHeader: null,
-      helpmaptooltip: null,
-      measuremaptooltip: null,
       isMetricCoordinateSystem: false,
       baseMaps: {
         none: new XYZ({
@@ -244,13 +243,15 @@ export default {
             "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
         })
       },
-      dynamicForColors: [[]],
       showInfoModal: false,
       isHashLoaded: false
     };
   },
+  created() {},
   mounted() {
+    this.hashResolveResult = this.resolveHash(window.location.hash);
     this.token = this.$cookie.get("token");
+
     if (this.token === null) this.$router.push("/login");
 
     this.mapHelper = new mapHelper(this);
@@ -265,6 +266,7 @@ export default {
       source: this.source,
       features: []
     });
+
     this.vector.setZIndex(9999);
 
     var debug = new TileLayer({
@@ -281,33 +283,21 @@ export default {
           "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
       })
     });
-    this.LayerService();
 
+    var dynamics = this.dynamicLayerList;
+    this.getLayers();
     this.$nextTick(function() {
       let dragAndDropInteraction = new DragAndDrop({
         formatConstructors: [GPX, GeoJSON, IGC, KML, TopoJSON]
       });
       this.layers = [gray, this.vector];
-
-      let zoom = 8;
-      let center = fromLonLat([47.82858, 40.3598414]);
+      let zoom =
+        this.hashResolveResult !== null ? this.hashResolveResult.zoom : 8;
+      let center =
+        this.hashResolveResult !== null
+          ? this.hashResolveResult.center
+          : fromLonLat([47.82858, 40.3598414]);
       let rotation = 0;
-      let selectedLayers = {};
-
-      if (window.location.hash !== "") {
-        let hash = window.location.hash.replace("#shareMap=", "");
-        let parts = hash.split("&");
-        if (parts.length === 4) {
-          zoom = parseInt(parts[0], 10);
-          center = [parseFloat(parts[1]), parseFloat(parts[2])];
-          parts[3].split(",").forEach(element => {
-            // this.selectedLayers[parseInt(element)] = true;
-            selectedLayers[parseInt(element)] = true;
-          });
-        }
-      }
-
-      this.$store.dispatch("SET_SELECTED_LAYERS", selectedLayers);
 
       this.mapLayer = new Map({
         interactions: defaultInteractions().extend([
@@ -334,6 +324,7 @@ export default {
         self.source.addFeatures(event.features);
         self.mapLayer.getView().fit(self.source.getExtent());
       });
+
       let displayFeatureInfo = function(pixel) {
         let features = [];
         self.mapLayer.forEachFeatureAtPixel(pixel, function(feature) {
@@ -487,13 +478,6 @@ export default {
     });
   },
   methods: {
-    btnclick(val) {
-      if (val) {
-        this.$refs["moodal"].show();
-      } else {
-        this.$refs["moodal"].hide();
-      }
-    },
     objectToQueryString(obj) {
       var str = [];
       for (var p in obj)
@@ -502,6 +486,7 @@ export default {
         }
       return "?" + str.join("&");
     },
+
     updateHash() {
       let view = this.mapLayer.getView();
       let state = {
@@ -509,10 +494,10 @@ export default {
         center: view.getCenter(),
         rotation: view.getRotation()
       };
-
-      let selectedLayersArr = Object.keys(
-        this.$store.getters.selectedLayers
-      ).map(Number);
+      var selectedLayers = this.getSelectedLayers();
+      var selectedLayerIds = selectedLayers.map(item => {
+        return item.id;
+      });
       let hash =
         "#shareMap=" +
         view.getZoom() +
@@ -521,9 +506,18 @@ export default {
         "&" +
         Math.round(view.getCenter()[1] * 100) / 100 +
         "&" +
-        selectedLayersArr.toString();
-
+        selectedLayerIds;
       window.history.pushState(state, "map", hash);
+    },
+    getSelectedLayers() {
+      var selectedLayers = [];
+      var layers = [...this.dynamicLayerList, ...this.baseLayerList];
+      layerHelper.recursiveLayerMapping(layers, function(layer) {
+        if (layer.isSelected) {
+          selectedLayers.push(layer);
+        }
+      });
+      return selectedLayers;
     },
     changeLocation() {
       this.mapLayer
@@ -681,6 +675,33 @@ export default {
         }
       );
     },
+    resolveHash(hash) {
+      var result = null;
+      if (hash !== "") {
+        let hashString = window.location.hash.replace("#shareMap=", "");
+        let parts = hashString.split("&");
+        if (parts.length === 4) {
+          let zoom = parseInt(parts[0], 10);
+          let center = [parseFloat(parts[1]), parseFloat(parts[2])];
+          let selectedLayers = parts[3].split(",").map(Number);
+          return { zoom, center, selectedLayers };
+          // console.log(ids);
+          // console.log(this.dynamicLayerList);
+          // var selecteds = layerHelper.recursiveLayerMapping(
+          //   this.dynamicLayerList,
+          //   function(layer) {
+          //     console.log(ids.includes(layer.id));
+          //     if (ids.includes(layer.id)) {
+          //       console.log("setted true");
+          //       layer.isSelected = true;
+          //     }
+          //   }
+          // );
+        }
+      }
+
+      return result;
+    },
     mapSetCenter(data) {
       if (data.geometry.x !== undefined) {
         this.mapLayer
@@ -699,105 +720,18 @@ export default {
       this.mapHelper.addInteraction();
     },
     onMoveCallbackDynamicLayerList(evt, originalEvent) {
-      this.layerCounter = 0;
-
-      let dynamicLayerList = this.dynamicLayerList;
-
-      dynamicLayerList = dynamicLayerList.map((item, index) => {
-        return this.recursiveLayerOrder(item);
-      });
-
-      dynamicLayerList.map((item, index) => {
-        this.recursiveLayerIndexes(item);
+      this.dynamicLayerList.map((item, index) => {
+        this.setZIndex(item);
       });
     },
     onMoveCallbackBaseLayerList(evt, originalEvent) {
-      this.layerCounter = 0;
-
-      let baseLayerList = this.baseLayerList;
-      baseLayerList = baseLayerList.map((item, index) => {
-        return this.recursiveLayerOrder(item);
+      this.baseLayerList.map((item, index) => {
+        this.setZIndex(item);
       });
-      baseLayerList.map((item, index) => {
-        this.recursiveLayerIndexes(item);
-      });
-    },
-    recursiveLayerOrder(item) {
-      if (this.isItemCategory(item))
-        return {
-          ...item,
-          children: item.children.map(item => this.recursiveLayerOrder(item)),
-          layers: item.layers.map(item => ({
-            ...item,
-            order: this.layerCounter++
-          }))
-        };
-      else
-        return {
-          ...item,
-          order: this.layerCounter++
-        };
-    },
-    recursiveLayerIndexes(item) {
-      if (this.isItemCategory(item)) {
-        item.layers.map((item, index) => this.recursiveLayerIndexes(item));
-      } else {
-        this.mapLayer.getLayers().forEach(function(layer) {
-          if (
-            layer.get("name") != undefined &&
-            layer.get("name") === item.name
-          ) {
-            layer.setZIndex(500 - item.order);
-          }
-        });
-      }
-    },
-    recursiveLayerSet(item, serviceName, subLayers) {
-      if (this.isItemCategory(item)) {
-        return {
-          ...item,
-          layers: item.layers.map(item =>
-            this.recursiveLayerSet(item, serviceName, subLayers)
-          )
-        };
-      } else {
-        if (item.name == serviceName) {
-          item.layers = subLayers.data.layers;
-        }
-        return {
-          ...item,
-          apiFrom: item.apiFrom ? item.apiFrom : "internal",
-          color: item.color ? item.color : false
-        };
-      }
     },
 
     isItemCategory(item) {
-      return item.layers && item.children;
-    },
-    recursiveLayerFind(item, name) {
-      var isCategory = this.isItemCategory(item);
-      if (isCategory) {
-        //group
-        if (item.layers.some(c => c.name === name)) {
-          return item.layers.find(c => c.name === name);
-        } else {
-          if (item.children && item.children.length > 0) {
-            item.children.map(item => this.recursiveLayerFind(item));
-          } else {
-            return null;
-          }
-        }
-      } //layer
-      else {
-        if (item.name == name) {
-          {
-            return item;
-          }
-        } else {
-          return null;
-        }
-      }
+      return layerHelper.isCategory(item);
     },
 
     async getTableData(service, layerId, layerName, query) {
@@ -964,27 +898,49 @@ export default {
         });
       });
     },
-    async LayerService() {
-      const response = await LayerService.getLayersWithFullDataFromServer({
+    async getLayers() {
+      LayerService.getLayersWithFullDataFromServer({
         token: this.token
+      }).then(response => {
+        let layers = layerHelper.mapLayers(response.data);
+        let e = { target: { checked: true } };
+
+        this.baseLayerList = layers.baseLayers;
+        this.dynamicLayerList = layers.dynamicLayers;
+
+        var selectedIds =
+          this.hashResolveResult.selectedLayers !== null
+            ? this.hashResolveResult.selectedLayers
+            : [];
+
+        this.dynamicLayerList = layerHelper.recursiveLayerMapping(
+          this.dynamicLayerList,
+          layer => {
+            if (selectedIds.includes(layer.id)) {
+              layer.isSelected = true;
+              this.selectService(
+                layer,
+                layer.order,
+                layer.mapType === "dynamic",
+                e,
+                false
+              );
+            }
+          }
+        );
       });
 
-      let layers = layerHelper.mapLayers(response.data);
-
-      this.baseLayerList = layers.baseLayers;
-      this.dynamicLayerList = layers.dynamicLayers;
-
-      let selectedLayersArr = Object.keys(
-        this.$store.getters.selectedLayers
-      ).map(Number);
-      selectedLayersArr.forEach(value => {
-        this.baseLayerList.forEach(item => {
-          this.checkIfLayerNeedsToTurnOn(item, value);
-        });
-        this.dynamicLayerList.forEach(item => {
-          this.checkIfLayerNeedsToTurnOn(item, value);
-        });
-      });
+      // let selectedLayersArr = Object.keys(
+      //   this.$store.getters.selectedLayers
+      // ).map(Number);
+      // selectedLayersArr.forEach(value => {
+      //   this.baseLayerList.forEach(item => {
+      //     this.checkIfLayerNeedsToTurnOn(item, value);
+      //   });
+      //   this.dynamicLayerList.forEach(item => {
+      //     this.checkIfLayerNeedsToTurnOn(item, value);
+      //   });
+      // });
     },
     checkIfLayerNeedsToTurnOn(layer, value) {
       let e = { target: { checked: true } };
@@ -1006,27 +962,6 @@ export default {
       }
     },
 
-    getSubLayersColorString(layer) {
-      var colorStringArr = [];
-      for (var i = 0; i < layer.layers.length; i++) {
-        let subLayer = layer.layers[i];
-
-        if (subLayer.color !== undefined && subLayer.color !== null) {
-          let colorString = colorHelper.renderColor(
-            subLayer.id,
-            subLayer.color.fill,
-            subLayer.color.border
-          );
-
-          colorStringArr.push(colorString);
-        }
-      }
-      var result = "";
-      if (colorStringArr.length > 0)
-        result = "[" + colorStringArr.join(" , ") + "]";
-
-      return result;
-    },
     getVectorStyle(service) {
       var color = null;
       if (service.color !== null) {
@@ -1034,7 +969,6 @@ export default {
       } else {
         color = this.defaultColorObject;
       }
-      console.log(color);
       var style = new Style({
         fill: new Fill({
           color: color.fill.hex8
@@ -1109,8 +1043,8 @@ export default {
               crossOrigin: "Anonymous",
               params: {
                 token: this.token,
-                layers: layerHelper.makeArcgisSublayerConfig(service),
-                dynamicLayers: this.getSubLayersColorString(service)
+                layers: layerHelper.renderArcgisSublayerConfig(service),
+                dynamicLayers: layerHelper.renderSubLayersColorString(service)
               }
             })
           });
@@ -1145,7 +1079,7 @@ export default {
 
     addLayers(service, index, dynamic = false) {
       // this.selectedLayersIdHolder(true, service);
-      if (service.extent != null && this.isHashLoaded) {
+      if (service.extent != null) {
         this.mapLayer
           .getView()
           .fit([
@@ -1157,14 +1091,49 @@ export default {
       }
 
       var new_layer = this.renderNewLayer(service);
+      this.getOrderNumber(this.dynamicLayerList, service);
+
       new_layer.set("name", service.name);
-      if (dynamic) {
-        new_layer.setZIndex(9999 - service.order);
-      } else {
-        new_layer.setZIndex(500 - service.order);
-      }
+      var zIndex = this.getZIndex(service);
+      new_layer.setZIndex(zIndex);
+
       this.mapLayer.addLayer(new_layer);
     },
+
+    getOrderNumber(array, service) {
+      var index = 0;
+      var result = 0;
+      layerHelper.recursiveLayerMapping(array, function(layer) {
+        index++;
+        if (layer.name == service.name) {
+          result = index;
+        }
+      });
+      return result;
+    },
+    setZIndex(service) {
+      this.mapLayer.getLayers().forEach(layer => {
+        if (
+          layer.get("name") != undefined &&
+          layer.get("name") === service.name
+        ) {
+          layer.setZIndex(this.getZIndex(service));
+        }
+      });
+    },
+    getZIndex(service) {
+      let zIndex = 0;
+      let orderNo = 0;
+      if (layerHelper.isDynamic(service)) {
+        zIndex = layerSettings.dynamicZIndex;
+        orderNo = this.getOrderNumber(this.dynamicLayerList, service);
+      } else {
+        zIndex = layerSettings.basemapZIndex;
+        orderNo = this.getOrderNumber(this.baseLayerList, service);
+      }
+      return zIndex - orderNo;
+    },
+
     refreshLayer(service) {
       this.deleteLayers(service);
       this.addLayers(service, service.order, true);
@@ -1234,7 +1203,7 @@ export default {
     async dynamicLayersReset(service, status) {
       if (layerHelper.isDynamicFromArcgis(service)) {
         var isColorEnabled = await this.isLayerColorEnabled(service);
-        this.dynamicLayerList = this.recursiveLayerProcess(
+        this.dynamicLayerList = this.recursiveLayerFind(
           this.dynamicLayerList,
           service,
           function(layer) {
@@ -1260,11 +1229,11 @@ export default {
       }
       return responseDynamic;
     },
-    recursiveLayerProcess(layerArr, service, callback) {
+    recursiveLayerFind(layerArr, service, callback) {
       for (var i = 0; i < layerArr.length; i++) {
         var item = layerArr[i];
 
-        var layer = this.recursiveLayerFind(item, service.name);
+        var layer = this.recursiveFind(item, service.name);
         if (callback && typeof callback === "function") {
           if (layer !== undefined && layer !== null) {
             callback(layer);
@@ -1274,6 +1243,31 @@ export default {
       }
       return layerArr;
     },
+    recursiveFind(item, name) {
+      var isCategory = this.isItemCategory(item);
+      if (isCategory) {
+        //group
+        if (item.layers.some(c => c.name === name)) {
+          return item.layers.find(c => c.name === name);
+        } else {
+          if (item.children && item.children.length > 0) {
+            item.children.map(item => this.recursiveFind(item));
+          } else {
+            return null;
+          }
+        }
+      } //layer
+      else {
+        if (item.name == name) {
+          {
+            return item;
+          }
+        } else {
+          return null;
+        }
+      }
+    },
+
     async selectService(service, index, isDynamic, e, isHashLoaded = true) {
       var isChecked = e.target.checked;
 
@@ -1287,13 +1281,12 @@ export default {
           subLayers = subLayerResponse.data.layers;
         }
 
-        this.dynamicLayerList = this.recursiveLayerProcess(
+        this.dynamicLayerList = this.recursiveLayerFind(
           this.dynamicLayerList,
           service,
           async layer => {
             if (layer != null) {
               layer.isSelected = isChecked;
-              layer.collapseVisibility = isChecked;
 
               if (isChecked && layerHelper.isDynamicFromArcgis(layer)) {
                 layer.layers = subLayers.map(item =>
@@ -1304,13 +1297,12 @@ export default {
           }
         );
       } else if (layerHelper.isBasemap(service)) {
-        this.baseLayerList = this.recursiveLayerProcess(
+        this.baseLayerList = this.recursiveLayerFind(
           this.baseLayerList,
           service,
-          function(layer) {
+          layer => {
             if (layer != null) {
               layer.isSelected = isChecked;
-              layer.collapseVisibility = isChecked;
             }
           }
         );
@@ -1322,7 +1314,7 @@ export default {
     async selectSubService(service, index, id, e) {
       let isChecked = e.target.checked;
 
-      this.dynamicLayerList = this.recursiveLayerProcess(
+      this.dynamicLayerList = this.recursiveLayerFind(
         this.dynamicLayerList,
         service,
         async layer => {
@@ -1373,7 +1365,7 @@ export default {
 
       this.deleteLayers(layer);
 
-      this.dynamicLayerList = this.recursiveLayerProcess(
+      this.dynamicLayerList = this.recursiveLayerFind(
         this.dynamicLayerList,
         layer,
         layer => {
@@ -1402,7 +1394,6 @@ export default {
     },
     dataTableVisibility: {
       get() {
-        console.log("get");
         return this.$store.state.dataTable.isVisible;
       },
       set(value) {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { baseUrl } from "../config/baseUrl";
+import { baseUrl } from "../config/urls";
 import { getToken } from "./token";
 const service = axios.create({
   baseURL: `${baseUrl}/arcgis/rest/services`,

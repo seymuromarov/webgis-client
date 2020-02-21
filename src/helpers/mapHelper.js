@@ -168,13 +168,13 @@ class MapHelper {
           let output;
 
           if (geom instanceof Polygon) {
-            output = MapHelpers.formatArea(geom);
+            output = MapHelper.formatArea(geom);
             maptooltipCoord = geom.getInteriorPoint().getCoordinates();
           } else if (geom instanceof LineString) {
-            output = MapHelpers.formatLength(geom);
+            output = MapHelper.formatLength(geom);
             maptooltipCoord = geom.getLastCoordinate();
           } else if (geom instanceof Circle) {
-            output = MapHelpers.formatCircleRadius(geom);
+            output = MapHelper.formatCircleRadius(geom);
             maptooltipCoord = geom.getLastCoordinate();
           }
           try {

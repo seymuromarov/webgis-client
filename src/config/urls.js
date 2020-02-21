@@ -54,8 +54,8 @@ const LAYER_URLS = {
 };
 
 const MAP_URLS = {
-  MVT: "api/Geo/VectorAsMvt",
-  GEOJSON: "api/Geo/VectorAsGeoJson"
+  MVT: "api/Tile/VectorAsMvt",
+  GEOJSON: "api/Tile/VectorAsGeoJson"
 };
 
 export { baseUrl, URL, emlakUrl, ACCOUNT_URL, LAYER_URLS, MAP_URLS };
