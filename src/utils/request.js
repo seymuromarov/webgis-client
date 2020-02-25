@@ -8,12 +8,9 @@ const service = axios.create({
 
 service.interceptors.request.use(
   request => {
-    request.headers["Authorization"] = "Bearer " + getToken();
-    // request.paramsSerializer= params => {
-    // return qs.stringify(params, {
-    //     arrayFormat: "brackets",
-    //     encode: false
-    // });}
+    request.headers["Authorization"] =
+      "Bearer " + localStorage.getItem("token");
+
     return request;
   },
   error => {

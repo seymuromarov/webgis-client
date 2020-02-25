@@ -158,7 +158,8 @@ export default {
   },
   computed: {
     userName() {
-      return this.$cookie.get("username");
+      // return this.$cookie.get("username");
+      return localStorage.getItem("username");
     },
     topMenu() {
       return [
@@ -367,8 +368,10 @@ export default {
   },
   methods: {
     logout() {
-      this.$cookie.delete("token");
-      this.$cookie.delete("username");
+      // this.$cookie.delete("token");
+      // this.$cookie.delete("username");
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
       this.$router.push("/login");
     },
     fullScreen() {

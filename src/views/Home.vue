@@ -250,7 +250,8 @@ export default {
   created() {},
   mounted() {
     this.hashResolveResult = this.resolveHash(window.location.hash);
-    this.token = this.$cookie.get("token");
+    // this.token = this.$cookie.get("token");
+    this.token = localStorage.getItem("token");
 
     if (this.token === null) this.$router.push("/login");
 

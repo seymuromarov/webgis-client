@@ -16,7 +16,7 @@
           @click="toggleSubList"
         />
         <i
-          class="fas fa-caret-up"
+          class="fas fa-caret-left"
           v-show="!subListVisibility"
           @click="toggleSubList"
         />

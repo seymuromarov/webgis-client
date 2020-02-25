@@ -146,7 +146,8 @@ export default {
   },
   computed: {
     showDeleteBtn() {
-      return this.$cookie.get("isAdmin");
+      // return this.$cookie.get("isAdmin");
+      return localStorage.getItem("isAdmin");
     }
   },
   mounted() {
