@@ -1262,20 +1262,50 @@ export default {
     },
     recursiveFind(item, name) {
       var isCategory = this.isItemCategory(item);
+
       if (isCategory) {
+        console.log("TCL: recursiveFind -> item", item.name);
         //group
-        if (item.layers.some(c => c.name === name)) {
-          return item.layers.find(c => c.name === name);
-        } else {
-          if (item.children && item.children.length > 0) {
-            item.children.map(item => this.recursiveFind(item));
-          } else {
-            return null;
+        // if (item.layers.some(c => c.name === name)) {
+        //   return item.layers.find(c => c.name === name);
+        // }
+        // if (item.layers && item.layers.length > 0) {
+        // item.layers.map(item => this.recursiveFind(item, name));
+
+        if (item.layers) {
+          if (item.layers.some(c => c.name === name)) {
+            return item.layers.find(c => c.name === name);
           }
+
+          // var layerCount = item.layers.length;
+          // if (layerCount > 0)
+          //   for (var i = 0; i < layerCount; i++) {
+          //     var layer = item.layers[i];
+          //     var resultLayer = this.recursiveFind(layer, name);
+          //     return resultLayer;
+          //   }
         }
+
+        var childrenCount = item.children.length;
+        if (childrenCount)
+          for (var j = 0; j < childrenCount; j++) {
+            var child = item.children[j];
+            var resultChild = this.recursiveFind(child, name);
+            // console.log("TCL: recursiveFind -> resultChild", {
+            //   child,
+            //   resultChild
+            // });
+            if (resultChild != null) return resultChild;
+          }
+
+        // if (item.children && item.children.length > 0) {
+        return null;
+        // else {
+        //   return null;
+        // }
       } //layer
       else {
-        if (item.name == name) {
+        if (item.name === name) {
           {
             return item;
           }
@@ -1304,7 +1334,7 @@ export default {
           async layer => {
             if (layer != null) {
               layer.isSelected = isChecked;
-
+              console.log(layer);
               if (isChecked && layerHelper.isDynamicFromArcgis(layer)) {
                 layer.layers = subLayers.map(item =>
                   layerHelper.subLayerMapping(item, layer)

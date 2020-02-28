@@ -6,8 +6,11 @@ const emlakUrl = getUrl.protocol + "//webgis.azercosmos.az/emlak";
 
 // const SERVER_URL = "http://webgis1.azercosmos.az";
 // const LOCAL_URL = "https://localhost:5001";
-
-const URL = getUrl.protocol + process.env.VUE_APP_BASE_API;
+console.log(process.env);
+const URL =
+  process.env.NODE_ENV === "development"
+    ? process.env.VUE_APP_BASE_API
+    : getUrl.protocol + "//" + process.env.VUE_APP_BASE_API;
 
 const ACCOUNT_URL = {
   LOGIN_URL: URL + "/api/account/login"
