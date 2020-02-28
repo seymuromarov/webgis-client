@@ -750,7 +750,15 @@ export default {
     isItemCategory(item) {
       return layerHelper.isCategory(item);
     },
-
+    isWhereExist(query) {
+      return (
+        query &&
+        query.where &&
+        query.where != null &&
+        query.where != "" &&
+        query.where.trim() != "1=1"
+      );
+    },
     async getTableData(service, layerId, layerName, query) {
       var layer = this.getLayer(service.id);
 
@@ -790,7 +798,7 @@ export default {
         } else {
           response = await LayerService.getLocalTableData(params);
         }
-        this.refreshLayer(service);
+        if (this.isWhereExist(query)) this.refreshLayer(service);
       }
       this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
 
@@ -1264,26 +1272,10 @@ export default {
       var isCategory = this.isItemCategory(item);
 
       if (isCategory) {
-        console.log("TCL: recursiveFind -> item", item.name);
-        //group
-        // if (item.layers.some(c => c.name === name)) {
-        //   return item.layers.find(c => c.name === name);
-        // }
-        // if (item.layers && item.layers.length > 0) {
-        // item.layers.map(item => this.recursiveFind(item, name));
-
         if (item.layers) {
           if (item.layers.some(c => c.name === name)) {
             return item.layers.find(c => c.name === name);
           }
-
-          // var layerCount = item.layers.length;
-          // if (layerCount > 0)
-          //   for (var i = 0; i < layerCount; i++) {
-          //     var layer = item.layers[i];
-          //     var resultLayer = this.recursiveFind(layer, name);
-          //     return resultLayer;
-          //   }
         }
 
         var childrenCount = item.children.length;
@@ -1291,18 +1283,10 @@ export default {
           for (var j = 0; j < childrenCount; j++) {
             var child = item.children[j];
             var resultChild = this.recursiveFind(child, name);
-            // console.log("TCL: recursiveFind -> resultChild", {
-            //   child,
-            //   resultChild
-            // });
             if (resultChild != null) return resultChild;
           }
 
-        // if (item.children && item.children.length > 0) {
         return null;
-        // else {
-        //   return null;
-        // }
       } //layer
       else {
         if (item.name === name) {
@@ -1334,7 +1318,6 @@ export default {
           async layer => {
             if (layer != null) {
               layer.isSelected = isChecked;
-              console.log(layer);
               if (isChecked && layerHelper.isDynamicFromArcgis(layer)) {
                 layer.layers = subLayers.map(item =>
                   layerHelper.subLayerMapping(item, layer)
