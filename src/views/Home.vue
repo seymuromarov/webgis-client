@@ -720,15 +720,32 @@ export default {
       return result;
     },
     mapSetCenter(data) {
+      let geometry = [];
       if (data.geometry.x !== undefined) {
-        this.mapLayer
-          .getView()
-          .setCenter(fromLonLat([data.geometry.x, data.geometry.y]));
-      } else {
-        this.mapLayer
-          .getView()
-          .setCenter(fromLonLat(data.geometry.rings[0][0]));
+        geometry = [data.geometry.x, data.geometry.y];
+      } else if (data.geometry.rings !== undefined) {
+        geometry = data.geometry.rings[0];
       }
+      if (geometry.length > 0) {
+        geometry = geometry.map((item, index) => fromLonLat(item));
+        var extent = new Polygon([geometry]);
+        this.mapLayer.getView().fit(extent, {
+          padding: [-50, 50, 30, 150],
+          size: [50, 100],
+          maxZoom: 16
+        });
+        var vectorLayer = this.mapHelper.renderPolygonVector(geometry);
+        this.mapSetFocusedPolygon(vectorLayer);
+      }
+    },
+    mapSetFocusedPolygon(vectorLayer) {
+      //if last vector exist
+      if (this.focusedPolygonVector != null)
+        //reset
+        this.mapLayer.removeLayer(this.focusedPolygonVector);
+      //set new vector
+      this.focusedPolygonVector = vectorLayer;
+      this.mapLayer.addLayer(vectorLayer);
     },
     showFilterModal() {
       this.$refs["filter-modal"].show();
@@ -798,7 +815,10 @@ export default {
         } else {
           response = await LayerService.getLocalTableData(params);
         }
-        if (this.isWhereExist(query)) this.refreshLayer(service);
+        // if (this.isWhereExist(query)) {
+        this.refreshLayer(service);
+        // }
+        // this.resetServiceQuery(service);
       }
       this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
 
@@ -825,10 +845,10 @@ export default {
         let tableName = layerName;
         let tableData = response.data.features;
         let totalCount = response.data.totalCount;
-        let tableHeaders = Object.keys(tableData[0].attributes);
+        let tableHeadersWithAlias = response.data.fieldAliases;
+        let tableHeaders = Object.keys(tableHeadersWithAlias);
         let tableStackedHeaders = tableHeaders;
         let target = response.data.fieldAliases;
-        let tableHeadersWithAlias = response.data.fieldAliases;
 
         let checkedColumnsData = [];
         let checkedColumns = [];
@@ -986,7 +1006,18 @@ export default {
         }
       }
     },
-
+    resetServiceQuery(service) {
+      console.log("TCL: resetServiceQuery -> service", service);
+      this.dynamicLayerList = layerHelper.recursiveLayerMapping(
+        this.dynamicLayerList,
+        layer => {
+          if (layer.id === service.id) {
+            console.log("reseted");
+            layer.query = { where: "" };
+          }
+        }
+      );
+    },
     getVectorStyle(service) {
       var color = null;
       if (service.color !== null) {
