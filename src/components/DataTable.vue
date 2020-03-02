@@ -293,9 +293,9 @@ export default {
       this.$emit("mapSetCenter", data);
     },
     showDataModal(data) {
+      this.selectedData = data;
       this.$refs["data-modal"].show();
-
-      this.fitToPolygon(data);
+      // this.fitToPolygon(data);
     },
     showColumnsChange() {
       this.toggler.showColumnsChange();

@@ -42,6 +42,7 @@ import Multiselect from "vue-multiselect";
 import LayerService from "@/services/LayerService";
 import { URL } from "@/config/urls";
 import { Modal as CustomModal } from "../";
+import { layerGetters } from "@/getters";
 
 export default {
   components: {
@@ -96,16 +97,19 @@ export default {
       }
     }
   },
-  created: async function() {
-    let response = await LayerService.getUserRelatedLayers();
-    this.baseLayerList = response.data;
+  mounted() {
+    console.log();
   },
   data() {
     return {
       selectedLayers: [],
-      baseLayerList: [],
       exportedImages: []
     };
+  },
+  computed: {
+    baseLayerList() {
+      return layerGetters.getBaseLayersWithoutCategory();
+    }
   }
 };
 </script>

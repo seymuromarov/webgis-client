@@ -1,5 +1,6 @@
 import { layerTypeEnum } from "../constants/enums/layerEnums";
 import { colorHelper } from "@/helpers";
+
 const mapper = {
   basemapMapping: (val, counter) => {
     counter += 1;
@@ -51,7 +52,7 @@ const mapper = {
       layersVisibility: false,
       collapseVisibility: false,
 
-      query: { where: "" },
+      query: { where: "1=1" },
       layers: null,
       apiFrom: "internal"
     };
@@ -171,17 +172,6 @@ const checker = {
 };
 
 const functions = {
-  getSelectedLayers() {
-    var selectedLayers = [];
-    var layers = [...this.dynamicLayerList, ...this.baseLayerList];
-    this.recursiveLayerMapping(layers, function(layer) {
-      if (layer.isSelected) {
-        selectedLayers.push(layer);
-      }
-    });
-    return selectedLayers;
-  },
-
   renderArcgisSublayerConfig: service => {
     var subLayers = service.layers;
     var activeLayers = subLayers

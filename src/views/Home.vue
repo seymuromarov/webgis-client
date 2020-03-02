@@ -160,6 +160,7 @@ import cities from "@/data/cities.json";
 import LoginService from "@/services/LoginService";
 import LayerService from "@/services/LayerService";
 import { toggler, mapHelper, layerHelper } from "@/helpers";
+import { layerGetters } from "@/getters";
 
 // Styles
 import "ol/ol.css";
@@ -523,7 +524,7 @@ export default {
         center: view.getCenter(),
         rotation: view.getRotation()
       };
-      var selectedLayers = this.getSelectedLayers();
+      var selectedLayers = layerGetters.getSelectedLayers();
       var selectedLayerIds = selectedLayers.map(item => {
         return item.id;
       });
@@ -538,16 +539,7 @@ export default {
         selectedLayerIds;
       window.history.pushState(state, "map", hash);
     },
-    getSelectedLayers() {
-      var selectedLayers = [];
-      var layers = [...this.dynamicLayerList, ...this.baseLayerList];
-      layerHelper.recursiveLayerMapping(layers, function(layer) {
-        if (layer.isSelected) {
-          selectedLayers.push(layer);
-        }
-      });
-      return selectedLayers;
-    },
+
     changeLocation() {
       this.mapLayer
         .getView()
@@ -771,11 +763,12 @@ export default {
       return (
         query &&
         query.where &&
-        query.where != null &&
-        query.where != "" &&
-        query.where.trim() != "1=1"
+        query.where !== null &&
+        query.where !== "" &&
+        query.where !== "1=1"
       );
     },
+
     async getTableData(service, layerId, layerName, query) {
       var layer = this.getLayer(service.id);
 
@@ -803,8 +796,8 @@ export default {
           ...query,
           ...this.tablePaging
         };
+        // this.resetServiceQuery(service);
 
-        service.query = query;
         if (this.filterQueryIsSum && service.resourceType === "local") {
           params.isSum = this.filterQueryIsSum;
           params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
@@ -815,10 +808,12 @@ export default {
         } else {
           response = await LayerService.getLocalTableData(params);
         }
-        // if (this.isWhereExist(query)) {
-        this.refreshLayer(service);
-        // }
-        // this.resetServiceQuery(service);
+
+        if (query.where !== service.query.where) {
+          service.query = query;
+          this.refreshLayer(service);
+        }
+        //
       }
       this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
 
@@ -925,24 +920,11 @@ export default {
         response = await LayerService.getLocalTableData(params);
       }
 
-      if (response.data.features !== undefined) {
-        if (response.data.features.length !== 0) {
-          this.$refs.dataTable.showDataModal(response.data.features[0]);
-        }
+      if (response.data.totalCount > 0) {
+        this.$refs.dataTable.showDataModal(response.data.features[0]);
       }
     },
-    setDynamicIndexes() {
-      this.dynamicLayerList.map((item, index) => {
-        this.mapLayer.getLayers().forEach(function(layer) {
-          if (
-            layer.get("name") != undefined &&
-            layer.get("name") === item.name
-          ) {
-            layer.setZIndex(9999 - index);
-          }
-        });
-      });
-    },
+
     async getLayers() {
       LayerService.getLayersWithFullDataFromServer({
         token: this.token
@@ -974,18 +956,6 @@ export default {
           }
         );
       });
-
-      // let selectedLayersArr = Object.keys(
-      //   this.$store.getters.selectedLayers
-      // ).map(Number);
-      // selectedLayersArr.forEach(value => {
-      //   this.baseLayerList.forEach(item => {
-      //     this.checkIfLayerNeedsToTurnOn(item, value);
-      //   });
-      //   this.dynamicLayerList.forEach(item => {
-      //     this.checkIfLayerNeedsToTurnOn(item, value);
-      //   });
-      // });
     },
     checkIfLayerNeedsToTurnOn(layer, value) {
       let e = { target: { checked: true } };
@@ -1007,12 +977,10 @@ export default {
       }
     },
     resetServiceQuery(service) {
-      console.log("TCL: resetServiceQuery -> service", service);
       this.dynamicLayerList = layerHelper.recursiveLayerMapping(
         this.dynamicLayerList,
         layer => {
           if (layer.id === service.id) {
-            console.log("reseted");
             layer.query = { where: "" };
           }
         }
@@ -1053,18 +1021,6 @@ export default {
         minResolution: createXYZ().getResolution(service.maxZoomLevel)
       };
     },
-    // getLayerVectorStyle(service) {
-    //   return {
-    //     fill: new Fill({
-    //       color: [203, 194, 185, 1]
-    //     }),
-    //     stroke: new Stroke({
-    //       color: [177, 163, 148, 0.5],
-    //       width: 2,
-    //       lineCap: "round"
-    //     })
-    //   };
-    // },
 
     renderNewLayer(service) {
       var isDynamic = layerHelper.isDynamic(service);
@@ -1191,9 +1147,10 @@ export default {
     },
 
     refreshLayer(service) {
-      this.deleteLayers(service);
+      this.deleteLayers(service, false);
       this.addLayers(service, service.order, true);
     },
+
     getLayer(id) {
       let layer = null;
       this.mapLayer.getLayers().forEach(function(lyr) {
@@ -1227,17 +1184,7 @@ export default {
         this.mapLayer.removeLayer(layersToRemove[i]);
       }
     },
-    async basemapLayersReset(service, status) {
-      let baseLayerList = this.$store.getters.baseLayerList.map(
-        (item, index) => {
-          if (service.name === item.name) {
-            item.layersVisibility = status;
-          }
-          return item;
-        }
-      );
-      this.$store.dispatch("SET_BASE_LAYER_LIST", baseLayerList);
-    },
+
     async isLayerColorEnabled(service) {
       let isColorEnabled = false;
       let response = await LayerService.getLayerDynamic({
@@ -1259,17 +1206,19 @@ export default {
     async dynamicLayersReset(service, status) {
       if (layerHelper.isDynamicFromArcgis(service)) {
         var isColorEnabled = await this.isLayerColorEnabled(service);
-        this.dynamicLayerList = this.recursiveLayerFind(
+
+        this.dynamicLayerList = layerHelper.recursiveLayerMapping(
           this.dynamicLayerList,
-          service,
-          function(layer) {
-            if (layer.layers !== undefined && layer.layers !== null) {
-              layer.layers = layer.layers.map((item, index) => {
-                return {
-                  ...item,
-                  isColorEnabled
-                };
-              });
+          async layer => {
+            if (layer != null && layer.id == service.id) {
+              if (layer.layers !== undefined && layer.layers !== null) {
+                layer.layers = layer.layers.map((item, index) => {
+                  return {
+                    ...item,
+                    isColorEnabled
+                  };
+                });
+              }
             }
           }
         );
@@ -1285,50 +1234,6 @@ export default {
       }
       return responseDynamic;
     },
-    recursiveLayerFind(layerArr, service, callback) {
-      for (var i = 0; i < layerArr.length; i++) {
-        var item = layerArr[i];
-
-        var layer = this.recursiveFind(item, service.name);
-        if (callback && typeof callback === "function") {
-          if (layer !== undefined && layer !== null) {
-            callback(layer);
-            break;
-          }
-        }
-      }
-      return layerArr;
-    },
-    recursiveFind(item, name) {
-      var isCategory = this.isItemCategory(item);
-
-      if (isCategory) {
-        if (item.layers) {
-          if (item.layers.some(c => c.name === name)) {
-            return item.layers.find(c => c.name === name);
-          }
-        }
-
-        var childrenCount = item.children.length;
-        if (childrenCount)
-          for (var j = 0; j < childrenCount; j++) {
-            var child = item.children[j];
-            var resultChild = this.recursiveFind(child, name);
-            if (resultChild != null) return resultChild;
-          }
-
-        return null;
-      } //layer
-      else {
-        if (item.name === name) {
-          {
-            return item;
-          }
-        } else {
-          return null;
-        }
-      }
-    },
 
     async selectService(service, index, isDynamic, e, isHashLoaded = true) {
       var isChecked = e.target.checked;
@@ -1343,11 +1248,10 @@ export default {
           subLayers = subLayerResponse.data.layers;
         }
 
-        this.dynamicLayerList = this.recursiveLayerFind(
+        this.dynamicLayerList = layerHelper.recursiveLayerMapping(
           this.dynamicLayerList,
-          service,
           async layer => {
-            if (layer != null) {
+            if (layer != null && layer.id == service.id) {
               layer.isSelected = isChecked;
               if (isChecked && layerHelper.isDynamicFromArcgis(layer)) {
                 layer.layers = subLayers.map(item =>
@@ -1358,11 +1262,10 @@ export default {
           }
         );
       } else if (layerHelper.isBasemap(service)) {
-        this.baseLayerList = this.recursiveLayerFind(
+        this.baseLayerList = layerHelper.recursiveLayerMapping(
           this.baseLayerList,
-          service,
-          layer => {
-            if (layer != null) {
+          async layer => {
+            if (layer != null && layer.id == service.id) {
               layer.isSelected = isChecked;
             }
           }
@@ -1375,36 +1278,18 @@ export default {
     async selectSubService(service, index, id, e) {
       let isChecked = e.target.checked;
 
-      this.dynamicLayerList = this.recursiveLayerFind(
+      this.dynamicLayerList = layerHelper.recursiveLayerMapping(
         this.dynamicLayerList,
-        service,
         async layer => {
-          if (layer != null) {
+          if (layer != null && layer.id == service.id) {
             var subLayer = layer.layers.find(c => c.id == id);
             subLayer.isSelected = isChecked;
           }
         }
       );
 
-      // let dynamicSubLayerList = this.$store.getters.dynamicSubLayerList;
-      // dynamicSubLayerList[service.name][id] = !dynamicSubLayerList[
-      //   service.name
-      // ][id];
-      // this.$store.dispatch("SET_DYNAMIC_SUBLAYER_LIST", dynamicSubLayerList);
-
-      this.deleteLayers(service, false);
-
-      // for (let i in this.dynamicLayerList) {
-      //   if (this.dynamicLayerList[i].name === service.name) {
-      //     let list = this.dynamicLayerList;
-      //     list[i].layersVisibility = true;
-
-      //     break;
-      //   }
-      // }
       this.dynamicLayersReset(service, isChecked);
-
-      this.addLayers(service, index, true);
+      this.refreshLayer(service);
     },
 
     setDrawType(name) {
@@ -1422,29 +1307,27 @@ export default {
     saveColor(service, colorObj) {
       const { fillColor, borderColor } = colorObj;
       var isSubLayer = layerHelper.isSublayer(service);
-      var layer = isSubLayer ? service.parent : service;
+      var service = isSubLayer ? service.parent : service;
 
-      this.deleteLayers(layer);
-
-      this.dynamicLayerList = this.recursiveLayerFind(
+      this.dynamicLayerList = layerHelper.recursiveLayerMapping(
         this.dynamicLayerList,
-        layer,
-        layer => {
-          var color = { fill: fillColor, border: borderColor };
-          if (isSubLayer) {
-            layer.layers = layer.layers.map((item, index) => {
-              if (item.id == service.id) {
-                item.color = color;
-              }
-              return item;
-            });
-          } else {
-            layer.color = color;
+        async layer => {
+          if (layer != null && layer.id == service.id) {
+            var color = { fill: fillColor, border: borderColor };
+            if (isSubLayer) {
+              layer.layers = layer.layers.map((item, index) => {
+                if (item.id == service.id) {
+                  item.color = color;
+                }
+                return item;
+              });
+            } else {
+              layer.color = color;
+            }
           }
         }
       );
-
-      this.addLayers(layer, layer, true);
+      this.refreshLayer(service);
     }
   },
   computed: {
@@ -1452,6 +1335,9 @@ export default {
       var fill = this.$store.state.colorPicker.fill;
       var border = this.$store.state.colorPicker.border;
       return { fill, border };
+    },
+    selectedLayers() {
+      return layerGetters.getSelectedLayers();
     },
     dataTableVisibility: {
       get() {
