@@ -26,7 +26,7 @@
  * # How to use #
  *
  * <Modal
- *      ref="🐮"
+ *      name="🐮"
  *      :title="'Moodal'"
  *      :width="400"
  *      :height="100"
@@ -42,15 +42,20 @@
  *     Hey I am Moodal
  * </Modal>
  *
- * $refs['🐮'].open() - Mount to the DOM
- * $refs['🐮'].close() - Unmount from the DOM
- * $refs['🐮'].show() - Show
- * $refs['🐮'].hide() - Hide
+ * $moodal.🐮.open() - Mount to the DOM
+ * $moodal.🐮.close() - Unmount from the DOM
+ * $moodal.🐮.show() - Show
+ * $moodal.🐮.hide() - Hide
  */
+
+import Vue from "vue";
 
 export default {
     name: "Moodal",
     props: {
+        name: {
+            type: String,
+        },
         height: {
             type: Number,
         },
@@ -133,6 +138,12 @@ export default {
             this.visible = false;
             this.$emit("afterHide");
         },
+    },
+    created() {
+        if (!this.$moodal) {
+            Vue.prototype.$moodal = {};
+        }
+        this.$moodal[this.name] = this;
     },
 };
 </script>

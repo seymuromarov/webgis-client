@@ -8,14 +8,4 @@ export { default as MapControls } from "./MapControls";
 export { default as InfoModal } from "./Info";
 export { default as Modal } from "./common/Modal";
 export { default as ToggleSwitch } from "./common/ToggleSwitch";
-
-// export {
-//     LayerColorPicker,
-//     ShapeColorPicker,
-//     DataTable,
-//     Sidebar,
-//     Filter,
-//     Report,
-//     MapControls,
-//     InfoModal,
-// };
+export { default as ComputedLayersModal } from "./modals/ComputedLayers";
