@@ -23,13 +23,46 @@
     >
       <div class="tableDiv howMuchWidthHaveMap">
         <div class="tableHeader">
-          <p class="table__title">
-            {{ tableName }}
-          </p>
+          <div class="table__tabs">
+            <div
+              class="table__tab"
+              :class="{
+                'table__tab--active': activeTab === tableName
+              }"
+              @click="setActiveTab(tableName)"
+            >
+              {{ tableName }}
+            </div>
+
+            <!-- TODO Delete below tabs -->
+            <!-- <div
+              class="table__tab"
+              :class="{
+                'table__tab--active': activeTab === tableName + 2
+              }"
+              @click="setActiveTab(tableName + 2)"
+            >
+              {{
+                tableName
+                  .split("")
+                  .reverse()
+                  .join("")
+              }}
+            </div>
+            <div
+              class="table__tab"
+              :class="{
+                'table__tab--active': activeTab === tableName + 3
+              }"
+              @click="setActiveTab(tableName + 3)"
+            >
+              {{ tableName.split("b").join("p") }}
+            </div> -->
+          </div>
           <div class="table__operations">
             <download-excel
               v-if="tableHeaders"
-              :data="featuresToExcel()"
+              :fetch="fetchFullData"
               :fields="checkedColumnsToExcel()"
               type="xls"
               :name="'test' + '_report.xls'"
@@ -55,13 +88,6 @@
               class="fas fa-times tableClose makeMePoint icon"
               @click="toggleIsVisible"
             />
-            <!-- <i
-                                v-if="tableName.trim() == 'CropMap2019_vector'"
-                                class="fas fa-filter tableSimpleFilter makeMePoint"
-                                style="color:blue"
-                                @click="showSimpleFilterModal"
-                        /> -->
-
             <div
               id="table-columns"
               class="tableShowColumns custom-scrollbar"
@@ -126,7 +152,7 @@
         </div>
       </div>
     </Resizable>
-    <CustomModal ref="data-modal" :minWidth="200" :minHeight="200">
+    <CustomModal name="dataModal" :minWidth="200" :minHeight="200">
       <p class="tableModalHeader">{{ tableName }}</p>
       <div class="row" style="overflow: auto">
         <table class="table popupTable">
@@ -170,7 +196,6 @@ export default {
       toggler: null,
       isColumnPopupShowing: false,
       selectedData: [],
-
       resize: {
         handlers: ["t"],
         left: 0,
@@ -183,12 +208,15 @@ export default {
         minH: 200,
         fit: true,
         event: ""
-      }
+      },
+      activeTab: null
     };
   },
 
   mounted() {
     this.scrollHandler();
+
+    this.activeTab = this.tableName;
   },
   created() {
     window.addEventListener("resize", this.update);
@@ -286,7 +314,7 @@ export default {
       this.$emit("showFilterModal");
     },
     showSimpleFilterModal() {
-      this.$refs["data-modal"].show();
+      this.$moodal.dataModal.show();
     },
     fitToPolygon(data) {
       this.selectedData = data;
@@ -294,11 +322,24 @@ export default {
     },
     showDataModal(data) {
       this.selectedData = data;
-      this.$refs["data-modal"].show();
+      this.$moodal.dataModal.show();
       // this.fitToPolygon(data);
     },
     showColumnsChange() {
       this.toggler.showColumnsChange();
+    },
+    async fetchFullData() {
+      var response = await LayerService.getLocalTableData({
+        layerId: this.serviceInfo.id,
+        ...this.serviceInfo.query,
+        isGeometryDataExist: false
+      });
+      console.log("fetchFullData -> response", response);
+      var attributes = response.data.features.map((item, index) => {
+        console.log("fetchFullData -> attributes", attributes);
+        return item.attributes;
+      });
+      return attributes;
     },
     featuresToExcel() {
       let features = [];
@@ -358,6 +399,9 @@ export default {
       this.resize.maxH = window.innerHeight;
 
       this.$forceUpdate();
+    },
+    setActiveTab(tab) {
+      this.activeTab = tab;
     }
   },
   computed: {
@@ -479,10 +523,25 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
-    .table__title {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
+
+    .table__tabs {
+      display: flex;
+
+      .table__tab {
+        margin: 0 10px 0 0;
+        padding: 0 10px;
+        font-size: 16px;
+        font-weight: 500;
+        opacity: 0.6;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        &--active {
+          opacity: 1;
+        }
+      }
     }
 
     .table__operations {
