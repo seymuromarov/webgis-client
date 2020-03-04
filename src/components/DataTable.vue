@@ -292,23 +292,6 @@ export default {
     },
     togglePopup(e) {
       this.isColumnPopupShowing = !this.isColumnPopupShowing;
-
-      // const handleClick = event => {
-      //     var eventId = event.target.getAttribute("id");
-      //     var tagId = "table-columns";
-
-      //     console.log({ eventId, tagId });
-
-      //     if (eventId !== tagId) {
-      //         this.isColumnPopupShowing = false;
-      //     }
-      // };
-
-      // if (!this.isColumnPopupShowing) {
-      //     document.addEventListener("click", handleClick);
-      // } else {
-      //     document.removeEventListener("click", handleClick);
-      // }
     },
     showFilterModal() {
       this.$emit("showFilterModal");
@@ -323,7 +306,6 @@ export default {
     showDataModal(data) {
       this.selectedData = data;
       this.$moodal.dataModal.show();
-      // this.fitToPolygon(data);
     },
     showColumnsChange() {
       this.toggler.showColumnsChange();

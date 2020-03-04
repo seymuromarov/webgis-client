@@ -66,8 +66,6 @@ export default {
         layers: []
       };
     },
-    handleAdd() {},
-    handleDelete() {},
     add() {
       const { label, layers } = this.data;
       this.data.layers = this.data.layers.map((item, index) => {
@@ -75,16 +73,16 @@ export default {
       });
       if (label != "" && layers.length > 0) {
         bunchService
-          .addBunch(this.data)
+          .add(this.data)
           .then(response => {
-            alert("success");
+            this.resetData();
+            this.$moodal.computedLayerModal.hide();
           })
           .catch(() => {
             "faild";
           });
       }
-    },
-    delete() {}
+    }
   },
   computed: {
     dynamicLayersList() {

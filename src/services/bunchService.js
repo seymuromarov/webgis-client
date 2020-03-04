@@ -1,19 +1,19 @@
 import request from "../utils/request";
 import { BUNCH_URL } from "../config/urls";
-let addBunch = data => {
+let get = data => {
   return request.post(BUNCH_URL.ADD, data);
 };
-let editBunch = data => {
-  return request.post(BUNCH_URL.ADD, data);
-};
-let deleteBunch = data => {
-  return request.post(BUNCH_URL.ADD, data);
-};
-let getBunch = data => {
-  return request.post(BUNCH_URL.ADD, data);
-};
-let getAllBunchs = () => {
+let getAll = () => {
   return request.get(BUNCH_URL.GET_ALL);
 };
+let add = data => {
+  return request.post(BUNCH_URL.ADD, data);
+};
+let edit = data => {
+  return request.post(BUNCH_URL.ADD, data);
+};
+let remove = data => {
+  return request.post(BUNCH_URL.ADD, data);
+};
 
-export default { addBunch };
+export default { add, getAll };

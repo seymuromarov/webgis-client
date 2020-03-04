@@ -1,17 +1,12 @@
 import request from "../utils/request";
-import { emlakUrl, URL } from "../config/urls";
+import { emlakUrl, URL, LAYER_URLS } from "../config/urls";
 
 export default {
   getUserRelatedLayers() {
     return request.get(URL + "/api/userlayer/getuserlayers");
   },
-  getLayers(params) {
-    return request.get("/", {
-      params: {
-        token: params.token,
-        f: "json"
-      }
-    });
+  getLayers() {
+    return request.get(LAYER_URLS.GET_ALL);
   },
   getData(url, params) {
     return request.get(url, {
