@@ -15,6 +15,13 @@ const URL =
 const ACCOUNT_URL = {
   LOGIN_URL: URL + "/api/account/login"
 };
+const BUNCH_URL = {
+  ADD: URL + "/api/bunch/add",
+  EDIT: URL + "/api/bunch/edit",
+  DELETE: URL + "/api/bunch/delete",
+  GET: URL + "/api/bunch/get",
+  GET_ALL: URL + "/api/bunch/getall"
+};
 const LAYER_URLS = {
   // GET_LAYER_NAMES_URL: URL + "/api/Map/GetLayers", // local server
   // GET_LAYER_DYNAMIC_URL: params => {
@@ -62,4 +69,4 @@ const MAP_URLS = {
   GEOJSON: "api/Tile/VectorAsGeoJson"
 };
 
-export { baseUrl, URL, emlakUrl, ACCOUNT_URL, LAYER_URLS, MAP_URLS };
+export { baseUrl, URL, emlakUrl, BUNCH_URL, ACCOUNT_URL, LAYER_URLS, MAP_URLS };
