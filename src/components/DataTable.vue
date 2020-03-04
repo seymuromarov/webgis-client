@@ -35,7 +35,7 @@
             </div>
 
             <!-- TODO Delete below tabs -->
-            <div
+            <!-- <div
               class="table__tab"
               :class="{
                 'table__tab--active': activeTab === tableName + 2
@@ -57,12 +57,12 @@
               @click="setActiveTab(tableName + 3)"
             >
               {{ tableName.split("b").join("p") }}
-            </div>
+            </div> -->
           </div>
           <div class="table__operations">
             <download-excel
               v-if="tableHeaders"
-              :data="featuresToExcel()"
+              :fetch="fetchFullData"
               :fields="checkedColumnsToExcel()"
               type="xls"
               :name="'test' + '_report.xls'"
@@ -327,6 +327,19 @@ export default {
     },
     showColumnsChange() {
       this.toggler.showColumnsChange();
+    },
+    async fetchFullData() {
+      var response = await LayerService.getLocalTableData({
+        layerId: this.serviceInfo.id,
+        ...this.serviceInfo.query,
+        isGeometryDataExist: false
+      });
+      console.log("fetchFullData -> response", response);
+      var attributes = response.data.features.map((item, index) => {
+        console.log("fetchFullData -> attributes", attributes);
+        return item.attributes;
+      });
+      return attributes;
     },
     featuresToExcel() {
       let features = [];
