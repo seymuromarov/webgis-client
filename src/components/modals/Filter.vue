@@ -2,13 +2,11 @@
     <div class="data-table__filter">
         <!-- Tabs -->
         <div class="filter__tabs">
-            <div
-                v-for="tab in tabs"
-                :key="tab.id"
-                class="tab"
-                :class="{ 'tab--active': activeTab === tab.id }"
-                @click="setActiveTab(tab.id)"
-            >
+            <div v-for="tab in tabs"
+                 :key="tab.id"
+                 class="tab"
+                 :class="{ 'tab--active': activeTab === tab.id }"
+                 @click="setActiveTab(tab.id)">
                 {{ tab.name }}
             </div>
         </div>
@@ -18,8 +16,7 @@
             <div class="filter__fields__columns">
                 <h5>Columns</h5>
                 <ul class="filter__fields__list custom-scrollbar">
-                    <li
-                        v-for="(alias, column) in tableFeaturesHeader"
+                    <li v-for="(alias, column) in tableFeaturesHeader"
                         :key="column"
                         class="list__item"
                         @dblclick="
@@ -32,8 +29,7 @@
                                 'filterSelectedColumn',
                                 stackedTableFeaturesHeader[column]
                             )
-                        "
-                    >
+                        ">
                         {{ alias }}
                     </li>
                 </ul>
@@ -43,12 +39,10 @@
             <div class="filter__fields__values">
                 <h5>Values</h5>
                 <ul class="filter__fields__list custom-scrollbar">
-                    <li
-                        @dblclick="appendFilterQuery(value)"
+                    <li @dblclick="appendFilterQuery(value)"
                         class="list__item"
                         v-for="(value, index) in filterValues"
-                        :key="index"
-                    >
+                        :key="index">
                         {{ value }}
                     </li>
                 </ul>
@@ -58,10 +52,8 @@
         <!-- Actions -->
         <div class="filter__actions">
             <div v-for="action in actionsList" :key="action">
-                <button
-                    @click="appendFilterQuery(action)"
-                    class="btn btn-sm btn-outline-secondary"
-                >
+                <button @click="appendFilterQuery(action)"
+                        class="btn btn-sm btn-outline-secondary">
                     {{ action }}
                 </button>
             </div>
@@ -71,47 +63,37 @@
         <div class="filter__query">
             <label class="title">SELECT * FROM table WHERE:</label>
 
-            <textarea
-                ref="filterQueryTextarea"
-                name="filterQuery"
-                rows="4"
-                cols="69"
-                :value="filterQuery"
-                @input="$emit('setFilterQuery', $event)"
-            ></textarea>
+            <textarea ref="filterQueryTextarea"
+                      name="filterQuery"
+                      rows="4"
+                      cols="69"
+                      :value="filterQuery"
+                      @input="$emit('setFilterQuery', $event)"></textarea>
         </div>
 
         <!-- Sum -->
         <div v-show="serviceInfo.resourceType === 'local'">
             <label>
-                <input
-                    class="parent-checkbox"
-                    type="checkbox"
-                    id="isSum"
-                    :value="false"
-                    v-model="filterQueryIsSum"
-                    style="opacity:0;"
-                />
-                <i
-                    class="far fa-check-circle"
-                    v-if="filterQueryIsSum"
-                    style="cursor: pointer; color:#008422"
-                ></i>
-                <i
-                    class="far fa-check-circle"
-                    v-else
-                    style="cursor: pointer;"
-                ></i>
+                <input class="parent-checkbox"
+                       type="checkbox"
+                       id="isSum"
+                       :value="false"
+                       v-model="filterQueryIsSum"
+                       style="opacity:0;" />
+                <i class="far fa-check-circle"
+                   v-if="filterQueryIsSum"
+                   style="cursor: pointer; color:#008422"></i>
+                <i class="far fa-check-circle"
+                   v-else
+                   style="cursor: pointer;"></i>
                 Sum
             </label>
 
             <label class="ml-4" v-if="filterQueryIsSum">
                 <select v-model="filterQueryArithmeticColumn">
-                    <option
-                        v-for="alias in tableFeaturesHeader"
-                        :value="alias"
-                        :key="alias"
-                    >
+                    <option v-for="alias in tableFeaturesHeader"
+                            :value="alias"
+                            :key="alias">
                         {{ alias }}
                     </option>
                 </select>
@@ -127,104 +109,104 @@
 </template>
 
 <script>
-export default {
-    name: "FilterBox",
-    props: {
-        tableHeader: {
-            type: String,
-        },
-        tableFeaturesHeader: {
-            type: Array,
-        },
-        stackedTableFeaturesHeader: {
-            type: Array,
-        },
-        filterQuery: {
-            type: String,
-        },
-        filterValues: {
-            type: Array,
-        },
-    },
-    data() {
-        return {
-            tabs: [
-                {
-                    id: 1,
-                    name: "Karxana 2019",
-                },
-                {
-                    id: 2,
-                    name: "Dəmiryolu",
-                },
-                {
-                    id: 3,
-                    name: "Şorlaşma 2020",
-                },
-                {
-                    id: 4,
-                    name: "Abidələr",
-                },
-            ],
-            activeTab: null,
-            actionsList: [
-                "=",
-                ">",
-                ">=",
-                "<",
-                "<=",
-                "<>",
-                "AND",
-                "OR",
-                "LIKE",
-                "IS NULL",
-            ],
-        };
-    },
-    computed: {
-        serviceInfo() {
-            return this.$store.state.dataTable.serviceInfo;
-        },
-        filterQueryIsSum: {
-            get() {
-                return this.$store.state.filter.filterQueryIsSum;
+    export default {
+        name: "FilterBox",
+        props: {
+            tableHeader: {
+                type: String,
             },
-            set(filterQueryIsSum) {
-                if (filterQueryIsSum) {
-                    this.$store.dispatch(
-                        "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
-                        this.tableFeaturesHeader[0]
+            tableFeaturesHeader: {
+                type: Array,
+            },
+            stackedTableFeaturesHeader: {
+                type: Array,
+            },
+            filterQuery: {
+                type: String,
+            },
+            filterValues: {
+                type: Array,
+            },
+        },
+        data() {
+            return {
+                tabs: [
+                    {
+                        id: 1,
+                        name: "Karxana 2019",
+                    },
+                    {
+                        id: 2,
+                        name: "Dəmiryolu",
+                    },
+                    {
+                        id: 3,
+                        name: "Şorlaşma 2020",
+                    },
+                    {
+                        id: 4,
+                        name: "Abidələr",
+                    },
+                ],
+                activeTab: null,
+                actionsList: [
+                    "=",
+                    ">",
+                    ">=",
+                    "<",
+                    "<=",
+                    "<>",
+                    "AND",
+                    "OR",
+                    "LIKE",
+                    "IS NULL",
+                ],
+            };
+        },
+        computed: {
+            serviceInfo() {
+                return this.$store.state.dataTable.serviceInfo;
+            },
+            filterQueryIsSum: {
+                get() {
+                    return this.$store.state.filter.filterQueryIsSum;
+                },
+                set(filterQueryIsSum) {
+                    if (filterQueryIsSum) {
+                        this.$store.dispatch(
+                            "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
+                            this.tableFeaturesHeader[0]
+                        );
+                    }
+                    return this.$store.dispatch(
+                        "SAVE_FILTER_QUERY_IS_SUM",
+                        filterQueryIsSum
                     );
-                }
-                return this.$store.dispatch(
-                    "SAVE_FILTER_QUERY_IS_SUM",
-                    filterQueryIsSum
-                );
+                },
+            },
+            filterQueryArithmeticColumn: {
+                get() {
+                    return this.$store.state.filter.filterQueryArithmeticColumn;
+                },
+                set(filterQueryArithmeticColumn) {
+                    return this.$store.dispatch(
+                        "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
+                        filterQueryArithmeticColumn
+                    );
+                },
             },
         },
-        filterQueryArithmeticColumn: {
-            get() {
-                return this.$store.state.filter.filterQueryArithmeticColumn;
+        methods: {
+            appendFilterQuery(value) {
+                this.$emit("appendFilterQuery", value + " ");
+                this.$refs.filterQueryTextarea.focus();
             },
-            set(filterQueryArithmeticColumn) {
-                return this.$store.dispatch(
-                    "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
-                    filterQueryArithmeticColumn
-                );
+            setActiveTab(tab) {
+                this.activeTab = tab;
             },
         },
-    },
-    methods: {
-        appendFilterQuery(value) {
-            this.$emit("appendFilterQuery", value + " ");
-            this.$refs.filterQueryTextarea.focus();
+        mounted() {
+            this.setActiveTab(this.tabs[0].id);
         },
-        setActiveTab(tab) {
-            this.activeTab = tab;
-        },
-    },
-    mounted() {
-        this.setActiveTab(this.tabs[0].id);
-    },
-};
+    };
 </script>
