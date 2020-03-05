@@ -518,11 +518,11 @@
     .table__operations {
         display: flex;
         align-items: center;
-        color: #1b2537;
+        color: var(--primary-color);
         & i
 
     {
-        color: #ffffff;
+        color: var(--white);
     }
 
     & > *:not(:first-child) {
@@ -533,7 +533,7 @@
     }
 
     .tableContent {
-        background-color: #2a354b;
+        background-color: var(--primary-color-lighten-100);
         .loader
 
     {
@@ -560,8 +560,8 @@
         thead
 
     {
-        background-color: #586276;
-        color: #ffffff;
+        background-color: var(--primary-color-lighten-200);
+        color: var(--white);
         th
 
     {
@@ -572,7 +572,7 @@
     }
 
     tbody {
-        background: #2a354b;
+        background: var(--primary-color-lighten-100);
         color: #fff;
     }
 
@@ -585,7 +585,7 @@
     }
 
     td {
-        border-color: #586276;
+        border-color: var(--primary-color-lighten-200);
     }
 
     }

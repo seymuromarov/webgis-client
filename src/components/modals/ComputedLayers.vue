@@ -104,7 +104,7 @@
         &, &:after
 
     {
-        background: #3b4353 !important;
+        background: var(--primary-color-opacity-85) !important;
     }
 
     &.multiselect__option--selected {
@@ -136,11 +136,11 @@
     }
 
     .multiselect__tag {
-        background: #3b4353 !important;
+        background: var(--primary-color-opacity-85) !important;
     }
 
     .multiselect__tag-icon:after {
-        color: #ffffff !important;
+        color: var(--white) !important;
     }
 
     .multiselect--active .multiselect__tags {
@@ -150,5 +150,9 @@
     .submit-btn {
         width: 20%;
         float: right;
+    }
+
+    #computedLayerModal .modal__body {
+        overflow: unset;
     }
 </style>

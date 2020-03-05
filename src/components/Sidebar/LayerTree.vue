@@ -47,7 +47,7 @@
                        :parent="data"
                        :loop="loop + 1"
                        @selectSubLayer="selectSubLayer"
-                       @selectService="selectService"
+                       @selectLayer="selectLayer"
                        @dynamicLayersReset="dynamicLayersReset"
                        @getTableData="getTableData" />
 
@@ -58,7 +58,7 @@
                        :loop="loop + 1"
                        @saveColor="saveColor"
                        @selectSubLayer="selectSubLayer"
-                       @selectService="selectService"
+                       @selectLayer="selectLayer"
                        @dynamicLayersReset="dynamicLayersReset"
                        @getTableData="getTableData" />
         </ul>

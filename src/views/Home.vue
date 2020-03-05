@@ -8,7 +8,7 @@
                              :nextHistoryEvent="nextHistoryEvent"
                              :previousHistoryEvent="previousHistoryEvent" />
                 <Sidebar :baseMaps="baseMaps"
-                         @selectService="selectService"
+                         @selectLayer="selectService"
                          @selectSubLayer="selectSubService"
                          @dynamicLayersReset="dynamicLayersReset"
                          @getTableData="getTableData"
@@ -25,7 +25,9 @@
                          @addPlace="setMarkerTrue"
                          @saveColor="saveColor"
                          @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
-                         @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList" />
+                         @onMoveCallbackDynamicLayerList="
+                        onMoveCallbackDynamicLayerList
+                    " />
             </div>
         </div>
 
@@ -53,7 +55,9 @@
         </CustomModal>
 
         <!-- Shape Color Picker -->
-        <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
+        <CustomModal name="colorPickerModal"
+                     title="Color picker"
+                     :minWidth="300">
             <ShapeColorPicker @setShapeColor="setShapeColor" />
         </CustomModal>
 
@@ -61,9 +65,9 @@
         <detector-modal :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
                         v-bind="{ lastBBOXOfShape, token }"
                         @close="
-        ($store.state.dataTable.lastBBOXOfShape = []) &
-          (isDrawnShapeForDetection = false)
-      "></detector-modal>
+                ($store.state.dataTable.lastBBOXOfShape = []) &
+                    (isDrawnShapeForDetection = false)
+            "></detector-modal>
 
         <!-- Information Modal -->
         <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
@@ -143,18 +147,21 @@
         MapControls,
         InfoModal,
         Modal as CustomModal,
-        ComputedLayersModal
+        ComputedLayersModal,
+        ChangeDetector as DetectorModal,
     } from "@/components/";
-    import DetectorModal from "@/components/modals/ChangeDetector";
 
     // Utils
     import { URL, MAP_URLS } from "@/config/urls";
     import { layerSettings } from "@/config/settings";
     import cities from "@/data/cities.json";
-    import LoginService from "@/services/LoginService";
-    import LayerService from "@/services/LayerService";
+ 
     import { toggler, mapHelper, layerHelper, serviceHelper } from "@/helpers";
     import { layerController } from "@/controllers";
+
+    // Services
+    import LoginService from "@/services/LoginService";
+    import LayerService from "@/services/LayerService";
 
     // Styles
     import "ol/ol.css";

@@ -7,18 +7,24 @@
                     <button class="menu__item__button"
                             @click="item.click"
                             :title="item.label">
-                        <img :src="require(`../../assets/images/icons/${item.image}`)"
+                        <img :src="
+                                require(`../../assets/images/icons/${item.image}`)
+                            "
                              alt=""
                              :class="{ active: activeMenu === item.key }" />
                     </button>
                 </div>
             </div>
             <div class="menu--bottom">
-                <div class="menu__item" v-for="item in bottomMenu" :key="item.key">
+                <div class="menu__item"
+                     v-for="item in bottomMenu"
+                     :key="item.key">
                     <button class="menu__item__button"
                             @click="item.click"
                             :title="item.label">
-                        <img :src="require(`../../assets/images/icons/${item.image}`)"
+                        <img :src="
+                                require(`../../assets/images/icons/${item.image}`)
+                            "
                              alt=""
                              :class="{ active: activeMenu === item.key }" />
                     </button>

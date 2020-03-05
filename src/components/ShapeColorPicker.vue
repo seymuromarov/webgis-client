@@ -44,7 +44,7 @@
                     rgba: { r: 255, g: 255, b: 255, a: 1 },
                 },
                 fillColor: {
-                    hex8: "#ffffff00",
+                    hex8: "var(--transparent)",
                     rgba: { r: 255, g: 255, b: 255, a: 1 },
                 },
             };

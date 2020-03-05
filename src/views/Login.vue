@@ -41,7 +41,6 @@ export default {
         username: username,
         password: password
       });
-      console.log(response);
       if (response.status === 400) {
         this.error = response.data;
       }
