@@ -96,13 +96,12 @@ const mapper = {
             .filter(c => c.mapTypeId === "dynamic")
             .map(val => mapper.recursiveMap(val, dynamicCounter));
 
-        var mapResult = {
+        const mapResult = {
             baseLayers,
             dynamicLayers,
         };
         return mapResult;
     },
-
     recursiveLayerMapping: (layerArr, callback) => {
         for (var i = 0; i < layerArr.length; i++) {
             var item = layerArr[i];
@@ -110,7 +109,6 @@ const mapper = {
         }
         return layerArr;
     },
-
     recursiveMapping: (item, callback) => {
         var isCategory = checker.isCategory(item);
         if (isCategory) {

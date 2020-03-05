@@ -97,9 +97,6 @@ export default {
             }
         },
     },
-    mounted() {
-        console.log();
-    },
     data() {
         return {
             selectedLayers: [],

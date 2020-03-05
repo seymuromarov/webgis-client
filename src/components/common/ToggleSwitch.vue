@@ -57,7 +57,7 @@ export default {
         right: 0;
         bottom: 0;
         border-radius: 12px;
-        background-color: #2a354b;
+        background-color: var(--primary-color-lighten-100);
         -webkit-transition: 0.4s;
         transition: 0.4s;
 

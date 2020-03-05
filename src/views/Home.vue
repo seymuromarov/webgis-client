@@ -160,17 +160,19 @@ import {
     InfoModal,
     Modal as CustomModal,
     ComputedLayersModal,
+    ChangeDetector as DetectorModal,
 } from "@/components/";
-import DetectorModal from "@/components/modals/ChangeDetector";
 
 // Utils
 import { URL, MAP_URLS } from "@/config/urls";
 import { layerSettings } from "@/config/settings";
 import cities from "@/data/cities.json";
-import LoginService from "@/services/LoginService";
-import LayerService from "@/services/LayerService";
 import { toggler, mapHelper, layerHelper } from "@/helpers";
 import { layerGetters } from "@/getters";
+
+// Services
+import LoginService from "@/services/LoginService";
+import LayerService from "@/services/LayerService";
 
 // Styles
 import "ol/ol.css";
@@ -259,7 +261,6 @@ export default {
             isHashLoaded: false,
         };
     },
-    created() {},
     mounted() {
         this.hashResolveResult = this.resolveHash(window.location.hash);
         // this.token = this.$cookie.get("token");
@@ -533,7 +534,6 @@ export default {
                 }
             return "?" + str.join("&");
         },
-
         updateHash() {
             let view = this.mapLayer.getView();
             let state = {
@@ -556,7 +556,6 @@ export default {
                 selectedLayerIds;
             window.history.pushState(state, "map", hash);
         },
-
         changeLocation() {
             this.mapLayer
                 .getView()
@@ -779,7 +778,6 @@ export default {
                 this.setZIndex(item);
             });
         },
-
         isItemCategory(item) {
             return layerHelper.isCategory(item);
         },
@@ -792,7 +790,6 @@ export default {
                 query.where !== "1=1"
             );
         },
-
         async getTableData(service, layerId, layerName, query) {
             var layer = this.getLayer(service.id);
 
@@ -952,8 +949,7 @@ export default {
                 this.$refs.dataTable.showDataModal(response.data.features[0]);
             }
         },
-
-        async getLayers() {
+        getLayers() {
             LayerService.getLayersWithFullDataFromServer({
                 token: this.token,
             }).then(response => {
@@ -963,7 +959,7 @@ export default {
                 this.baseLayerList = layers.baseLayers;
                 this.dynamicLayerList = layers.dynamicLayers;
 
-                var selectedIds =
+                const selectedIds =
                     this.hashResolveResult.selectedLayers !== null
                         ? this.hashResolveResult.selectedLayers
                         : [];
@@ -1042,7 +1038,6 @@ export default {
             });
             return style;
         },
-
         getLayerZoomLevelOptions(service) {
             return {
                 maxResolution:
@@ -1050,7 +1045,6 @@ export default {
                 minResolution: createXYZ().getResolution(service.maxZoomLevel),
             };
         },
-
         renderNewLayer(service) {
             var isDynamic = layerHelper.isDynamic(service);
             let zoomLevelProperties = this.getLayerZoomLevelOptions(service);
@@ -1121,7 +1115,6 @@ export default {
             }
             return new_layer;
         },
-
         addLayers(service, index, dynamic = false) {
             // this.selectedLayersIdHolder(true, service);
             if (service.extent != null) {
@@ -1144,7 +1137,6 @@ export default {
 
             this.mapLayer.addLayer(new_layer);
         },
-
         getOrderNumber(array, service) {
             var index = 0;
             var result = 0;
@@ -1178,12 +1170,10 @@ export default {
             }
             return zIndex - orderNo;
         },
-
         refreshLayer(service) {
             this.deleteLayers(service, false);
             this.addLayers(service, service.order, true);
         },
-
         getLayer(id) {
             let layer = null;
             this.mapLayer.getLayers().forEach(function(lyr) {
@@ -1198,7 +1188,6 @@ export default {
             let layers = this.mapLayer.getLayers().getArray();
             layers[0].setSource(this.baseMaps[index]);
         },
-
         deleteLayers(service, reset) {
             let layersToRemove = [];
             let self = this;
@@ -1217,7 +1206,6 @@ export default {
                 this.mapLayer.removeLayer(layersToRemove[i]);
             }
         },
-
         async isLayerColorEnabled(service) {
             let isColorEnabled = false;
             let response = await LayerService.getLayerDynamic({
@@ -1275,7 +1263,6 @@ export default {
             }
             return responseDynamic;
         },
-
         async selectService(service, index, isDynamic, e, isHashLoaded = true) {
             var isChecked = e.target.checked;
 
@@ -1335,7 +1322,6 @@ export default {
             this.dynamicLayersReset(service, isChecked);
             this.refreshLayer(service);
         },
-
         setDrawType(name) {
             this.typeSelect = name;
             this.mapLayer.removeInteraction(this.draw);
@@ -1392,7 +1378,6 @@ export default {
                 this.$store.dispatch("SAVE_DATATABLE_VISIBLE", value);
             },
         },
-
         focusedPolygonVector: {
             get() {
                 return this.$store.state.layers.focusedPolygonVector;
@@ -1420,7 +1405,6 @@ export default {
                 this.$store.dispatch("SAVE_FILTER_QUERY_IS_SUM", value);
             },
         },
-
         filterQueryArithmeticColumn() {
             return this.$store.state.filter.filterQueryArithmeticColumn;
         },
@@ -1440,7 +1424,6 @@ export default {
                 this.$store.dispatch("SET_BASE_LAYER_LIST", val);
             },
         },
-
         tableHeadersWithAlias() {
             return this.$store.state.dataTable.tableHeadersWithAlias;
         },

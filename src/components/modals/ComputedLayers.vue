@@ -3,7 +3,7 @@
         name="computedLayerModal"
         title="Computed layers"
         :width="400"
-        :height="400"
+        :height="'auto'"
     >
         <form>
             <div class="form-group">
@@ -71,7 +71,7 @@ export default {
 .multiselect__option--highlight {
     &,
     &:after {
-        background: #3b4353 !important;
+        background: var(--primary-color-opacity-85) !important;
     }
     &.multiselect__option--selected {
         &,
@@ -95,10 +95,10 @@ export default {
     padding: 2px 40px 0 8px !important;
 }
 .multiselect__tag {
-    background: #3b4353 !important;
+    background: var(--primary-color-opacity-85) !important;
 }
 .multiselect__tag-icon:after {
-    color: #ffffff !important;
+    color: var(--white) !important;
 }
 .multiselect--active .multiselect__tags {
     padding: 8px 40px 0 8px !important;
@@ -106,5 +106,9 @@ export default {
 .submit-btn {
     width: 20%;
     float: right;
+}
+
+#computedLayerModal .modal__body {
+    overflow: unset;
 }
 </style>

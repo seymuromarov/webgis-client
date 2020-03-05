@@ -1,6 +1,7 @@
 <template>
     <transition name="fade">
         <div
+            :id="name"
             class="Modal modal--overlay"
             v-show="visible"
             v-if="mounted"
@@ -34,6 +35,10 @@
  *      :minHeight="100"
  *      :maxWidth="1920"
  *      :maxheight="1080"
+ *      v-on:beforeOpen=""
+ *      v-on:beforeClose=""
+ *      v-on:beforeShow=""
+ *      v-on:beforeHide=""
  *      v-on:afterOpen=""
  *      v-on:afterClose=""
  *      v-on:afterShow=""
@@ -57,10 +62,10 @@ export default {
             type: String,
         },
         height: {
-            type: Number,
+            type: [Number, String],
         },
         width: {
-            type: Number,
+            type: [Number, String],
         },
         minHeight: {
             type: Number,
@@ -94,10 +99,26 @@ export default {
             let style = [];
 
             if (this.width) {
-                style.push(`width: ${this.width}px;`);
+                let width = "";
+
+                if (typeof this.width === "number") {
+                    width = this.width + "px";
+                } else if (typeof this.width === "string") {
+                    width = this.width;
+                }
+
+                style.push(`width: ${width};`);
             }
             if (this.height) {
-                style.push(`height: ${this.height}px;`);
+                let height = "";
+
+                if (typeof this.height === "number") {
+                    height = this.height + "px";
+                } else if (typeof this.height === "string") {
+                    height = this.height;
+                }
+
+                style.push(`height: ${height};`);
             }
             if (this.minWidth) {
                 style.push(`min-width: ${this.minWidth}px;`);
@@ -120,21 +141,25 @@ export default {
     methods: {
         // Mount to the DOM
         open() {
+            this.$emit("beforeOpen");
             this.mounted = true;
             this.$emit("afterOpen");
         },
         // Unmount from the DOM
         close() {
+            this.$emit("beforeClose");
             this.mounted = false;
             this.$emit("afterClose");
         },
         // Show
         show() {
+            this.$emit("beforeShow");
             this.visible = true;
             this.$emit("afterShow");
         },
         // Hide
         hide() {
+            this.$emit("beforeHide");
             this.visible = false;
             this.$emit("afterHide");
         },
@@ -162,12 +187,12 @@ export default {
     pointer-events: all;
 
     &.modal--overlay {
-        background-color: #1a253780;
+        background-color: var(--primary-color-opacity-50);
     }
 
     .modal__content {
         // width: 50%;
-        background-color: #ffffff;
+        background-color: var(--white);
         border-radius: 4px;
         text-align: left;
         pointer-events: all;
@@ -182,8 +207,8 @@ export default {
             display: flex;
             justify-content: space-between;
             padding: 8px 16px;
-            background: #1a2537;
-            color: #ffffff;
+            background: var(--primary-color);
+            color: var(--white);
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
 

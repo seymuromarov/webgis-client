@@ -158,7 +158,7 @@ export default {
         display: flex;
         margin: 10px;
         .search__logo {
-            background-color: #1b2537;
+            background-color: var(--primary-color);
             padding: 7px 14px;
             border-top-left-radius: 5px;
             border-bottom-left-radius: 5px;
@@ -175,9 +175,9 @@ export default {
                 height: 100%;
                 width: 0;
                 padding: 0;
-                background-color: rgba(27, 37, 55, 0.85);
+                background-color: var(--primary-color-opacity-85);
                 border: 0;
-                color: #ffffff;
+                color: var(--white);
                 transition: all 0.2s ease-in-out;
                 transition-delay: 0.1s;
                 font-size: 14px;
@@ -199,7 +199,7 @@ export default {
             .search__results {
                 max-height: 0px;
                 position: absolute;
-                background-color: rgba(42, 53, 75, 0.85);
+                background-color: var(--primary-color-opacity-85);
                 left: 0;
                 right: 0;
                 border-bottom-left-radius: 5px;
@@ -214,10 +214,10 @@ export default {
 
                     li {
                         padding: 2px 10px;
-                        color: #ffffff;
+                        color: var(--white);
                         font-size: 14px;
                         &:hover {
-                            background-color: #586276;
+                            background-color: var(--primary-color-lighten-200);
                             cursor: pointer;
                         }
                     }
@@ -236,11 +236,11 @@ export default {
         padding: 10px;
         border: none;
         border-radius: 5px;
-        background-color: rgba(27, 37, 55, 0.85);
-        color: #ffffff;
+        background-color: var(--primary-color-opacity-85);
+        color: var(--white);
 
         &:hover {
-            background-color: rgba(27, 37, 55, 0.95);
+            background-color: var(--primary-color-opacity-85);
         }
 
         &:disabled {

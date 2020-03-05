@@ -508,7 +508,7 @@ export default {
     .resizable-t {
         z-index: 10 !important;
         &:hover {
-            background-color: #2a354baa;
+            background-color: var(--primary-color-lighten-100);
         }
     }
 }
@@ -516,8 +516,8 @@ export default {
 .tableDiv {
     top: 0;
     .tableHeader {
-        background-color: #1b2537;
-        color: #ffffff;
+        background-color: var(--primary-color);
+        color: var(--white);
         height: 40px;
         display: flex;
         align-items: center;
@@ -547,9 +547,9 @@ export default {
         .table__operations {
             display: flex;
             align-items: center;
-            color: #1b2537;
+            color: var(--primary-color);
             & i {
-                color: #ffffff;
+                color: var(--white);
             }
 
             & > *:not(:first-child) {
@@ -559,7 +559,7 @@ export default {
     }
 
     .tableContent {
-        background-color: #2a354b;
+        background-color: var(--primary-color-lighten-100);
         .loader {
             font-size: 2rem;
             display: flex;
@@ -579,8 +579,8 @@ export default {
 
     .selfTable {
         thead {
-            background-color: #586276;
-            color: #ffffff;
+            background-color: var(--primary-color-lighten-200);
+            color: var(--white);
             th {
                 font-weight: 400;
                 border: 0;
@@ -588,7 +588,7 @@ export default {
         }
 
         tbody {
-            background: #2a354b;
+            background: var(--primary-color-lighten-100);
             color: #fff;
         }
 
@@ -601,7 +601,7 @@ export default {
         }
 
         td {
-            border-color: #586276;
+            border-color: var(--primary-color-lighten-200);
         }
     }
 }

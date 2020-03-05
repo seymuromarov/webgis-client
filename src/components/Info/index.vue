@@ -124,23 +124,24 @@ export default {
     .modal-dialog {
         max-width: 650px;
         .modal-content {
-            border: 1px solid #1b2537;
+            border: 1px solid var(--primary-color);
             .modal-header {
                 padding: 0px;
                 border-bottom: 0;
                 position: relative;
-                background-color: #1b2537;
+                background-color: var(--primary-color);
                 .nav {
                     width: 100%;
 
                     &.nav-tabs {
                         border-bottom: 1px solid #dee2e6;
                         .nav-link {
-                            color: #ffffff;
+                            color: var(--white);
                             padding: 0.35rem 1rem;
                             &.active {
-                                border-color: #1b2537 #1b2537 #fff;
-                                color: #1b2537;
+                                border-color: var(--primary-color)
+                                    var(--primary-color) #fff;
+                                color: var(--primary-color);
                                 font-weight: 500;
                             }
                         }
