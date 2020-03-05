@@ -598,12 +598,13 @@ export default {
         exportData() {
             this.mapHelper.exportData(this);
         },
-        async filterSelectedColumn(column) {
+        async filterSelectedColumn(serviceId, column) {
             this.filterValues = [];
             let params = {
-                id: this.$store.state.dataTable.serviceInfo.id,
+                id: this.$store.state.dataTable.services[serviceId].serviceInfo
+                    .id,
             };
-            if (this.selectedServiceInfo.resourceType === "local") {
+            if (this.selectedServiceInfo(serviceId).resourceType === "local") {
                 let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
                     params
                 );
@@ -850,23 +851,22 @@ export default {
                 this.tableNextRequest["layerId"] = layerId;
                 this.tableNextRequest["layerName"] = layerName;
 
-                let serviceName = service.name;
-                let serviceInfo = {
-                    id: service.id,
-                    label: service.name,
-                    mapType: service.mapType,
-                    resourceType: service.resourceType,
-                    query: service.query,
-                    isDisabled: service.isDisabled,
-                };
-                let serviceResourceType = service.resourceType;
-                let tableName = layerName;
-                let tableData = response.data.features;
-                let totalCount = response.data.totalCount;
-                let tableHeadersWithAlias = response.data.fieldAliases;
-                let tableHeaders = Object.keys(tableHeadersWithAlias);
-                let tableStackedHeaders = tableHeaders;
-                let target = response.data.fieldAliases;
+                // let serviceName = service.name;
+                // let serviceInfo = {
+                //     id: service.id,
+                //     label: service.name,
+                //     mapType: service.mapType,
+                //     resourceType: service.resourceType,
+                //     query: service.query,
+                //     isDisabled: service.isDisabled,
+                // };
+                // let tableName = layerName;
+                // let tableData = response.data.features;
+                // let totalCount = response.data.totalCount;
+                // let tableHeadersWithAlias = response.data.fieldAliases;
+                // let tableHeaders = Object.keys(tableHeadersWithAlias);
+                // let tableStackedHeaders = tableHeaders;
+                // let target = response.data.fieldAliases;
 
                 let checkedColumnsData = [];
                 let checkedColumns = [];
@@ -897,22 +897,36 @@ export default {
                     }
                     return name;
                 });
+
                 checkedColumns = checkedColumns.map((item, index) => {
                     return tableHeadersWithAlias[item];
                 });
+
                 this.dataTableVisibility = false;
-                await this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
-                    serviceInfo,
-                    totalCount,
-                    tableName,
-                    tableHeaders,
-                    tableStackedHeaders,
-                    tableHeadersWithAlias,
-                    tableData,
-                    target,
-                    checkedColumnsData,
-                    checkedColumns,
-                });
+
+                await this.$store.dispatch(
+                    "SAVE_DATATABLE_CONFIGURATION",
+                    service.id,
+                    {
+                        serviceInfo: {
+                            id: service.id,
+                            label: service.name,
+                            mapType: service.mapType,
+                            resourceType: service.resourceType,
+                            query: service.query,
+                            isDisabled: service.isDisabled,
+                        },
+                        totalCount: response.data.totalCount,
+                        tableName: layerName,
+                        tableHeaders: Object.keys(tableHeadersWithAlias),
+                        tableStackedHeaders: Object.keys(tableHeadersWithAlias), // ? duplicated data
+                        tableHeadersWithAlias: response.data.fieldAliases,
+                        tableData: response.data.features,
+                        target: response.data.fieldAliases,
+                        checkedColumnsData,
+                        checkedColumns,
+                    }
+                );
                 this.dataTableVisibility = true;
                 this.tableFeaturesData = tableData;
                 this.tableFeaturesHeader = tableHeaders;
@@ -1394,8 +1408,8 @@ export default {
                 this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
             },
         },
-        selectedServiceInfo() {
-            return this.$store.state.dataTable.serviceInfo;
+        selectedServiceInfo(id) {
+            return this.$store.state.dataTable.services[id].serviceInfo;
         },
         filterQueryIsSum: {
             get() {

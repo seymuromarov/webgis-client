@@ -30,6 +30,7 @@
                         @click="
                             $emit(
                                 'filterSelectedColumn',
+                                activeTab,
                                 stackedTableFeaturesHeader[column]
                             )
                         "
@@ -148,24 +149,24 @@ export default {
     },
     data() {
         return {
-            tabs: [
-                {
-                    id: 1,
-                    name: "Karxana 2019",
-                },
-                {
-                    id: 2,
-                    name: "Dəmiryolu",
-                },
-                {
-                    id: 3,
-                    name: "Şorlaşma 2020",
-                },
-                {
-                    id: 4,
-                    name: "Abidələr",
-                },
-            ],
+            // tabs: [
+            //     {
+            //         id: 1,
+            //         name: "Karxana 2019",
+            //     },
+            //     {
+            //         id: 2,
+            //         name: "Dəmiryolu",
+            //     },
+            //     {
+            //         id: 3,
+            //         name: "Şorlaşma 2020",
+            //     },
+            //     {
+            //         id: 4,
+            //         name: "Abidələr",
+            //     },
+            // ],
             activeTab: null,
             actionsList: [
                 "=",
@@ -182,8 +183,19 @@ export default {
         };
     },
     computed: {
+        services() {
+            return this.$store.state.dataTable.services;
+        },
         serviceInfo() {
             return this.$store.state.dataTable.serviceInfo;
+        },
+        tabs() {
+            return services.map(service => {
+                return {
+                    id: 1,
+                    name: service.serviceName,
+                };
+            });
         },
         filterQueryIsSum: {
             get() {
