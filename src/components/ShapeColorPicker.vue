@@ -2,22 +2,16 @@
     <div class="colorPickers colorPickers--light">
         <ul class="nav">
             <li class="nav-item">
-                <a
-                    class="nav-link"
-                    :class="{ active: !isBorder }"
-                    href="#"
-                    @click="borderClick(false)"
-                    >Fill Color</a
-                >
+                <a class="nav-link"
+                   :class="{ active: !isBorder }"
+                   href="#"
+                   @click="borderClick(false)">Fill Color</a>
             </li>
             <li class="nav-item">
-                <a
-                    class="nav-link"
-                    :class="{ active: isBorder }"
-                    href="#"
-                    @click="borderClick(true)"
-                    >Border Color</a
-                >
+                <a class="nav-link"
+                   :class="{ active: isBorder }"
+                   href="#"
+                   @click="borderClick(true)">Border Color</a>
             </li>
         </ul>
 
@@ -34,43 +28,43 @@
     </div>
 </template>
 <script>
-import { Chrome } from "vue-color";
-export default {
-    name: "color",
-    props: {},
-    components: {
-        ColorScheme: Chrome,
-    },
-    mounted() {},
-    data() {
-        return {
-            isBorder: false,
-            borderColor: {
-                hex8: "#000000",
-                rgba: { r: 255, g: 255, b: 255, a: 1 },
-            },
-            fillColor: {
-                hex8: "var(--transparent)",
-                rgba: { r: 255, g: 255, b: 255, a: 1 },
-            },
-        };
-    },
-    methods: {
-        borderClick(status) {
-            this.isBorder = status;
+    import { Chrome } from "vue-color";
+    export default {
+        name: "color",
+        props: {},
+        components: {
+            ColorScheme: Chrome,
         },
-        save() {
-            this.$store.dispatch(
-                "SAVE_COLORPICKER_SHAPEFILLCOLOR",
-                this.fillColor
-            );
-            this.$store.dispatch(
-                "SAVE_COLORPICKER_SHAPEBORDERCOLOR",
-                this.borderColor
-            );
-            this.$emit("setShapeColor");
+        mounted() { },
+        data() {
+            return {
+                isBorder: false,
+                borderColor: {
+                    hex8: "#000000",
+                    rgba: { r: 255, g: 255, b: 255, a: 1 },
+                },
+                fillColor: {
+                    hex8: "var(--transparent)",
+                    rgba: { r: 255, g: 255, b: 255, a: 1 },
+                },
+            };
         },
-    },
-    computed: {},
-};
+        methods: {
+            borderClick(status) {
+                this.isBorder = status;
+            },
+            save() {
+                this.$store.dispatch(
+                    "SAVE_COLORPICKER_SHAPEFILLCOLOR",
+                    this.fillColor
+                );
+                this.$store.dispatch(
+                    "SAVE_COLORPICKER_SHAPEBORDERCOLOR",
+                    this.borderColor
+                );
+                this.$emit("setShapeColor");
+            },
+        },
+        computed: {},
+    };
 </script>

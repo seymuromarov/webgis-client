@@ -14,46 +14,15 @@ const URL =
 const ACCOUNT_URL = {
     LOGIN_URL: URL + "/api/account/login",
 };
+const BUNCH_URL = {
+  ADD: URL + "/api/bunch/add",
+  EDIT: URL + "/api/bunch/edit",
+  DELETE: URL + "/api/bunch/delete",
+  GET: URL + "/api/bunch/get",
+  GET_ALL: URL + "/api/bunch/getall"
+};
 const LAYER_URLS = {
-    // GET_LAYER_NAMES_URL: URL + "/api/Map/GetLayers", // local server
-    // GET_LAYER_DYNAMIC_URL: params => {
-    //   return URL + "/api/map/service/" + params.name + "/MapServer/layers";
-    // },
-    // GET_DYNAMIC_LAYER_URL: params => {
-    //   return URL + "/api/map/service/" + params.name + "/MapServer/";
-    // },
-    // GET_EMLAK_URL: params => {
-    //   return (
-    //     emlakUrl +
-    //     "/arcgis/rest/services/AZERCOSMOS/" +
-    //     params.name +
-    //     "/MapServer"
-    //   );
-    // },
-    // GET_TABLE_DATA_URL: params => {
-    //   return (
-    //     URL +
-    //     "/api/data/get/" +
-    //     params.name +
-    //     "/MapServer/" +
-    //     params.layer +
-    //     "/query/"
-    //   );
-    // },
-    // GET_GEOMETRY_DATA_URL: () => {
-    //   return (
-    //     URL +
-    //     "/api/data/get/" +
-    //     params.name +
-    //     "/MapServer/" +
-    //     params.layer +
-    //     "/query/"
-    //   );
-    // },
-    // GET_USER_RELATED_LAYERS: URL + "/api/userlayer/getuserlayers",
-    // GET_DRAWN_AREA_IMAGE: params => {
-    //   return LAYER_URLS.GET_DYNAMIC_LAYER_URL(params) + "export";
-    // }
+  GET_ALL: URL + "/api/Map/GetLayers"
 };
 
 const MAP_URLS = {
@@ -61,4 +30,4 @@ const MAP_URLS = {
     GEOJSON: "api/Tile/VectorAsGeoJson",
 };
 
-export { baseUrl, URL, emlakUrl, ACCOUNT_URL, LAYER_URLS, MAP_URLS };
+export { baseUrl, URL, emlakUrl, BUNCH_URL, ACCOUNT_URL, LAYER_URLS, MAP_URLS };
