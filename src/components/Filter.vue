@@ -14,8 +14,7 @@
         <!-- Columns -->
         <div class="filterFieldsListDiv">
             <ul class="filterFieldsList">
-                <li
-                    v-for="(alias, column) in tableFeaturesHeader"
+                <li v-for="(alias, column) in tableFeaturesHeader"
                     :key="column"
                     @dblclick="
                         $emit(
@@ -28,8 +27,7 @@
                             'filterSelectedColumn',
                             stackedTableFeaturesHeader[column]
                         )
-                    "
-                >
+                    ">
                     {{ alias }}
                 </li>
             </ul>
@@ -38,12 +36,10 @@
         <!-- Column Values -->
         <div class="filterValuesDiv">
             <ul class="filterValuesList">
-                <li
-                    @dblclick="addValueToQuery(value)"
+                <li @dblclick="addValueToQuery(value)"
                     class="filterValue"
                     v-for="(value, index) in filterValues"
-                    :key="index"
-                >
+                    :key="index">
                     {{ value }}
                 </li>
             </ul>
@@ -56,10 +52,8 @@
                     <tbody>
                         <tr>
                             <td v-for="action in actionsList" :key="action">
-                                <button
-                                    @click="appendFilterQuery(action)"
-                                    class="parameterButton btn btn-sm btn-outline-secondary"
-                                >
+                                <button @click="appendFilterQuery(action)"
+                                        class="parameterButton btn btn-sm btn-outline-secondary">
                                     {{ action }}
                                 </button>
                             </td>
@@ -72,45 +66,35 @@
         <!-- Textarea -->
         <div class="filterSelectDiv">
             <label class="query-start">SELECT * FROM table WHERE:</label>
-            <textarea
-                class="queryTextArea"
-                ref="filterQueryTextarea"
-                name="filterQuery"
-                rows="4"
-                cols="69"
-                :value="filterQuery"
-                @input="$emit('setFilterQuery', $event)"
-            ></textarea>
+            <textarea class="queryTextArea"
+                      ref="filterQueryTextarea"
+                      name="filterQuery"
+                      rows="4"
+                      cols="69"
+                      :value="filterQuery"
+                      @input="$emit('setFilterQuery', $event)"></textarea>
             <div v-show="serviceInfo.resourceType === 'local'">
                 <label>
-                    <input
-                        class="parentCheckbox"
-                        type="checkbox"
-                        id="isSum"
-                        :value="false"
-                        v-model="filterQueryIsSum"
-                        style="opacity:0;"
-                    />
-                    <i
-                        class="far fa-check-circle"
-                        v-if="filterQueryIsSum"
-                        style="cursor: pointer; color:#008422"
-                    ></i>
-                    <i
-                        class="far fa-check-circle"
-                        v-else
-                        style="cursor: pointer;"
-                    ></i>
+                    <input class="parentCheckbox"
+                           type="checkbox"
+                           id="isSum"
+                           :value="false"
+                           v-model="filterQueryIsSum"
+                           style="opacity:0;" />
+                    <i class="far fa-check-circle"
+                       v-if="filterQueryIsSum"
+                       style="cursor: pointer; color:#008422"></i>
+                    <i class="far fa-check-circle"
+                       v-else
+                       style="cursor: pointer;"></i>
                     Sum
                 </label>
 
                 <label class="ml-4" v-if="filterQueryIsSum">
                     <select v-model="filterQueryArithmeticColumn">
-                        <option
-                            v-for="alias in tableFeaturesHeader"
-                            :value="alias"
-                            :key="alias"
-                        >
+                        <option v-for="alias in tableFeaturesHeader"
+                                :value="alias"
+                                :key="alias">
                             {{ alias }}
                         </option>
                     </select>
@@ -118,10 +102,8 @@
                 </label>
             </div>
             <div>
-                <button
-                    class="btn btn-outline-info filterApplyButton"
-                    @click="$emit('filterData')"
-                >
+                <button class="btn btn-outline-info filterApplyButton"
+                        @click="$emit('filterData')">
                     Apply
                 </button>
             </div>
@@ -213,26 +195,30 @@ export default {
 </script>
 
 <style lang="scss">
-.tabs {
-    margin: 10px 0;
-    display: flex;
-    .tab {
+    .tabs {
+        margin: 10px 0;
+        display: flex;
+        .tab
+
+    {
         padding: 4px 8px;
         font-size: 14px;
         border: 1px solid #1a2537;
         border-radius: 4px;
         color: #1a2537;
         cursor: pointer;
+        &:not(:last-child)
 
-        &:not(:last-child) {
-            margin-right: 16px;
-        }
-
-        &--active,
-        &:hover {
-            background-color: #1a2537;
-            color: #ffffff;
-        }
+    {
+        margin-right: 16px;
     }
-}
+
+    &--active,
+    &:hover {
+        background-color: #1a2537;
+        color: #ffffff;
+    }
+
+    }
+    }
 </style>
