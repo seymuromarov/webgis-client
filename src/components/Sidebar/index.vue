@@ -61,28 +61,28 @@
       <div class="list__tabs">
         <div
           class="tab"
-          :class="{ 'tab--active': dynamicActiveTab === 1 }"
-          @click="setDynamicActiveTab(1)"
+          :class="{ 'tab--active': dynamicActiveTab === 'dynamicTab' }"
+          @click="setDynamicActiveTab('dynamicTab')"
         >
           Hip
         </div>
         <div
           class="tab"
-          :class="{ 'tab--active': dynamicActiveTab === 2 }"
-          @click="setDynamicActiveTab(2)"
+          :class="{ 'tab--active': dynamicActiveTab === 'bunchTab' }"
+          @click="setDynamicActiveTab('bunchTab')"
         >
           Hop
         </div>
       </div>
 
       <ul
-        v-if="dynamicActiveTab === 1"
+        v-if="dynamicActiveTab === 'dynamicTab'"
         class="list__content list__content--parent custom-scrollbar"
       >
         <transition name="slide-fade">
           <Draggable
             key="dynamicLayer"
-            v-bind="dragOptionsDynamic"
+            :v-bind="() => dragOptions('dynamicDragger')"
             v-model="dynamicLayerListModel"
             @start="isDragging = true"
             @end="$emit('onMoveCallbackDynamicLayerList', $event)"
@@ -92,7 +92,7 @@
                 v-for="(layer, index) in dynamicLayersList"
                 :key="layer.name + index"
                 :data="layer"
-                @selectLayer="selectLayer"
+                @selectService="selectService"
                 @dynamicLayersReset="dynamicLayersReset"
                 @saveColor="saveColor"
                 @selectSubLayer="selectSubLayer"
@@ -104,27 +104,22 @@
       </ul>
 
       <ul
-        v-if="dynamicActiveTab === 2"
+        v-if="dynamicActiveTab === 'bunchTab'"
         class="list__content list__content--parent custom-scrollbar"
       >
         <transition name="slide-fade">
           <Draggable
             key="dynamicLayer"
-            v-bind="dragOptionsDynamic"
-            v-model="dynamicLayerListModel"
+            :v-bind="() => dragOptions('bunchDragger')"
+            v-model="bunchLayerList"
             @start="isDragging = true"
             @end="$emit('onMoveCallbackDynamicLayerList', $event)"
           >
             <transition-group type="transition" name="flip-list">
               <LayerTree
-                v-for="(layer, index) in computedLayersList"
-                :key="layer.name + index"
-                :data="layer"
-                @selectLayer="selectLayer"
-                @dynamicLayersReset="dynamicLayersReset"
-                @saveColor="saveColor"
-                @selectSubLayer="selectSubLayer"
-                @getTableData="getTableData"
+                v-for="(bunch, index) in bunchLayerList"
+                :key="bunch.name + index"
+                :data="bunch"
               />
             </transition-group>
           </Draggable>
@@ -132,7 +127,7 @@
       </ul>
 
       <button
-        v-if="dynamicActiveTab === 2"
+        v-if="dynamicActiveTab === 'bunchTab'"
         class="btn btn--add-new"
         @click="openComputedLayerModal"
       >
@@ -149,7 +144,7 @@
           <Draggable
             key="baseLayers"
             v-model="baseLayerListModel"
-            v-bind="dragOptions"
+            :v-bind="() => dragOptions('baseDragger')"
             @start="isDragging = true"
             @end="$emit('onMoveCallbackBaseLayerList', $event)"
           >
@@ -158,7 +153,7 @@
                 v-for="(layer, index) in baselayerList"
                 :key="layer.name + index"
                 :data="layer"
-                @selectLayer="selectLayer"
+                @selectService="selectService"
                 @selectSubLayer="selectSubLayer"
                 @getTableData="getTableData"
               />
@@ -209,7 +204,7 @@ export default {
       activeLayerType: "gray",
       layerTypesVisible: false,
       isDragging: false,
-      dynamicActiveTab: 1,
+      dynamicActiveTab: "dynamicTab",
       computedLayersList: [
         {
           id: 1,
@@ -418,15 +413,8 @@ export default {
         }
       ];
     },
-    dragOptionsDynamic() {
-      return {
-        animation: 0,
-        group: "dynamicDragger",
-        disabled: false,
-        ghostClass: "ghost"
-      };
-    },
-    dragOptions() {
+
+    dragOptions(group) {
       return {
         animation: 0,
         group: "baseDragger",
@@ -476,8 +464,8 @@ export default {
         this.activeMenu = menu;
       }
     },
-    selectLayer(item, order, isDynamic, event) {
-      this.$emit("selectLayer", item, order, isDynamic, event);
+    selectService(item, isChecked) {
+      this.$emit("selectService", item, isChecked);
     },
     dynamicLayersReset(item, status) {
       this.$emit("dynamicLayersReset", item, status);
@@ -528,8 +516,8 @@ export default {
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
-    setDynamicActiveTab(tabId) {
-      this.dynamicActiveTab = tabId;
+    setDynamicActiveTab(tabLabel) {
+      this.dynamicActiveTab = tabLabel;
     },
     openComputedLayerModal() {
       this.$moodal.computedLayerModal.show();

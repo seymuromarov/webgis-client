@@ -2,7 +2,11 @@ const mapper = {
   mapBunchs: bunchs => {
     let mapResult = bunchs.map((item, index) => {
       return {
-        ...item,
+        id: item.id,
+        name: item.label,
+        layers: item.layers,
+        type: "bunch",
+        isActive: item.isActive,
         isSelected: false,
         isColorEnabled: true
       };

@@ -42,7 +42,7 @@
 import Modal from "../common/Modal";
 import Multiselect from "vue-multiselect";
 import { bunchService } from "@/services";
-import { layerGetters } from "@/getters";
+import { layerController } from "@/controllers";
 export default {
   name: "ComputedLayersModal",
   components: {
@@ -86,7 +86,7 @@ export default {
   },
   computed: {
     dynamicLayersList() {
-      let dynamicLayers = layerGetters.getDynamicLayersWithoutCategory(true);
+      let dynamicLayers = layerController.getDynamicLayersWithoutCategory(true);
       let options = dynamicLayers.map((item, index) => {
         return { id: item.id, name: item.name };
       });

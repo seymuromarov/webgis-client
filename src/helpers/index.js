@@ -5,6 +5,7 @@ import layerHelper from "./layerHelper";
 import dateFormatter from "./dateFormatter";
 import hashHelper from "./hashHelper";
 import bunchHelper from "./bunchHelper";
+import serviceHelper from "./serviceHelper";
 
 export {
   toggler,
@@ -13,5 +14,6 @@ export {
   layerHelper,
   dateFormatter,
   hashHelper,
-  bunchHelper
+  bunchHelper,
+  serviceHelper
 };

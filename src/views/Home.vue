@@ -11,7 +11,7 @@
         />
         <Sidebar
           :baseMaps="baseMaps"
-          @selectLayer="selectService"
+          @selectService="selectService"
           @selectSubLayer="selectSubService"
           @dynamicLayersReset="dynamicLayersReset"
           @getTableData="getTableData"
@@ -163,8 +163,8 @@ import { layerSettings } from "@/config/settings";
 import cities from "@/data/cities.json";
 import LoginService from "@/services/LoginService";
 import LayerService from "@/services/LayerService";
-import { toggler, mapHelper, layerHelper } from "@/helpers";
-import { layerGetters } from "@/getters";
+import { toggler, mapHelper, layerHelper, serviceHelper } from "@/helpers";
+import { layerController } from "@/controllers";
 
 // Styles
 import "ol/ol.css";
@@ -529,7 +529,7 @@ export default {
         center: view.getCenter(),
         rotation: view.getRotation()
       };
-      var selectedLayers = layerGetters.getSelectedLayers();
+      var selectedLayers = layerController.getSelectedLayers();
       var selectedLayerIds = selectedLayers.map(item => {
         return item.id;
       });
@@ -762,7 +762,7 @@ export default {
     },
 
     isItemCategory(item) {
-      return layerHelper.isCategory(item);
+      return serviceHelper.isCategory(item);
     },
     isWhereExist(query) {
       return (
@@ -816,7 +816,7 @@ export default {
 
         if (query.where !== service.query.where) {
           service.query = query;
-          this.refreshLayer(service);
+          this.refreshService(service);
         }
         //
       }
@@ -960,7 +960,7 @@ export default {
       // });
     },
     checkIfLayerNeedsToTurnOn(layer, value) {
-      let e = { target: { checked: true } };
+      let isChecked = true;
 
       if (layer.hasOwnProperty("children")) {
         layer.layers.map(async item => {
@@ -968,13 +968,7 @@ export default {
         });
       } else {
         if (layer.id === value) {
-          this.selectService(
-            layer,
-            layer.order,
-            layer.mapType === "dynamic",
-            e,
-            false
-          );
+          this.selectService(layer, isChecked);
         }
       }
     },
@@ -1024,74 +1018,79 @@ export default {
       };
     },
 
-    renderNewLayer(service) {
-      var isDynamic = layerHelper.isDynamic(service);
+    renderNewService(service) {
+      var isDynamic = serviceHelper.isDynamic(service);
+      var isLayer = serviceHelper.isLayer(service);
       let zoomLevelProperties = this.getLayerZoomLevelOptions(service);
       let new_layer;
       let url = URL + "/api/map/service/" + service.name + "/MapServer/";
-      if (isDynamic) {
-        if (layerHelper.isLocalService(service)) {
-          new_layer = new VectorTileLayer({
-            id: service.id,
-            ...zoomLevelProperties,
-            source: new VectorTileSource({
-              format: new MVT({
-                geometryName: "geom"
+      if (isLayer) {
+        if (isDynamic) {
+          if (serviceHelper.isLocalService(service)) {
+            new_layer = new VectorTileLayer({
+              id: service.id,
+              ...zoomLevelProperties,
+              source: new VectorTileSource({
+                format: new MVT({
+                  geometryName: "geom"
+                }),
+                url:
+                  URL +
+                  "/" +
+                  MAP_URLS.MVT +
+                  `/${service.id}/{z}/{x}/{y}/` +
+                  (service.query.where != ""
+                    ? this.objectToQueryString(service.query)
+                    : "")
               }),
-              url:
-                URL +
-                "/" +
-                MAP_URLS.MVT +
-                `/${service.id}/{z}/{x}/{y}/` +
-                (service.query.where != ""
-                  ? this.objectToQueryString(service.query)
-                  : "")
-            }),
-            style: this.getVectorStyle(service)
-          });
+              style: this.getVectorStyle(service)
+            });
+          } else {
+            new_layer = new ImageLayer({
+              ...zoomLevelProperties,
+              source: new ImageArcGISRest({
+                url: url,
+                crossOrigin: "Anonymous",
+                params: {
+                  token: this.token,
+                  layers: layerHelper.renderArcgisSublayerConfig(service),
+                  dynamicLayers: layerHelper.renderSubLayersColorString(service)
+                }
+              })
+            });
+          }
         } else {
-          new_layer = new ImageLayer({
-            ...zoomLevelProperties,
-            source: new ImageArcGISRest({
-              url: url,
-              crossOrigin: "Anonymous",
-              params: {
-                token: this.token,
-                layers: layerHelper.renderArcgisSublayerConfig(service),
-                dynamicLayers: layerHelper.renderSubLayersColorString(service)
-              }
-            })
-          });
+          if (service.spatial === 3857) {
+            url = url + "/tile/{z}/{y}/{x}?token=" + this.token;
+            new_layer = new TileLayer({
+              ...zoomLevelProperties,
+              source: new XYZ({
+                url: url,
+                projection: "EPSG:3857",
+                crossOrigin: "Anonymous"
+              })
+            });
+          } else {
+            new_layer = new TileLayer({
+              ...zoomLevelProperties,
+              source: new TileArcGISRest({
+                url: url,
+                crossOrigin: "Anonymous",
+                params: {
+                  token: this.token,
+                  FORMAT: "png8"
+                }
+              })
+            });
+          }
         }
       } else {
-        if (service.spatial === 3857) {
-          url = url + "/tile/{z}/{y}/{x}?token=" + this.token;
-          new_layer = new TileLayer({
-            ...zoomLevelProperties,
-            source: new XYZ({
-              url: url,
-              projection: "EPSG:3857",
-              crossOrigin: "Anonymous"
-            })
-          });
-        } else {
-          new_layer = new TileLayer({
-            ...zoomLevelProperties,
-            source: new TileArcGISRest({
-              url: url,
-              crossOrigin: "Anonymous",
-              params: {
-                token: this.token,
-                FORMAT: "png8"
-              }
-            })
-          });
-        }
       }
+
       return new_layer;
     },
 
-    addLayers(service, index, dynamic = false) {
+    addService(service) {
       // this.selectedLayersIdHolder(true, service);
       if (service.extent != null) {
         this.mapLayer
@@ -1104,14 +1103,14 @@ export default {
           ]);
       }
 
-      var new_layer = this.renderNewLayer(service);
+      var newService = this.renderNewService(service);
       this.getOrderNumber(this.dynamicLayerList, service);
 
-      new_layer.set("name", service.name);
+      newService.set("name", service.name);
       var zIndex = this.getZIndex(service);
-      new_layer.setZIndex(zIndex);
+      newService.setZIndex(zIndex);
 
-      this.mapLayer.addLayer(new_layer);
+      this.mapLayer.addLayer(newService);
     },
 
     getOrderNumber(array, service) {
@@ -1138,7 +1137,7 @@ export default {
     getZIndex(service) {
       let zIndex = 0;
       let orderNo = 0;
-      if (layerHelper.isDynamic(service)) {
+      if (serviceHelper.isDynamic(service)) {
         zIndex = layerSettings.dynamicZIndex;
         orderNo = this.getOrderNumber(this.dynamicLayerList, service);
       } else {
@@ -1148,11 +1147,10 @@ export default {
       return zIndex - orderNo;
     },
 
-    refreshLayer(service) {
-      this.deleteLayers(service, false);
-      this.addLayers(service, service.order, true);
+    refreshService(service) {
+      this.deleteService(service, false);
+      this.addService(service);
     },
-
     getLayer(id) {
       let layer = null;
       this.mapLayer.getLayers().forEach(function(lyr) {
@@ -1168,7 +1166,7 @@ export default {
       layers[0].setSource(this.baseMaps[index]);
     },
 
-    deleteLayers(service, reset) {
+    deleteService(service, reset) {
       let layersToRemove = [];
       let self = this;
 
@@ -1206,7 +1204,7 @@ export default {
       return isColorEnabled;
     },
     async dynamicLayersReset(service, status) {
-      if (layerHelper.isDynamicFromArcgis(service)) {
+      if (serviceHelper.isDynamicFromArcgis(service)) {
         var isColorEnabled = await this.isLayerColorEnabled(service);
 
         this.dynamicLayerList = layerHelper.recursiveLayerMapping(
@@ -1228,7 +1226,7 @@ export default {
     },
     async getResponseDynamic(service) {
       let responseDynamic = null;
-      if (layerHelper.isDynamicFromArcgis(service)) {
+      if (serviceHelper.isDynamicFromArcgis(service)) {
         responseDynamic = await LayerService.getDynamicLayers({
           token: this.token,
           name: service.name
@@ -1237,45 +1235,47 @@ export default {
       return responseDynamic;
     },
 
-    async selectService(service, index, isDynamic, e, isHashLoaded = true) {
-      var isChecked = e.target.checked;
+    async selectService(service, isChecked) {
+      // var isChecked = e.target.checked;
 
-      this.isHashLoaded = isHashLoaded;
+      // this.isHashLoaded = isHashLoaded;
+      if (serviceHelper.isLayer(service)) {
+        if (serviceHelper.isDynamic(service)) {
+          let subLayers = null;
+          if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
+            let subLayerResponse;
+            subLayerResponse = await this.getResponseDynamic(service);
+            subLayers = subLayerResponse.data.layers;
+          }
 
-      if (layerHelper.isDynamic(service)) {
-        let subLayers = null;
-        if (isChecked && layerHelper.isDynamicFromArcgis(service)) {
-          let subLayerResponse;
-          subLayerResponse = await this.getResponseDynamic(service);
-          subLayers = subLayerResponse.data.layers;
-        }
-
-        this.dynamicLayerList = layerHelper.recursiveLayerMapping(
-          this.dynamicLayerList,
-          async layer => {
-            if (layer != null && layer.id == service.id) {
-              layer.isSelected = isChecked;
-              if (isChecked && layerHelper.isDynamicFromArcgis(layer)) {
-                layer.layers = subLayers.map(item =>
-                  layerHelper.subLayerMapping(item, layer)
-                );
+          this.dynamicLayerList = layerHelper.recursiveLayerMapping(
+            this.dynamicLayerList,
+            async layer => {
+              if (layer != null && layer.id == service.id) {
+                layer.isSelected = isChecked;
+                if (isChecked && serviceHelper.isDynamicFromArcgis(layer)) {
+                  layer.layers = subLayers.map(item =>
+                    layerHelper.subLayerMapping(item, layer)
+                  );
+                }
               }
             }
-          }
-        );
-      } else if (layerHelper.isBasemap(service)) {
-        this.baseLayerList = layerHelper.recursiveLayerMapping(
-          this.baseLayerList,
-          async layer => {
-            if (layer != null && layer.id == service.id) {
-              layer.isSelected = isChecked;
+          );
+        } else if (serviceHelper.isBasemap(service)) {
+          this.baseLayerList = layerHelper.recursiveLayerMapping(
+            this.baseLayerList,
+            async layer => {
+              if (layer != null && layer.id == service.id) {
+                layer.isSelected = isChecked;
+              }
             }
-          }
-        );
+          );
+        }
+      } else {
       }
 
-      if (isChecked) this.addLayers(service, index, isDynamic);
-      else this.deleteLayers(service);
+      if (isChecked) this.addService(service);
+      else this.deleteService(service);
     },
     async selectSubService(service, index, id, e) {
       let isChecked = e.target.checked;
@@ -1291,7 +1291,7 @@ export default {
       );
 
       this.dynamicLayersReset(service, isChecked);
-      this.refreshLayer(service);
+      this.refreshService(service);
     },
 
     setDrawType(name) {
@@ -1308,7 +1308,7 @@ export default {
     },
     saveColor(service, colorObj) {
       const { fillColor, borderColor } = colorObj;
-      var isSubLayer = layerHelper.isSublayer(service);
+      var isSubLayer = serviceHelper.isSublayer(service);
       var service = isSubLayer ? service.parent : service;
 
       this.dynamicLayerList = layerHelper.recursiveLayerMapping(
@@ -1329,7 +1329,7 @@ export default {
           }
         }
       );
-      this.refreshLayer(service);
+      this.refreshService(service);
     }
   },
   computed: {
@@ -1339,7 +1339,7 @@ export default {
       return { fill, border };
     },
     selectedLayers() {
-      return layerGetters.getSelectedLayers();
+      return layerController.getSelectedLayers();
     },
     dataTableVisibility: {
       get() {
@@ -1388,6 +1388,14 @@ export default {
       },
       set(val) {
         this.$store.dispatch("saveDynamicLayerList", val);
+      }
+    },
+    bunchLayerList: {
+      get() {
+        return this.$store.getters.bunchLayerList;
+      },
+      set(val) {
+        this.$store.dispatch("saveBunchLayerList", val);
       }
     },
     baseLayerList: {
