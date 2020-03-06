@@ -23,37 +23,14 @@
                 <div class="tableHeader">
                     <div class="table__tabs">
                         <div class="table__tab"
+                             v-for="tab in tabs"
+                             :key="tab.id"
                              :class="{
-                'table__tab--active': activeTab === tableName
-              }"
-                             @click="setActiveTab(tableName)">
-                            {{ tableName }}
+                                'table__tab--active': tab.id == activeTab,
+                            }"
+                             @click="setActiveTab(tab.id)">
+                            {{ tab.name }}
                         </div>
-
-                        <!-- TODO Delete below tabs -->
-                        <!-- <div
-                                      class="table__tab"
-                                      :class="{
-                                        'table__tab--active': activeTab === tableName + 2
-                                      }"
-                                      @click="setActiveTab(tableName + 2)"
-                                    >
-                                      {{
-                                        tableName
-                                          .split("")
-                                          .reverse()
-                                          .join("")
-                                      }}
-                                    </div>
-                                    <div
-                                      class="table__tab"
-                                      :class="{
-                                        'table__tab--active': activeTab === tableName + 3
-                                      }"
-                                      @click="setActiveTab(tableName + 3)"
-                                    >
-                                      {{ tableName.split("b").join("p") }}
-                                    </div> -->
                     </div>
                     <div class="table__operations">
                         <download-excel v-if="tableHeaders"
@@ -81,7 +58,9 @@
                                 <div v-for="(alias, index) in tableHeaders"
                                      :key="index"
                                      class="table__column">
-                                    <input @click="selectColumns(alias, index, $event)"
+                                    <input @click="
+                                            selectColumns(alias, index, $event)
+                                        "
                                            type="checkbox"
                                            :id="alias"
                                            :value="alias"
@@ -96,7 +75,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="tableContent custom-scrollbar" id="dataTable">
+                <div class="tableContent custom-scrollbar"
+                     id="dataTable"
+                     ref="dataTableContent">
                     <!-- Loader -->
                     <div class="loader" v-if="loading">
                         <img src="@/assets/loading.svg" alt />
@@ -128,6 +109,7 @@
                 </div>
             </div>
         </Resizable>
+
         <CustomModal name="dataModal" :minWidth="200" :minHeight="200">
             <p class="tableModalHeader">{{ tableName }}</p>
             <div class="row" style="overflow: auto">
@@ -139,7 +121,8 @@
                         </tr>
                     </thead>
                     <tbody class="popupTableBody">
-                        <tr v-for="(value, key) in selectedData.attributes" :key="key">
+                        <tr v-for="(value, key) in selectedData.attributes"
+                            :key="key">
                             <td class="paddingLeft">
                                 {{ tableHeadersWithAlias[key] }}
                             </td>
@@ -161,11 +144,10 @@
 
     export default {
         name: "DataTable",
-        props: {},
         components: {
             Multiselect,
             Resizable,
-            CustomModal
+            CustomModal,
         },
         data() {
             return {
@@ -183,16 +165,14 @@
                     minW: 150,
                     minH: 200,
                     fit: true,
-                    event: ""
+                    event: "",
                 },
-                activeTab: null
+                tabs: [],
+                activeTab: null,
             };
         },
-
         mounted() {
             this.scrollHandler();
-
-            this.activeTab = this.tableName;
         },
         created() {
             window.addEventListener("resize", this.update);
@@ -202,18 +182,40 @@
         },
         watch: {
             isVisible: {
-                handler(val) {
+                handler() {
                     this.resetScroll();
                     this.resetPaging();
                 },
                 deep: true,
-                immediate: false
-            }
+                immediate: false,
+            },
+            dataTable: {
+                handler(value) {
+                    const services = value.services;
+
+                    let tabs = [];
+                    for (const service in services) {
+                        tabs.push({
+                            id: service,
+                            name: services[service].tableName,
+                        });
+                    }
+                    this.tabs = tabs;
+
+                    if (tabs.length) {
+                        this.activeTab = tabs[0].id;
+                    }
+                    console.log("loading", this.loading);
+                },
+                deep: true,
+                immediate: false,
+            },
         },
         methods: {
             resetScroll() {
-                const table = document.getElementById("dataTable");
-                table.scrollTo(0, 0);
+                if (this.$refs.dataTableContent) {
+                    this.$refs.dataTableContent.scrollTo(0, 0);
+                }
             },
             isEndOfData() {
                 return this.paging.page * this.paging.limit > this.totalCount;
@@ -222,7 +224,8 @@
                 const table = document.getElementById("dataTable");
                 table.addEventListener("scroll", e => {
                     if (
-                        table.scrollTop + table.clientHeight >= table.scrollHeight &&
+                        table.scrollTop + table.clientHeight >=
+                        table.scrollHeight &&
                         !this.paging.isBusy &&
                         !this.isEndOfData() &&
                         this.serviceInfo.resourceType === "local"
@@ -232,7 +235,7 @@
                         this.isPagingBusy(true);
                         this.paging = {
                             ...this.paging,
-                            page: page++
+                            page: page++,
                         };
 
                         this.getDatas();
@@ -243,14 +246,14 @@
             isPagingBusy(isBusy) {
                 this.paging = {
                     ...this.paging,
-                    isBusy
+                    isBusy,
                 };
             },
             async getDatas() {
                 var params = {
                     layerId: this.serviceInfo.id,
                     ...this.serviceInfo.query,
-                    ...this.paging
+                    ...this.paging,
                 };
                 var response = await LayerService.getLocalTableData(params);
                 var data = response.data.features;
@@ -260,7 +263,7 @@
                 this.paging = {
                     isBusy: false,
                     page: 1,
-                    limit: 25
+                    limit: 25,
                 };
             },
             toggleIsVisible() {
@@ -290,7 +293,7 @@
                 var response = await LayerService.getLocalTableData({
                     layerId: this.serviceInfo.id,
                     ...this.serviceInfo.query,
-                    isGeometryDataExist: false
+                    isGeometryDataExist: false,
                 });
                 var attributes = response.data.features.map((item, index) => {
                     return item.attributes;
@@ -309,7 +312,9 @@
 
                 for (let column in this.tableHeaders) {
                     if (this.checkedColumns.includes(this.tableHeaders[column])) {
-                        columns[this.tableHeaders[column]] = this.tableStackedHeaders[column];
+                        columns[
+                            this.tableHeaders[column]
+                        ] = this.tableStackedHeaders[column];
                     }
                 }
                 return columns;
@@ -358,7 +363,7 @@
             },
             setActiveTab(tab) {
                 this.activeTab = tab;
-            }
+            },
         },
         computed: {
             isVisible() {
@@ -376,7 +381,7 @@
                 },
                 set(value) {
                     this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
-                }
+                },
             },
             serviceInfo() {
                 return this.$store.state.dataTable.serviceInfo;
@@ -393,21 +398,38 @@
                 },
                 set(value) {
                     this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-                }
+                },
             },
             tableHeadersWithAlias() {
                 return this.$store.state.dataTable.tableHeadersWithAlias;
             },
-            // tableData() {
-            //   return this.$store.state.dataTable.tableData;
-            // },
+            dataTable: {
+                get() {
+                    const data = this.$store.state.dataTable;
+
+                    // for (const service in data.services) {
+                    //     this.tabs.push({
+                    //         id: service,
+                    //         name: data.services[service].tableName,
+                    //     });
+                    // }
+
+                    return data;
+                },
+            },
             tableData: {
                 get() {
-                    return this.$store.state.dataTable.tableData;
+                    // return this.$store.state.dataTable.tableData;
+                    if (this.activeTab) {
+                        return this.$store.state.dataTable.services[this.activeTab]
+                            .tableData;
+                    } else {
+                        return null;
+                    }
                 },
                 set(value) {
                     this.$store.dispatch("SAVE_DATATABLE_DATA", value);
-                }
+                },
             },
             target() {
                 return this.$store.state.dataTable.target;
@@ -417,8 +439,11 @@
                     return this.$store.state.dataTable.checkedColumnsData;
                 },
                 set(value) {
-                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", value);
-                }
+                    this.$store.dispatch(
+                        "SAVE_DATATABLE_CHECKED_COLUMNS_DATA",
+                        value
+                    );
+                },
             },
             checkedColumns: {
                 get() {
@@ -426,20 +451,20 @@
                 },
                 set(value) {
                     this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-                }
+                },
             },
             // checkedColumns() {
             //     return this.$store.state.dataTable.checkedColumns;
             // },
             lastBBOXOfShape() {
                 return this.$store.state.dataTable.lastBBOXOfShape;
-            }
+            },
         },
         filters: {
             checkEmpty(value) {
                 return typeof value !== "number" ? 0 : value;
-            }
-        }
+            },
+        },
     };
 </script>
 

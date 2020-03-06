@@ -40,18 +40,19 @@
         </CustomModal>
 
         <!-- Filter -->
-        <CustomModal name="filterModal" title="Filter" :maxWidth="600">
-            <FilterBox :tableHeader="tableHeader"
-                       :filterQuery="filterQuery"
-                       :filterValues="filterValues"
-                       :tableFeaturesHeader="tableFeaturesHeader"
-                       :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
-                       @appendFilterQuery="filterQuery += $event"
-                       @setFilterQuery="filterQuery = $event.target.value"
-                       @filterSelectedColumn="filterSelectedColumn"
-                       @filterData="filterData" />
-        </CustomModal>
-
+        <!-- <CustomModal name="filterModal" title="Filter" :maxWidth="600">
+            <FilterBox
+                :tableHeader="tableHeader"
+                :filterQuery="filterQuery"
+                :filterValues="filterValues"
+                :tableFeaturesHeader="tableFeaturesHeader"
+                :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
+                @appendFilterQuery="filterQuery += $event"
+                @setFilterQuery="filterQuery = $event.target.value"
+                @filterSelectedColumn="filterSelectedColumn"
+                @filterData="filterData"
+            />
+        </CustomModal> -->
         <!-- Shape Color Picker -->
         <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
             <ShapeColorPicker @setShapeColor="setShapeColor" />
@@ -81,7 +82,7 @@
         Modify,
         defaults as defaultInteractions,
         DragRotateAndZoom,
-        DragAndDrop
+        DragAndDrop,
     } from "ol/interaction";
     import TileDebug from "ol/source/TileDebug";
     import {
@@ -90,12 +91,12 @@
         Fill,
         Stroke,
         Style,
-        Icon
+        Icon,
     } from "ol/style.js";
     import {
         Tile as TileLayer,
         Vector as VectorLayer,
-        Image as ImageLayer
+        Image as ImageLayer,
     } from "ol/layer.js";
     import VectorTileLayer from "ol/layer/VectorTile.js";
     import VectorTileSource from "ol/source/VectorTile.js";
@@ -105,7 +106,7 @@
         OSM,
         TileArcGISRest,
         Vector as VectorSource,
-        ImageArcGISRest
+        ImageArcGISRest,
     } from "ol/source.js";
     import {
         fromLonLat,
@@ -113,14 +114,14 @@
         transform,
         transformExtent,
         get as getProjection,
-        getTransform
+        getTransform,
     } from "ol/proj";
     import XYZ from "ol/source/XYZ.js";
     import { bbox as bboxStrategy } from "ol/loadingstrategy";
     import {
         ZoomSlider,
         defaults as defaultControls,
-        FullScreen
+        FullScreen,
     } from "ol/control.js";
     import MousePosition from "ol/control/MousePosition.js";
     import { createStringXY } from "ol/coordinate.js";
@@ -176,7 +177,7 @@
             Report,
             MapControls,
             CustomModal,
-            ComputedLayersModal
+            ComputedLayersModal,
         },
         data() {
             return {
@@ -225,28 +226,27 @@
                 baseMaps: {
                     none: new XYZ({
                         crossOrigin: "Anonymous",
-                        url: ""
+                        url: "",
                     }),
                     satellite: new XYZ({
                         name: "sat",
                         url:
-                            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
                     }),
                     street: new XYZ({
                         url:
-                            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+                            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
                     }),
                     gray: new XYZ({
                         crossOrigin: "Anonymous",
                         url:
-                            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-                    })
+                            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+                    }),
                 },
                 showInfoModal: false,
-                isHashLoaded: false
+                isHashLoaded: false,
             };
         },
-        created() { },
         mounted() {
             this.hashResolveResult = this.resolveHash(window.location.hash);
             // this.token = this.$cookie.get("token");
@@ -259,12 +259,12 @@
             this.citySearchOptions = cities;
 
             this.source = new VectorSource({
-                wrapX: false
+                wrapX: false,
             });
 
             this.vector = new VectorLayer({
                 source: this.source,
-                features: []
+                features: [],
             });
 
             this.vector.setZIndex(9999);
@@ -272,16 +272,16 @@
             var debug = new TileLayer({
                 source: new TileDebug({
                     projection: "EPSG:3857",
-                    tileGrid: new OSM().getTileGrid()
-                })
+                    tileGrid: new OSM().getTileGrid(),
+                }),
             });
 
             let gray = new TileLayer({
                 source: new XYZ({
                     crossOrigin: "Anonymous",
                     url:
-                        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-                })
+                        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+                }),
             });
 
             var dynamics = this.dynamicLayerList;
@@ -301,7 +301,7 @@
                 //       tile.setLoader(function(extent, resolution, projection) {
                 //         LayerService.postData(url, params).then(function(response) {
                 //           response.arrayBuffer().then(function(data) {
-                //             const format = tile.getFormat(); // ol/format/MVT configured as source format
+                //             const format = tile.getFormats(); // ol/format/MVT configured as source format
                 //             const features = format.readFeatures(data, {
                 //               extent: extent,
                 //               featureProjection: projection
@@ -315,11 +315,13 @@
                 // });
 
                 let dragAndDropInteraction = new DragAndDrop({
-                    formatConstructors: [GPX, GeoJSON, IGC, KML, TopoJSON]
+                    formatConstructors: [GPX, GeoJSON, IGC, KML, TopoJSON],
                 });
                 this.layers = [gray, this.vector];
                 let zoom =
-                    this.hashResolveResult !== null ? this.hashResolveResult.zoom : 8;
+                    this.hashResolveResult !== null
+                        ? this.hashResolveResult.zoom
+                        : 8;
                 let center =
                     this.hashResolveResult !== null
                         ? this.hashResolveResult.center
@@ -329,7 +331,7 @@
                 this.mapLayer = new Map({
                     interactions: defaultInteractions().extend([
                         new DragRotateAndZoom(),
-                        dragAndDropInteraction
+                        dragAndDropInteraction,
                     ]),
                     controls: [], // defaultControls(), //.extend([new FullScreen()]),
                     target: "map",
@@ -337,12 +339,12 @@
                     view: new View({
                         center: center,
                         zoom: zoom,
-                        rotation: rotation
-                    })
+                        rotation: rotation,
+                    }),
                 });
 
                 let modify = new Modify({
-                    source: this.source
+                    source: this.source,
                 });
                 this.mapLayer.addInteraction(modify);
                 let self = this;
@@ -384,12 +386,12 @@
                         coord = fromLonLat([coord[0], coord[1]]);
                         coord = [
                             coord[1].toString().substring(0, 10),
-                            coord[0].toString().substring(0, 10)
+                            coord[0].toString().substring(0, 10),
                         ];
                     } else {
                         coord = [
                             coord[1].toString().substring(0, 7),
-                            coord[0].toString().substring(0, 7)
+                            coord[0].toString().substring(0, 7),
                         ];
                     }
                     // document.getElementById("mouse-position").innerHTML =
@@ -408,7 +410,7 @@
                             crossOrigin: "Anonymous",
                             geometry: new Point(fromLonLat([coord[0], coord[1]])),
                             name: "",
-                            id: "232"
+                            id: "232",
                         });
                         iconFeature.setStyle(
                             new Style({
@@ -418,8 +420,8 @@
                                     anchorXUnits: "fraction",
                                     anchorYUnits: "pixels",
                                     src:
-                                        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAD2ElEQVRogdWaQYgcRRSGv2724HER8eBBFhHJWSWB6ClEood+5pyzJ3P1Ih5EwjKERUQPopJDlICYg4R6IQQMXkxEPETwoBAWWYLIIrIsYQ9xWaY8TPdsbU3XdFV1z5j8UPSb1139/lf16vWr7imstTzOKIDy/ybRB4W1lqIoSmvteKr0fqdARI4BrwMngDVgFRgDO8AfwB3ghqr+1dhw7SXLZMyAtXZcFMWRflVVnQXeA16MvM0t4IKq3k6176LouwZE5BngS+B05i2+As4bY/ZyOh8JIfcIk5GG9ukriqKsquo4oMBTmeQb3APOqOp9107DwZfda7IXcVVVJ4HvgCd6km+wDbyiqlspnbJCSETWgF+YLNAhcQ94KSWcSjicLvfoLlJXFpEV4BuGJw/wAvC5z2GePBM+PvGWjm8BxzuI/A38BGwCe8ABsAtsAQ87+p4TkVdDfPyLV+BwsXblfhEpgXcjyD9dNxerHM7amPlr731r7WsddrDWjo+ETgROA8/OOX/ALPE2dNk7JSJrUSHUFjKhBrzZYXglgnwMSiZP82AINXJprR27ITSvAS8PRDAGJ7r4zISQf/S9BZ5bogPPJ4VQKJV6+ieX6MCqyyckl7HhU1+XVaFmopPPNIR8r0JTBjxYogO7XaMPEAyhgLy5YNIuthq78wa2jJkmJ4R61e6J+CE7C/k6R//1ksjvA9eSQsg9GXJIVe+ynFm4oqo7bXyCIQTRmejCgsmPgVFsWCeFUD0Lt4C7C3TgW2PMZoiPL7dmoa6MBIwWRh9GsXuBoijK7E29iPwOHBuKdY2bxpg3UjoEy2l/V+bqa3Eji+J8jGJHvpFnp8Qj3qavj1eAPwck/2Pzjigm9rNqIbcZY/YZdhbWUzkEa6GQruX8F8A/A5D/1RhzI6djMAt1rv5JSt0HPh7AgZFvN7Yl1UKBB9sn9KtSN4GrufajdmQu/JkwxjxgEkq52FDV6b2Ts1AbsTaiIcdq3YdMCrBUbAOX/XunyNO3CE028uHqQzKwLSKXgLcTHdios1k2knZkbc8IlwyT90Kx2AE+yx35Rk7dkU1l3ylVvQ9cTXDgU1V9GLpfrNw7C3kZaZ24jf8e8NEQNrNrobYRMcb8BlyPcOCSqu72Hf2+tRABeb2D/AGTrJWdeVx5xdqjn20GwM8i8j1wKnD+sjFmsCKwby0UwgcB/T5wMZpdBBb2obuqqovAO45qDJxX1T5P7Rn0/sw6DyJyEjgD/Atcqxf5sKgdKNuObc295lGQp9+JA87NfKP15TkD03nNEGj9r8TjhMFqoa5sNUTOb5P/A8dYOKnlHRBqAAAAAElFTkSuQmCC"
-                                })
+                                        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAD2ElEQVRogdWaQYgcRRSGv2724HER8eBBFhHJWSWB6ClEood+5pyzJ3P1Ih5EwjKERUQPopJDlICYg4R6IQQMXkxEPETwoBAWWYLIIrIsYQ9xWaY8TPdsbU3XdFV1z5j8UPSb1139/lf16vWr7imstTzOKIDy/ybRB4W1lqIoSmvteKr0fqdARI4BrwMngDVgFRgDO8AfwB3ghqr+1dhw7SXLZMyAtXZcFMWRflVVnQXeA16MvM0t4IKq3k6176LouwZE5BngS+B05i2+As4bY/ZyOh8JIfcIk5GG9ukriqKsquo4oMBTmeQb3APOqOp9107DwZfda7IXcVVVJ4HvgCd6km+wDbyiqlspnbJCSETWgF+YLNAhcQ94KSWcSjicLvfoLlJXFpEV4BuGJw/wAvC5z2GePBM+PvGWjm8BxzuI/A38BGwCe8ABsAtsAQ87+p4TkVdDfPyLV+BwsXblfhEpgXcjyD9dNxerHM7amPlr731r7WsddrDWjo+ETgROA8/OOX/ALPE2dNk7JSJrUSHUFjKhBrzZYXglgnwMSiZP82AINXJprR27ITSvAS8PRDAGJ7r4zISQf/S9BZ5bogPPJ4VQKJV6+ieX6MCqyyckl7HhU1+XVaFmopPPNIR8r0JTBjxYogO7XaMPEAyhgLy5YNIuthq78wa2jJkmJ4R61e6J+CE7C/k6R//1ksjvA9eSQsg9GXJIVe+ynFm4oqo7bXyCIQTRmejCgsmPgVFsWCeFUD0Lt4C7C3TgW2PMZoiPL7dmoa6MBIwWRh9GsXuBoijK7E29iPwOHBuKdY2bxpg3UjoEy2l/V+bqa3Eji+J8jGJHvpFnp8Qj3qavj1eAPwck/2Pzjigm9rNqIbcZY/YZdhbWUzkEa6GQruX8F8A/A5D/1RhzI6djMAt1rv5JSt0HPh7AgZFvN7Yl1UKBB9sn9KtSN4GrufajdmQu/JkwxjxgEkq52FDV6b2Ts1AbsTaiIcdq3YdMCrBUbAOX/XunyNO3CE028uHqQzKwLSKXgLcTHdios1k2knZkbc8IlwyT90Kx2AE+yx35Rk7dkU1l3ylVvQ9cTXDgU1V9GLpfrNw7C3kZaZ24jf8e8NEQNrNrobYRMcb8BlyPcOCSqu72Hf2+tRABeb2D/AGTrJWdeVx5xdqjn20GwM8i8j1wKnD+sjFmsCKwby0UwgcB/T5wMZpdBBb2obuqqovAO45qDJxX1T5P7Rn0/sw6DyJyEjgD/Atcqxf5sKgdKNuObc295lGQp9+JA87NfKP15TkD03nNEGj9r8TjhMFqoa5sNUTOb5P/A8dYOKnlHRBqAAAAAElFTkSuQmCC",
+                                }),
                             })
                         );
                         self.source.addFeature(iconFeature);
@@ -431,7 +433,9 @@
                         ) {
                             try {
                                 self.source.removeFeature(feature);
-                                let elem = document.getElementsByClassName(feature.get("id"));
+                                let elem = document.getElementsByClassName(
+                                    feature.get("id")
+                                );
 
                                 elem[0].className = "hidden";
                             } catch (e) { }
@@ -445,18 +449,18 @@
                             try {
                                 let newStyle = new Style({
                                     fill: new Fill({
-                                        color: self.shapeFillColor.hex8
+                                        color: self.shapeFillColor.hex8,
                                     }),
                                     stroke: new Stroke({
                                         color: self.shapeBorderColor.hex8,
-                                        width: 2
+                                        width: 2,
                                     }),
                                     image: new CircleStyle({
                                         radius: 7,
                                         fill: new Fill({
-                                            color: self.shapeFillColor.hex8
-                                        })
-                                    })
+                                            color: self.shapeFillColor.hex8,
+                                        }),
+                                    }),
                                 });
 
                                 feature.setStyle(newStyle);
@@ -480,7 +484,7 @@
                         let state = {
                             zoom: view.getZoom(),
                             center: view.getCenter(),
-                            rotation: view.getRotation()
+                            rotation: view.getRotation(),
                         };
                         self.updateHash();
                         self.historyEvents.push(state);
@@ -509,17 +513,18 @@
                 var str = [];
                 for (var p in obj)
                     if (obj.hasOwnProperty(p)) {
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                        str.push(
+                            encodeURIComponent(p) + "=" + encodeURIComponent(obj[p])
+                        );
                     }
                 return "?" + str.join("&");
             },
-
             updateHash() {
                 let view = this.mapLayer.getView();
                 let state = {
                     zoom: view.getZoom(),
                     center: view.getCenter(),
-                    rotation: view.getRotation()
+                    rotation: view.getRotation(),
                 };
                 var selectedLayers = layerController.getSelectedLayers();
                 var selectedLayerIds = selectedLayers.map(item => {
@@ -536,12 +541,14 @@
                     selectedLayerIds;
                 window.history.pushState(state, "map", hash);
             },
-
             changeLocation() {
                 this.mapLayer
                     .getView()
                     .setCenter(
-                        fromLonLat([parseFloat(this.longChange), parseFloat(this.latChange)])
+                        fromLonLat([
+                            parseFloat(this.longChange),
+                            parseFloat(this.latChange),
+                        ])
                     );
             },
             LatLongFormToggle() {
@@ -564,7 +571,9 @@
             onCitySelect(city) {
                 this.mapLayer
                     .getView()
-                    .setCenter(fromLonLat([parseFloat(city.lng), parseFloat(city.lat)]));
+                    .setCenter(
+                        fromLonLat([parseFloat(city.lng), parseFloat(city.lat)])
+                    );
                 this.mapLayer.getView().setZoom(11);
                 this.citySearchInputShow = false;
             },
@@ -574,10 +583,10 @@
             exportData() {
                 this.mapHelper.exportData(this);
             },
-            async filterSelectedColumn(column) {
+            async filterSelectedColumn(id, column) {
                 this.filterValues = [];
                 let params = {
-                    id: this.$store.state.dataTable.serviceInfo.id
+                    id: this.$store.state.dataTable.services[id].serviceInfo.id,
                 };
                 if (this.selectedServiceInfo.resourceType === "local") {
                     let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
@@ -636,7 +645,7 @@
                     {
                         theme: "outline",
                         position: "bottom-center",
-                        duration: 3500
+                        duration: 3500,
                     }
                 );
             },
@@ -669,7 +678,9 @@
             },
             selectColumns(alias, key, e) {
                 if (e.target.checked) {
-                    this.checkedColumnsData.push(this.stackedTableFeaturesHeader[key]);
+                    this.checkedColumnsData.push(
+                        this.stackedTableFeaturesHeader[key]
+                    );
                 } else {
                     this.checkedColumnsData = this.checkedColumnsData.filter(
                         data => data != alias
@@ -689,7 +700,7 @@
                         name: "simple-data-filter-modal",
                         resizable: false,
                         adaptive: true,
-                        draggable: false
+                        draggable: false,
                     }
                 );
             },
@@ -721,7 +732,7 @@
                     this.mapLayer.getView().fit(extent, {
                         padding: [-50, 50, 30, 150],
                         size: [50, 100],
-                        maxZoom: 16
+                        maxZoom: 16,
                     });
                     var vectorLayer = this.mapHelper.renderPolygonVector(geometry);
                     this.mapSetFocusedPolygon(vectorLayer);
@@ -752,7 +763,6 @@
                     this.setZIndex(item);
                 });
             },
-
             isItemCategory(item) {
                 return serviceHelper.isCategory(item);
             },
@@ -765,7 +775,6 @@
                     query.where !== "1=1"
                 );
             },
-
             async getTableData(service, layerId, layerName, query) {
                 var layer = this.getLayer(service.id);
 
@@ -775,30 +784,33 @@
                 this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
 
                 if (service.resourceType === "azcArcgis") {
+                    console.log("hello");
                     let params = {
                         token: this.token,
                         name: service.name,
                         layer: layerId,
-                        ...query
+                        ...query,
                     };
                     response = await LayerService.getTableData(params);
                 } else {
                     this.tablePaging = {
                         isBusy: false,
                         page: 1,
-                        limit: 25
+                        limit: 25,
                     };
                     let params = {
                         layerId: service.id,
                         ...query,
-                        ...this.tablePaging
+                        ...this.tablePaging,
                     };
                     // this.resetServiceQuery(service);
 
                     if (this.filterQueryIsSum && service.resourceType === "local") {
                         params.isSum = this.filterQueryIsSum;
                         params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
-                        response = await LayerService.getLocalArithmeticData(params);
+                        response = await LayerService.getLocalArithmeticData(
+                            params
+                        );
                         this.ArithmeticDataResult = response.data.result;
                         this.$moodal.arithmeticResultModal.show();
                         this.filterQueryIsSum = false;
@@ -812,6 +824,7 @@
                     }
                     //
                 }
+
                 this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
 
                 if (response.data.error !== undefined) {
@@ -819,40 +832,42 @@
                 }
 
                 if (!this.filterQueryIsSum) {
+                    console.log("issum");
                     let self = this;
                     this.tableNextRequest["service"] = service;
                     this.tableNextRequest["layerId"] = layerId;
                     this.tableNextRequest["layerName"] = layerName;
 
-                    let serviceName = service.name;
-                    let serviceInfo = {
-                        id: service.id,
-                        label: service.name,
-                        mapType: service.mapType,
-                        resourceType: service.resourceType,
-                        query: service.query,
-                        isDisabled: service.isDisabled
-                    };
-                    let serviceResourceType = service.resourceType;
-                    let tableName = layerName;
-                    let tableData = response.data.features;
-                    let totalCount = response.data.totalCount;
+                    // let serviceName = service.name;
+                    // let serviceInfo = {
+                    //     id: service.id,
+                    //     label: service.name,
+                    //     mapType: service.mapType,
+                    //     resourceType: service.resourceType,
+                    //     query: service.query,
+                    //     isDisabled: service.isDisabled,
+                    // };
+                    // let tableName = layerName;
+                    // let tableData = response.data.features;
+                    // let totalCount = response.data.totalCount;
+                    // let tableStackedHeaders = tableHeaders;
+
+                    let target = response.data.fieldAliases;
                     let tableHeadersWithAlias = response.data.fieldAliases;
                     let tableHeaders = Object.keys(tableHeadersWithAlias);
-                    let tableStackedHeaders = tableHeaders;
-                    let target = response.data.fieldAliases;
-
                     let checkedColumnsData = [];
                     let checkedColumns = [];
 
                     let defaultUnCheckedColumns = [
                         "OBJECTID",
                         "Shape_Length",
-                        "Shape_Area"
+                        "Shape_Area",
                     ];
 
                     for (let alias in tableHeaders) {
-                        if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
+                        if (
+                            !defaultUnCheckedColumns.includes(tableHeaders[alias])
+                        ) {
                             checkedColumnsData.push(tableHeaders[alias]);
                             checkedColumns.push(tableHeaders[alias]);
                         }
@@ -869,24 +884,37 @@
                         }
                         return name;
                     });
+
                     checkedColumns = checkedColumns.map((item, index) => {
                         return tableHeadersWithAlias[item];
                     });
+
                     this.dataTableVisibility = false;
-                    await this.$store.dispatch("SAVE_DATATABLE_CONFIGURATION", {
-                        serviceInfo,
-                        totalCount,
-                        tableName,
-                        tableHeaders,
-                        tableStackedHeaders,
-                        tableHeadersWithAlias,
-                        tableData,
-                        target,
-                        checkedColumnsData,
-                        checkedColumns
+
+                    await this.$store.dispatch("SAVE_DATATABLE_SERVICE", {
+                        id: service.id,
+                        data: {
+                            serviceInfo: {
+                                id: service.id,
+                                label: service.name,
+                                mapType: service.mapType,
+                                resourceType: service.resourceType,
+                                query: service.query,
+                                isDisabled: service.isDisabled,
+                            },
+                            totalCount: response.data.totalCount,
+                            tableName: layerName,
+                            tableHeaders: tableHeaders,
+                            tableStackedHeaders: Object.keys(tableHeadersWithAlias),
+                            tableHeadersWithAlias,
+                            tableData: response.data.features,
+                            target,
+                            checkedColumnsData,
+                            checkedColumns,
+                        },
                     });
                     this.dataTableVisibility = true;
-                    this.tableFeaturesData = tableData;
+                    this.tableFeaturesData = response.data.features;
                     this.tableFeaturesHeader = tableHeaders;
                     this.stackedTableFeaturesHeader = tableHeaders;
                 }
@@ -905,14 +933,14 @@
                         name: service.name,
                         layer: layer_id,
                         where: query,
-                        geometry: geometry
+                        geometry: geometry,
                     };
                     response = await LayerService.getGeometryData(params);
                 } else {
                     var params = {
                         layerId: service.id,
                         where: query,
-                        geometry: coords[0] + "," + coords[1]
+                        geometry: coords[0] + "," + coords[1],
                     };
                     response = await LayerService.getLocalTableData(params);
                 }
@@ -921,7 +949,6 @@
                     this.$refs.dataTable.showDataModal(response.data.features[0]);
                 }
             },
-
             async getLayers() {
                 // LayerService.getLayersWithFullDataFromServer({
                 //     token: this.token,
@@ -983,33 +1010,32 @@
                 }
                 var style = new Style({
                     fill: new Fill({
-                        color: color.fill.hex8
+                        color: color.fill.hex8,
                     }),
                     stroke: new Stroke({
                         color: color.border.hex8,
-                        width: 0.5
+                        width: 0.5,
                     }),
                     image: new CircleStyle({
                         radius: 7,
                         fill: new Fill({
-                            color: color.fill.hex8
+                            color: color.fill.hex8,
                         }),
                         stroke: new Stroke({
                             color: color.border.hex8,
-                            width: 0.5
-                        })
-                    })
+                            width: 0.5,
+                        }),
+                    }),
                 });
                 return style;
             },
-
             getLayerZoomLevelOptions(service) {
                 return {
-                    maxResolution: createXYZ().getResolution(service.minZoomLevel) * 1.01,
-                    minResolution: createXYZ().getResolution(service.maxZoomLevel)
+                    maxResolution:
+                        createXYZ().getResolution(service.minZoomLevel) * 1.01,
+                    minResolution: createXYZ().getResolution(service.maxZoomLevel),
                 };
             },
-
             renderNewService(service) {
                 var isLayer = serviceHelper.isLayer(service);
                 let zoomLevelProperties = this.getLayerZoomLevelOptions(service);
@@ -1024,7 +1050,7 @@
                                 ...zoomLevelProperties,
                                 source: new VectorTileSource({
                                     format: new MVT({
-                                        geometryName: "geom"
+                                        geometryName: "geom",
                                     }),
                                     url:
                                         URL +
@@ -1032,10 +1058,12 @@
                                         MAP_URLS.MVT +
                                         `/${service.id}/{z}/{x}/{y}/` +
                                         (service.query.where != ""
-                                            ? this.objectToQueryString(service.query)
-                                            : "")
+                                            ? this.objectToQueryString(
+                                                service.query
+                                            )
+                                            : ""),
                                 }),
-                                style: this.getVectorStyle(service)
+                                style: this.getVectorStyle(service),
                             });
                         } else {
                             new_layer = new ImageLayer({
@@ -1045,10 +1073,14 @@
                                     crossOrigin: "Anonymous",
                                     params: {
                                         token: this.token,
-                                        layers: layerHelper.renderArcgisSublayerConfig(service),
-                                        dynamicLayers: layerHelper.renderSubLayersColorString(service)
-                                    }
-                                })
+                                        layers: layerHelper.renderArcgisSublayerConfig(
+                                            service
+                                        ),
+                                        dynamicLayers: layerHelper.renderSubLayersColorString(
+                                            service
+                                        ),
+                                    },
+                                }),
                             });
                         }
                     } else {
@@ -1059,8 +1091,8 @@
                                 source: new XYZ({
                                     url: url,
                                     projection: "EPSG:3857",
-                                    crossOrigin: "Anonymous"
-                                })
+                                    crossOrigin: "Anonymous",
+                                }),
                             });
                         } else {
                             new_layer = new TileLayer({
@@ -1070,9 +1102,9 @@
                                     crossOrigin: "Anonymous",
                                     params: {
                                         token: this.token,
-                                        FORMAT: "png8"
-                                    }
-                                })
+                                        FORMAT: "png8",
+                                    },
+                                }),
                             });
                         }
                     }
@@ -1105,7 +1137,6 @@
 
                 return new_layer;
             },
-
             addService(service) {
                 // this.selectedLayersIdHolder(true, service);
                 if (service.extent != null) {
@@ -1115,7 +1146,7 @@
                             service.extent.minX,
                             service.extent.minY,
                             service.extent.maxX,
-                            service.extent.maxY
+                            service.extent.maxY,
                         ]);
                 }
 
@@ -1128,7 +1159,6 @@
 
                 this.mapLayer.addLayer(newService);
             },
-
             getOrderNumber(array, service) {
                 var index = 0;
                 var result = 0;
@@ -1168,7 +1198,6 @@
 
                 return zIndex - orderNo;
             },
-
             refreshService(service) {
                 mapController.deleteService(service, false);
                 this.addService(service);
@@ -1192,13 +1221,16 @@
                 let isColorEnabled = false;
                 let response = await LayerService.getLayerDynamic({
                     token: this.token,
-                    name: service.name
+                    name: service.name,
                 });
                 if (response.data.layers[0].drawingInfo !== undefined) {
-                    if (response.data.layers[0].drawingInfo.renderer.symbol !== undefined) {
+                    if (
+                        response.data.layers[0].drawingInfo.renderer.symbol !==
+                        undefined
+                    ) {
                         if (
-                            response.data.layers[0].drawingInfo.renderer.symbol.color !==
-                            undefined
+                            response.data.layers[0].drawingInfo.renderer.symbol
+                                .color !== undefined
                         ) {
                             isColorEnabled = true;
                         }
@@ -1214,13 +1246,18 @@
                         this.dynamicLayerList,
                         async layer => {
                             if (layer != null && layer.id == service.id) {
-                                if (layer.layers !== undefined && layer.layers !== null) {
-                                    layer.layers = layer.layers.map((item, index) => {
-                                        return {
-                                            ...item,
-                                            isColorEnabled
-                                        };
-                                    });
+                                if (
+                                    layer.layers !== undefined &&
+                                    layer.layers !== null
+                                ) {
+                                    layer.layers = layer.layers.map(
+                                        (item, index) => {
+                                            return {
+                                                ...item,
+                                                isColorEnabled,
+                                            };
+                                        }
+                                    );
                                 }
                             }
                         }
@@ -1232,12 +1269,11 @@
                 if (serviceHelper.isDynamicFromArcgis(service)) {
                     responseDynamic = await LayerService.getDynamicLayers({
                         token: this.token,
-                        name: service.name
+                        name: service.name,
                     });
                 }
                 return responseDynamic;
             },
-
             async selectService(service, isChecked) {
                 // var isChecked = e.target.checked;
 
@@ -1245,9 +1281,14 @@
                 if (serviceHelper.isLayer(service)) {
                     if (serviceHelper.isDynamic(service)) {
                         let subLayers = null;
-                        if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
+                        if (
+                            isChecked &&
+                            serviceHelper.isDynamicFromArcgis(service)
+                        ) {
                             let subLayerResponse;
-                            subLayerResponse = await this.getResponseDynamic(service);
+                            subLayerResponse = await this.getResponseDynamic(
+                                service
+                            );
                             subLayers = subLayerResponse.data.layers;
                         }
 
@@ -1256,7 +1297,10 @@
                             async layer => {
                                 if (layer != null && layer.id == service.id) {
                                     layer.isSelected = isChecked;
-                                    if (isChecked && serviceHelper.isDynamicFromArcgis(layer)) {
+                                    if (
+                                        isChecked &&
+                                        serviceHelper.isDynamicFromArcgis(layer)
+                                    ) {
                                         layer.layers = subLayers.map(item =>
                                             layerHelper.subLayerMapping(item, layer)
                                         );
@@ -1297,7 +1341,6 @@
                 this.dynamicLayersReset(service, isChecked);
                 this.refreshService(service);
             },
-
             setDrawType(name) {
                 this.typeSelect = name;
                 this.mapLayer.removeInteraction(this.draw);
@@ -1326,7 +1369,7 @@
                     bunchController.setColor(service.id, color);
                 }
                 this.refreshService(service);
-            }
+            },
         },
         computed: {
             defaultColorObject() {
@@ -1351,9 +1394,8 @@
                     return this.$store.state.dataTable.isVisible;
                 },
                 set(value) {
-                    // this.filterQueryIsSum = false;
                     this.$store.dispatch("SAVE_DATATABLE_VISIBLE", value);
-                }
+                },
             },
 
             focusedPolygonVector: {
@@ -1362,7 +1404,7 @@
                 },
                 set(value) {
                     this.$store.dispatch("saveFocusePolygonVector", value);
-                }
+                },
             },
             tablePaging: {
                 get() {
@@ -1370,7 +1412,7 @@
                 },
                 set(value) {
                     this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
-                }
+                },
             },
             selectedServiceInfo() {
                 return this.$store.state.dataTable.serviceInfo;
@@ -1381,7 +1423,7 @@
                 },
                 set(value) {
                     this.$store.dispatch("SAVE_FILTER_QUERY_IS_SUM", value);
-                }
+                },
             },
 
             filterQueryArithmeticColumn() {
@@ -1393,15 +1435,16 @@
                 },
                 set(val) {
                     this.$store.dispatch("saveDynamicLayerList", val);
-                }
+                },
             },
+
             bunchLayerList: {
                 get() {
                     return this.$store.getters.bunchLayerList;
                 },
                 set(val) {
                     this.$store.dispatch("saveBunchLayerList", val);
-                }
+                },
             },
             baseLayerList: {
                 get() {
@@ -1409,7 +1452,7 @@
                 },
                 set(val) {
                     this.$store.dispatch("saveBaseLayerList", val);
-                }
+                },
             },
 
             tableHeadersWithAlias() {
@@ -1443,15 +1486,19 @@
             checkedColumnsToExcel() {
                 let columns = {};
                 for (let column in this.tableFeaturesHeader) {
-                    if (this.checkedColumns.includes(this.tableFeaturesHeader[column])) {
+                    if (
+                        this.checkedColumns.includes(
+                            this.tableFeaturesHeader[column]
+                        )
+                    ) {
                         columns[
                             this.tableFeaturesHeader[column]
                         ] = this.stackedTableFeaturesHeader[column];
                     }
                 }
                 return columns;
-            }
-        }
+            },
+        },
     };
 </script>
 

@@ -50,7 +50,9 @@
             <div class="list__header">Dynamic layers</div>
             <div class="list__tabs">
                 <div class="tab"
-                     :class="{ 'tab--active': dynamicActiveTab === 'dynamicTab' }"
+                     :class="{
+                        'tab--active': dynamicActiveTab === 'dynamicTab',
+                    }"
                      @click="setDynamicActiveTab('dynamicTab')">
                     Dynamic
                 </div>
@@ -141,7 +143,9 @@
                 <li class="list__item" v-for="tool in toolList" :key="tool.key">
                     <div class="item__header" @click="tool.click">
                         <span class="title">
-                            <img :src="require(`../../assets/images/icons/${tool.image}`)"
+                            <img :src="
+                                    require(`../../assets/images/icons/${tool.image}`)
+                                "
                                  alt=""
                                  class="pre" />
                             {{ tool.label }}
@@ -161,10 +165,10 @@
         name: "Sidebar",
         components: {
             LayerTree,
-            Draggable
+            Draggable,
         },
         props: {
-            baseMaps: { type: Object }
+            baseMaps: { type: Object },
         },
         data() {
             return {
@@ -178,27 +182,27 @@
                         id: 1,
                         name: "Hello",
                         type: "computed",
-                        isSelected: true
+                        isSelected: true,
                     },
                     {
                         id: 2,
                         name: "From the",
                         type: "computed",
-                        isSelected: false
+                        isSelected: false,
                     },
                     {
                         id: 3,
                         name: "Other",
                         type: "computed",
-                        isSelected: false
+                        isSelected: false,
                     },
                     {
                         id: 4,
                         name: "Side",
                         type: "computed",
-                        isSelected: false
-                    }
-                ]
+                        isSelected: false,
+                    },
+                ],
             };
         },
         computed: {
@@ -214,7 +218,7 @@
                         image: "user.svg",
                         click: () => {
                             this.toggleActiveMenu("profile");
-                        }
+                        },
                     },
                     {
                         key: "tools",
@@ -222,7 +226,7 @@
                         image: "pencil.svg",
                         click: () => {
                             this.toggleActiveMenu("tools");
-                        }
+                        },
                     },
                     {
                         key: "dynamicLayers",
@@ -230,7 +234,7 @@
                         image: "layer.svg",
                         click: () => {
                             this.toggleActiveMenu("dynamicLayers");
-                        }
+                        },
                     },
                     {
                         key: "baseMap",
@@ -238,8 +242,8 @@
                         image: "map.svg",
                         click: () => {
                             this.toggleActiveMenu("baseMap");
-                        }
-                    }
+                        },
+                    },
                 ];
             },
             bottomMenu() {
@@ -248,7 +252,7 @@
                         key: "information",
                         label: "Information",
                         image: "information.svg",
-                        click: this.showInfoModal
+                        click: this.showInfoModal,
                     },
                     {
                         key: "layerTypes",
@@ -256,26 +260,26 @@
                         image: "hamburger.svg",
                         click: () => {
                             this.toggleActiveMenu("layerTypes");
-                        }
+                        },
                     },
                     {
                         key: "exportPNG",
                         label: "Export PNG",
                         image: "picture.svg",
-                        click: this.exportPNG
+                        click: this.exportPNG,
                     },
                     {
                         key: "exportGeojson",
                         label: "Export GeoJSON",
                         image: "file_download.svg",
-                        click: this.exportData
+                        click: this.exportData,
                     },
                     {
                         key: "fullscreen",
                         label: "Full screen",
                         image: "fullscreen.svg",
-                        click: this.fullScreen
-                    }
+                        click: this.fullScreen,
+                    },
                 ];
             },
             dynamicLayersList() {
@@ -295,13 +299,13 @@
                         image: "mouse.svg",
                         click: () => {
                             this.setDrawType("None");
-                        }
+                        },
                     },
                     {
                         key: "addPoint",
                         label: "Add point",
                         image: "point.svg",
-                        click: this.addPlace
+                        click: this.addPlace,
                     },
                     {
                         key: "rectangle",
@@ -309,7 +313,7 @@
                         image: "rectangle.svg",
                         click: () => {
                             this.setDrawType("Box");
-                        }
+                        },
                     },
                     {
                         key: "square",
@@ -317,7 +321,7 @@
                         image: "square.svg",
                         click: () => {
                             this.setDrawType("Square");
-                        }
+                        },
                     },
                     {
                         key: "circle",
@@ -325,7 +329,7 @@
                         image: "circle.svg",
                         click: () => {
                             this.setDrawType("Circle");
-                        }
+                        },
                     },
                     {
                         key: "polygon",
@@ -333,7 +337,7 @@
                         image: "polygon.svg",
                         click: () => {
                             this.setDrawType("Polygon");
-                        }
+                        },
                     },
                     {
                         key: "line",
@@ -341,44 +345,44 @@
                         image: "line.svg",
                         click: () => {
                             this.setDrawType("LineString");
-                        }
+                        },
                     },
                     {
                         key: "addPlace",
                         label: "Add place",
                         image: "place.svg",
-                        click: () => { }
+                        click: () => { },
                     },
                     {
                         key: "reset",
                         label: "Reset",
                         image: "reset.svg",
-                        click: this.reset
+                        click: this.reset,
                     },
                     {
                         key: "delete",
                         label: "Delete",
                         image: "delete.svg",
-                        click: this.delete
+                        click: this.delete,
                     },
                     {
                         key: "pickColor",
                         label: "Pick color",
                         image: "color_picker.svg",
-                        click: this.pickColor
+                        click: this.pickColor,
                     },
                     {
                         key: "changeDetection",
                         label: "Change detection",
                         image: "world.svg",
-                        click: this.changeDetector
+                        click: this.changeDetector,
                     },
                     {
                         key: "graticule",
                         label: "Graticule",
                         image: "grid.svg",
-                        click: this.addGraticule
-                    }
+                        click: this.addGraticule,
+                    },
                 ];
             },
 
@@ -387,7 +391,7 @@
                     animation: 0,
                     group: "baseDragger",
                     disabled: false,
-                    ghostClass: "ghost"
+                    ghostClass: "ghost",
                 };
             },
             dynamicLayerListModel: {
@@ -396,7 +400,7 @@
                 },
                 set(val) {
                     this.$store.dispatch("saveDynamicLayerList", val);
-                }
+                },
             },
             baseLayerListModel: {
                 get() {
@@ -404,8 +408,8 @@
                 },
                 set(val) {
                     this.$store.dispatch("saveBaseLayerList", val);
-                }
-            }
+                },
+            },
         },
         methods: {
             logout() {
@@ -489,8 +493,8 @@
             },
             openComputedLayerModal() {
                 this.$moodal.computedLayerModal.show();
-            }
-        }
+            },
+        },
     };
 </script>
 

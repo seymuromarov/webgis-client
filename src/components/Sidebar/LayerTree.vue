@@ -76,43 +76,43 @@
     import { bunchController, mapController } from "@/controllers";
     import { bunchService } from "@/services";
 
-    export default {
-        name: "LayerTree",
-        components: {
-            ToggleSwitch,
-            LayerColorPicker
-        },
-        props: {
-            data: {
-                type: Object
-            },
-            parent: {
-                type: Object
-            },
-            loop: {
-                type: Number,
-                default: 1
-            }
-        },
-        data() {
-            return {
-                subListVisibility: false,
-                layerIsSelected: false
-            };
-        },
-        computed: {
-            switchModel: {
-                get() {
-                    if (serviceHelper.isLayer(this.data)) {
-                        return this.data.isSelected;
-                    } else {
-                        return this.data.defaultVisibility;
-                    }
-                },
-                set(e) {
-                    if (e.target.checked === false) {
-                        this.subListVisibility = false;
-                    }
+export default {
+  name: "LayerTree",
+  components: {
+    ToggleSwitch,
+    LayerColorPicker
+  },
+  props: {
+    data: {
+      type: Object
+    },
+    parent: {
+      type: Object
+    },
+    loop: {
+      type: Number,
+      default: 1
+    }
+  },
+  data() {
+    return {
+      subListVisibility: false,
+      layerIsSelected: false
+    };
+  },
+  computed: {
+    switchModel: {
+      get() {
+        if (serviceHelper.isLayer(this.data)) {
+          return this.data.isSelected;
+        } else {
+          return this.data.defaultVisibility;
+        }
+      },
+      set(e) {
+        if (e.target.checked === false) {
+          this.subListVisibility = false;
+        }
 
                     this.layerPicker(e);
                 }
