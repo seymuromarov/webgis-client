@@ -2,13 +2,11 @@ import { serviceTypeEnum } from "../constants/enums/serviceEnums";
 import { colorHelper, serviceHelper } from "@/helpers";
 
 const mapper = {
-  basemapMapping: (val, counter) => {
-    counter += 1;
+  basemapMapping: val => {
     return {
       id: val.id,
       name: val.label,
       showingLabel: val.showingLabel,
-      order: counter,
       spatial: val.spatial,
       minZoomLevel: val.minZoomLevel,
       maxZoomLevel: val.maxZoomLevel,
@@ -30,13 +28,11 @@ const mapper = {
       layers: null
     };
   },
-  dynamicMapping: (val, counter) => {
-    counter += 1;
+  dynamicMapping: val => {
     return {
       id: val.resourceTypeId === "local" ? val.id : val.id,
       name: val.label,
       showingLabel: val.showingLabel,
-      order: counter,
       minZoomLevel: val.minZoomLevel,
       maxZoomLevel: val.maxZoomLevel,
       extent: val.extent,
@@ -57,25 +53,23 @@ const mapper = {
       apiFrom: "internal"
     };
   },
-  recursiveMap: (val, counter) => {
+  recursiveMap: val => {
     if (val.layers !== undefined) {
       return {
         name: val.label,
         mapTypeId: val.mapTypeId,
-        children: val.children.map((val, i) =>
-          mapper.recursiveMap(val, counter)
-        ),
+        children: val.children.map((val, i) => mapper.recursiveMap(val)),
         type: serviceTypeEnum.CATEGORY,
         layers: val.layers.map((val, i) =>
           val.mapTypeId == "basemap"
-            ? mapper.basemapMapping(val, counter)
-            : mapper.dynamicMapping(val, counter)
+            ? mapper.basemapMapping(val)
+            : mapper.dynamicMapping(val)
         )
       };
     } else
       return val.mapTypeId == "basemap"
-        ? mapper.basemapMapping(val, counter)
-        : mapper.dynamicMapping(val, counter);
+        ? mapper.basemapMapping(val)
+        : mapper.dynamicMapping(val);
   },
   subLayerMapping: (item, layer) => {
     item.color = null;
@@ -86,15 +80,13 @@ const mapper = {
     return item;
   },
   mapLayers: layers => {
-    let baseCounter = 0;
-    let dynamicCounter = 0;
     let baseLayers = layers
       .filter(c => c.mapTypeId === "basemap")
-      .map(val => mapper.recursiveMap(val, baseCounter));
+      .map(val => mapper.recursiveMap(val));
 
     let dynamicLayers = layers
       .filter(c => c.mapTypeId === "dynamic")
-      .map(val => mapper.recursiveMap(val, dynamicCounter));
+      .map(val => mapper.recursiveMap(val));
 
     var mapResult = {
       baseLayers,

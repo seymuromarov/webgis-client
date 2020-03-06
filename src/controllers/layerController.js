@@ -1,5 +1,21 @@
 import $store from "@/store/store.js";
 import { layerHelper, serviceHelper } from "@/helpers";
+const baseLayerList = {
+  get() {
+    return $store.getters.baseLayerList;
+  },
+  set(val) {
+    $store.dispatch("saveBaseLayerList", val);
+  }
+};
+const dynamicLayerList = {
+  get() {
+    return $store.getters.dynamicLayerList;
+  },
+  set(data) {
+    $store.dispatch("saveDynamicLayerList", data);
+  }
+};
 
 const getters = {
   getBaseLayersWithoutCategory() {
@@ -19,6 +35,14 @@ const getters = {
     });
     return list;
   },
+  getSelectedBasemaps() {
+    let list = [];
+    let baseLayerList = $store.getters.baseLayerList;
+    layerHelper.recursiveLayerMapping(baseLayerList, layer => {
+      if (layer.isSelected) list.push(layer);
+    });
+    return list;
+  },
   getSelectedLayers() {
     var selectedLayers = [];
     let dynamicLayerList = $store.getters.dynamicLayerList;
@@ -32,8 +56,31 @@ const getters = {
     return selectedLayers;
   }
 };
-const setters = {};
-
+const setters = {
+  setColor(service, color, isSubLayer) {
+    var list = layerHelper.recursiveLayerMapping(
+      dynamicLayerList.get(),
+      async layer => {
+        if (layer != null && layer.id == service.id) {
+          if (isSubLayer) {
+            layer.layers = layer.layers.map((item, index) => {
+              if (item.id == service.id) {
+                item.color = color;
+              }
+              return item;
+            });
+          } else {
+            layer.color = color;
+          }
+        }
+      }
+    );
+    dynamicLayerList.set(list);
+  }
+};
+const functions = {};
 export default {
-  ...getters
+  ...getters,
+  ...setters,
+  ...functions
 };

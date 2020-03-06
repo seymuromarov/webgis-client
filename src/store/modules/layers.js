@@ -9,7 +9,7 @@ const mutations = {
   SET_FOCUSED_POLYGON_VECTOR(state, payload) {
     state.focusedPolygonVector = payload;
   },
-  SER_DYNAMIC_LAYER_LIST(state, payload) {
+  SET_DYNAMIC_LAYER_LIST(state, payload) {
     state.dynamicLayerList = payload;
   },
 
@@ -26,7 +26,7 @@ const actions = {
     context.commit("SET_FOCUSED_POLYGON_VECTOR", payload);
   },
   saveDynamicLayerList(context, payload) {
-    context.commit("SER_DYNAMIC_LAYER_LIST", payload);
+    context.commit("SET_DYNAMIC_LAYER_LIST", payload);
   },
 
   saveBaseLayerList(context, payload) {

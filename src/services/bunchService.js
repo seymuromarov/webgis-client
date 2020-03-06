@@ -12,8 +12,8 @@ let add = data => {
 let edit = data => {
   return request.post(BUNCH_URL.ADD, data);
 };
-let remove = data => {
-  return request.post(BUNCH_URL.ADD, data);
+let remove = id => {
+  return request.delete(BUNCH_URL.DELETE + "/" + id);
 };
 
-export default { add, getAll };
+export default { add, getAll, remove };

@@ -5,13 +5,15 @@ import information from "./information";
 import forum from "./forum";
 import layers from "./layers";
 import filter from "./filter";
+import map from "./map";
 
 export default {
-    auth,
-    dataTable,
-    colorPicker,
-    information,
-    forum,
-    layers,
-    filter,
+  auth,
+  dataTable,
+  colorPicker,
+  information,
+  forum,
+  layers,
+  filter,
+  map
 };
