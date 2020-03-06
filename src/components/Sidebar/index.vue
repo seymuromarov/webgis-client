@@ -162,344 +162,344 @@
 </template>
 
 <script>
-import LayerTree from "./LayerTree";
-import Draggable from "vuedraggable";
+    import LayerTree from "./LayerTree";
+    import Draggable from "vuedraggable";
 
-export default {
-    name: "Sidebar",
-    components: {
-        LayerTree,
-        Draggable,
-    },
-    props: {
-        baseMaps: { type: Object },
-    },
-    data() {
-        return {
-            activeMenu: "",
-            activeLayerType: "gray",
-            layerTypesVisible: false,
-            isDragging: false,
-            dynamicActiveTab: "dynamicTab",
-            computedLayersList: [
-                {
-                    id: 1,
-                    name: "Hello",
-                    type: "computed",
-                    isSelected: true,
-                },
-                {
-                    id: 2,
-                    name: "From the",
-                    type: "computed",
-                    isSelected: false,
-                },
-                {
-                    id: 3,
-                    name: "Other",
-                    type: "computed",
-                    isSelected: false,
-                },
-                {
-                    id: 4,
-                    name: "Side",
-                    type: "computed",
-                    isSelected: false,
-                },
-            ],
-        };
-    },
-    computed: {
-        userName() {
-            // return this.$cookie.get("username");
-            return localStorage.getItem("username");
+    export default {
+        name: "Sidebar",
+        components: {
+            LayerTree,
+            Draggable,
         },
-        topMenu() {
-            return [
-                {
-                    key: "profile",
-                    label: "Profile",
-                    image: "user.svg",
-                    click: () => {
-                        this.toggleActiveMenu("profile");
-                    },
-                },
-                {
-                    key: "tools",
-                    label: "Tools",
-                    image: "pencil.svg",
-                    click: () => {
-                        this.toggleActiveMenu("tools");
-                    },
-                },
-                {
-                    key: "dynamicLayers",
-                    label: "Dynamic Layers",
-                    image: "layer.svg",
-                    click: () => {
-                        this.toggleActiveMenu("dynamicLayers");
-                    },
-                },
-                {
-                    key: "baseMap",
-                    label: "Basemaps",
-                    image: "map.svg",
-                    click: () => {
-                        this.toggleActiveMenu("baseMap");
-                    },
-                },
-            ];
+        props: {
+            baseMaps: { type: Object },
         },
-        bottomMenu() {
-            return [
-                {
-                    key: "information",
-                    label: "Information",
-                    image: "information.svg",
-                    click: this.showInfoModal,
-                },
-                {
-                    key: "layerTypes",
-                    label: "Layer Types",
-                    image: "hamburger.svg",
-                    click: () => {
-                        this.toggleActiveMenu("layerTypes");
-                    },
-                },
-                {
-                    key: "exportPNG",
-                    label: "Export PNG",
-                    image: "picture.svg",
-                    click: this.exportPNG,
-                },
-                {
-                    key: "exportGeojson",
-                    label: "Export GeoJSON",
-                    image: "file_download.svg",
-                    click: this.exportData,
-                },
-                {
-                    key: "fullscreen",
-                    label: "Full screen",
-                    image: "fullscreen.svg",
-                    click: this.fullScreen,
-                },
-            ];
-        },
-        dynamicLayersList() {
-            return this.$store.getters.dynamicLayerList;
-        },
-        bunchLayerList() {
-            return this.$store.getters.bunchLayerList;
-        },
-        baselayerList() {
-            return this.$store.getters.baseLayerList;
-        },
-        toolList() {
-            return [
-                {
-                    key: "mouse",
-                    label: "Mouse",
-                    image: "mouse.svg",
-                    click: () => {
-                        this.setDrawType("None");
-                    },
-                },
-                {
-                    key: "addPoint",
-                    label: "Add point",
-                    image: "point.svg",
-                    click: this.addPlace,
-                },
-                {
-                    key: "rectangle",
-                    label: "Rectangle",
-                    image: "rectangle.svg",
-                    click: () => {
-                        this.setDrawType("Box");
-                    },
-                },
-                {
-                    key: "square",
-                    label: "Square",
-                    image: "square.svg",
-                    click: () => {
-                        this.setDrawType("Square");
-                    },
-                },
-                {
-                    key: "circle",
-                    label: "Circle",
-                    image: "circle.svg",
-                    click: () => {
-                        this.setDrawType("Circle");
-                    },
-                },
-                {
-                    key: "polygon",
-                    label: "Polygon",
-                    image: "polygon.svg",
-                    click: () => {
-                        this.setDrawType("Polygon");
-                    },
-                },
-                {
-                    key: "line",
-                    label: "Line",
-                    image: "line.svg",
-                    click: () => {
-                        this.setDrawType("LineString");
-                    },
-                },
-                {
-                    key: "addPlace",
-                    label: "Add place",
-                    image: "place.svg",
-                    click: () => {},
-                },
-                {
-                    key: "reset",
-                    label: "Reset",
-                    image: "reset.svg",
-                    click: this.reset,
-                },
-                {
-                    key: "delete",
-                    label: "Delete",
-                    image: "delete.svg",
-                    click: this.delete,
-                },
-                {
-                    key: "pickColor",
-                    label: "Pick color",
-                    image: "color_picker.svg",
-                    click: this.pickColor,
-                },
-                {
-                    key: "changeDetection",
-                    label: "Change detection",
-                    image: "world.svg",
-                    click: this.changeDetector,
-                },
-                {
-                    key: "graticule",
-                    label: "Graticule",
-                    image: "grid.svg",
-                    click: this.addGraticule,
-                },
-            ];
-        },
-
-        dragOptions(group) {
+        data() {
             return {
-                animation: 0,
-                group: "baseDragger",
-                disabled: false,
-                ghostClass: "ghost",
+                activeMenu: "",
+                activeLayerType: "gray",
+                layerTypesVisible: false,
+                isDragging: false,
+                dynamicActiveTab: "dynamicTab",
+                computedLayersList: [
+                    {
+                        id: 1,
+                        name: "Hello",
+                        type: "computed",
+                        isSelected: true,
+                    },
+                    {
+                        id: 2,
+                        name: "From the",
+                        type: "computed",
+                        isSelected: false,
+                    },
+                    {
+                        id: 3,
+                        name: "Other",
+                        type: "computed",
+                        isSelected: false,
+                    },
+                    {
+                        id: 4,
+                        name: "Side",
+                        type: "computed",
+                        isSelected: false,
+                    },
+                ],
             };
         },
-        dynamicLayerListModel: {
-            get() {
-                return this.dynamicLayerList;
+        computed: {
+            userName() {
+                // return this.$cookie.get("username");
+                return localStorage.getItem("username");
             },
-            set(val) {
-                this.$store.dispatch("saveDynamicLayerList", val);
+            topMenu() {
+                return [
+                    {
+                        key: "profile",
+                        label: "Profile",
+                        image: "user.svg",
+                        click: () => {
+                            this.toggleActiveMenu("profile");
+                        },
+                    },
+                    {
+                        key: "tools",
+                        label: "Tools",
+                        image: "pencil.svg",
+                        click: () => {
+                            this.toggleActiveMenu("tools");
+                        },
+                    },
+                    {
+                        key: "dynamicLayers",
+                        label: "Dynamic Layers",
+                        image: "layer.svg",
+                        click: () => {
+                            this.toggleActiveMenu("dynamicLayers");
+                        },
+                    },
+                    {
+                        key: "baseMap",
+                        label: "Basemaps",
+                        image: "map.svg",
+                        click: () => {
+                            this.toggleActiveMenu("baseMap");
+                        },
+                    },
+                ];
             },
-        },
-        baseLayerListModel: {
-            get() {
+            bottomMenu() {
+                return [
+                    {
+                        key: "information",
+                        label: "Information",
+                        image: "information.svg",
+                        click: this.showInfoModal,
+                    },
+                    {
+                        key: "layerTypes",
+                        label: "Layer Types",
+                        image: "hamburger.svg",
+                        click: () => {
+                            this.toggleActiveMenu("layerTypes");
+                        },
+                    },
+                    {
+                        key: "exportPNG",
+                        label: "Export PNG",
+                        image: "picture.svg",
+                        click: this.exportPNG,
+                    },
+                    {
+                        key: "exportGeojson",
+                        label: "Export GeoJSON",
+                        image: "file_download.svg",
+                        click: this.exportData,
+                    },
+                    {
+                        key: "fullscreen",
+                        label: "Full screen",
+                        image: "fullscreen.svg",
+                        click: this.fullScreen,
+                    },
+                ];
+            },
+            dynamicLayersList() {
+                return this.$store.getters.dynamicLayerList;
+            },
+            bunchLayerList() {
+                return this.$store.getters.bunchLayerList;
+            },
+            baselayerList() {
                 return this.$store.getters.baseLayerList;
             },
-            set(val) {
-                this.$store.dispatch("saveBaseLayerList", val);
+            toolList() {
+                return [
+                    {
+                        key: "mouse",
+                        label: "Mouse",
+                        image: "mouse.svg",
+                        click: () => {
+                            this.setDrawType("None");
+                        },
+                    },
+                    {
+                        key: "addPoint",
+                        label: "Add point",
+                        image: "point.svg",
+                        click: this.addPlace,
+                    },
+                    {
+                        key: "rectangle",
+                        label: "Rectangle",
+                        image: "rectangle.svg",
+                        click: () => {
+                            this.setDrawType("Box");
+                        },
+                    },
+                    {
+                        key: "square",
+                        label: "Square",
+                        image: "square.svg",
+                        click: () => {
+                            this.setDrawType("Square");
+                        },
+                    },
+                    {
+                        key: "circle",
+                        label: "Circle",
+                        image: "circle.svg",
+                        click: () => {
+                            this.setDrawType("Circle");
+                        },
+                    },
+                    {
+                        key: "polygon",
+                        label: "Polygon",
+                        image: "polygon.svg",
+                        click: () => {
+                            this.setDrawType("Polygon");
+                        },
+                    },
+                    {
+                        key: "line",
+                        label: "Line",
+                        image: "line.svg",
+                        click: () => {
+                            this.setDrawType("LineString");
+                        },
+                    },
+                    {
+                        key: "addPlace",
+                        label: "Add place",
+                        image: "place.svg",
+                        click: () => { },
+                    },
+                    {
+                        key: "reset",
+                        label: "Reset",
+                        image: "reset.svg",
+                        click: this.reset,
+                    },
+                    {
+                        key: "delete",
+                        label: "Delete",
+                        image: "delete.svg",
+                        click: this.delete,
+                    },
+                    {
+                        key: "pickColor",
+                        label: "Pick color",
+                        image: "color_picker.svg",
+                        click: this.pickColor,
+                    },
+                    {
+                        key: "changeDetection",
+                        label: "Change detection",
+                        image: "world.svg",
+                        click: this.changeDetector,
+                    },
+                    {
+                        key: "graticule",
+                        label: "Graticule",
+                        image: "grid.svg",
+                        click: this.addGraticule,
+                    },
+                ];
+            },
+
+            dragOptions(group) {
+                return {
+                    animation: 0,
+                    group: "baseDragger",
+                    disabled: false,
+                    ghostClass: "ghost",
+                };
+            },
+            dynamicLayerListModel: {
+                get() {
+                    return this.dynamicLayerList;
+                },
+                set(val) {
+                    this.$store.dispatch("saveDynamicLayerList", val);
+                },
+            },
+            baseLayerListModel: {
+                get() {
+                    return this.$store.getters.baseLayerList;
+                },
+                set(val) {
+                    this.$store.dispatch("saveBaseLayerList", val);
+                },
             },
         },
-    },
-    methods: {
-        logout() {
-            // this.$cookie.delete("token");
-            // this.$cookie.delete("username");
-            localStorage.removeItem("token");
-            localStorage.removeItem("username");
-            this.$router.push("/login");
+        methods: {
+            logout() {
+                // this.$cookie.delete("token");
+                // this.$cookie.delete("username");
+                localStorage.removeItem("token");
+                localStorage.removeItem("username");
+                this.$router.push("/login");
+            },
+            fullScreen() {
+                if (
+                    window.innerWidth == screen.width &&
+                    window.innerHeight == screen.height
+                ) {
+                    document.exitFullscreen();
+                } else {
+                    document.querySelector("body").requestFullscreen();
+                }
+            },
+            toggleActiveMenu(menu) {
+                if (this.activeMenu === menu) {
+                    this.activeMenu = "";
+                } else {
+                    this.activeMenu = menu;
+                }
+            },
+            selectService(item, isChecked) {
+                this.$emit("selectService", item, isChecked);
+            },
+            dynamicLayersReset(item, status) {
+                this.$emit("dynamicLayersReset", item, status);
+            },
+            selectSubLayer(service, index, id, event) {
+                this.$emit("selectSubLayer", service, index, id, event);
+            },
+            getTableData(parent, itemId, itemName, query) {
+                this.$emit("getTableData", parent, itemId, itemName, query);
+            },
+            showInfoModal() {
+                this.$emit("showInfoModal");
+            },
+            exportPNG() {
+                this.$emit("exportPNG");
+            },
+            exportData() {
+                this.$emit("exportData");
+            },
+            setBaseLayout(key) {
+                this.activeLayerType = key;
+                this.$emit("setBaseLayout", key);
+            },
+            saveColor(service, color) {
+                this.$emit("saveColor", service, color);
+            },
+            setDrawType(key) {
+                this.$emit("setDrawType", key);
+            },
+            pickColor() {
+                this.$emit("pickColor");
+            },
+            changeDetector() {
+                this.$emit("changeDetector");
+            },
+            addGraticule() {
+                this.$emit("addGraticule");
+            },
+            addPlace() {
+                this.$emit("addPlace");
+            },
+            delete() {
+                this.$emit("delete");
+            },
+            reset() {
+                this.$emit("reset");
+            },
+            capitalize(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            },
+            setDynamicActiveTab(tabLabel) {
+                this.dynamicActiveTab = tabLabel;
+            },
+            openComputedLayerModal() {
+                this.$moodal.computedLayerModal.show();
+            },
         },
-        fullScreen() {
-            if (
-                window.innerWidth == screen.width &&
-                window.innerHeight == screen.height
-            ) {
-                document.exitFullscreen();
-            } else {
-                document.querySelector("body").requestFullscreen();
-            }
-        },
-        toggleActiveMenu(menu) {
-            if (this.activeMenu === menu) {
-                this.activeMenu = "";
-            } else {
-                this.activeMenu = menu;
-            }
-        },
-        selectService(item, isChecked) {
-            this.$emit("selectService", item, isChecked);
-        },
-        dynamicLayersReset(item, status) {
-            this.$emit("dynamicLayersReset", item, status);
-        },
-        selectSubLayer(service, index, id, event) {
-            this.$emit("selectSubLayer", service, index, id, event);
-        },
-        getTableData(parent, itemId, itemName, query) {
-            this.$emit("getTableData", parent, itemId, itemName, query);
-        },
-        showInfoModal() {
-            this.$emit("showInfoModal");
-        },
-        exportPNG() {
-            this.$emit("exportPNG");
-        },
-        exportData() {
-            this.$emit("exportData");
-        },
-        setBaseLayout(key) {
-            this.activeLayerType = key;
-            this.$emit("setBaseLayout", key);
-        },
-        saveColor(service, color) {
-            this.$emit("saveColor", service, color);
-        },
-        setDrawType(key) {
-            this.$emit("setDrawType", key);
-        },
-        pickColor() {
-            this.$emit("pickColor");
-        },
-        changeDetector() {
-            this.$emit("changeDetector");
-        },
-        addGraticule() {
-            this.$emit("addGraticule");
-        },
-        addPlace() {
-            this.$emit("addPlace");
-        },
-        delete() {
-            this.$emit("delete");
-        },
-        reset() {
-            this.$emit("reset");
-        },
-        capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        },
-        setDynamicActiveTab(tabLabel) {
-            this.dynamicActiveTab = tabLabel;
-        },
-        openComputedLayerModal() {
-            this.$moodal.computedLayerModal.show();
-        },
-    },
-};
+    };
 </script>
 
 <style lang="scss">
