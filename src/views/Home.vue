@@ -11,7 +11,7 @@
                 />
                 <Sidebar
                     :baseMaps="baseMaps"
-                    @selectLayer="selectService"
+                    @selectService="selectService"
                     @selectSubLayer="selectSubService"
                     @dynamicLayersReset="dynamicLayersReset"
                     @getTableData="getTableData"
@@ -48,7 +48,7 @@
         </CustomModal>
 
         <!-- Filter -->
-        <CustomModal name="filterModal" title="Filter" :maxWidth="600">
+        <!-- <CustomModal name="filterModal" title="Filter" :maxWidth="600">
             <FilterBox
                 :tableHeader="tableHeader"
                 :filterQuery="filterQuery"
@@ -60,7 +60,7 @@
                 @filterSelectedColumn="filterSelectedColumn"
                 @filterData="filterData"
             />
-        </CustomModal>
+        </CustomModal> -->
 
         <!-- Shape Color Picker -->
         <CustomModal
@@ -72,14 +72,14 @@
         </CustomModal>
 
         <!-- Change Detection -->
-        <detector-modal
+        <!-- <detector-modal
             :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
             v-bind="{ lastBBOXOfShape, token }"
             @close="
                 ($store.state.dataTable.lastBBOXOfShape = []) &
                     (isDrawnShapeForDetection = false)
             "
-        ></detector-modal>
+        ></detector-modal> -->
 
         <!-- Information Modal -->
         <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
@@ -262,7 +262,6 @@ export default {
             isHashLoaded: false,
         };
     },
-    created() {},
     mounted() {
         this.hashResolveResult = this.resolveHash(window.location.hash);
         // this.token = this.$cookie.get("token");
@@ -536,7 +535,6 @@ export default {
                 }
             return "?" + str.join("&");
         },
-
         updateHash() {
             let view = this.mapLayer.getView();
             let state = {
@@ -559,7 +557,6 @@ export default {
                 selectedLayerIds;
             window.history.pushState(state, "map", hash);
         },
-
         changeLocation() {
             this.mapLayer
                 .getView()
@@ -602,10 +599,10 @@ export default {
         exportData() {
             this.mapHelper.exportData(this);
         },
-        async filterSelectedColumn(column) {
+        async filterSelectedColumn(id, column) {
             this.filterValues = [];
             let params = {
-                id: this.$store.state.dataTable.serviceInfo.id,
+                id: this.$store.state.dataTable.services[id].serviceInfo.id,
             };
             if (this.selectedServiceInfo.resourceType === "local") {
                 let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
@@ -782,7 +779,6 @@ export default {
                 this.setZIndex(item);
             });
         },
-
         isItemCategory(item) {
             return serviceHelper.isCategory(item);
         },
@@ -795,7 +791,6 @@ export default {
                 query.where !== "1=1"
             );
         },
-
         async getTableData(service, layerId, layerName, query) {
             var layer = this.getLayer(service.id);
 
@@ -805,6 +800,7 @@ export default {
             this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
 
             if (service.resourceType === "azcArcgis") {
+                console.log("hello");
                 let params = {
                     token: this.token,
                     name: service.name,
@@ -844,6 +840,7 @@ export default {
                 }
                 //
             }
+
             this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
 
             if (response.data.error !== undefined) {
@@ -851,6 +848,7 @@ export default {
             }
 
             if (!this.filterQueryIsSum) {
+                console.log("issum");
                 let self = this;
                 this.tableNextRequest["service"] = service;
                 this.tableNextRequest["layerId"] = layerId;
@@ -868,11 +866,11 @@ export default {
                 // let tableName = layerName;
                 // let tableData = response.data.features;
                 // let totalCount = response.data.totalCount;
-                // let tableHeadersWithAlias = response.data.fieldAliases;
-                // let tableHeaders = Object.keys(tableHeadersWithAlias);
                 // let tableStackedHeaders = tableHeaders;
-                // let target = response.data.fieldAliases;
 
+                let target = response.data.fieldAliases;
+                let tableHeadersWithAlias = response.data.fieldAliases;
+                let tableHeaders = Object.keys(tableHeadersWithAlias);
                 let checkedColumnsData = [];
                 let checkedColumns = [];
 
@@ -909,10 +907,9 @@ export default {
 
                 this.dataTableVisibility = false;
 
-                await this.$store.dispatch(
-                    "SAVE_DATATABLE_CONFIGURATION",
-                    service.id,
-                    {
+                await this.$store.dispatch("SAVE_DATATABLE_SERVICE", {
+                    id: service.id,
+                    data: {
                         serviceInfo: {
                             id: service.id,
                             label: service.name,
@@ -923,17 +920,17 @@ export default {
                         },
                         totalCount: response.data.totalCount,
                         tableName: layerName,
-                        tableHeaders: Object.keys(tableHeadersWithAlias),
-                        tableStackedHeaders: Object.keys(tableHeadersWithAlias), // ? duplicated data
-                        tableHeadersWithAlias: response.data.fieldAliases,
+                        tableHeaders: tableHeaders,
+                        tableStackedHeaders: Object.keys(tableHeadersWithAlias),
+                        tableHeadersWithAlias,
                         tableData: response.data.features,
-                        target: response.data.fieldAliases,
+                        target,
                         checkedColumnsData,
                         checkedColumns,
-                    }
-                );
+                    },
+                });
                 this.dataTableVisibility = true;
-                this.tableFeaturesData = tableData;
+                this.tableFeaturesData = response.data.features;
                 this.tableFeaturesHeader = tableHeaders;
                 this.stackedTableFeaturesHeader = tableHeaders;
             }
@@ -968,7 +965,6 @@ export default {
                 this.$refs.dataTable.showDataModal(response.data.features[0]);
             }
         },
-
         async getLayers() {
             // LayerService.getLayersWithFullDataFromServer({
             //     token: this.token,
@@ -1049,7 +1045,6 @@ export default {
             });
             return style;
         },
-
         getLayerZoomLevelOptions(service) {
             return {
                 maxResolution:
@@ -1057,7 +1052,6 @@ export default {
                 minResolution: createXYZ().getResolution(service.maxZoomLevel),
             };
         },
-
         renderNewService(service) {
             var isDynamic = serviceHelper.isDynamic(service);
             var isLayer = serviceHelper.isLayer(service);
@@ -1135,7 +1129,6 @@ export default {
 
             return new_layer;
         },
-
         addService(service) {
             // this.selectedLayersIdHolder(true, service);
             if (service.extent != null) {
@@ -1158,7 +1151,6 @@ export default {
 
             this.mapLayer.addLayer(newService);
         },
-
         getOrderNumber(array, service) {
             var index = 0;
             var result = 0;
@@ -1192,7 +1184,6 @@ export default {
             }
             return zIndex - orderNo;
         },
-
         refreshService(service) {
             this.deleteService(service, false);
             this.addService(service);
@@ -1211,7 +1202,6 @@ export default {
             let layers = this.mapLayer.getLayers().getArray();
             layers[0].setSource(this.baseMaps[index]);
         },
-
         deleteService(service, reset) {
             let layersToRemove = [];
             let self = this;
@@ -1230,7 +1220,6 @@ export default {
                 this.mapLayer.removeLayer(layersToRemove[i]);
             }
         },
-
         async isLayerColorEnabled(service) {
             let isColorEnabled = false;
             let response = await LayerService.getLayerDynamic({
@@ -1288,7 +1277,6 @@ export default {
             }
             return responseDynamic;
         },
-
         async selectService(service, isChecked) {
             // var isChecked = e.target.checked;
 
@@ -1355,7 +1343,6 @@ export default {
             this.dynamicLayersReset(service, isChecked);
             this.refreshService(service);
         },
-
         setDrawType(name) {
             this.typeSelect = name;
             this.mapLayer.removeInteraction(this.draw);
@@ -1408,7 +1395,6 @@ export default {
                 return this.$store.state.dataTable.isVisible;
             },
             set(value) {
-                // this.filterQueryIsSum = false;
                 this.$store.dispatch("SAVE_DATATABLE_VISIBLE", value);
             },
         },

@@ -4,29 +4,39 @@
         <div class="menu">
             <div class="menu--top">
                 <div class="menu__item" v-for="item in topMenu" :key="item.key">
-                    <button class="menu__item__button"
-                            @click="item.click"
-                            :title="item.label">
-                        <img :src="
+                    <button
+                        class="menu__item__button"
+                        @click="item.click"
+                        :title="item.label"
+                    >
+                        <img
+                            :src="
                                 require(`../../assets/images/icons/${item.image}`)
                             "
-                             alt=""
-                             :class="{ active: activeMenu === item.key }" />
+                            alt=""
+                            :class="{ active: activeMenu === item.key }"
+                        />
                     </button>
                 </div>
             </div>
             <div class="menu--bottom">
-                <div class="menu__item"
-                     v-for="item in bottomMenu"
-                     :key="item.key">
-                    <button class="menu__item__button"
-                            @click="item.click"
-                            :title="item.label">
-                        <img :src="
+                <div
+                    class="menu__item"
+                    v-for="item in bottomMenu"
+                    :key="item.key"
+                >
+                    <button
+                        class="menu__item__button"
+                        @click="item.click"
+                        :title="item.label"
+                    >
+                        <img
+                            :src="
                                 require(`../../assets/images/icons/${item.image}`)
                             "
-                             alt=""
-                             :class="{ active: activeMenu === item.key }" />
+                            alt=""
+                            :class="{ active: activeMenu === item.key }"
+                        />
                     </button>
                 </div>
             </div>
@@ -42,11 +52,13 @@
 
         <!-- Layer Types -->
         <div class="layer-types" v-show="activeMenu === 'layerTypes'">
-            <div v-for="(layer, key) in baseMaps"
-                 :key="key"
-                 class="layer-types__item"
-                 :class="{ active: activeLayerType === key }"
-                 @click="setBaseLayout(key)">
+            <div
+                v-for="(layer, key) in baseMaps"
+                :key="key"
+                class="layer-types__item"
+                :class="{ active: activeLayerType === key }"
+                @click="setBaseLayout(key)"
+            >
                 {{ capitalize(key) }}
             </div>
         </div>
@@ -55,60 +67,80 @@
         <div class="list layers" v-show="activeMenu === 'dynamicLayers'">
             <div class="list__header">Dynamic layers</div>
             <div class="list__tabs">
-                <div class="tab"
-                     :class="{ 'tab--active': dynamicActiveTab === 'dynamicTab' }"
-                     @click="setDynamicActiveTab('dynamicTab')">
+                <div
+                    class="tab"
+                    :class="{
+                        'tab--active': dynamicActiveTab === 'dynamicTab',
+                    }"
+                    @click="setDynamicActiveTab('dynamicTab')"
+                >
                     Hip
                 </div>
-                <div class="tab"
-                     :class="{ 'tab--active': dynamicActiveTab === 'bunchTab' }"
-                     @click="setDynamicActiveTab('bunchTab')">
+                <div
+                    class="tab"
+                    :class="{ 'tab--active': dynamicActiveTab === 'bunchTab' }"
+                    @click="setDynamicActiveTab('bunchTab')"
+                >
                     Hop
                 </div>
             </div>
 
-            <ul v-if="dynamicActiveTab === 'dynamicTab'"
-                class="list__content list__content--parent custom-scrollbar">
+            <ul
+                v-if="dynamicActiveTab === 'dynamicTab'"
+                class="list__content list__content--parent custom-scrollbar"
+            >
                 <transition name="slide-fade">
-                    <Draggable key="dynamicLayer"
-                               :v-bind="() => dragOptions('dynamicDragger')"
-                               v-model="dynamicLayerListModel"
-                               @start="isDragging = true"
-                               @end="$emit('onMoveCallbackDynamicLayerList', $event)">
+                    <Draggable
+                        key="dynamicLayer"
+                        :v-bind="() => dragOptions('dynamicDragger')"
+                        v-model="dynamicLayerListModel"
+                        @start="isDragging = true"
+                        @end="$emit('onMoveCallbackDynamicLayerList', $event)"
+                    >
                         <transition-group type="transition" name="flip-list">
-                            <LayerTree v-for="(layer, index) in dynamicLayersList"
-                                       :key="layer.name + index"
-                                       :data="layer"
-                                       @selectService="selectService"
-                                       @dynamicLayersReset="dynamicLayersReset"
-                                       @saveColor="saveColor"
-                                       @selectSubLayer="selectSubLayer"
-                                       @getTableData="getTableData" />
+                            <LayerTree
+                                v-for="(layer, index) in dynamicLayersList"
+                                :key="layer.name + index"
+                                :data="layer"
+                                @selectService="selectService"
+                                @dynamicLayersReset="dynamicLayersReset"
+                                @saveColor="saveColor"
+                                @selectSubLayer="selectSubLayer"
+                                @getTableData="getTableData"
+                            />
                         </transition-group>
                     </Draggable>
                 </transition>
             </ul>
 
-            <ul v-if="dynamicActiveTab === 'bunchTab'"
-                class="list__content list__content--parent custom-scrollbar">
+            <ul
+                v-if="dynamicActiveTab === 'bunchTab'"
+                class="list__content list__content--parent custom-scrollbar"
+            >
                 <transition name="slide-fade">
-                    <Draggable key="dynamicLayer"
-                               :v-bind="() => dragOptions('bunchDragger')"
-                               v-model="bunchLayerList"
-                               @start="isDragging = true"
-                               @end="$emit('onMoveCallbackDynamicLayerList', $event)">
+                    <Draggable
+                        key="dynamicLayer"
+                        :v-bind="() => dragOptions('bunchDragger')"
+                        v-model="bunchLayerList"
+                        @start="isDragging = true"
+                        @end="$emit('onMoveCallbackDynamicLayerList', $event)"
+                    >
                         <transition-group type="transition" name="flip-list">
-                            <LayerTree v-for="(bunch, index) in bunchLayerList"
-                                       :key="bunch.name + index"
-                                       :data="bunch" />
+                            <LayerTree
+                                v-for="(bunch, index) in bunchLayerList"
+                                :key="bunch.name + index"
+                                :data="bunch"
+                            />
                         </transition-group>
                     </Draggable>
                 </transition>
             </ul>
 
-            <button v-if="dynamicActiveTab === 'bunchTab'"
-                    class="btn btn--add-new"
-                    @click="openComputedLayerModal">
+            <button
+                v-if="dynamicActiveTab === 'bunchTab'"
+                class="btn btn--add-new"
+                @click="openComputedLayerModal"
+            >
                 <i class="fas fa-plus"></i>&nbsp;&nbsp;Add
             </button>
         </div>
@@ -119,18 +151,22 @@
 
             <ul class="list__content list__content--parent custom-scrollbar">
                 <transition name="slide-fade">
-                    <Draggable key="baseLayers"
-                               v-model="baseLayerListModel"
-                               :v-bind="() => dragOptions('baseDragger')"
-                               @start="isDragging = true"
-                               @end="$emit('onMoveCallbackBaseLayerList', $event)">
+                    <Draggable
+                        key="baseLayers"
+                        v-model="baseLayerListModel"
+                        :v-bind="() => dragOptions('baseDragger')"
+                        @start="isDragging = true"
+                        @end="$emit('onMoveCallbackBaseLayerList', $event)"
+                    >
                         <transition-group type="transition" name="flip-list">
-                            <LayerTree v-for="(layer, index) in baselayerList"
-                                       :key="layer.name + index"
-                                       :data="layer"
-                                       @selectService="selectService"
-                                       @selectSubLayer="selectSubLayer"
-                                       @getTableData="getTableData" />
+                            <LayerTree
+                                v-for="(layer, index) in baselayerList"
+                                :key="layer.name + index"
+                                :data="layer"
+                                @selectService="selectService"
+                                @selectSubLayer="selectSubLayer"
+                                @getTableData="getTableData"
+                            />
                         </transition-group>
                     </Draggable>
                 </transition>
@@ -145,9 +181,13 @@
                 <li class="list__item" v-for="tool in toolList" :key="tool.key">
                     <div class="item__header" @click="tool.click">
                         <span class="title">
-                            <img :src="require(`../../assets/images/icons/${tool.image}`)"
-                                 alt=""
-                                 class="pre" />
+                            <img
+                                :src="
+                                    require(`../../assets/images/icons/${tool.image}`)
+                                "
+                                alt=""
+                                class="pre"
+                            />
                             {{ tool.label }}
                         </span>
                     </div>
@@ -158,346 +198,346 @@
 </template>
 
 <script>
-    import LayerTree from "./LayerTree";
-    import Draggable from "vuedraggable";
+import LayerTree from "./LayerTree";
+import Draggable from "vuedraggable";
 
-    export default {
-        name: "Sidebar",
-        components: {
-            LayerTree,
-            Draggable
+export default {
+    name: "Sidebar",
+    components: {
+        LayerTree,
+        Draggable,
+    },
+    props: {
+        baseMaps: { type: Object },
+    },
+    data() {
+        return {
+            activeMenu: "",
+            activeLayerType: "gray",
+            layerTypesVisible: false,
+            isDragging: false,
+            dynamicActiveTab: "dynamicTab",
+            computedLayersList: [
+                {
+                    id: 1,
+                    name: "Hello",
+                    type: "computed",
+                    isSelected: true,
+                },
+                {
+                    id: 2,
+                    name: "From the",
+                    type: "computed",
+                    isSelected: false,
+                },
+                {
+                    id: 3,
+                    name: "Other",
+                    type: "computed",
+                    isSelected: false,
+                },
+                {
+                    id: 4,
+                    name: "Side",
+                    type: "computed",
+                    isSelected: false,
+                },
+            ],
+        };
+    },
+    computed: {
+        userName() {
+            // return this.$cookie.get("username");
+            return localStorage.getItem("username");
         },
-        props: {
-            baseMaps: { type: Object }
+        topMenu() {
+            return [
+                {
+                    key: "profile",
+                    label: "Profile",
+                    image: "user.svg",
+                    click: () => {
+                        this.toggleActiveMenu("profile");
+                    },
+                },
+                {
+                    key: "tools",
+                    label: "Tools",
+                    image: "pencil.svg",
+                    click: () => {
+                        this.toggleActiveMenu("tools");
+                    },
+                },
+                {
+                    key: "dynamicLayers",
+                    label: "Dynamic Layers",
+                    image: "layer.svg",
+                    click: () => {
+                        this.toggleActiveMenu("dynamicLayers");
+                    },
+                },
+                {
+                    key: "baseMap",
+                    label: "Basemaps",
+                    image: "map.svg",
+                    click: () => {
+                        this.toggleActiveMenu("baseMap");
+                    },
+                },
+            ];
         },
-        data() {
+        bottomMenu() {
+            return [
+                {
+                    key: "information",
+                    label: "Information",
+                    image: "information.svg",
+                    click: this.showInfoModal,
+                },
+                {
+                    key: "layerTypes",
+                    label: "Layer Types",
+                    image: "hamburger.svg",
+                    click: () => {
+                        this.toggleActiveMenu("layerTypes");
+                    },
+                },
+                {
+                    key: "exportPNG",
+                    label: "Export PNG",
+                    image: "picture.svg",
+                    click: this.exportPNG,
+                },
+                {
+                    key: "exportGeojson",
+                    label: "Export GeoJSON",
+                    image: "file_download.svg",
+                    click: this.exportData,
+                },
+                {
+                    key: "fullscreen",
+                    label: "Full screen",
+                    image: "fullscreen.svg",
+                    click: this.fullScreen,
+                },
+            ];
+        },
+        dynamicLayersList() {
+            return this.$store.getters.dynamicLayerList;
+        },
+        bunchLayerList() {
+            return this.$store.getters.bunchLayerList;
+        },
+        baselayerList() {
+            return this.$store.getters.baseLayerList;
+        },
+        toolList() {
+            return [
+                {
+                    key: "mouse",
+                    label: "Mouse",
+                    image: "mouse.svg",
+                    click: () => {
+                        this.setDrawType("None");
+                    },
+                },
+                {
+                    key: "addPoint",
+                    label: "Add point",
+                    image: "point.svg",
+                    click: this.addPlace,
+                },
+                {
+                    key: "rectangle",
+                    label: "Rectangle",
+                    image: "rectangle.svg",
+                    click: () => {
+                        this.setDrawType("Box");
+                    },
+                },
+                {
+                    key: "square",
+                    label: "Square",
+                    image: "square.svg",
+                    click: () => {
+                        this.setDrawType("Square");
+                    },
+                },
+                {
+                    key: "circle",
+                    label: "Circle",
+                    image: "circle.svg",
+                    click: () => {
+                        this.setDrawType("Circle");
+                    },
+                },
+                {
+                    key: "polygon",
+                    label: "Polygon",
+                    image: "polygon.svg",
+                    click: () => {
+                        this.setDrawType("Polygon");
+                    },
+                },
+                {
+                    key: "line",
+                    label: "Line",
+                    image: "line.svg",
+                    click: () => {
+                        this.setDrawType("LineString");
+                    },
+                },
+                {
+                    key: "addPlace",
+                    label: "Add place",
+                    image: "place.svg",
+                    click: () => {},
+                },
+                {
+                    key: "reset",
+                    label: "Reset",
+                    image: "reset.svg",
+                    click: this.reset,
+                },
+                {
+                    key: "delete",
+                    label: "Delete",
+                    image: "delete.svg",
+                    click: this.delete,
+                },
+                {
+                    key: "pickColor",
+                    label: "Pick color",
+                    image: "color_picker.svg",
+                    click: this.pickColor,
+                },
+                {
+                    key: "changeDetection",
+                    label: "Change detection",
+                    image: "world.svg",
+                    click: this.changeDetector,
+                },
+                {
+                    key: "graticule",
+                    label: "Graticule",
+                    image: "grid.svg",
+                    click: this.addGraticule,
+                },
+            ];
+        },
+
+        dragOptions(group) {
             return {
-                activeMenu: "",
-                activeLayerType: "gray",
-                layerTypesVisible: false,
-                isDragging: false,
-                dynamicActiveTab: "dynamicTab",
-                computedLayersList: [
-                    {
-                        id: 1,
-                        name: "Hello",
-                        type: "computed",
-                        isSelected: true
-                    },
-                    {
-                        id: 2,
-                        name: "From the",
-                        type: "computed",
-                        isSelected: false
-                    },
-                    {
-                        id: 3,
-                        name: "Other",
-                        type: "computed",
-                        isSelected: false
-                    },
-                    {
-                        id: 4,
-                        name: "Side",
-                        type: "computed",
-                        isSelected: false
-                    }
-                ]
+                animation: 0,
+                group: "baseDragger",
+                disabled: false,
+                ghostClass: "ghost",
             };
         },
-        computed: {
-            userName() {
-                // return this.$cookie.get("username");
-                return localStorage.getItem("username");
+        dynamicLayerListModel: {
+            get() {
+                return this.dynamicLayerList;
             },
-            topMenu() {
-                return [
-                    {
-                        key: "profile",
-                        label: "Profile",
-                        image: "user.svg",
-                        click: () => {
-                            this.toggleActiveMenu("profile");
-                        }
-                    },
-                    {
-                        key: "tools",
-                        label: "Tools",
-                        image: "pencil.svg",
-                        click: () => {
-                            this.toggleActiveMenu("tools");
-                        }
-                    },
-                    {
-                        key: "dynamicLayers",
-                        label: "Dynamic Layers",
-                        image: "layer.svg",
-                        click: () => {
-                            this.toggleActiveMenu("dynamicLayers");
-                        }
-                    },
-                    {
-                        key: "baseMap",
-                        label: "Basemaps",
-                        image: "map.svg",
-                        click: () => {
-                            this.toggleActiveMenu("baseMap");
-                        }
-                    }
-                ];
+            set(val) {
+                this.$store.dispatch("saveDynamicLayerList", val);
             },
-            bottomMenu() {
-                return [
-                    {
-                        key: "information",
-                        label: "Information",
-                        image: "information.svg",
-                        click: this.showInfoModal
-                    },
-                    {
-                        key: "layerTypes",
-                        label: "Layer Types",
-                        image: "hamburger.svg",
-                        click: () => {
-                            this.toggleActiveMenu("layerTypes");
-                        }
-                    },
-                    {
-                        key: "exportPNG",
-                        label: "Export PNG",
-                        image: "picture.svg",
-                        click: this.exportPNG
-                    },
-                    {
-                        key: "exportGeojson",
-                        label: "Export GeoJSON",
-                        image: "file_download.svg",
-                        click: this.exportData
-                    },
-                    {
-                        key: "fullscreen",
-                        label: "Full screen",
-                        image: "fullscreen.svg",
-                        click: this.fullScreen
-                    }
-                ];
-            },
-            dynamicLayersList() {
-                return this.$store.getters.dynamicLayerList;
-            },
-            bunchLayerList() {
-                return this.$store.getters.bunchLayerList;
-            },
-            baselayerList() {
+        },
+        baseLayerListModel: {
+            get() {
                 return this.$store.getters.baseLayerList;
             },
-            toolList() {
-                return [
-                    {
-                        key: "mouse",
-                        label: "Mouse",
-                        image: "mouse.svg",
-                        click: () => {
-                            this.setDrawType("None");
-                        }
-                    },
-                    {
-                        key: "addPoint",
-                        label: "Add point",
-                        image: "point.svg",
-                        click: this.addPlace
-                    },
-                    {
-                        key: "rectangle",
-                        label: "Rectangle",
-                        image: "rectangle.svg",
-                        click: () => {
-                            this.setDrawType("Box");
-                        }
-                    },
-                    {
-                        key: "square",
-                        label: "Square",
-                        image: "square.svg",
-                        click: () => {
-                            this.setDrawType("Square");
-                        }
-                    },
-                    {
-                        key: "circle",
-                        label: "Circle",
-                        image: "circle.svg",
-                        click: () => {
-                            this.setDrawType("Circle");
-                        }
-                    },
-                    {
-                        key: "polygon",
-                        label: "Polygon",
-                        image: "polygon.svg",
-                        click: () => {
-                            this.setDrawType("Polygon");
-                        }
-                    },
-                    {
-                        key: "line",
-                        label: "Line",
-                        image: "line.svg",
-                        click: () => {
-                            this.setDrawType("LineString");
-                        }
-                    },
-                    {
-                        key: "addPlace",
-                        label: "Add place",
-                        image: "place.svg",
-                        click: () => { }
-                    },
-                    {
-                        key: "reset",
-                        label: "Reset",
-                        image: "reset.svg",
-                        click: this.reset
-                    },
-                    {
-                        key: "delete",
-                        label: "Delete",
-                        image: "delete.svg",
-                        click: this.delete
-                    },
-                    {
-                        key: "pickColor",
-                        label: "Pick color",
-                        image: "color_picker.svg",
-                        click: this.pickColor
-                    },
-                    {
-                        key: "changeDetection",
-                        label: "Change detection",
-                        image: "world.svg",
-                        click: this.changeDetector
-                    },
-                    {
-                        key: "graticule",
-                        label: "Graticule",
-                        image: "grid.svg",
-                        click: this.addGraticule
-                    }
-                ];
+            set(val) {
+                this.$store.dispatch("saveBaseLayerList", val);
             },
-
-            dragOptions(group) {
-                return {
-                    animation: 0,
-                    group: "baseDragger",
-                    disabled: false,
-                    ghostClass: "ghost"
-                };
-            },
-            dynamicLayerListModel: {
-                get() {
-                    return this.dynamicLayerList;
-                },
-                set(val) {
-                    this.$store.dispatch("saveDynamicLayerList", val);
-                }
-            },
-            baseLayerListModel: {
-                get() {
-                    return this.$store.getters.baseLayerList;
-                },
-                set(val) {
-                    this.$store.dispatch("saveBaseLayerList", val);
-                }
+        },
+    },
+    methods: {
+        logout() {
+            // this.$cookie.delete("token");
+            // this.$cookie.delete("username");
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            this.$router.push("/login");
+        },
+        fullScreen() {
+            if (
+                window.innerWidth == screen.width &&
+                window.innerHeight == screen.height
+            ) {
+                document.exitFullscreen();
+            } else {
+                document.querySelector("body").requestFullscreen();
             }
         },
-        methods: {
-            logout() {
-                // this.$cookie.delete("token");
-                // this.$cookie.delete("username");
-                localStorage.removeItem("token");
-                localStorage.removeItem("username");
-                this.$router.push("/login");
-            },
-            fullScreen() {
-                if (
-                    window.innerWidth == screen.width &&
-                    window.innerHeight == screen.height
-                ) {
-                    document.exitFullscreen();
-                } else {
-                    document.querySelector("body").requestFullscreen();
-                }
-            },
-            toggleActiveMenu(menu) {
-                if (this.activeMenu === menu) {
-                    this.activeMenu = "";
-                } else {
-                    this.activeMenu = menu;
-                }
-            },
-            selectService(item, isChecked) {
-                this.$emit("selectService", item, isChecked);
-            },
-            dynamicLayersReset(item, status) {
-                this.$emit("dynamicLayersReset", item, status);
-            },
-            selectSubLayer(service, index, id, event) {
-                this.$emit("selectSubLayer", service, index, id, event);
-            },
-            getTableData(parent, itemId, itemName, query) {
-                this.$emit("getTableData", parent, itemId, itemName, query);
-            },
-            showInfoModal() {
-                this.$emit("showInfoModal");
-            },
-            exportPNG() {
-                this.$emit("exportPNG");
-            },
-            exportData() {
-                this.$emit("exportData");
-            },
-            setBaseLayout(key) {
-                this.activeLayerType = key;
-                this.$emit("setBaseLayout", key);
-            },
-            saveColor(service, color) {
-                this.$emit("saveColor", service, color);
-            },
-            setDrawType(key) {
-                this.$emit("setDrawType", key);
-            },
-            pickColor() {
-                this.$emit("pickColor");
-            },
-            changeDetector() {
-                this.$emit("changeDetector");
-            },
-            addGraticule() {
-                this.$emit("addGraticule");
-            },
-            addPlace() {
-                this.$emit("addPlace");
-            },
-            delete() {
-                this.$emit("delete");
-            },
-            reset() {
-                this.$emit("reset");
-            },
-            capitalize(str) {
-                return str.charAt(0).toUpperCase() + str.slice(1);
-            },
-            setDynamicActiveTab(tabLabel) {
-                this.dynamicActiveTab = tabLabel;
-            },
-            openComputedLayerModal() {
-                this.$moodal.computedLayerModal.show();
+        toggleActiveMenu(menu) {
+            if (this.activeMenu === menu) {
+                this.activeMenu = "";
+            } else {
+                this.activeMenu = menu;
             }
-        }
-    };
+        },
+        selectService(item, isChecked) {
+            this.$emit("selectService", item, isChecked);
+        },
+        dynamicLayersReset(item, status) {
+            this.$emit("dynamicLayersReset", item, status);
+        },
+        selectSubLayer(service, index, id, event) {
+            this.$emit("selectSubLayer", service, index, id, event);
+        },
+        getTableData(parent, itemId, itemName, query) {
+            this.$emit("getTableData", parent, itemId, itemName, query);
+        },
+        showInfoModal() {
+            this.$emit("showInfoModal");
+        },
+        exportPNG() {
+            this.$emit("exportPNG");
+        },
+        exportData() {
+            this.$emit("exportData");
+        },
+        setBaseLayout(key) {
+            this.activeLayerType = key;
+            this.$emit("setBaseLayout", key);
+        },
+        saveColor(service, color) {
+            this.$emit("saveColor", service, color);
+        },
+        setDrawType(key) {
+            this.$emit("setDrawType", key);
+        },
+        pickColor() {
+            this.$emit("pickColor");
+        },
+        changeDetector() {
+            this.$emit("changeDetector");
+        },
+        addGraticule() {
+            this.$emit("addGraticule");
+        },
+        addPlace() {
+            this.$emit("addPlace");
+        },
+        delete() {
+            this.$emit("delete");
+        },
+        reset() {
+            this.$emit("reset");
+        },
+        capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        },
+        setDynamicActiveTab(tabLabel) {
+            this.dynamicActiveTab = tabLabel;
+        },
+        openComputedLayerModal() {
+            this.$moodal.computedLayerModal.show();
+        },
+    },
+};
 </script>
 
 <style lang="scss">
-    @import "@/assets/style/sidebarStyle.scss";
+@import "@/assets/style/sidebarStyle.scss";
 </style>

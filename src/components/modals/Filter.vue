@@ -149,24 +149,6 @@ export default {
     },
     data() {
         return {
-            // tabs: [
-            //     {
-            //         id: 1,
-            //         name: "Karxana 2019",
-            //     },
-            //     {
-            //         id: 2,
-            //         name: "Dəmiryolu",
-            //     },
-            //     {
-            //         id: 3,
-            //         name: "Şorlaşma 2020",
-            //     },
-            //     {
-            //         id: 4,
-            //         name: "Abidələr",
-            //     },
-            // ],
             activeTab: null,
             actionsList: [
                 "=",
@@ -190,12 +172,16 @@ export default {
             return this.$store.state.dataTable.serviceInfo;
         },
         tabs() {
-            return services.map(service => {
-                return {
-                    id: 1,
+            let data = [];
+
+            for (const service in this.services) {
+                data.push({
+                    id: service,
                     name: service.serviceName,
-                };
-            });
+                });
+            }
+
+            return data;
         },
         filterQueryIsSum: {
             get() {
