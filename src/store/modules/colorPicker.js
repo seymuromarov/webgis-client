@@ -1,33 +1,9 @@
 const state = {
   fill: {
-    hsl: { h: 0, s: 0, l: 1, a: 1 },
-    hex: "#FFFFFF",
-    hex8: "#FFFFFF",
-    rgba: { r: 255, g: 255, b: 255, a: 1 },
-    hsv: { h: 0, s: 0, v: 1, a: 1 },
-    oldHue: 0,
-    source: "rgba",
-    a: 1
+    hex8: "#FFFFFF00"
   },
   border: {
-    hsl: {
-      h: 4.105263157894738,
-      s: 0.8962264150943399,
-      l: 0.5843137254901961,
-      a: 1
-    },
-    hex: "#F44336",
-    hex8: "#F44336FF",
-    rgba: { r: 244, g: 67, b: 54, a: 1 },
-    hsv: {
-      h: 4.105263157894738,
-      s: 0.7786885245901639,
-      v: 0.9568627450980393,
-      a: 1
-    },
-    oldHue: 4.105263157894737,
-    source: "hex",
-    a: 1
+    hex8: "#F44336FF"
   },
 
   // fillColor: {

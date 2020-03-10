@@ -39,10 +39,6 @@ Vue.use(ol);
 Vue.use(VueSweetalert2);
 Vue.use(VueQuillEditor);
 
-//#region initiliaze store
-store.dispatch("getLayers");
-//#endregion
-
 new Vue({
   router,
   store,

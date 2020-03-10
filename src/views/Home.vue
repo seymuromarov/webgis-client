@@ -160,6 +160,7 @@ import {
 // Utils
 import { URL, MAP_URLS } from "@/config/urls";
 import { layerSettings } from "@/config/settings";
+import { materialColors } from "@/config/colors";
 import cities from "@/data/cities.json";
 
 import { toggler, mapHelper, layerHelper, serviceHelper } from "@/helpers";
@@ -256,7 +257,9 @@ export default {
       isHashLoaded: false
     };
   },
-  created() {},
+  created() {
+    this.$store.dispatch("getLayers");
+  },
   mounted() {
     this.hashResolveResult = this.resolveHash(window.location.hash);
     // this.token = this.$cookie.get("token");
@@ -295,7 +298,6 @@ export default {
     });
 
     var dynamics = this.dynamicLayerList;
-    this.getLayers();
     this.$nextTick(function() {
       // var vectorGetTest = new VectorTileLayer({
       //   id: 999,
@@ -984,13 +986,12 @@ export default {
         }
       );
     },
-    getVectorStyle(service) {
-      var color = null;
-      if (service.color !== null) {
-        color = service.color;
-      } else {
+    getVectorStyle(color) {
+      if (color === null) {
         color = this.defaultColorObject;
       }
+      console.log("getVectorStyle -> color", color);
+
       var style = new Style({
         fill: new Fill({
           color: color.fill.hex8
@@ -1045,7 +1046,7 @@ export default {
                     ? this.objectToQueryString(service.query)
                     : "")
               }),
-              style: this.getVectorStyle(service)
+              style: this.getVectorStyle(service.color)
             });
           } else {
             new_layer = new ImageLayer({
@@ -1109,7 +1110,25 @@ export default {
                 allowDots: true
               })
           }),
-          style: this.getVectorStyle(service)
+          style: feature => {
+            var featureLayerId = feature.get("layerId");
+            var layerIds = service.layers.map(item => {
+              return item.id;
+            });
+            var index = layerIds.indexOf(featureLayerId);
+
+            var color = materialColors[index];
+            var colorObj = {
+              border: {
+                hex8: color
+              },
+              fill: {
+                hex8: "#FFFFFF00"
+              }
+            };
+
+            return this.getVectorStyle(colorObj);
+          }
         });
       }
 
