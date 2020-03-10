@@ -31,7 +31,7 @@
         />
       </div>
 
-      <button type="submit" class="btn btn-primary submit-btn" @click="add">
+      <button type="button" class="btn btn-primary submit-btn" @click="add">
         Add
       </button>
     </form>
