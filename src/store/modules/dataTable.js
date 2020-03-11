@@ -17,7 +17,9 @@ const defaultService = {
 };
 
 const state = {
-    services: {},
+    tabs: [],
+    activeService: null,
+    data: [],
     isVisible: false,
     loading: false,
     paging: {
@@ -64,11 +66,13 @@ const mutations = {
     SET_DATATABLE_TARGET(state, { id, target }) {
         state.services[id].target = target;
     },
-    SET_DATATABLE_CHECKED_COLUMNS_DATA(state, { id, checkedColumnsData }) {
-        state.services[id].checkedColumnsData = checkedColumnsData;
+    SET_DATATABLE_CHECKED_COLUMNS_DATA(state, { id, value }) {
+        state.data.find(x => x.service.id === id).data.checkedColumns = value;
     },
-    SET_DATATABLE_CHECKED_COLUMNS(state, { id, checkedColumns }) {
-        state.services[id].checkedColumns = checkedColumns;
+    SET_DATATABLE_CHECKED_COLUMNS(state, { id, value }) {
+        state.data.find(
+            x => x.service.id === id
+        ).data.checkedColumnsData = value;
     },
     SET_DRAW_BBOX(state, drawBBOX) {
         state.lastBBOXOfShape = drawBBOX;
@@ -83,27 +87,25 @@ const mutations = {
     SET_DATATABLE_PAGING(state, paging) {
         state.paging = paging;
     },
-    SET_DATATABLE_SERVICE(state, { id, data }) {
-        let service = { ...defaultService };
-
-        service.totalCount = data.totalCount;
-        service.serviceInfo = data.serviceInfo;
-        service.tableName = data.tableName;
-        service.tableHeaders = data.tableHeaders;
-        service.tableStackedHeaders = data.tableStackedHeaders;
-        service.tableHeadersWithAlias = data.tableHeadersWithAlias;
-        service.tableData = data.tableData;
-        service.target = data.target;
-        service.checkedColumnsData = data.checkedColumnsData;
-        service.checkedColumns = data.checkedColumns;
-
-        state.services[id] = service;
+    SET_DATATABLE(state, payload) {
+        state.data = payload;
+    },
+    SET_DATATABLE_TABS(state, payload) {
+        state.tabs = payload;
+    },
+    SET_DATATABLE_ACTIVE_SERVICE(state, payload) {
+        state.activeService = payload;
+    },
+    SET_DATATABLE_QUERY(state, { id, query }) {
+        state.data.find(x => x.service.id === id).service.query.where = query;
     },
 };
 
 const getters = {
     isVisible: state => state.isVisible,
     dataTableLoading: state => state.loading,
+    tableData: state => state.data,
+    tableActiveService: state => state.activeService,
 };
 const actions = {
     SAVE_DATATABLE_VISIBLE(context, isVisible) {
@@ -115,15 +117,11 @@ const actions = {
     SAVE_SIMPLE_FILTER_VISIBLE(context, isSimpleFilterVisible) {
         context.commit("SET_SIMPLE_FILTER_VISIBLE", isSimpleFilterVisible);
     },
-    SAVE_DATATABLE_CHECKED_COLUMNS(context, { id, checkedColumns }) {
-        context.commit("SET_DATATABLE_CHECKED_COLUMNS", { id, checkedColumns });
+    SAVE_DATATABLE_CHECKED_COLUMNS(context, { id, value }) {
+        context.commit("SET_DATATABLE_CHECKED_COLUMNS", { id, value });
     },
-    SAVE_DATATABLE_CHECKED_COLUMNS_DATA(context, checkedColumnsData) {
-        context.commit(
-            "SET_DATATABLE_CHECKED_COLUMNS_DATA",
-            id,
-            checkedColumnsData
-        );
+    SAVE_DATATABLE_CHECKED_COLUMNS_DATA(context, { id, value }) {
+        context.commit("SET_DATATABLE_CHECKED_COLUMNS_DATA", { id, value });
     },
     SAVE_DATATABLE_SERVICE_NAME(context, serviceName) {
         context.commit("SET_DATATABLE_SERVICE_NAME", serviceName);
@@ -150,7 +148,6 @@ const actions = {
         context.commit("SET_DATATABLE_PAGING", paging);
     },
     SAVE_DATATABLE_CONFIGURATION(context, { id, data }) {
-        console.log("dttbl", id, data);
         const {
             totalCount,
             serviceInfo,
@@ -185,9 +182,22 @@ const actions = {
         context.commit("SET_DATATABLE_CHECKED_COLUMNS", { id, checkedColumns });
     },
 
-    SAVE_DATATABLE_SERVICE(context, { id, data }) {
-        console.log(data);
-        context.commit("SET_DATATABLE_SERVICE", { id, data });
+    SAVE_DATATABLE(context, payload) {
+        context.commit("SET_DATATABLE", payload);
+    },
+    SAVE_DATATABLE_ACTIVE_SERVICE(context, payload) {
+        context.commit("SET_DATATABLE_ACTIVE_SERVICE", payload);
+    },
+
+    SAVE_DATATABLE_TABS(context, payload) {
+        context.commit("SET_DATATABLE_TABS", payload);
+    },
+    SAVE_DATATABLE_QUERY(context, { id, query }) {
+        context.commit("SET_DATATABLE_QUERY", { id, query });
+    },
+
+    RESET_DATATABLE(context) {
+        context.commit("SET_DATATABLE", []);
     },
 };
 
