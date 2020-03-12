@@ -23,12 +23,11 @@
                             v-for="(alias, column) in tableFeaturesHeader"
                             :key="column"
                             class="list__item"
-                            @dblclick="appendFilterQuery(getValueKey(alias))"
+                            @dblclick="appendFilterQuery(alias)"
                             @click="
                                 $emit(
                                     'filterSelectedColumn',
-                                    activeTabId,
-                                    getValueKey(alias)
+                                    activeTabId, alias
                                 )
                             "
                         >
@@ -153,11 +152,11 @@ export default {
         };
     },
     methods: {
-        getValueKey(alias) {
-            return Object.keys(this.activeTabData.tableHeadersWithAlias).find(
-                key => this.activeTabData.tableHeadersWithAlias[key] === alias
-            );
-        },
+        // getValueKey(alias) {
+        //     return Object.keys(this.activeTabData.tableHeadersWithAlias).find(
+        //         key => this.activeTabData.tableHeadersWithAlias[key] === alias
+        //     );
+        // },
         appendFilterQuery(value) {
             this.activeTabQuery = this.activeTabQuery + value + " ";
             this.$refs.filterQueryTextarea.focus();

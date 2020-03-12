@@ -11,7 +11,6 @@ const getters = {
     getData(serviceId) {
         let data = tableData.get();
         let result = data.find(x => x.service.id === serviceId);
-        console.log({ result, data });
         return result;
     },
 };

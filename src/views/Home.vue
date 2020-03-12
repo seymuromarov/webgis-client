@@ -1571,7 +1571,6 @@ export default {
                 return data ? data.filterValues : [];
             },
             set(value) {
-                console.log(value);
                 this.$store.dispatch("SAVE_DATATABLE_FILTER_VALUES", {
                     id: this.activeTabId,
                     value,
