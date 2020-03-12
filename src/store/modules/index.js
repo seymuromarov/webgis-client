@@ -8,12 +8,12 @@ import filter from "./filter";
 import map from "./map";
 
 export default {
-  auth,
-  dataTable,
-  colorPicker,
-  information,
-  forum,
-  layers,
-  filter,
-  map
+    auth,
+    dataTable,
+    colorPicker,
+    information,
+    forum,
+    layers,
+    filter,
+    map
 };

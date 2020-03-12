@@ -3,13 +3,11 @@
         <div class="data-table__filter">
             <!-- Tabs -->
             <div class="filter__tabs">
-                <div
-                    v-for="tab in tabs"
-                    :key="tab.id"
-                    class="tab"
-                    :class="{ 'tab--active': activeTabId === tab.id }"
-                    @click="setActiveTabId(tab.id)"
-                >
+                <div v-for="tab in tabs"
+                     :key="tab.id"
+                     class="tab"
+                     :class="{ 'tab--active': activeTabId === tab.id }"
+                     @click="setActiveTabId(tab.id)">
                     {{ tab.name }}
                 </div>
             </div>
@@ -19,8 +17,7 @@
                 <div class="filter__fields__columns">
                     <h5>Columns</h5>
                     <ul class="filter__fields__list custom-scrollbar">
-                        <li
-                            v-for="(alias, column) in tableFeaturesHeader"
+                        <li v-for="(alias, column) in tableFeaturesHeader"
                             :key="column"
                             class="list__item"
                             @dblclick="appendFilterQuery(alias)"
@@ -29,8 +26,7 @@
                                     'filterSelectedColumn',
                                     activeTabId, alias
                                 )
-                            "
-                        >
+                            ">
                             {{ alias }}
                         </li>
                     </ul>
@@ -40,12 +36,10 @@
                 <div class="filter__fields__values">
                     <h5>Values</h5>
                     <ul class="filter__fields__list custom-scrollbar">
-                        <li
-                            @dblclick="appendFilterQuery(value)"
+                        <li @dblclick="appendFilterQuery(value)"
                             class="list__item"
                             v-for="(value, index) in filterValues"
-                            :key="index"
-                        >
+                            :key="index">
                             {{ value }}
                         </li>
                     </ul>
@@ -55,10 +49,8 @@
             <!-- Actions -->
             <div class="filter__actions">
                 <div v-for="action in actionsList" :key="action">
-                    <button
-                        @click="appendFilterQuery(action)"
-                        class="btn btn-sm btn-outline-secondary"
-                    >
+                    <button @click="appendFilterQuery(action)"
+                            class="btn btn-sm btn-outline-secondary">
                         {{ action }}
                     </button>
                 </div>
@@ -68,14 +60,12 @@
             <div class="filter__query">
                 <label class="title">SELECT * FROM table WHERE:</label>
 
-                <textarea
-                    ref="filterQueryTextarea"
-                    name="filterQuery"
-                    rows="4"
-                    cols="69"
-                    :value="activeTabQuery"
-                    @input="activeTabQuery = $event.target.value"
-                ></textarea>
+                <textarea ref="filterQueryTextarea"
+                          name="filterQuery"
+                          rows="4"
+                          cols="69"
+                          :value="activeTabQuery"
+                          @input="activeTabQuery = $event.target.value"></textarea>
             </div>
 
             <!-- Sum -->
@@ -115,7 +105,6 @@
                     Sum Column
                 </label>
             </div> -->
-
             <!-- Apply button -->
             <button class="btn filter__apply-btn" @click="applyFilter">
                 Apply
@@ -125,165 +114,165 @@
 </template>
 
 <script>
-import { layerController, bunchController } from "@/controllers";
-import { layerHelper, serviceHelper } from "@/helpers";
-import { Modal } from "@/components";
+    import { layerController, bunchController } from "@/controllers";
+    import { layerHelper, serviceHelper } from "@/helpers";
+    import { Modal } from "@/components";
 
-export default {
-    name: "FilterBox",
-    components: {
-        Modal,
-    },
-    data() {
-        return {
-            actionsList: [
-                "=",
-                ">",
-                ">=",
-                "<",
-                "<=",
-                "<>",
-                "AND",
-                "OR",
-                "LIKE",
-                "IS NULL",
-            ],
-            currentTabId: null,
-        };
-    },
-    methods: {
-        // getValueKey(alias) {
-        //     return Object.keys(this.activeTabData.tableHeadersWithAlias).find(
-        //         key => this.activeTabData.tableHeadersWithAlias[key] === alias
-        //     );
-        // },
-        appendFilterQuery(value) {
-            this.activeTabQuery = this.activeTabQuery + value + " ";
-            this.$refs.filterQueryTextarea.focus();
+    export default {
+        name: "FilterBox",
+        components: {
+            Modal,
         },
-        setActiveTabId(tab) {
-            this.activeTabId = tab;
+        data() {
+            return {
+                actionsList: [
+                    "=",
+                    ">",
+                    ">=",
+                    "<",
+                    "<=",
+                    "<>",
+                    "AND",
+                    "OR",
+                    "LIKE",
+                    "IS NULL",
+                ],
+                currentTabId: null,
+            };
         },
-        applyFilter() {
-            this.$emit(
-                "filterData",
-                this.activeTabService,
-                this.activeTabQuery
-            );
-            this.$moodal.filterModal.hide();
-        },
-    },
-    computed: {
-        tabs() {
-            return this.$store.state.dataTable.tabs;
-        },
-        activeTabId: {
-            get() {
-                return this.$store.state.dataTable.activeTabId;
+        methods: {
+            // getValueKey(alias) {
+            //     return Object.keys(this.activeTabData.tableHeadersWithAlias).find(
+            //         key => this.activeTabData.tableHeadersWithAlias[key] === alias
+            //     );
+            // },
+            appendFilterQuery(value) {
+                this.activeTabQuery = this.activeTabQuery + value + " ";
+                this.$refs.filterQueryTextarea.focus();
             },
-            set(id) {
-                this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
+            setActiveTabId(tab) {
+                this.activeTabId = tab;
+            },
+            applyFilter() {
+                this.$emit(
+                    "filterData",
+                    this.activeTabService,
+                    this.activeTabQuery
+                );
+                this.$moodal.filterModal.hide();
             },
         },
-        activeTab() {
-            return this.$store.state.dataTable.data.find(
-                x => x.service.id === this.activeTabId
-            );
-        },
-        activeTabData() {
-            return this.activeTab ? this.activeTab.data : null;
-        },
-        activeTabService() {
-            return this.activeTab ? this.activeTab.service : null;
-        },
-        activeTabQuery: {
-            get() {
-                let where = "";
-                let activeService = this.$store.getters.tableActiveService;
-                if (!activeService || !this.activeTabId) return where;
-                let isBunch = serviceHelper.isBunch(activeService);
-                if (isBunch) {
-                    let bunchLayer = bunchController.getBunchLayer(
-                        activeService.id,
-                        this.activeTabId
-                    );
-                    where = bunchLayer ? bunchLayer.query.where : "";
-                } else {
-                    let layer = layerController.getDynamicLayer(
-                        this.activeTabId
-                    );
-                    where = layer.query.where;
-                }
-
-                return where;
+        computed: {
+            tabs() {
+                return this.$store.state.dataTable.tabs;
             },
-            set(query) {
-                if (query) {
+            activeTabId: {
+                get() {
+                    return this.$store.state.dataTable.activeTabId;
+                },
+                set(id) {
+                    this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
+                },
+            },
+            activeTab() {
+                return this.$store.state.dataTable.data.find(
+                    x => x.service.id === this.activeTabId
+                );
+            },
+            activeTabData() {
+                return this.activeTab ? this.activeTab.data : null;
+            },
+            activeTabService() {
+                return this.activeTab ? this.activeTab.service : null;
+            },
+            activeTabQuery: {
+                get() {
+                    let where = "";
                     let activeService = this.$store.getters.tableActiveService;
+                    if (!activeService || !this.activeTabId) return where;
                     let isBunch = serviceHelper.isBunch(activeService);
                     if (isBunch) {
-                        bunchController.setQuery(
-                            activeService,
-                            this.activeTabId,
-                            query
+                        let bunchLayer = bunchController.getBunchLayer(
+                            activeService.id,
+                            this.activeTabId
                         );
-                    } else layerController.setQuery(activeService, query);
+                        where = bunchLayer ? bunchLayer.query.where : "";
+                    } else {
+                        let layer = layerController.getDynamicLayer(
+                            this.activeTabId
+                        );
+                        where = layer.query.where;
+                    }
+
+                    return where;
+                },
+                set(query) {
+                    if (query) {
+                        let activeService = this.$store.getters.tableActiveService;
+                        let isBunch = serviceHelper.isBunch(activeService);
+                        if (isBunch) {
+                            bunchController.setQuery(
+                                activeService,
+                                this.activeTabId,
+                                query
+                            );
+                        } else layerController.setQuery(activeService, query);
+                    }
+                },
+            },
+            tableFeaturesHeader() {
+                if (this.activeTabData) {
+                    return Object.values(this.activeTabData.tableHeadersWithAlias);
+                } else {
+                    return [];
                 }
             },
-        },
-        tableFeaturesHeader() {
-            if (this.activeTabData) {
-                return Object.values(this.activeTabData.tableHeadersWithAlias);
-            } else {
-                return [];
-            }
-        },
-        tableFeaturesTarget() {
-            if (this.activeTabData) {
-                return this.activeTabData.tableHeadersWithAlias;
-            } else {
-                return {};
-            }
-        },
-        filterValues: {
-            get() {
-                const data = this.$store.getters.activeTableData;
-                return data ? data.filterValues : [];
+            tableFeaturesTarget() {
+                if (this.activeTabData) {
+                    return this.activeTabData.tableHeadersWithAlias;
+                } else {
+                    return {};
+                }
             },
-        },
-        filterQueryIsSum: {
-            get() {
-                return this.$store.state.filter.filterQueryIsSum;
+            filterValues: {
+                get() {
+                    const data = this.$store.getters.activeTableData;
+                    return data ? data.filterValues : [];
+                },
             },
-            set(filterQueryIsSum) {
-                if (filterQueryIsSum) {
-                    this.$store.dispatch(
-                        "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
-                        this.tableFeaturesHeader[0]
+            filterQueryIsSum: {
+                get() {
+                    return this.$store.state.filter.filterQueryIsSum;
+                },
+                set(filterQueryIsSum) {
+                    if (filterQueryIsSum) {
+                        this.$store.dispatch(
+                            "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
+                            this.tableFeaturesHeader[0]
+                        );
+                    }
+                    return this.$store.dispatch(
+                        "SAVE_FILTER_QUERY_IS_SUM",
+                        filterQueryIsSum
                     );
-                }
-                return this.$store.dispatch(
-                    "SAVE_FILTER_QUERY_IS_SUM",
-                    filterQueryIsSum
-                );
+                },
+            },
+            filterQueryArithmeticColumn: {
+                get() {
+                    return this.$store.state.filter.filterQueryArithmeticColumn;
+                },
+                set(filterQueryArithmeticColumn) {
+                    return this.$store.dispatch(
+                        "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
+                        filterQueryArithmeticColumn
+                    );
+                },
             },
         },
-        filterQueryArithmeticColumn: {
-            get() {
-                return this.$store.state.filter.filterQueryArithmeticColumn;
-            },
-            set(filterQueryArithmeticColumn) {
-                return this.$store.dispatch(
-                    "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
-                    filterQueryArithmeticColumn
-                );
+        watch: {
+            activeTabId(val) {
+                this.currentTabId = val;
             },
         },
-    },
-    watch: {
-        activeTabId(val) {
-            this.currentTabId = val;
-        },
-    },
-};
+    };
 </script>
