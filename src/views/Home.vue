@@ -3,44 +3,38 @@
         <!-- Main content -->
         <div class="padding-0 map-layout">
             <div id="map">
-                <MapControls
-                    :map="mapLayer"
-                    :mapHelpers="mapHelper"
-                    :nextHistoryEvent="nextHistoryEvent"
-                    :previousHistoryEvent="previousHistoryEvent"
-                />
-                <Sidebar
-                    :baseMaps="baseMaps"
-                    @selectService="selectService"
-                    @selectSubLayer="selectSubService"
-                    @dynamicLayersReset="dynamicLayersReset"
-                    @getTableData="getTableData"
-                    @showInfoModal="showInfoModal = true"
-                    @exportPNG="pngExport"
-                    @exportData="exportData"
-                    @setBaseLayout="setBaseLayout"
-                    @setDrawType="setDrawType"
-                    @delete="deleteFeatureOn"
-                    @reset="resetFeatures"
-                    @pickColor="eyeDropper"
-                    @changeDetector="changeDetector"
-                    @addGraticule="addGraticule"
-                    @addPlace="setMarkerTrue"
-                    @saveColor="saveColor"
-                    @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
-                    @onMoveCallbackDynamicLayerList="
+                <MapControls :map="mapLayer"
+                             :mapHelpers="mapHelper"
+                             :nextHistoryEvent="nextHistoryEvent"
+                             :previousHistoryEvent="previousHistoryEvent" />
+                <Sidebar :baseMaps="baseMaps"
+                         @selectService="selectService"
+                         @selectSubLayer="selectSubService"
+                         @dynamicLayersReset="dynamicLayersReset"
+                         @getTableData="getTableData"
+                         @showInfoModal="showInfoModal = true"
+                         @exportPNG="pngExport"
+                         @exportData="exportData"
+                         @setBaseLayout="setBaseLayout"
+                         @setDrawType="setDrawType"
+                         @delete="deleteFeatureOn"
+                         @reset="resetFeatures"
+                         @pickColor="eyeDropper"
+                         @changeDetector="changeDetector"
+                         @addGraticule="addGraticule"
+                         @addPlace="setMarkerTrue"
+                         @saveColor="saveColor"
+                         @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
+                         @onMoveCallbackDynamicLayerList="
                         onMoveCallbackDynamicLayerList
-                    "
-                />
+                    " />
             </div>
         </div>
 
         <!-- Data table -->
-        <DataTable
-            ref="dataTable"
-            @showFilterModal="showFilterModal"
-            @mapSetCenter="mapSetCenter"
-        />
+        <DataTable ref="dataTable"
+                   @showFilterModal="showFilterModal"
+                   @mapSetCenter="mapSetCenter" />
 
         <!-- Report -->
         <CustomModal name="arithmeticResultModal" :maxWidth="600">
@@ -49,31 +43,26 @@
 
         <!-- Filter -->
         <CustomModal name="filterModal" title="Filter" :maxWidth="600">
-            <FilterBox
-                :filterValues="filterValues"
-                :tableFeaturesHeader="tableFeaturesHeader"
-                :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
-                @filterSelectedColumn="filterSelectedColumn"
-                @filterData="filterData"
-            />
+            <FilterBox :filterValues="filterValues"
+                       :tableFeaturesHeader="tableFeaturesHeader"
+                       :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
+                       @filterSelectedColumn="filterSelectedColumn"
+                       @filterData="filterData" />
         </CustomModal>
         <!-- Shape Color Picker -->
-        <CustomModal
-            name="colorPickerModal"
-            title="Color picker"
-            :minWidth="300"
-        >
+        <CustomModal name="colorPickerModal"
+                     title="Color picker"
+                     :minWidth="300">
             <ShapeColorPicker @setShapeColor="setShapeColor" />
         </CustomModal>
 
         <!-- Change Detection -->
         <!-- <detector-modal :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
-                        v-bind="{ lastBBOXOfShape, token }"
-                        @close="
-        ($store.state.dataTable.lastBBOXOfShape = []) &
-          (isDrawnShapeForDetection = false)
-      "></detector-modal> -->
-
+                          v-bind="{ lastBBOXOfShape, token }"
+                          @close="
+          ($store.state.dataTable.lastBBOXOfShape = []) &
+            (isDrawnShapeForDetection = false)
+        "></detector-modal> -->
         <!-- Information Modal -->
         <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
 

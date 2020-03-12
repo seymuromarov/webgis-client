@@ -17,55 +17,55 @@
 </template>
 
 <script>
-import LoginService from "@/services/LoginService";
-import { getToken, setToken } from "../utils/token";
+    import LoginService from "@/services/LoginService";
+    import { getToken, setToken } from "../utils/token";
 
-export default {
-  mounted() {
-    this.error = this.$store.getters.authError;
-  },
-  data: function() {
-    return {
-      username: "",
-      password: "",
-      error: ""
+    export default {
+        mounted() {
+            this.error = this.$store.getters.authError;
+        },
+        data: function () {
+            return {
+                username: "",
+                password: "",
+                error: ""
+            };
+        },
+        methods: {
+            login() {
+                const { username, password } = this;
+                this.loginService(username, password);
+            },
+            async loginService(username, password) {
+                const response = await LoginService.getToken({
+                    username: username,
+                    password: password
+                });
+                if (response.status === 400) {
+                    this.error = response.data;
+                }
+                // response.data.username = username
+                else {
+                    // this.$store.commit('getToken', response.data)
+                    // this.$cookie.set("username", username, { expires: "1D" });
+                    localStorage.setItem("username", username);
+                    this.$store.dispatch("SAVE_AUTH_TOKEN", response.data.token);
+
+                    // Check admin privilege
+                    const isAdmin = response.data.user.distinctPermissions.find(
+                        x => x.label.toLowerCase() === "admin"
+                    );
+                    // this.$cookie.set("isAdmin", Boolean(isAdmin), {
+                    //   expires: "1D"
+                    // });
+                    localStorage.setItem("isAdmin", Boolean(isAdmin));
+                    localStorage.setItem("token", response.data.token);
+                    // setToken(response.data.token);
+                    this.$router.push("/");
+                }
+            }
+        }
     };
-  },
-  methods: {
-    login() {
-      const { username, password } = this;
-      this.loginService(username, password);
-    },
-    async loginService(username, password) {
-      const response = await LoginService.getToken({
-        username: username,
-        password: password
-      });
-      if (response.status === 400) {
-        this.error = response.data;
-      }
-      // response.data.username = username
-      else {
-        // this.$store.commit('getToken', response.data)
-        // this.$cookie.set("username", username, { expires: "1D" });
-        localStorage.setItem("username", username);
-        this.$store.dispatch("SAVE_AUTH_TOKEN", response.data.token);
-
-        // Check admin privilege
-        const isAdmin = response.data.user.distinctPermissions.find(
-          x => x.label.toLowerCase() === "admin"
-        );
-        // this.$cookie.set("isAdmin", Boolean(isAdmin), {
-        //   expires: "1D"
-        // });
-        localStorage.setItem("isAdmin", Boolean(isAdmin));
-        localStorage.setItem("token", response.data.token);
-        // setToken(response.data.token);
-        this.$router.push("/");
-      }
-    }
-  }
-};
 </script>
 
 <style scoped>

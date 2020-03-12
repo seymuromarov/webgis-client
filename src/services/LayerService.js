@@ -76,9 +76,9 @@ export default {
     getLayerForEmlakService(params) {
         return request.get(
             emlakUrl +
-                "/arcgis/rest/services/AZERCOSMOS/" +
-                params.name +
-                "/MapServer",
+            "/arcgis/rest/services/AZERCOSMOS/" +
+            params.name +
+            "/MapServer",
             {
                 params: {
                     token: params.token,
@@ -126,11 +126,11 @@ export default {
     getTableData(params) {
         return request.get(
             URL +
-                "/api/data/get/" +
-                params.name +
-                "/MapServer/" +
-                params.layer +
-                "/query/",
+            "/api/data/get/" +
+            params.name +
+            "/MapServer/" +
+            params.layer +
+            "/query/",
             {
                 params: {
                     f: "json",
@@ -145,11 +145,11 @@ export default {
     getGeometryData(params) {
         return request.get(
             URL +
-                "/api/data/get/" +
-                params.name +
-                "/MapServer/" +
-                params.layer +
-                "/query/",
+            "/api/data/get/" +
+            params.name +
+            "/MapServer/" +
+            params.layer +
+            "/query/",
             {
                 params: {
                     token: params.token,
