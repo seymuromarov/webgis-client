@@ -1,35 +1,29 @@
 <template>
-  <Modal
-    name="computedLayerModal"
-    title="Computed layers"
-    :width="400"
-    :height="400"
-  >
-    <form>
-      <div class="form-group">
-        <label for="label">Label</label>
-        <input
-          type="text"
-          class="form-control"
-          id="label"
-          v-model="data.label"
-        />
-      </div>
-      <div class="form-group">
-        <label for="layers">Layers</label>
-        <Multiselect
-          id="layers"
-          v-model="data.layers"
-          :options="dynamicLayersList"
-          :multiple="true"
-          :close-on-select="false"
-          :limit="4"
-          :maxHeight="200"
-          label="name"
-          track-by="name"
-          placeholder="Select layers"
-        />
-      </div>
+    <Modal name="computedLayerModal"
+           title="Computed layers"
+           :width="400"
+           :height="400">
+        <form>
+            <div class="form-group">
+                <label for="label">Label</label>
+                <input type="text"
+                       class="form-control"
+                       id="label"
+                       v-model="data.label" />
+            </div>
+            <div class="form-group">
+                <label for="layers">Layers</label>
+                <Multiselect id="layers"
+                             v-model="data.layers"
+                             :options="dynamicLayersList"
+                             :multiple="true"
+                             :close-on-select="false"
+                             :limit="4"
+                             :maxHeight="200"
+                             label="name"
+                             track-by="name"
+                             placeholder="Select layers" />
+            </div>
 
       <button type="button" class="btn btn-primary submit-btn" @click="add">
         Add
@@ -98,65 +92,68 @@ export default {
 </script>
 
 <style lang="scss">
-// TODO Make this (.multiselect) styles global (without '!important')
-.multiselect {
-  font-size: 14px !important;
-}
-
-.multiselect__option:after {
-  line-height: 30px !important;
-}
-
-.multiselect__option--highlight {
-  &,
-  &:after {
-    background: var(--primary-color-opacity-85) !important;
-  }
-
-  &.multiselect__option--selected {
-    &,
-    &:after {
-      background: #e32222 !important;
+    // TODO Make this (.multiselect) styles global (without '!important')
+    .multiselect {
+        font-size: 14px !important;
     }
-  }
-}
 
-.multiselect__placeholder {
-  margin: 0 !important;
-}
+    .multiselect__option:after {
+        line-height: 30px !important;
+    }
 
-.multiselect__select {
-  height: 30px !important;
-}
+    .multiselect__option--highlight {
+        &, &:after
 
-.multiselect__option {
-  padding: 6px 12px !important;
-  min-height: 30px !important;
-}
+    {
+        background: var(--primary-color-opacity-85) !important;
+    }
 
-.multiselect__tags {
-  min-height: 30px !important;
-  padding: 2px 40px 0 8px !important;
-}
+    &.multiselect__option--selected {
+        &, &:after
 
-.multiselect__tag {
-  background: var(--primary-color-opacity-85) !important;
-}
+    {
+        background: #e32222 !important;
+    }
 
-.multiselect__tag-icon:after {
-  color: var(--white) !important;
-}
+    }
+    }
 
-.multiselect--active .multiselect__tags {
-  padding: 8px 40px 0 8px !important;
-}
+    .multiselect__placeholder {
+        margin: 0 !important;
+    }
 
-.submit-btn {
-  width: 20%;
-  float: right;
-}
+    .multiselect__select {
+        height: 30px !important;
+    }
 
-#computedLayerModal .modal__body {
-  overflow: unset;
-}
+    .multiselect__option {
+        padding: 6px 12px !important;
+        min-height: 30px !important;
+    }
+
+    .multiselect__tags {
+        min-height: 30px !important;
+        padding: 2px 40px 0 8px !important;
+    }
+
+    .multiselect__tag {
+        background: var(--primary-color-opacity-85) !important;
+    }
+
+    .multiselect__tag-icon:after {
+        color: var(--white) !important;
+    }
+
+    .multiselect--active .multiselect__tags {
+        padding: 8px 40px 0 8px !important;
+    }
+
+    .submit-btn {
+        width: 20%;
+        float: right;
+    }
+
+    #computedLayerModal .modal__body {
+        overflow: unset;
+    }
 </style>

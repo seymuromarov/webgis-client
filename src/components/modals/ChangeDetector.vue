@@ -1,40 +1,34 @@
 <template>
-  <CustomModal
-    name="detectorModal"
-    title="Change detection"
-    :minWidth="600"
-    :minHeight="400"
-    @afterHide="$emit('close')"
-  >
-    <!-- <div class="detector-wrapper"> -->
-    <div class="detector">
-      <!-- <p class="detector-title"></p> -->
-      <!-- <button @click="$emit('close')">&#x2715;</button> -->
-      <multiselect
-        v-model="selectedLayers"
-        :options="baseLayerList"
-        placeholder="Layers"
-        :close-on-select="false"
-        :multiple="true"
-        label="showingLabel"
-        track-by="name"
-        style="margin: 15px 0;"
-      ></multiselect>
-      <div class="detector-list">
-        <div
-          :key="index"
-          v-for="(exported, index) in exportedImages"
-          class="detector-list-item"
-        >
-          <p>{{ exported.label }}</p>
-          <div class="image-wrapper">
-            <img :src="exported.image" />
-          </div>
+    <CustomModal name="detectorModal"
+                 title="Change detection"
+                 :minWidth="600"
+                 :minHeight="400"
+                 @afterHide="$emit('close')">
+        <!-- <div class="detector-wrapper"> -->
+        <div class="detector">
+            <!-- <p class="detector-title"></p> -->
+            <!-- <button @click="$emit('close')">&#x2715;</button> -->
+            <multiselect v-model="selectedLayers"
+                         :options="baseLayerList"
+                         placeholder="Layers"
+                         :close-on-select="false"
+                         :multiple="true"
+                         label="showingLabel"
+                         track-by="name"
+                         style="margin: 15px 0;"></multiselect>
+            <div class="detector-list">
+                <div :key="index"
+                     v-for="(exported, index) in exportedImages"
+                     class="detector-list-item">
+                    <p>{{ exported.label }}</p>
+                    <div class="image-wrapper">
+                        <img :src="exported.image" />
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <!-- </div> -->
-  </CustomModal>
+        <!-- </div> -->
+    </CustomModal>
 </template>
 
 <script>

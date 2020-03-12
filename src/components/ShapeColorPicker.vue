@@ -1,37 +1,31 @@
 <template>
-  <div class="colorPickers colorPickers--light">
-    <ul class="nav">
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          :class="{ active: !isBorder }"
-          href="#"
-          @click="borderClick(false)"
-          >Fill Color</a
-        >
-      </li>
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          :class="{ active: isBorder }"
-          href="#"
-          @click="borderClick(true)"
-          >Border Color</a
-        >
-      </li>
-    </ul>
+    <div class="colorPickers colorPickers--light">
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link"
+                   :class="{ active: !isBorder }"
+                   href="#"
+                   @click="borderClick(false)">Fill Color</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"
+                   :class="{ active: isBorder }"
+                   href="#"
+                   @click="borderClick(true)">Border Color</a>
+            </li>
+        </ul>
 
-    <div class="colorPicker">
-      <ColorScheme v-model="borderColor" v-if="isBorder"></ColorScheme>
-      <ColorScheme v-model="fillColor" v-else></ColorScheme>
-    </div>
+        <div class="colorPicker">
+            <ColorScheme v-model="borderColor" v-if="isBorder"></ColorScheme>
+            <ColorScheme v-model="fillColor" v-else></ColorScheme>
+        </div>
 
-    <div class="colorPickerButton">
-      <button class="btn btn-sm btn-primary" type="button" @click="save">
-        Save
-      </button>
+        <div class="colorPickerButton">
+            <button class="btn btn-sm btn-primary" type="button" @click="save">
+                Save
+            </button>
+        </div>
     </div>
-  </div>
 </template>
 <script>
 import { Chrome } from "vue-color";

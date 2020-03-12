@@ -4,7 +4,7 @@
             :id="name"
             class="Modal modal--overlay"
             v-show="visible"
-            v-if="mounted"
+            v-if="isMounted"
             @click.self="hide"
         >
             <div class="modal__content" :style="contentStyle">
@@ -87,10 +87,14 @@ export default {
             type: String,
             default: "",
         },
+        mounted: {
+            type: Boolean,
+            default: true,
+        },
     },
     data() {
         return {
-            mounted: true,
+            isMounted: this.mounted,
             visible: false,
         };
     },
@@ -142,13 +146,15 @@ export default {
         // Mount to the DOM
         open() {
             this.$emit("beforeOpen");
-            this.mounted = true;
+            this.isMounted = true;
+            this.show();
             this.$emit("afterOpen");
         },
         // Unmount from the DOM
         close() {
             this.$emit("beforeClose");
-            this.mounted = false;
+            this.isMounted = false;
+            this.hide();
             this.$emit("afterClose");
         },
         // Show
