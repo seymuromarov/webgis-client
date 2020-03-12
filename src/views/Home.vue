@@ -701,20 +701,6 @@ export default {
         showColumnsChange() {
             this.toggler.showColumnsChange();
         },
-        showSimpleFilterModal(layerId, layerName) {
-            this.$store.dispatch("SAVE_DATATABLE_LAYER_ID", layerId);
-            this.$store.dispatch("SAVE_DATATABLE_SERVICE_NAME", layerName);
-            this.$refs.reportFilterModal.$modal.show(
-                "simple-data-filter-modal",
-                null,
-                {
-                    name: "simple-data-filter-modal",
-                    resizable: false,
-                    adaptive: true,
-                    draggable: false,
-                }
-            );
-        },
         resolveHash(hash) {
             var result = null;
             if (hash !== "") {
@@ -888,7 +874,6 @@ export default {
             let response;
             let activeService = this.$store.getters.tableActiveService;
             this.dataTableVisibility = true;
-            // this.$store.dispatch("SAVE_DATATABLE_VISIBLE", true);
             this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
 
             if (serviceHelper.isArcgisService(service)) {
@@ -1485,6 +1470,8 @@ export default {
                 this.$store.dispatch("saveFocusePolygonVector", value);
             },
         },
+
+        // This should not work
         tablePaging: {
             get() {
                 return this.$store.state.dataTable.paging;

@@ -428,20 +428,6 @@ export default {
                 return this.$store.state.dataTable.data;
             },
         },
-        // tableData: {
-        //     get() {
-        //         // return this.$store.state.dataTable.tableData;
-        //         if (this.activeTabId) {
-        //             return this.$store.state.dataTable.services[this.activeTabId]
-        //                 .tableData;
-        //         } else {
-        //             return null;
-        //         }
-        //     },
-        //     set(value) {
-        //         this.$store.dispatch("SAVE_DATATABLE_DATA", value);
-        //     },
-        // },
         target() {
             return this.activeTableData.target;
         },
@@ -470,9 +456,6 @@ export default {
                 });
             },
         },
-        // checkedColumns() {
-        //     return this.$store.state.dataTable.checkedColumns;
-        // },
         lastBBOXOfShape() {
             return this.activeTableData.lastBBOXOfShape;
         },
