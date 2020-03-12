@@ -36,8 +36,8 @@ const getters = {
         return bunch;
     },
     getBunchLayer(bunchId, layerId) {
-        var bunch = getters.getBunch(bunchId);
-        var layer = bunch.layers.find(c => c.id == layerId);
+        const bunch = getters.getBunch(bunchId);
+        const layer = bunch.layers.find(c => c.id === layerId);
         return layer;
     },
 };

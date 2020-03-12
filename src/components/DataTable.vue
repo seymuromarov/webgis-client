@@ -197,7 +197,6 @@ export default {
                 fit: true,
                 event: "",
             },
-            activeTabId: null,
         };
     },
     mounted() {
@@ -217,11 +216,6 @@ export default {
             },
             deep: true,
             immediate: false,
-        },
-        tabs() {
-            // if (!this.activeTabId) {
-            this.activeTabId = this.tabs[0].id;
-            // }
         },
     },
     methods: {
@@ -481,6 +475,14 @@ export default {
         // },
         lastBBOXOfShape() {
             return this.activeTableData.lastBBOXOfShape;
+        },
+        activeTabId: {
+            get() {
+                return this.$store.state.dataTable.activeTabId;
+            },
+            set(id) {
+                this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
+            },
         },
         activeTableData() {
             const item = this.dataArray.find(

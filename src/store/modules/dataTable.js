@@ -17,6 +17,7 @@ const defaultService = {
 };
 
 const state = {
+    activeTabId: null,
     tabs: [],
     activeService: null,
     data: [],
@@ -98,6 +99,9 @@ const mutations = {
     },
     SET_DATATABLE_QUERY(state, { id, query }) {
         state.data.find(x => x.service.id === id).service.query.where = query;
+    },
+    SET_DATATABLE_ACTIVE_TAB_ID(state, id) {
+        state.activeTabId = id;
     },
 };
 
@@ -191,13 +195,21 @@ const actions = {
 
     SAVE_DATATABLE_TABS(context, payload) {
         context.commit("SET_DATATABLE_TABS", payload);
+        context.commit(
+            "SET_DATATABLE_ACTIVE_TAB_ID",
+            payload.length ? payload[0].id : null
+        );
     },
     SAVE_DATATABLE_QUERY(context, { id, query }) {
         context.commit("SET_DATATABLE_QUERY", { id, query });
     },
 
     RESET_DATATABLE(context) {
-        context.commit("SET_DATATABLE", []);
+        context.dispatch("SAVE_DATATABLE", []);
+        context.dispatch("SAVE_DATATABLE_TABS", []);
+    },
+    SAVE_DATATABLE_ACTIVE_TAB_ID(context, id) {
+        context.commit("SET_DATATABLE_ACTIVE_TAB_ID", id);
     },
 };
 

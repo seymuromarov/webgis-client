@@ -143,7 +143,7 @@ export default {
     },
     data() {
         return {
-            activeTabId: null,
+            // activeTabId: null,
             actionsList: [
                 "=",
                 ">",
@@ -176,14 +176,15 @@ export default {
             this.$moodal.filterModal.hide();
         },
     },
-    watch: {
-        tabs() {
-            if (!this.activeTabId) {
-                this.activeTabId = this.tabs[0].id;
-            }
-        },
-    },
     computed: {
+        activeTabId: {
+            get() {
+                return this.$store.state.dataTable.activeTabId;
+            },
+            set(id) {
+                this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
+            },
+        },
         activeTab() {
             return this.$store.state.dataTable.data.find(
                 x => x.service.id === this.activeTabId
@@ -206,7 +207,7 @@ export default {
                         activeService.id,
                         this.activeTabId
                     );
-                    where = bunchLayer.query.where;
+                    where = bunchLayer ? bunchLayer.query.where : "";
                 } else {
                     let layer = layerController.getDynamicLayer(
                         this.activeTabId
