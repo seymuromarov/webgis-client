@@ -29,7 +29,7 @@
                             v-for="tab in tabs"
                             :key="tab.id"
                             :class="{
-                                'table__tab--active': tab.id == activeTabId,
+                                'table__tab--active': tab.id == currentTabId,
                             }"
                             @click="setActiveTab(tab.id)"
                         >
@@ -181,6 +181,7 @@ export default {
     },
     data() {
         return {
+            currentTabId: null,
             toggler: null,
             isColumnPopupShowing: false,
             selectedData: [],
@@ -213,6 +214,13 @@ export default {
             handler() {
                 this.resetScroll();
                 this.resetPaging();
+            },
+            deep: true,
+            immediate: false,
+        },
+        activeTabId: {
+            handler(val) {
+                this.currentTabId = Number(val);
             },
             deep: true,
             immediate: false,
@@ -397,10 +405,10 @@ export default {
         },
         paging: {
             get() {
-                return tableController.getData(this.activeTabId).paging;
+                return tableController.getData(this.currentTabId).paging;
             },
             set(value) {
-                tableController.setPaging(this.activeTabId, value);
+                tableController.setPaging(this.currentTabId, value);
             },
         },
         serviceInfo() {
@@ -423,9 +431,9 @@ export default {
         tableHeadersWithAlias() {
             return this.activeTableData.tableHeadersWithAlias;
         },
-        dataArray: {
+        tableData: {
             get() {
-                return this.$store.state.dataTable.data;
+                return this.$store.getters.tableData;
             },
         },
         target() {
@@ -437,7 +445,7 @@ export default {
             },
             set(value) {
                 this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", {
-                    id: this.activeTabId,
+                    id: this.currentTabId,
                     value,
                 });
             },
@@ -451,7 +459,7 @@ export default {
             },
             set(value) {
                 this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", {
-                    id: this.activeTabId,
+                    id: this.currentTabId,
                     value,
                 });
             },
@@ -468,19 +476,11 @@ export default {
             },
         },
         activeTableData() {
-            const item = this.dataArray.find(
-                x => x.service.id === this.activeTabId
-            );
-
-            if (item) {
-                return item.data;
-            } else {
-                return [];
-            }
+            return this.$store.getters.activeTableData;
         },
         activeTableService() {
-            const item = this.dataArray.find(
-                x => x.service.id === this.activeTabId
+            const item = this.tableData.find(
+                x => x.service.id === this.currentTabId
             );
 
             if (item) {

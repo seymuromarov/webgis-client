@@ -10,7 +10,9 @@ const tableData = {
 const getters = {
     getData(serviceId) {
         let data = tableData.get();
-        return data.find(x => x.service.id === serviceId);
+        let result = data.find(x => x.service.id === serviceId);
+        console.log({ result, data });
+        return result;
     },
 };
 

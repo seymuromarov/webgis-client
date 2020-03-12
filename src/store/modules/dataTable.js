@@ -28,6 +28,9 @@ const mutations = {
     SET_DATATABLE_CHECKED_COLUMNS_DATA(state, { id, value }) {
         state.data.find(x => x.service.id === id).data.checkedColumns = value;
     },
+    SET_DATATABLE_FILTER_VALUES(state, { id, value }) {
+        state.data.find(x => x.service.id === id).data.filterValues = value;
+    },
     SET_DATATABLE_VISIBLE(state, isVisible) {
         state.isVisible = isVisible;
     },
@@ -46,6 +49,14 @@ const getters = {
     dataTableLoading: state => state.loading,
     tableData: state => state.data,
     tableActiveService: state => state.activeService,
+    activeTableData: state => {
+        const item = state.data.find(x => x.service.id === state.activeTabId);
+        return item ? item.data : {};
+    },
+    activeTableService: state => {
+        const item = state.data.find(x => x.service.id === state.activeTabId);
+        return item ? item.data : {};
+    },
 };
 
 const actions = {
@@ -71,17 +82,20 @@ const actions = {
     SAVE_DATATABLE_CHECKED_COLUMNS_DATA(context, { id, value }) {
         context.commit("SET_DATATABLE_CHECKED_COLUMNS_DATA", { id, value });
     },
+    SAVE_DATATABLE_FILTER_VALUES(context, { id, value }) {
+        context.commit("SET_DATATABLE_FILTER_VALUES", { id, value });
+    },
     SAVE_DATATABLE_VISIBLE(context, isVisible) {
         context.commit("SET_DATATABLE_VISIBLE", isVisible);
     },
-    SAVE_DATATABLE_LOADING(context, loading) {
-        context.commit("SET_DATATABLE_LOADING", loading);
+    SAVE_DATATABLE_LOADING(context, payload) {
+        context.commit("SET_DATATABLE_LOADING", payload);
     },
-    SAVE_DATATABLE_PAGING(context, paging) {
-        context.commit("SET_DATATABLE_PAGING", paging);
+    SAVE_DATATABLE_PAGING(context, payload) {
+        context.commit("SET_DATATABLE_PAGING", payload);
     },
-    SAVE_DRAW_BBOX(context, drawBBOX) {
-        context.commit("SET_DRAW_BBOX", drawBBOX);
+    SAVE_DRAW_BBOX(context, payload) {
+        context.commit("SET_DRAW_BBOX", payload);
     },
     RESET_DATATABLE(context) {
         context.dispatch("SAVE_DATATABLE", []);

@@ -48,15 +48,12 @@
         </CustomModal>
 
         <!-- Filter -->
-        <CustomModal name="filterModal" title="Filter" :maxWidth="600">
-            <FilterBox
-                :filterValues="filterValues"
-                :tableFeaturesHeader="tableFeaturesHeader"
-                :stackedTableFeaturesHeader="stackedTableFeaturesHeader"
-                @filterSelectedColumn="filterSelectedColumn"
-                @filterData="filterData"
-            />
-        </CustomModal>
+        <FilterModal
+            :filterValues="filterValues"
+            @filterSelectedColumn="filterSelectedColumn"
+            @filterData="filterData"
+        />
+
         <!-- Shape Color Picker -->
         <CustomModal
             name="colorPickerModal"
@@ -181,7 +178,7 @@ export default {
         DetectorModal,
         InfoModal,
         Sidebar,
-        FilterBox: Filter,
+        FilterModal: Filter,
         Report,
         MapControls,
         CustomModal,
@@ -195,7 +192,7 @@ export default {
             latChange: null,
             longChange: null,
             ArithmeticDataResult: {},
-            filterValues: [],
+            // filterValues: [],
             value: [],
             checkedColumns: [],
             checkedColumnsData: [],
@@ -216,9 +213,9 @@ export default {
 
             hashResolveResult: [],
 
+            tableFeaturesData: [],
             stackedTableFeaturesHeader: [],
             tableFeaturesHeader: [],
-            tableFeaturesData: [],
             tableNextRequest: [],
             citySearchOptions: [],
             citySearchInputShow: false,
@@ -592,18 +589,20 @@ export default {
             this.mapHelper.exportData(this);
         },
         async filterSelectedColumn(id, column) {
-            let service = this.$store.getters.tableData.find(
+            const service = this.$store.getters.tableData.find(
                 x => x.service.id === id
             ).service;
+
+            const params = { id };
+
             this.filterValues = [];
-            let params = {
-                id,
-            };
+
             if (serviceHelper.isLocalService(service)) {
-                let getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
+                const getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
                     params
                 );
-                let result = getLayerColumnsDistinctData.data.result;
+                const result = getLayerColumnsDistinctData.data.result;
+
                 this.filterValues =
                     result[
                         Object.keys(result).find(
@@ -611,7 +610,7 @@ export default {
                         )
                     ];
             } else {
-                let keys = Object.keys(this.tableHeadersWithAlias);
+                const keys = Object.keys(this.tableHeadersWithAlias);
                 for (let i = 0; i < keys.length; i++) {
                     if (this.tableHeadersWithAlias[keys[i]] === column) {
                         column = keys[i];
@@ -630,12 +629,6 @@ export default {
                     }
                 }
             }
-
-            // if (getLayerColumnsDistinctData.status === 200) {
-
-            // } else {
-
-            // }
         },
         filterData(service, query) {
             // this.tableNextRequest["service"],
@@ -822,6 +815,7 @@ export default {
                         tableStackedHeaders: Object.keys(tableHeadersWithAlias),
                         tableHeadersWithAlias,
                         tableData: item.features,
+                        filterValues: [],
                         target,
                         checkedColumnsData,
                         checkedColumns,
@@ -1567,6 +1561,22 @@ export default {
                 }
             }
             return columns;
+        },
+        activeTabId() {
+            return this.$store.state.dataTable.activeTabId;
+        },
+        filterValues: {
+            get() {
+                const data = this.$store.getters.activeTableData;
+                return data ? data.filterValues : [];
+            },
+            set(value) {
+                console.log(value);
+                this.$store.dispatch("SAVE_DATATABLE_FILTER_VALUES", {
+                    id: this.activeTabId,
+                    value,
+                });
+            },
         },
     },
 };
