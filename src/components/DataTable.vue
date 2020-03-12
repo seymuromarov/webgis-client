@@ -26,7 +26,7 @@
                              v-for="tab in tabs"
                              :key="tab.id"
                              :class="{
-                                'table__tab--active': tab.id == activeTabId,
+                                'table__tab--active': tab.id == currentTabId,
                             }"
                              @click="setActiveTab(tab.id)">
                             {{ tab.name }}
@@ -137,79 +137,81 @@
 </template>
 
 <script>
-    import { toggler } from "../helpers";
-    import Multiselect from "vue-multiselect";
-    import LayerService from "../services/LayerService";
-    import Resizable from "vue-resizable";
-    import CustomModal from "./common/Modal";
-    import { tableController } from "@/controllers";
-    import { serviceHelper } from "@/helpers";
-    export default {
-        name: "DataTable",
-        components: {
-            Multiselect,
-            Resizable,
-            CustomModal,
-        },
-        data() {
-            return {
-                toggler: null,
-                isColumnPopupShowing: false,
-                selectedData: [],
-                resize: {
-                    handlers: ["t"],
-                    left: 0,
-                    top: window.innerHeight - 200,
-                    height: window.innerHeight,
-                    width: window.innerWidth,
-                    maxW: 10000,
-                    maxH: window.innerHeight,
-                    minW: 150,
-                    minH: 200,
-                    fit: true,
-                    event: "",
-                },
-                activeTabId: null,
-            };
-        },
-        mounted() {
-            this.scrollHandler();
-        },
-        created() {
-            window.addEventListener("resize", this.update);
-        },
-        destroyed() {
-            window.removeEventListener("resize", this.update);
-        },
-        watch: {
-            isVisible: {
-                handler() {
-                    this.resetScroll();
-                    this.resetPaging();
-                },
-                deep: true,
-                immediate: false,
+import { toggler } from "../helpers";
+import Multiselect from "vue-multiselect";
+import LayerService from "../services/LayerService";
+import Resizable from "vue-resizable";
+import CustomModal from "./common/Modal";
+import { tableController } from "@/controllers";
+import { serviceHelper } from "@/helpers";
+export default {
+    name: "DataTable",
+    components: {
+        Multiselect,
+        Resizable,
+        CustomModal,
+    },
+    data() {
+        return {
+            currentTabId: null,
+            toggler: null,
+            isColumnPopupShowing: false,
+            selectedData: [],
+            resize: {
+                handlers: ["t"],
+                left: 0,
+                top: window.innerHeight - 200,
+                height: window.innerHeight,
+                width: window.innerWidth,
+                maxW: 10000,
+                maxH: window.innerHeight,
+                minW: 150,
+                minH: 200,
+                fit: true,
+                event: "",
             },
-            tabs() {
-                // if (!this.activeTabId) {
-                this.activeTabId = this.tabs[0].id;
-                // }
+        };
+    },
+    mounted() {
+        this.scrollHandler();
+    },
+    created() {
+        window.addEventListener("resize", this.update);
+    },
+    destroyed() {
+        window.removeEventListener("resize", this.update);
+    },
+    watch: {
+        isVisible: {
+            handler() {
+                this.resetScroll();
+                this.resetPaging();
             },
+            deep: true,
+            immediate: false,
         },
-        methods: {
-            resetScroll() {
-                if (this.$refs.dataTableContent) {
-                    this.$refs.dataTableContent.scrollTo(0, 0);
-                }
+        activeTabId: {
+            handler(val) {
+                this.currentTabId = Number(val);
             },
-            isEndOfData() {
-                return this.paging.page * this.paging.limit > this.totalCount;
-            },
-            scrollHandler() {
-                const table = document.getElementById("dataTable");
-                table.addEventListener("scroll", e => {
-                    if (
-                        table.scrollTop + table.clientHeight >=
+            deep: true,
+            immediate: false,
+        },
+    },
+    methods: {
+        resetScroll() {
+            if (this.$refs.dataTableContent) {
+                this.$refs.dataTableContent.scrollTo(0, 0);
+            }
+        },
+        isEndOfData() {
+            return this.paging.page * this.paging.limit > this.totalCount;
+        },
+        scrollHandler() {
+            const table = document.getElementById("dataTable");
+            table.addEventListener("scroll", e => {
+                if (
+                    table.scrollTop + table.clientHeight >=
                         table.scrollHeight &&
                         !this.paging.isBusy &&
                         !this.isEndOfData() &&
@@ -357,118 +359,101 @@
                 this.resize.width = window.innerWidth;
                 this.resize.maxH = window.innerHeight;
 
-                this.$forceUpdate();
+            this.$forceUpdate();
+        },
+        setActiveTab(tab) {
+            this.activeTabId = tab;
+        },
+    },
+    computed: {
+        isVisible() {
+            return this.$store.state.dataTable.isVisible;
+        },
+        loading() {
+            return this.$store.getters.dataTableLoading;
+        },
+        totalCount() {
+            return this.$store.state.dataTable.totalCount;
+        },
+        paging: {
+            get() {
+                return tableController.getData(this.currentTabId).paging;
             },
-            setActiveTab(tab) {
-                this.activeTabId = tab;
+            set(value) {
+                tableController.setPaging(this.currentTabId, value);
             },
         },
-        computed: {
-            isVisible() {
-                return this.$store.state.dataTable.isVisible;
+        serviceInfo() {
+            return this.activeTableData.serviceInfo;
+        },
+        tableName() {
+            return this.activeTableData.tableName;
+        },
+        tableHeaders() {
+            return this.activeTableData.tableHeaders;
+        },
+        tableStackedHeaders: {
+            get() {
+                return this.activeTableData.tableStackedHeaders;
             },
-            loading() {
-                return this.$store.getters.dataTableLoading;
+            set(value) {
+                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
             },
-            totalCount() {
-                return this.$store.state.dataTable.totalCount;
+        },
+        tableHeadersWithAlias() {
+            return this.activeTableData.tableHeadersWithAlias;
+        },
+        tableData: {
+            get() {
+                return this.$store.getters.tableData;
             },
-            paging: {
-                get() {
-                    return tableController.getData(this.activeTabId).paging;
-                },
-                set(value) {
-                    tableController.setPaging(this.activeTabId, value);
-                },
+        },
+        target() {
+            return this.activeTableData.target;
+        },
+        checkedColumnsData: {
+            get() {
+                return this.activeTableData.checkedColumnsData;
             },
-            serviceInfo() {
-                return this.activeTableData.serviceInfo;
+            set(value) {
+                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", {
+                    id: this.currentTabId,
+                    value,
+                });
             },
-            tableName() {
-                return this.activeTableData.tableName;
+        },
+        tabs() {
+            return this.$store.state.dataTable.tabs;
+        },
+        checkedColumns: {
+            get() {
+                return this.activeTableData.checkedColumns;
             },
-            tableHeaders() {
-                return this.activeTableData.tableHeaders;
+            set(value) {
+                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", {
+                    id: this.currentTabId,
+                    value,
+                });
             },
-            tableStackedHeaders: {
-                get() {
-                    return this.activeTableData.tableStackedHeaders;
-                },
-                set(value) {
-                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-                },
+        },
+        lastBBOXOfShape() {
+            return this.activeTableData.lastBBOXOfShape;
+        },
+        activeTabId: {
+            get() {
+                return this.$store.state.dataTable.activeTabId;
             },
-            tableHeadersWithAlias() {
-                return this.activeTableData.tableHeadersWithAlias;
+            set(id) {
+                this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
             },
-            dataArray: {
-                get() {
-                    return this.$store.state.dataTable.data;
-                },
-            },
-            // tableData: {
-            //     get() {
-            //         // return this.$store.state.dataTable.tableData;
-            //         if (this.activeTabId) {
-            //             return this.$store.state.dataTable.services[this.activeTabId]
-            //                 .tableData;
-            //         } else {
-            //             return null;
-            //         }
-            //     },
-            //     set(value) {
-            //         this.$store.dispatch("SAVE_DATATABLE_DATA", value);
-            //     },
-            // },
-            target() {
-                return this.activeTableData.target;
-            },
-            checkedColumnsData: {
-                get() {
-                    return this.activeTableData.checkedColumnsData;
-                },
-                set(value) {
-                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", {
-                        id: this.activeTabId,
-                        value,
-                    });
-                },
-            },
-            tabs() {
-                return this.$store.state.dataTable.tabs;
-            },
-            checkedColumns: {
-                get() {
-                    return this.activeTableData.checkedColumns;
-                },
-                set(value) {
-                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", {
-                        id: this.activeTabId,
-                        value,
-                    });
-                },
-            },
-            // checkedColumns() {
-            //     return this.$store.state.dataTable.checkedColumns;
-            // },
-            lastBBOXOfShape() {
-                return this.activeTableData.lastBBOXOfShape;
-            },
-            activeTableData() {
-                const item = this.dataArray.find(
-                    x => x.service.id === this.activeTabId
-                );
-
-                if (item) {
-                    return item.data;
-                } else {
-                    return [];
-                }
-            },
-            activeTableService() {
-                const item = this.dataArray.find(
-                    x => x.service.id === this.activeTabId
-                );
+        },
+        activeTableData() {
+            return this.$store.getters.activeTableData;
+        },
+        activeTableService() {
+            const item = this.tableData.find(
+                x => x.service.id === this.currentTabId
+            );
 
                 if (item) {
                     return item.service;

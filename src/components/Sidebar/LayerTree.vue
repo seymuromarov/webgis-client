@@ -72,176 +72,176 @@
 </template>
 
 <script>
-import ToggleSwitch from "../common/ToggleSwitch";
-import LayerColorPicker from "../LayerColorPicker";
-import { layerHelper, serviceHelper } from "@/helpers";
-import { bunchController, mapController } from "@/controllers";
-import { bunchService } from "@/services";
+    import ToggleSwitch from "../common/ToggleSwitch";
+    import LayerColorPicker from "../LayerColorPicker";
+    import { layerHelper, serviceHelper } from "@/helpers";
+    import { bunchController, mapController } from "@/controllers";
+    import { bunchService } from "@/services";
 
-export default {
-    name: "LayerTree",
-    components: {
-        ToggleSwitch,
-        LayerColorPicker,
-    },
-    props: {
-        data: {
-            type: Object,
+    export default {
+        name: "LayerTree",
+        components: {
+            ToggleSwitch,
+            LayerColorPicker,
         },
-        parent: {
-            type: Object,
-        },
-        loop: {
-            type: Number,
-            default: 1,
-        },
-    },
-    data() {
-        return {
-            subListVisibility: false,
-            layerIsSelected: false,
-        };
-    },
-    computed: {
-        switchModel: {
-            get() {
-                if (serviceHelper.isLayer(this.data)) {
-                    return this.data.isSelected;
-                } else {
-                    return this.data.defaultVisibility;
-                }
+        props: {
+            data: {
+                type: Object,
             },
-            set(e) {
-                if (e.target.checked === false) {
-                    this.subListVisibility = false;
-                }
-
-                this.layerPicker(e);
+            parent: {
+                type: Object,
+            },
+            loop: {
+                type: Number,
+                default: 1,
             },
         },
-        paddingLeft() {
-            return this.loop * 16 + "px";
+        data() {
+            return {
+                subListVisibility: false,
+                layerIsSelected: false,
+            };
         },
-        isCategory() {
-            return serviceHelper.isCategory(this.data);
-        },
-        caretIconsVisibility() {
-            return (
-                this.isCategory ||
-                (serviceHelper.isLayer(this.data) &&
-                    serviceHelper.isDynamicFromArcgis(this.data) &&
-                    this.data.isSelected)
-            );
-        },
-        tableIconVisibility() {
-            return (
-                this.data.isSelected &&
-                (serviceHelper.isSublayer(this.data) ||
-                    serviceHelper.isBunch(this.data) ||
+        computed: {
+            switchModel: {
+                get() {
+                    if (serviceHelper.isLayer(this.data)) {
+                        return this.data.isSelected;
+                    } else {
+                        return this.data.defaultVisibility;
+                    }
+                },
+                set(e) {
+                    if (e.target.checked === false) {
+                        this.subListVisibility = false;
+                    }
+
+                    this.layerPicker(e);
+                },
+            },
+            paddingLeft() {
+                return this.loop * 16 + "px";
+            },
+            isCategory() {
+                return serviceHelper.isCategory(this.data);
+            },
+            caretIconsVisibility() {
+                return (
+                    this.isCategory ||
                     (serviceHelper.isLayer(this.data) &&
-                        serviceHelper.isDynamicFromLocal(this.data)))
-            );
-        },
-        colorIconVisibility() {
-            return (
-                this.data.isSelected &&
-                this.data.isColorEnabled &&
-                (serviceHelper.isSublayer(this.data) ||
-                    serviceHelper.isBunch(this.data) ||
-                    (serviceHelper.isLayer(this.data) &&
-                        serviceHelper.isDynamicFromLocal(this.data)))
-            ); // && this.color;
-        },
-        deleteIconVisibility() {
-            return this.data.isColorEnabled && serviceHelper.isBunch(this.data); // && this.color;
-        },
-        operationsVisibility() {
-            return this.tableIconVisibility || this.colorIconVisibility;
-        },
-        colorPickerVisibility() {
-            return (
-                this.data.isSelected &&
-                this.activeColorPickerId === this.getLayerId()
-            );
-        },
-        activeColorPickerId: {
-            get() {
-                return this.$store.getters.activeColorPickerId;
-            },
-            set(value) {
-                this.$store.dispatch("SAVE_ACTIVE_COLOR_PICKER_ID", value);
-            },
-        },
-    },
-    methods: {
-        toggleSubList() {
-            this.subListVisibility = !this.subListVisibility;
-            if (this.subListVisibility)
-                this.dynamicLayersReset(this.data, this.subListVisibility);
-        },
-        onColorPickerSave(color) {
-            this.$emit("saveColor", this.data, color);
-        },
-        saveColor(data, color) {
-            this.$emit("saveColor", data, color);
-        },
-        colorPickerOnClose() {
-            this.activeColorPickerId = null;
-        },
-        layerPicker(event) {
-            let isChecked = event.target.checked;
-
-            if (serviceHelper.isSublayer(this.data)) {
-                this.$emit(
-                    "selectSubLayer",
-                    this.parent,
-                    this.parent.order,
-                    this.data.id,
-                    isChecked
+                        serviceHelper.isDynamicFromArcgis(this.data) &&
+                        this.data.isSelected)
                 );
-            } else {
-                this.$emit("selectService", this.data, isChecked);
-                this.$emit("dynamicLayersReset", this.data, isChecked);
-            }
+            },
+            tableIconVisibility() {
+                return (
+                    this.data.isSelected &&
+                    (serviceHelper.isSublayer(this.data) ||
+                        serviceHelper.isBunch(this.data) ||
+                        (serviceHelper.isLayer(this.data) &&
+                            serviceHelper.isDynamicFromLocal(this.data)))
+                );
+            },
+            colorIconVisibility() {
+                return (
+                    this.data.isSelected &&
+                    this.data.isColorEnabled &&
+                    (serviceHelper.isSublayer(this.data) ||
+                        serviceHelper.isBunch(this.data) ||
+                        (serviceHelper.isLayer(this.data) &&
+                            serviceHelper.isDynamicFromLocal(this.data)))
+                ); // && this.color;
+            },
+            deleteIconVisibility() {
+                return this.data.isColorEnabled && serviceHelper.isBunch(this.data); // && this.color;
+            },
+            operationsVisibility() {
+                return this.tableIconVisibility || this.colorIconVisibility;
+            },
+            colorPickerVisibility() {
+                return (
+                    this.data.isSelected &&
+                    this.activeColorPickerId === this.getLayerId()
+                );
+            },
+            activeColorPickerId: {
+                get() {
+                    return this.$store.getters.activeColorPickerId;
+                },
+                set(value) {
+                    this.$store.dispatch("SAVE_ACTIVE_COLOR_PICKER_ID", value);
+                },
+            },
         },
-        selectService(item, isChecked) {
-            this.$emit("selectService", item, isChecked);
-        },
-        selectSubLayer(parent, order, itemId, event) {
-            this.$emit("selectSubLayer", parent, order, itemId, event);
-        },
-        dynamicLayersReset(data, status) {
-            this.$emit("dynamicLayersReset", data, status);
-        },
-        getTableData(data, layerId, layerName, query) {
-            var service = serviceHelper.isSublayer(data) ? data.parent : data;
-            this.$emit("getTableData", service, layerId, layerName, query);
-        },
-        getLayerId() {
-            var id = 0;
-            if (serviceHelper.isSublayer(this.data)) {
-                id = this.data.uid;
-            } else if (
-                serviceHelper.isLayer(this.data) &&
-                serviceHelper.isDynamicFromLocal(this.data)
-            ) {
-                id = this.data.id;
-            }
-            return id;
-        },
-        toggleColorPicker() {
-            if (this.activeColorPickerId === this.getLayerId()) {
+        methods: {
+            toggleSubList() {
+                this.subListVisibility = !this.subListVisibility;
+                if (this.subListVisibility)
+                    this.dynamicLayersReset(this.data, this.subListVisibility);
+            },
+            onColorPickerSave(color) {
+                this.$emit("saveColor", this.data, color);
+            },
+            saveColor(data, color) {
+                this.$emit("saveColor", data, color);
+            },
+            colorPickerOnClose() {
                 this.activeColorPickerId = null;
-            } else {
-                this.activeColorPickerId = this.getLayerId();
-            }
+            },
+            layerPicker(event) {
+                let isChecked = event.target.checked;
+
+                if (serviceHelper.isSublayer(this.data)) {
+                    this.$emit(
+                        "selectSubLayer",
+                        this.parent,
+                        this.parent.order,
+                        this.data.id,
+                        isChecked
+                    );
+                } else {
+                    this.$emit("selectService", this.data, isChecked);
+                    this.$emit("dynamicLayersReset", this.data, isChecked);
+                }
+            },
+            selectService(item, isChecked) {
+                this.$emit("selectService", item, isChecked);
+            },
+            selectSubLayer(parent, order, itemId, event) {
+                this.$emit("selectSubLayer", parent, order, itemId, event);
+            },
+            dynamicLayersReset(data, status) {
+                this.$emit("dynamicLayersReset", data, status);
+            },
+            getTableData(data, layerId, layerName, query) {
+                var service = serviceHelper.isSublayer(data) ? data.parent : data;
+                this.$emit("getTableData", service, layerId, layerName, query);
+            },
+            getLayerId() {
+                var id = 0;
+                if (serviceHelper.isSublayer(this.data)) {
+                    id = this.data.uid;
+                } else if (
+                    serviceHelper.isLayer(this.data) &&
+                    serviceHelper.isDynamicFromLocal(this.data)
+                ) {
+                    id = this.data.id;
+                }
+                return id;
+            },
+            toggleColorPicker() {
+                if (this.activeColorPickerId === this.getLayerId()) {
+                    this.activeColorPickerId = null;
+                } else {
+                    this.activeColorPickerId = this.getLayerId();
+                }
+            },
+            deleteBunch() {
+                bunchService.remove(this.data.id).then(response => {
+                    bunchController.remove(this.data.id);
+                    mapController.deleteService(this.data);
+                });
+            },
         },
-        deleteBunch() {
-            bunchService.remove(this.data.id).then(response => {
-                bunchController.remove(this.data.id);
-                mapController.deleteService(this.data);
-            });
-        },
-    },
-};
+    };
 </script>

@@ -1,130 +1,130 @@
 <template>
-    <div class="data-table__filter">
-        <!-- Tabs -->
-        <div class="filter__tabs">
-            <div v-for="tab in tabs"
-                 :key="tab.id"
-                 class="tab"
-                 :class="{ 'tab--active': activeTabId === tab.id }"
-                 @click="setActiveTabId(tab.id)">
-                {{ tab.name }}
-            </div>
-        </div>
-
-        <div class="filter__fields">
-            <!-- Columns -->
-            <div class="filter__fields__columns">
-                <h5>Columns</h5>
-                <ul class="filter__fields__list custom-scrollbar">
-                    <li v-for="(alias, column) in tableFeaturesHeader"
-                        :key="column"
-                        class="list__item"
-                        @dblclick="
-                            appendFilterQuery(tableFeaturesTarget[alias])
-                        "
-                        @click="
-                            $emit(
-                                'filterSelectedColumn',
-                                activeTabId,
-                                tableFeaturesTarget[alias]
-                            )
-                        ">
-                        {{ alias }}
-                    </li>
-                </ul>
+    <Modal name="filterModal" title="Filter" :maxWidth="600">
+        <div class="data-table__filter">
+            <!-- Tabs -->
+            <div class="filter__tabs">
+                <div v-for="tab in tabs"
+                     :key="tab.id"
+                     class="tab"
+                     :class="{ 'tab--active': activeTabId === tab.id }"
+                     @click="setActiveTabId(tab.id)">
+                    {{ tab.name }}
+                </div>
             </div>
 
-            <!-- Column Values -->
-            <div class="filter__fields__values">
-                <h5>Values</h5>
-                <ul class="filter__fields__list custom-scrollbar">
-                    <li @dblclick="appendFilterQuery(value)"
-                        class="list__item"
-                        v-for="(value, index) in filterValues"
-                        :key="index">
-                        {{ value }}
-                    </li>
-                </ul>
+            <div class="filter__fields">
+                <!-- Columns -->
+                <div class="filter__fields__columns">
+                    <h5>Columns</h5>
+                    <ul class="filter__fields__list custom-scrollbar">
+                        <li v-for="(alias, column) in tableFeaturesHeader"
+                            :key="column"
+                            class="list__item"
+                            @dblclick="appendFilterQuery(alias)"
+                            @click="
+                                $emit(
+                                    'filterSelectedColumn',
+                                    activeTabId, alias
+                                )
+                            ">
+                            {{ alias }}
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column Values -->
+                <div class="filter__fields__values">
+                    <h5>Values</h5>
+                    <ul class="filter__fields__list custom-scrollbar">
+                        <li @dblclick="appendFilterQuery(value)"
+                            class="list__item"
+                            v-for="(value, index) in filterValues"
+                            :key="index">
+                            {{ value }}
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
 
-        <!-- Actions -->
-        <div class="filter__actions">
-            <div v-for="action in actionsList" :key="action">
-                <button @click="appendFilterQuery(action)"
-                        class="btn btn-sm btn-outline-secondary">
-                    {{ action }}
-                </button>
+            <!-- Actions -->
+            <div class="filter__actions">
+                <div v-for="action in actionsList" :key="action">
+                    <button @click="appendFilterQuery(action)"
+                            class="btn btn-sm btn-outline-secondary">
+                        {{ action }}
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <!-- Textarea -->
-        <div class="filter__query">
-            <label class="title">SELECT * FROM table WHERE:</label>
+            <!-- Textarea -->
+            <div class="filter__query">
+                <label class="title">SELECT * FROM table WHERE:</label>
 
-            <textarea ref="filterQueryTextarea"
-                      name="filterQuery"
-                      rows="4"
-                      cols="69"
-                      :value="activeTabQuery"
-                      @input="activeTabQuery = $event.target.value"></textarea>
-        </div>
+                <textarea ref="filterQueryTextarea"
+                          name="filterQuery"
+                          rows="4"
+                          cols="69"
+                          :value="activeTabQuery"
+                          @input="activeTabQuery = $event.target.value"></textarea>
+            </div>
 
-        <!-- Sum -->
-        <div v-show="reportCheckboxVisibility">
-            <label>
-                <input class="parent-checkbox"
-                       type="checkbox"
-                       id="isSum"
-                       :value="false"
-                       v-model="filterQueryIsSum"
-                       style="opacity:0;" />
-                <i class="far fa-check-circle"
-                   v-if="filterQueryIsSum"
-                   style="cursor: pointer; color:#008422"></i>
-                <i class="far fa-check-circle"
-                   v-else
-                   style="cursor: pointer;"></i>
-                Sum
-            </label>
+            <!-- Sum -->
+            <!-- <div v-show="serviceInfo.resourceType === 'local'">
+                <label>
+                    <input
+                        class="parent-checkbox"
+                        type="checkbox"
+                        id="isSum"
+                        :value="false"
+                        v-model="filterQueryIsSum"
+                        style="opacity:0;"
+                    />
+                    <i
+                        class="far fa-check-circle"
+                        v-if="filterQueryIsSum"
+                        style="cursor: pointer; color:#008422"
+                    ></i>
+                    <i
+                        class="far fa-check-circle"
+                        v-else
+                        style="cursor: pointer;"
+                    ></i>
+                    Sum
+                </label>
 
-            <label class="ml-4" v-if="filterQueryIsSum">
-                <select v-model="filterQueryArithmeticColumn">
-                    <option v-for="alias in tableFeaturesHeader"
+                <label class="ml-4" v-if="filterQueryIsSum">
+                    <select v-model="filterQueryArithmeticColumn">
+                        <option
+                            v-for="alias in tableFeaturesHeader"
                             :value="alias"
-                            :key="alias">
-                        {{ alias }}
-                    </option>
-                </select>
-                Sum Column
-            </label>
+                            :key="alias"
+                        >
+                            {{ alias }}
+                        </option>
+                    </select>
+                    Sum Column
+                </label>
+            </div> -->
+            <!-- Apply button -->
+            <button class="btn filter__apply-btn" @click="applyFilter">
+                Apply
+            </button>
         </div>
-        <!-- Apply button -->
-        <button class="btn filter__apply-btn" @click="apply">
-            Apply
-        </button>
-    </div>
+    </Modal>
 </template>
 
 <script>
     import { layerController, bunchController } from "@/controllers";
     import { layerHelper, serviceHelper } from "@/helpers";
+    import { Modal } from "@/components";
+
     export default {
         name: "FilterBox",
-        props: {
-            // tableFeaturesHeader: {
-            //     type: Array,
-            // },
-            stackedTableFeaturesHeader: {
-                type: Array,
-            },
-            filterValues: {
-                type: Array,
-            },
+        components: {
+            Modal,
         },
         data() {
             return {
-                activeTabId: null,
                 actionsList: [
                     "=",
                     ">",
@@ -137,18 +137,23 @@
                     "LIKE",
                     "IS NULL",
                 ],
+                currentTabId: null,
             };
         },
         methods: {
+            // getValueKey(alias) {
+            //     return Object.keys(this.activeTabData.tableHeadersWithAlias).find(
+            //         key => this.activeTabData.tableHeadersWithAlias[key] === alias
+            //     );
+            // },
             appendFilterQuery(value) {
-                // this.$emit("appendFilterQuery", value + " ");
                 this.activeTabQuery = this.activeTabQuery + value + " ";
                 this.$refs.filterQueryTextarea.focus();
             },
             setActiveTabId(tab) {
                 this.activeTabId = tab;
             },
-            apply() {
+            applyFilter() {
                 this.$emit(
                     "filterData",
                     this.activeTabService,
@@ -157,14 +162,18 @@
                 this.$moodal.filterModal.hide();
             },
         },
-        watch: {
-            tabs() {
-                if (!this.activeTabId) {
-                    this.activeTabId = this.tabs[0].id;
-                }
-            },
-        },
         computed: {
+            tabs() {
+                return this.$store.state.dataTable.tabs;
+            },
+            activeTabId: {
+                get() {
+                    return this.$store.state.dataTable.activeTabId;
+                },
+                set(id) {
+                    this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
+                },
+            },
             activeTab() {
                 return this.$store.state.dataTable.data.find(
                     x => x.service.id === this.activeTabId
@@ -173,37 +182,27 @@
             activeTabData() {
                 return this.activeTab ? this.activeTab.data : null;
             },
-            tableActiveService() {
-                return this.$store.getters.tableActiveService;
-            },
             activeTabService() {
                 return this.activeTab ? this.activeTab.service : null;
-            },
-            reportCheckboxVisibility() {
-                return this.activeTabService && this.tableActiveService && serviceHelper.isLayer(this.tableActiveService)
             },
             activeTabQuery: {
                 get() {
                     let where = "";
-                    let activeService = this.tableActiveService;
-                    if (activeService && this.activeTabId) {
-                        let isBunch = serviceHelper.isBunch(activeService);
-                        if (isBunch) {
-                            let bunchLayer = bunchController.getBunchLayer(
-                                activeService.id,
-                                this.activeTabId
-                            );
-                            console.log(bunchLayer);
-
-                            where = bunchLayer.query.where;
-                        } else {
-                            let layer = layerController.getDynamicLayer(
-                                this.activeTabId
-                            );
-                            where = layer.query.where;
-                        }
+                    let activeService = this.$store.getters.tableActiveService;
+                    if (!activeService || !this.activeTabId) return where;
+                    let isBunch = serviceHelper.isBunch(activeService);
+                    if (isBunch) {
+                        let bunchLayer = bunchController.getBunchLayer(
+                            activeService.id,
+                            this.activeTabId
+                        );
+                        where = bunchLayer ? bunchLayer.query.where : "";
+                    } else {
+                        let layer = layerController.getDynamicLayer(
+                            this.activeTabId
+                        );
+                        where = layer.query.where;
                     }
-
 
                     return where;
                 },
@@ -221,13 +220,9 @@
                     }
                 },
             },
-
-            tabs() {
-                return this.$store.state.dataTable.tabs;
-            },
             tableFeaturesHeader() {
                 if (this.activeTabData) {
-                    return Object.keys(this.activeTabData.tableHeadersWithAlias);
+                    return Object.values(this.activeTabData.tableHeadersWithAlias);
                 } else {
                     return [];
                 }
@@ -238,6 +233,12 @@
                 } else {
                     return {};
                 }
+            },
+            filterValues: {
+                get() {
+                    const data = this.$store.getters.activeTableData;
+                    return data ? data.filterValues : [];
+                },
             },
             filterQueryIsSum: {
                 get() {
@@ -266,6 +267,11 @@
                         filterQueryArithmeticColumn
                     );
                 },
+            },
+        },
+        watch: {
+            activeTabId(val) {
+                this.currentTabId = val;
             },
         },
     };
