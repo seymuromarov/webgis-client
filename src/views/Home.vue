@@ -796,14 +796,13 @@ export default {
         response = await LayerService.getTableData(params);
       } else {
         this.tablePaging = {
-          isBusy: false,
           page: 1,
           limit: 25
         };
         let params = {
           layerId: service.id,
           ...query,
-          ...this.tablePaging
+          paging: this.tablePaging
         };
         // this.resetServiceQuery(service);
 
