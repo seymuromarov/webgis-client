@@ -71,42 +71,34 @@
         </div>
 
         <!-- Sum -->
-        <!-- <div v-show="serviceInfo.resourceType === 'local'">
+        <div v-show="reportCheckboxVisibility">
             <label>
-                <input
-                    class="parent-checkbox"
-                    type="checkbox"
-                    id="isSum"
-                    :value="false"
-                    v-model="filterQueryIsSum"
-                    style="opacity:0;"
-                />
-                <i
-                    class="far fa-check-circle"
-                    v-if="filterQueryIsSum"
-                    style="cursor: pointer; color:#008422"
-                ></i>
-                <i
-                    class="far fa-check-circle"
-                    v-else
-                    style="cursor: pointer;"
-                ></i>
+                <input class="parent-checkbox"
+                       type="checkbox"
+                       id="isSum"
+                       :value="false"
+                       v-model="filterQueryIsSum"
+                       style="opacity:0;" />
+                <i class="far fa-check-circle"
+                   v-if="filterQueryIsSum"
+                   style="cursor: pointer; color:#008422"></i>
+                <i class="far fa-check-circle"
+                   v-else
+                   style="cursor: pointer;"></i>
                 Sum
             </label>
 
             <label class="ml-4" v-if="filterQueryIsSum">
                 <select v-model="filterQueryArithmeticColumn">
-                    <option
-                        v-for="alias in tableFeaturesHeader"
-                        :value="alias"
-                        :key="alias"
-                    >
+                    <option v-for="alias in tableFeaturesHeader"
+                            :value="alias"
+                            :key="alias">
                         {{ alias }}
                     </option>
                 </select>
                 Sum Column
             </label>
-        </div> -->
+        </div>
         <!-- Apply button -->
         <button class="btn filter__apply-btn" @click="apply">
             Apply
@@ -181,27 +173,37 @@
             activeTabData() {
                 return this.activeTab ? this.activeTab.data : null;
             },
+            tableActiveService() {
+                return this.$store.getters.tableActiveService;
+            },
             activeTabService() {
                 return this.activeTab ? this.activeTab.service : null;
+            },
+            reportCheckboxVisibility() {
+                return this.activeTabService && this.tableActiveService && serviceHelper.isLayer(this.tableActiveService)
             },
             activeTabQuery: {
                 get() {
                     let where = "";
-                    let activeService = this.$store.getters.tableActiveService;
-                    if (!activeService || !this.activeTabId) return where;
-                    let isBunch = serviceHelper.isBunch(activeService);
-                    if (isBunch) {
-                        let bunchLayer = bunchController.getBunchLayer(
-                            activeService.id,
-                            this.activeTabId
-                        );
-                        where = bunchLayer.query.where;
-                    } else {
-                        let layer = layerController.getDynamicLayer(
-                            this.activeTabId
-                        );
-                        where = layer.query.where;
+                    let activeService = this.tableActiveService;
+                    if (activeService && this.activeTabId) {
+                        let isBunch = serviceHelper.isBunch(activeService);
+                        if (isBunch) {
+                            let bunchLayer = bunchController.getBunchLayer(
+                                activeService.id,
+                                this.activeTabId
+                            );
+                            console.log(bunchLayer);
+
+                            where = bunchLayer.query.where;
+                        } else {
+                            let layer = layerController.getDynamicLayer(
+                                this.activeTabId
+                            );
+                            where = layer.query.where;
+                        }
                     }
+
 
                     return where;
                 },

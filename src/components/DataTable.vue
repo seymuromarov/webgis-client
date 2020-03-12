@@ -137,352 +137,352 @@
 </template>
 
 <script>
-import { toggler } from "../helpers";
-import Multiselect from "vue-multiselect";
-import LayerService from "../services/LayerService";
-import Resizable from "vue-resizable";
-import CustomModal from "./common/Modal";
-import { tableController } from "@/controllers";
-import { serviceHelper } from "@/helpers";
-export default {
-    name: "DataTable",
-    components: {
-        Multiselect,
-        Resizable,
-        CustomModal,
-    },
-    data() {
-        return {
-            toggler: null,
-            isColumnPopupShowing: false,
-            selectedData: [],
-            resize: {
-                handlers: ["t"],
-                left: 0,
-                top: window.innerHeight - 200,
-                height: window.innerHeight,
-                width: window.innerWidth,
-                maxW: 10000,
-                maxH: window.innerHeight,
-                minW: 150,
-                minH: 200,
-                fit: true,
-                event: "",
+    import { toggler } from "../helpers";
+    import Multiselect from "vue-multiselect";
+    import LayerService from "../services/LayerService";
+    import Resizable from "vue-resizable";
+    import CustomModal from "./common/Modal";
+    import { tableController } from "@/controllers";
+    import { serviceHelper } from "@/helpers";
+    export default {
+        name: "DataTable",
+        components: {
+            Multiselect,
+            Resizable,
+            CustomModal,
+        },
+        data() {
+            return {
+                toggler: null,
+                isColumnPopupShowing: false,
+                selectedData: [],
+                resize: {
+                    handlers: ["t"],
+                    left: 0,
+                    top: window.innerHeight - 200,
+                    height: window.innerHeight,
+                    width: window.innerWidth,
+                    maxW: 10000,
+                    maxH: window.innerHeight,
+                    minW: 150,
+                    minH: 200,
+                    fit: true,
+                    event: "",
+                },
+                activeTabId: null,
+            };
+        },
+        mounted() {
+            this.scrollHandler();
+        },
+        created() {
+            window.addEventListener("resize", this.update);
+        },
+        destroyed() {
+            window.removeEventListener("resize", this.update);
+        },
+        watch: {
+            isVisible: {
+                handler() {
+                    this.resetScroll();
+                    this.resetPaging();
+                },
+                deep: true,
+                immediate: false,
             },
-            activeTabId: null,
-        };
-    },
-    mounted() {
-        this.scrollHandler();
-    },
-    created() {
-        window.addEventListener("resize", this.update);
-    },
-    destroyed() {
-        window.removeEventListener("resize", this.update);
-    },
-    watch: {
-        isVisible: {
-            handler() {
-                this.resetScroll();
-                this.resetPaging();
+            tabs() {
+                // if (!this.activeTabId) {
+                this.activeTabId = this.tabs[0].id;
+                // }
             },
-            deep: true,
-            immediate: false,
         },
-        tabs() {
-            // if (!this.activeTabId) {
-            this.activeTabId = this.tabs[0].id;
-            // }
-        },
-    },
-    methods: {
-        resetScroll() {
-            if (this.$refs.dataTableContent) {
-                this.$refs.dataTableContent.scrollTo(0, 0);
-            }
-        },
-        isEndOfData() {
-            return this.paging.page * this.paging.limit > this.totalCount;
-        },
-        scrollHandler() {
-            const table = document.getElementById("dataTable");
-            table.addEventListener("scroll", e => {
-                if (
-                    table.scrollTop + table.clientHeight >=
+        methods: {
+            resetScroll() {
+                if (this.$refs.dataTableContent) {
+                    this.$refs.dataTableContent.scrollTo(0, 0);
+                }
+            },
+            isEndOfData() {
+                return this.paging.page * this.paging.limit > this.totalCount;
+            },
+            scrollHandler() {
+                const table = document.getElementById("dataTable");
+                table.addEventListener("scroll", e => {
+                    if (
+                        table.scrollTop + table.clientHeight >=
                         table.scrollHeight &&
-                    !this.paging.isBusy &&
-                    !this.isEndOfData() &&
-                    serviceHelper.isLocalService(this.activeTableService)
-                ) {
-                    var page = this.paging.page;
-                    page += 1;
-                    this.isPagingBusy(true);
-                    this.paging = {
-                        ...this.paging,
-                        page: page++,
-                    };
+                        !this.paging.isBusy &&
+                        !this.isEndOfData() &&
+                        serviceHelper.isLocalService(this.activeTableService)
+                    ) {
+                        var page = this.paging.page;
+                        page += 1;
+                        this.isPagingBusy(true);
+                        this.paging = {
+                            ...this.paging,
+                            page: page++,
+                        };
 
-                    this.getDatas();
-                    this.isPagingBusy(false);
+                        this.getDatas();
+                        this.isPagingBusy(false);
+                    }
+                });
+            },
+            isPagingBusy(isBusy) {
+                this.paging = {
+                    ...this.paging,
+                    isBusy,
+                };
+            },
+            async getDatas() {
+                var params = {
+                    layerId: this.activeTableService.id,
+                    ...this.activeTableService.query,
+                    paging: this.paging,
+                };
+                var response = await LayerService.getLocalTableData(params);
+                var data = response.data.features;
+                this.activeTableData.tableData = [
+                    ...this.activeTableData.tableData,
+                    ...data,
+                ];
+            },
+            resetPaging() {
+                this.paging = {
+                    isBusy: false,
+                    page: 1,
+                    limit: 25,
+                };
+            },
+            toggleIsVisible() {
+                this.$store.dispatch("SAVE_DATATABLE_VISIBLE", !this.isVisible);
+            },
+            togglePopup(e) {
+                this.isColumnPopupShowing = !this.isColumnPopupShowing;
+            },
+            showFilterModal() {
+                this.$emit("showFilterModal");
+            },
+            showSimpleFilterModal() {
+                this.$moodal.dataModal.show();
+            },
+            fitToPolygon(data) {
+                this.selectedData = data;
+                this.$emit("mapSetCenter", data);
+            },
+            showDataModal(data) {
+                this.selectedData = data;
+                this.$moodal.dataModal.show();
+            },
+            showColumnsChange() {
+                this.toggler.showColumnsChange();
+            },
+            async fetchFullData() {
+                var response = await LayerService.getLocalTableData({
+                    layerId: this.activeTableService.id,
+                    ...this.activeTableService.query,
+                    isGeometryDataExist: false,
+                });
+                var attributes = response.data.features.map((item, index) => {
+                    return item.attributes;
+                });
+                return attributes;
+            },
+            featuresToExcel() {
+                let features = [];
+                for (let i = 0; i < this.tableData.length; i++) {
+                    features[i] = this.tableData[i].attributes;
                 }
-            });
-        },
-        isPagingBusy(isBusy) {
-            this.paging = {
-                ...this.paging,
-                isBusy,
-            };
-        },
-        async getDatas() {
-            var params = {
-                layerId: this.activeTableService.id,
-                ...this.activeTableService.query,
-                ...this.paging,
-            };
-            var response = await LayerService.getLocalTableData(params);
-            var data = response.data.features;
-            this.activeTableData.tableData = [
-                ...this.activeTableData.tableData,
-                ...data,
-            ];
-        },
-        resetPaging() {
-            this.paging = {
-                isBusy: false,
-                page: 1,
-                limit: 25,
-            };
-        },
-        toggleIsVisible() {
-            this.$store.dispatch("SAVE_DATATABLE_VISIBLE", !this.isVisible);
-        },
-        togglePopup(e) {
-            this.isColumnPopupShowing = !this.isColumnPopupShowing;
-        },
-        showFilterModal() {
-            this.$emit("showFilterModal");
-        },
-        showSimpleFilterModal() {
-            this.$moodal.dataModal.show();
-        },
-        fitToPolygon(data) {
-            this.selectedData = data;
-            this.$emit("mapSetCenter", data);
-        },
-        showDataModal(data) {
-            this.selectedData = data;
-            this.$moodal.dataModal.show();
-        },
-        showColumnsChange() {
-            this.toggler.showColumnsChange();
-        },
-        async fetchFullData() {
-            var response = await LayerService.getLocalTableData({
-                layerId: this.activeTableService.id,
-                ...this.activeTableService.query,
-                isGeometryDataExist: false,
-            });
-            var attributes = response.data.features.map((item, index) => {
-                return item.attributes;
-            });
-            return attributes;
-        },
-        featuresToExcel() {
-            let features = [];
-            for (let i = 0; i < this.tableData.length; i++) {
-                features[i] = this.tableData[i].attributes;
-            }
-            return features;
-        },
-        checkedColumnsToExcel() {
-            let columns = {};
+                return features;
+            },
+            checkedColumnsToExcel() {
+                let columns = {};
 
-            for (let column in this.tableHeaders) {
-                if (this.checkedColumns.includes(this.tableHeaders[column])) {
-                    columns[
-                        this.tableHeaders[column]
-                    ] = this.tableStackedHeaders[column];
-                }
-            }
-            return columns;
-        },
-        selectColumns(alias, index, e) {
-            if (e.target.checked) {
-                this.checkedColumns.push(alias);
-
-                var keys = Object.keys(this.tableHeadersWithAlias);
-                var tempAlias = alias;
-
-                for (let i = 0; i < keys.length; i++) {
-                    if (this.tableHeadersWithAlias[keys[i]] === alias) {
-                        tempAlias = keys[i];
-                        break;
+                for (let column in this.tableHeaders) {
+                    if (this.checkedColumns.includes(this.tableHeaders[column])) {
+                        columns[
+                            this.tableHeaders[column]
+                        ] = this.tableStackedHeaders[column];
                     }
                 }
-                this.checkedColumnsData.push(tempAlias);
-            } else {
-                const checkedColumnsDataIndex = this.checkedColumnsData.findIndex(
-                    x => x.toLowerCase() === alias.toLowerCase()
-                );
-                const checkedColumnsIndex = this.checkedColumns.findIndex(
-                    x => x.toLowerCase() === alias.toLowerCase()
-                );
+                return columns;
+            },
+            selectColumns(alias, index, e) {
+                if (e.target.checked) {
+                    this.checkedColumns.push(alias);
 
-                this.checkedColumnsData.splice(checkedColumnsDataIndex, 1);
-                this.checkedColumns.splice(checkedColumnsIndex, 1);
+                    var keys = Object.keys(this.tableHeadersWithAlias);
+                    var tempAlias = alias;
 
-                // this.checkedColumnsData = this.checkedColumnsData.filter(
-                //     data => data.toLowerCase() !== alias.toLowerCase()
-                // );
+                    for (let i = 0; i < keys.length; i++) {
+                        if (this.tableHeadersWithAlias[keys[i]] === alias) {
+                            tempAlias = keys[i];
+                            break;
+                        }
+                    }
+                    this.checkedColumnsData.push(tempAlias);
+                } else {
+                    const checkedColumnsDataIndex = this.checkedColumnsData.findIndex(
+                        x => x.toLowerCase() === alias.toLowerCase()
+                    );
+                    const checkedColumnsIndex = this.checkedColumns.findIndex(
+                        x => x.toLowerCase() === alias.toLowerCase()
+                    );
 
-                // this.checkedColumns = this.checkedColumns.filter(
-                //     data => data.toLowerCase() !== alias.toLowerCase()
-                // );
-            }
-        },
-        resizeHandler(data) {
-            this.resize.width = data.width;
-            this.resize.height = data.height;
-            this.resize.left = data.left;
-            this.resize.top = data.top;
-            this.resize.event = data.eventName;
-            if (data.eventName === "mount") {
+                    this.checkedColumnsData.splice(checkedColumnsDataIndex, 1);
+                    this.checkedColumns.splice(checkedColumnsIndex, 1);
+
+                    // this.checkedColumnsData = this.checkedColumnsData.filter(
+                    //     data => data.toLowerCase() !== alias.toLowerCase()
+                    // );
+
+                    // this.checkedColumns = this.checkedColumns.filter(
+                    //     data => data.toLowerCase() !== alias.toLowerCase()
+                    // );
+                }
+            },
+            resizeHandler(data) {
+                this.resize.width = data.width;
+                this.resize.height = data.height;
+                this.resize.left = data.left;
+                this.resize.top = data.top;
+                this.resize.event = data.eventName;
+                if (data.eventName === "mount") {
+                    this.resize.height = 200;
+                }
+            },
+            update() {
+                this.resize.top = window.innerHeight - 200;
                 this.resize.height = 200;
-            }
-        },
-        update() {
-            this.resize.top = window.innerHeight - 200;
-            this.resize.height = 200;
-            this.resize.width = window.innerWidth;
-            this.resize.maxH = window.innerHeight;
+                this.resize.width = window.innerWidth;
+                this.resize.maxH = window.innerHeight;
 
-            this.$forceUpdate();
-        },
-        setActiveTab(tab) {
-            this.activeTabId = tab;
-        },
-    },
-    computed: {
-        isVisible() {
-            return this.$store.state.dataTable.isVisible;
-        },
-        loading() {
-            return this.$store.getters.dataTableLoading;
-        },
-        totalCount() {
-            return this.$store.state.dataTable.totalCount;
-        },
-        paging: {
-            get() {
-                return tableController.getData(this.activeTabId).paging;
+                this.$forceUpdate();
             },
-            set(value) {
-                tableController.setPaging(this.activeTabId, value);
+            setActiveTab(tab) {
+                this.activeTabId = tab;
             },
         },
-        serviceInfo() {
-            return this.activeTableData.serviceInfo;
-        },
-        tableName() {
-            return this.activeTableData.tableName;
-        },
-        tableHeaders() {
-            return this.activeTableData.tableHeaders;
-        },
-        tableStackedHeaders: {
-            get() {
-                return this.activeTableData.tableStackedHeaders;
+        computed: {
+            isVisible() {
+                return this.$store.state.dataTable.isVisible;
             },
-            set(value) {
-                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
+            loading() {
+                return this.$store.getters.dataTableLoading;
             },
-        },
-        tableHeadersWithAlias() {
-            return this.activeTableData.tableHeadersWithAlias;
-        },
-        dataArray: {
-            get() {
-                return this.$store.state.dataTable.data;
+            totalCount() {
+                return this.$store.state.dataTable.totalCount;
             },
-        },
-        // tableData: {
-        //     get() {
-        //         // return this.$store.state.dataTable.tableData;
-        //         if (this.activeTabId) {
-        //             return this.$store.state.dataTable.services[this.activeTabId]
-        //                 .tableData;
-        //         } else {
-        //             return null;
-        //         }
-        //     },
-        //     set(value) {
-        //         this.$store.dispatch("SAVE_DATATABLE_DATA", value);
-        //     },
-        // },
-        target() {
-            return this.activeTableData.target;
-        },
-        checkedColumnsData: {
-            get() {
-                return this.activeTableData.checkedColumnsData;
+            paging: {
+                get() {
+                    return tableController.getData(this.activeTabId).paging;
+                },
+                set(value) {
+                    tableController.setPaging(this.activeTabId, value);
+                },
             },
-            set(value) {
-                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", {
-                    id: this.activeTabId,
-                    value,
-                });
+            serviceInfo() {
+                return this.activeTableData.serviceInfo;
             },
-        },
-        tabs() {
-            return this.$store.state.dataTable.tabs;
-        },
-        checkedColumns: {
-            get() {
-                return this.activeTableData.checkedColumns;
+            tableName() {
+                return this.activeTableData.tableName;
             },
-            set(value) {
-                this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", {
-                    id: this.activeTabId,
-                    value,
-                });
+            tableHeaders() {
+                return this.activeTableData.tableHeaders;
             },
-        },
-        // checkedColumns() {
-        //     return this.$store.state.dataTable.checkedColumns;
-        // },
-        lastBBOXOfShape() {
-            return this.activeTableData.lastBBOXOfShape;
-        },
-        activeTableData() {
-            const item = this.dataArray.find(
-                x => x.service.id === this.activeTabId
-            );
+            tableStackedHeaders: {
+                get() {
+                    return this.activeTableData.tableStackedHeaders;
+                },
+                set(value) {
+                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
+                },
+            },
+            tableHeadersWithAlias() {
+                return this.activeTableData.tableHeadersWithAlias;
+            },
+            dataArray: {
+                get() {
+                    return this.$store.state.dataTable.data;
+                },
+            },
+            // tableData: {
+            //     get() {
+            //         // return this.$store.state.dataTable.tableData;
+            //         if (this.activeTabId) {
+            //             return this.$store.state.dataTable.services[this.activeTabId]
+            //                 .tableData;
+            //         } else {
+            //             return null;
+            //         }
+            //     },
+            //     set(value) {
+            //         this.$store.dispatch("SAVE_DATATABLE_DATA", value);
+            //     },
+            // },
+            target() {
+                return this.activeTableData.target;
+            },
+            checkedColumnsData: {
+                get() {
+                    return this.activeTableData.checkedColumnsData;
+                },
+                set(value) {
+                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", {
+                        id: this.activeTabId,
+                        value,
+                    });
+                },
+            },
+            tabs() {
+                return this.$store.state.dataTable.tabs;
+            },
+            checkedColumns: {
+                get() {
+                    return this.activeTableData.checkedColumns;
+                },
+                set(value) {
+                    this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", {
+                        id: this.activeTabId,
+                        value,
+                    });
+                },
+            },
+            // checkedColumns() {
+            //     return this.$store.state.dataTable.checkedColumns;
+            // },
+            lastBBOXOfShape() {
+                return this.activeTableData.lastBBOXOfShape;
+            },
+            activeTableData() {
+                const item = this.dataArray.find(
+                    x => x.service.id === this.activeTabId
+                );
 
-            if (item) {
-                return item.data;
-            } else {
-                return [];
-            }
-        },
-        activeTableService() {
-            const item = this.dataArray.find(
-                x => x.service.id === this.activeTabId
-            );
+                if (item) {
+                    return item.data;
+                } else {
+                    return [];
+                }
+            },
+            activeTableService() {
+                const item = this.dataArray.find(
+                    x => x.service.id === this.activeTabId
+                );
 
-            if (item) {
-                return item.service;
-            } else {
-                return [];
-            }
+                if (item) {
+                    return item.service;
+                } else {
+                    return [];
+                }
+            },
         },
-    },
-    filters: {
-        checkEmpty(value) {
-            return typeof value !== "number" ? 0 : value;
+        filters: {
+            checkEmpty(value) {
+                return typeof value !== "number" ? 0 : value;
+            },
         },
-    },
-};
+    };
 </script>
 
 <style lang="scss">
