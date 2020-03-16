@@ -31,6 +31,10 @@ const functions = {
   }
 };
 const getters = {
+  getBunchLayerList() {
+    let data = bunchLayerList.get();
+    return data;
+  },
   getBunch(bunchId) {
     let bunch = bunchLayerList.get().find(c => c.id == bunchId);
     return bunch;

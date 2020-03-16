@@ -1,6 +1,6 @@
 import $store from "@/store/store.js";
 import { serviceHelper, layerHelper } from "@/helpers";
-import { layerController } from "@/controllers";
+import { layerController, mapController } from "@/controllers";
 const functions = {
   async selectService(service, isChecked) {
     if (serviceHelper.isLayer(service)) {
@@ -15,40 +15,46 @@ const functions = {
       bunchController.setSelected(service, isChecked);
     }
 
-    if (isChecked) this.addService(service);
-    else mapController.deleteService(service);
+    if (isChecked) functions.addService(service);
+    else functions.deleteService(service);
   },
   addService(service) {
     if (service.extent != null) {
-      this.mapLayer
-        .getView()
-        .fit([
-          service.extent.minX,
-          service.extent.minY,
-          service.extent.maxX,
-          service.extent.maxY
-        ]);
+      const { minX, minY, maxX, maxY } = service.extent;
+      var extent = [minX, minY, maxX, maxY];
+      mapController.fitView(extent);
     }
 
-    var newService = this.renderNewService(service);
-    this.getOrderNumber(this.dynamicLayerList, service);
-
+    var newService = mapController.renderNewService(service);
     newService.set("name", service.name);
     var zIndex = this.getZIndex(service);
     newService.setZIndex(zIndex);
 
     this.mapLayer.addLayer(newService);
   },
-
-  setZIndex(service) {
-    this.mapLayer.getLayers().forEach(layer => {
-      if (
-        layer.get("name") != undefined &&
-        layer.get("name") === service.name
-      ) {
-        layer.setZIndex(this.getZIndex(service));
-      }
-    });
+  deleteService(service) {
+    let layersToRemove = [];
+    var mapLayer = $store.getters.mapLayer;
+    mapLayer
+      .get()
+      .getLayers()
+      .forEach(function(layer) {
+        if (
+          layer.get("name") != undefined &&
+          layer.get("name") === service.name
+        ) {
+          layersToRemove.push(layer);
+        }
+      });
+    let len = layersToRemove.length;
+    for (let i = 0; i < len; i++) {
+      mapLayer.removeLayer(layersToRemove[i]);
+    }
+    $store.dispatch("saveMap", mapLayer);
+  },
+  refreshService(service) {
+    functions.deleteService(service, false);
+    functions.addService(service);
   }
 };
 const setters = {};
@@ -59,14 +65,23 @@ const getters = {
     if (serviceHelper.isLayer(service)) {
       if (serviceHelper.isDynamic(service)) {
         zIndex = layerSettings.dynamicZIndex;
-        orderNo = this.getOrderNumber(this.dynamicLayerList, service);
+        orderNo = getters.getOrderNumber(
+          layerController.getDynamicLayerList(),
+          service
+        );
       } else {
         zIndex = layerSettings.basemapZIndex;
-        orderNo = this.getOrderNumber(this.baseLayerList, service);
+        orderNo = getters.getOrderNumber(
+          layerController.getBaseLayerList(),
+          service
+        );
       }
     } else {
       zIndex = layerSettings.bunchZIndex;
-      orderNo = this.getOrderNumber(this.bunchLayerList, service);
+      orderNo = getters.getOrderNumber(
+        bunchController.getBunchLayerList(),
+        service
+      );
     }
 
     return zIndex - orderNo;

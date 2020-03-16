@@ -1,4 +1,4 @@
-import { serviceTypeEnum } from "../constants/enums/serviceEnums";
+import { serviceTypeEnum } from "@/constants/enums";
 import { colorHelper, serviceHelper } from "@/helpers";
 
 const mapper = {
