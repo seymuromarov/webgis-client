@@ -56,6 +56,7 @@ const mapper = {
   recursiveMap: val => {
     if (val.layers !== undefined) {
       return {
+        id: val.id,
         name: val.label,
         mapTypeId: val.mapTypeId,
         children: val.children.map((val, i) => mapper.recursiveMap(val)),
@@ -102,30 +103,6 @@ const mapper = {
     }
     return layerArr;
   },
-
-  recursiveTreeMapping: arr => {
-    for (var i = 0; i < arr.length; i++) {
-      var item = arr[i];
-      item = mapper.recursiveTreeSelectMapping(item);
-    }
-  },
-  recursiveTreeSelectMapping: item => {
-    var isCategory = serviceHelper.isCategory(item);
-    if (isCategory) {
-      item.children = [...item.children, item.layers];
-      const { id, name, children } = item;
-      item = { id, name, children };
-
-      for (var i = 0; i < item.children.length; i++) {
-        var child = item.children[i];
-        item.children = mapper.recursiveTreeSelectMapping(child, callback);
-      }
-      return item;
-    } else {
-      return { id: item.name, label: item.label };
-    }
-  },
-
   recursiveMapping: (item, callback) => {
     var isCategory = serviceHelper.isCategory(item);
     if (isCategory) {
@@ -149,6 +126,35 @@ const mapper = {
       if (callback && typeof callback === "function") {
         callback(item);
       }
+    }
+  },
+
+  recursiveTreeMapping: arr => {
+    var list = [];
+    for (let i = 0; i < arr.length; i++) {
+      var item = arr[i];
+      var item = mapper.recursiveTreeSelectMapping(item);
+      list.push(item);
+    }
+    return list;
+  },
+  recursiveTreeSelectMapping: item => {
+    var isCategory = serviceHelper.isCategory(item);
+    if (isCategory) {
+      var category = {
+        id: item.id,
+        label: item.name,
+        children: [...item.children, ...item.layers]
+      };
+
+      for (var i = 0; i < category.children.length; i++) {
+        category.children[i] = mapper.recursiveTreeSelectMapping(
+          category.children[i]
+        );
+      }
+      return category;
+    } else {
+      return { id: item.id, label: item.name };
     }
   }
 };

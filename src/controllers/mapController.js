@@ -1,17 +1,31 @@
 import $store from "@/store/store.js";
-
+const mapLayer = {
+  get() {
+    return $store.getters.mapLayer;
+  },
+  set(value) {
+    $store.dispatch("saveMap", value);
+  }
+};
 const functions = {
+  fitView(extent) {
+    this.mapLayer.getView().fit(extent);
+  },
+
   deleteService(service) {
     let layersToRemove = [];
     var mapLayer = $store.getters.mapLayer;
-    mapLayer.getLayers().forEach(function(layer) {
-      if (
-        layer.get("name") != undefined &&
-        layer.get("name") === service.name
-      ) {
-        layersToRemove.push(layer);
-      }
-    });
+    mapLayer
+      .get()
+      .getLayers()
+      .forEach(function(layer) {
+        if (
+          layer.get("name") != undefined &&
+          layer.get("name") === service.name
+        ) {
+          layersToRemove.push(layer);
+        }
+      });
     let len = layersToRemove.length;
     for (let i = 0; i < len; i++) {
       mapLayer.removeLayer(layersToRemove[i]);

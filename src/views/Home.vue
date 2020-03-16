@@ -11,7 +11,6 @@
         />
         <Sidebar
           :baseMaps="baseMaps"
-          @selectService="selectService"
           @selectSubLayer="selectSubService"
           @dynamicLayersReset="dynamicLayersReset"
           @getTableData="getTableData"
@@ -58,12 +57,14 @@
     </CustomModal>
 
     <!-- Change Detection -->
-    <!-- <detector-modal :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
-                          v-bind="{ lastBBOXOfShape, token }"
-                          @close="
-          ($store.state.dataTable.lastBBOXOfShape = []) &
-            (isDrawnShapeForDetection = false)
-        "></detector-modal> -->
+    <detector-modal
+      :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
+      v-bind="{ lastBBOXOfShape, token }"
+      @close="
+        ($store.state.dataTable.lastBBOXOfShape = []) &
+          (isDrawnShapeForDetection = false)
+      "
+    ></detector-modal>
     <!-- Information Modal -->
     <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
 
@@ -153,7 +154,12 @@ import { materialColors } from "@/config/colors";
 import cities from "@/data/cities.json";
 
 import { toggler, mapHelper, layerHelper, serviceHelper } from "@/helpers";
-import { layerController, bunchController, mapController } from "@/controllers";
+import {
+  layerController,
+  bunchController,
+  mapController,
+  serviceController
+} from "@/controllers";
 
 // Services
 import LoginService from "@/services/LoginService";
@@ -1016,7 +1022,7 @@ export default {
         });
       } else {
         if (layer.id === value) {
-          this.selectService(layer, isChecked);
+          serviceController.selectService(layer, isChecked);
         }
       }
     },
@@ -1177,67 +1183,7 @@ export default {
 
       return new_layer;
     },
-    addService(service) {
-      // this.selectedLayersIdHolder(true, service);
-      if (service.extent != null) {
-        this.mapLayer
-          .getView()
-          .fit([
-            service.extent.minX,
-            service.extent.minY,
-            service.extent.maxX,
-            service.extent.maxY
-          ]);
-      }
 
-      var newService = this.renderNewService(service);
-      this.getOrderNumber(this.dynamicLayerList, service);
-
-      newService.set("name", service.name);
-      var zIndex = this.getZIndex(service);
-      newService.setZIndex(zIndex);
-
-      this.mapLayer.addLayer(newService);
-    },
-    getOrderNumber(array, service) {
-      var index = 0;
-      var result = 0;
-      layerHelper.recursiveLayerMapping(array, function(layer) {
-        index++;
-        if (layer.name == service.name) {
-          result = index;
-        }
-      });
-      return result;
-    },
-    setZIndex(service) {
-      this.mapLayer.getLayers().forEach(layer => {
-        if (
-          layer.get("name") != undefined &&
-          layer.get("name") === service.name
-        ) {
-          layer.setZIndex(this.getZIndex(service));
-        }
-      });
-    },
-    getZIndex(service) {
-      let zIndex = 0;
-      let orderNo = 0;
-      if (serviceHelper.isLayer(service)) {
-        if (serviceHelper.isDynamic(service)) {
-          zIndex = layerSettings.dynamicZIndex;
-          orderNo = this.getOrderNumber(this.dynamicLayerList, service);
-        } else {
-          zIndex = layerSettings.basemapZIndex;
-          orderNo = this.getOrderNumber(this.baseLayerList, service);
-        }
-      } else {
-        zIndex = layerSettings.bunchZIndex;
-        orderNo = this.getOrderNumber(this.bunchLayerList, service);
-      }
-
-      return zIndex - orderNo;
-    },
     refreshService(service) {
       mapController.deleteService(service, false);
       this.addService(service);
@@ -1305,49 +1251,7 @@ export default {
       }
       return responseDynamic;
     },
-    async selectService(service, isChecked) {
-      // var isChecked = e.target.checked;
 
-      // this.isHashLoaded = isHashLoaded;
-      if (serviceHelper.isLayer(service)) {
-        if (serviceHelper.isDynamic(service)) {
-          let subLayers = null;
-          if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
-            let subLayerResponse;
-            subLayerResponse = await this.getResponseDynamic(service);
-            subLayers = subLayerResponse.data.layers;
-          }
-
-          this.dynamicLayerList = layerHelper.recursiveLayerMapping(
-            this.dynamicLayerList,
-            async layer => {
-              if (layer != null && layer.id == service.id) {
-                layer.isSelected = isChecked;
-                if (isChecked && serviceHelper.isDynamicFromArcgis(layer)) {
-                  layer.layers = subLayers.map(item =>
-                    layerHelper.subLayerMapping(item, layer)
-                  );
-                }
-              }
-            }
-          );
-        } else if (serviceHelper.isBasemap(service)) {
-          this.baseLayerList = layerHelper.recursiveLayerMapping(
-            this.baseLayerList,
-            async layer => {
-              if (layer != null && layer.id == service.id) {
-                layer.isSelected = isChecked;
-              }
-            }
-          );
-        }
-      } else {
-        bunchController.setSelected(service.id, isChecked);
-      }
-
-      if (isChecked) this.addService(service);
-      else mapController.deleteService(service);
-    },
     async selectSubService(service, index, id, e) {
       let isChecked = e.target.checked;
 

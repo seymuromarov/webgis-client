@@ -226,12 +226,11 @@ export default {
       },
       set(query) {
         if (query) {
-          console.log(query);
           let activeService = this.$store.getters.tableActiveService;
           let isBunch = serviceHelper.isBunch(activeService);
           if (isBunch) {
             bunchController.setQuery(activeService, this.activeTabId, query);
-          } else layerController.setQuery(activeService, query);
+          } else layerControllxer.setQuery(activeService, query);
         }
       }
     },
