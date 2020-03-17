@@ -245,7 +245,7 @@ export default {
                     !this.isEndOfData() &&
                     serviceHelper.isLocalService(this.activeTableService)
                 ) {
-                    var page = this.paging.page;
+                    let page = this.paging.page;
                     page += 1;
                     this.isPagingBusy(true);
                     this.paging = {
@@ -358,8 +358,8 @@ export default {
             if (e.target.checked) {
                 this.checkedColumns.push(alias);
 
-                var keys = Object.keys(this.tableHeadersWithAlias);
-                var tempAlias = alias;
+                const keys = Object.keys(this.tableHeadersWithAlias);
+                let tempAlias = alias;
 
                 for (let i = 0; i < keys.length; i++) {
                     if (this.tableHeadersWithAlias[keys[i]] === alias) {

@@ -127,7 +127,7 @@ class MapHelper {
         this.data.isColorPick = false;
         let value = this.data.typeSelect;
         if (value !== "None") {
-            var geometryFunction;
+            let geometryFunction;
             if (value === "Square") {
                 value = "Circle";
                 geometryFunction = createRegularPolygon(4);
@@ -233,20 +233,20 @@ class MapHelper {
     }
 
     renderPolygonVector(coordinates) {
-        var polygon = new Polygon([coordinates]);
-        var feature = new Feature({
+        const polygon = new Polygon([coordinates]);
+        const feature = new Feature({
             geometry: polygon
         });
-        var vectorSource = new VectorSource();
+        const vectorSource = new VectorSource();
         vectorSource.addFeature(feature);
 
-        var style = new Style({
+        const style = new Style({
             stroke: new Stroke({
                 color: "#FF0000",
                 width: 3
             })
         });
-        var vectorLayer = new VectorLayer({
+        const vectorLayer = new VectorLayer({
             source: vectorSource,
             style: style
         });

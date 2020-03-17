@@ -232,11 +232,11 @@ export default {
             this.$emit("dynamicLayersReset", data, status);
         },
         getTableData(data, layerId, layerName, query) {
-            var service = serviceHelper.isSublayer(data) ? data.parent : data;
+            const service = serviceHelper.isSublayer(data) ? data.parent : data;
             this.$emit("getTableData", service, layerId, layerName, query);
         },
         getLayerId() {
-            var id = 0;
+            let id = 0;
             if (serviceHelper.isSublayer(this.data)) {
                 id = this.data.uid;
             } else if (

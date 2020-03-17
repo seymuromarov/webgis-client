@@ -203,7 +203,7 @@ export default {
         },
         activeTabService() {
             let isBunch = serviceHelper.isBunch(this.activeService);
-            var service = null;
+            let service = null;
 
             if (this.activeTab) {
                 if (isBunch)

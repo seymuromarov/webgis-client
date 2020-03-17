@@ -34,7 +34,7 @@ const getters = {
         let list = [];
 
         layerHelper.recursiveLayerMapping(dynamicLayerList.get(), layer => {
-            var isLocal = isLocalOnly
+            const isLocal = isLocalOnly
                 ? serviceHelper.isDynamicFromLocal(layer)
                 : true;
             if (isLocal) list.push(layer);
@@ -49,8 +49,8 @@ const getters = {
         return list;
     },
     getSelectedLayers() {
-        var selectedLayers = [];
-        var layers = [...dynamicLayerList.get(), ...baseLayerList.get()];
+        const selectedLayers = [];
+        const layers = [...dynamicLayerList.get(), ...baseLayerList.get()];
         layerHelper.recursiveLayerMapping(layers, layer => {
             if (layer.isSelected) {
                 selectedLayers.push(layer);
@@ -61,7 +61,7 @@ const getters = {
 };
 const setters = {
     setColor(service, color, isSubLayer) {
-        var list = layerHelper.recursiveLayerMapping(
+        const list = layerHelper.recursiveLayerMapping(
             dynamicLayerList.get(),
             async layer => {
                 if (layer != null && layer.id == service.id) {
@@ -81,7 +81,7 @@ const setters = {
         dynamicLayerList.set(list);
     },
     setQuery(service, query) {
-        var list = layerHelper.recursiveLayerMapping(
+        const list = layerHelper.recursiveLayerMapping(
             dynamicLayerList.get(),
             async layer => {
                 if (layer != null && layer.id == service.id) {

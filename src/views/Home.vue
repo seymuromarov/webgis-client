@@ -278,7 +278,7 @@ export default {
 
         this.vector.setZIndex(9999);
 
-        var debug = new TileLayer({
+        const debug = new TileLayer({
             source: new TileDebug({
                 projection: "EPSG:3857",
                 tileGrid: new OSM().getTileGrid(),
@@ -293,9 +293,9 @@ export default {
             }),
         });
 
-        var dynamics = this.dynamicLayerList;
+        const dynamics = this.dynamicLayerList;
         this.$nextTick(function() {
-            // var vectorGetTest = new VectorTileLayer({
+            // const vectorGetTest = new VectorTileLayer({
             //   id: 999,
             //   source: new VectorTileSource({
             //     format: new MVT({
@@ -303,7 +303,7 @@ export default {
             //     }),
             //     url: URL + "/api/Tile/VectorPost",
             //     tileLoadFunction: function(tile, url) {
-            //       var params = {
+            //       const params = {
             //         a: "test"
             //       };
             //       tile.setLoader(function(extent, resolution, projection) {
@@ -517,8 +517,8 @@ export default {
     },
     methods: {
         objectToQueryString(obj) {
-            var str = [];
-            for (var p in obj)
+            const str = [];
+            for (const p in obj)
                 if (obj.hasOwnProperty(p)) {
                     str.push(
                         encodeURIComponent(p) + "=" + encodeURIComponent(obj[p])
@@ -533,8 +533,8 @@ export default {
                 center: view.getCenter(),
                 rotation: view.getRotation(),
             };
-            var selectedLayers = layerController.getSelectedLayers();
-            var selectedLayerIds = selectedLayers.map(item => {
+            const selectedLayers = layerController.getSelectedLayers();
+            const selectedLayerIds = selectedLayers.map(item => {
                 return item.id;
             });
             let hash =
@@ -702,7 +702,7 @@ export default {
             this.toggler.showColumnsChange();
         },
         resolveHash(hash) {
-            var result = null;
+            const result = null;
             if (hash !== "") {
                 let hashString = window.location.hash.replace("#shareMap=", "");
                 let parts = hashString.split("&");
@@ -725,13 +725,15 @@ export default {
             }
             if (geometry.length > 0) {
                 geometry = geometry.map((item, index) => fromLonLat(item));
-                var extent = new Polygon([geometry]);
+                const extent = new Polygon([geometry]);
                 this.mapLayer.getView().fit(extent, {
                     padding: [-50, 50, 30, 150],
                     size: [50, 100],
                     maxZoom: 16,
                 });
-                var vectorLayer = this.mapHelper.renderPolygonVector(geometry);
+                const vectorLayer = this.mapHelper.renderPolygonVector(
+                    geometry
+                );
                 this.mapSetFocusedPolygon(vectorLayer);
             }
         },
@@ -773,7 +775,7 @@ export default {
             );
         },
         setTableData(dataArr) {
-            var dataTableArr = [];
+            const dataTableArr = [];
             for (let i = 0; i < dataArr.length; i++) {
                 const item = dataArr[i];
                 let target = item.fieldAliases;
@@ -871,8 +873,6 @@ export default {
             this.$store.dispatch("SAVE_DATATABLE_TABS", tabs);
         },
         async getTableData(service, layerId, layerName, query) {
-            var layer = this.getLayer(service.id);
-            console.log("service", service);
             let response;
             let activeService = this.$store.getters.tableActiveService;
             this.dataTableVisibility = true;
@@ -892,10 +892,11 @@ export default {
                     limit: 25,
                 };
 
-                var isBunch = serviceHelper.isBunch(activeService);
+                const isBunch = serviceHelper.isBunch(activeService);
                 if (isBunch) {
-                    var isSameService = activeService.type === service.type;
-                    var queryParams;
+                    const isSameService = activeService.type === service.type;
+                    let queryParams;
+
                     if (isSameService) {
                         queryParams = service.layers.map((item, index) => {
                             return {
@@ -912,7 +913,7 @@ export default {
                         ];
                     }
 
-                    var params = { layerQueries: queryParams };
+                    const params = { layerQueries: queryParams };
                     response = await LayerService.getIntersectLocalTableData(
                         activeService.id,
                         params
@@ -987,7 +988,7 @@ export default {
             if (serviceHelper.isLayer(service)) {
                 if (serviceHelper.isDynamicFromArcgis(service)) {
                     geometry = coords[0] + "," + coords[1];
-                    var params = {
+                    const params = {
                         token: this.token,
                         name: service.name,
                         layer: layer_id,
@@ -996,7 +997,7 @@ export default {
                     };
                     response = await LayerService.getGeometryData(params);
                 } else {
-                    var params = {
+                    const params = {
                         layerId: service.id,
                         where: query,
                         geometry: coords[0] + "," + coords[1],
@@ -1019,7 +1020,7 @@ export default {
             //     let e = { target: { checked: true } };
             //     this.baseLayerList = layers.baseLayers;
             //     this.dynamicLayerList = layers.dynamicLayers;
-            //     var selectedIds =
+            //     const selectedIds =
             //         this.hashResolveResult.selectedLayers !== null
             //             ? this.hashResolveResult.selectedLayers
             //             : [];
@@ -1068,7 +1069,7 @@ export default {
                 color = this.defaultColorObject;
             }
 
-            var style = new Style({
+            const style = new Style({
                 fill: new Fill({
                     color: color.fill.hex8,
                 }),
@@ -1099,12 +1100,14 @@ export default {
         },
 
         renderNewService(service) {
-            var isLayer = serviceHelper.isLayer(service);
+            const isLayer = serviceHelper.isLayer(service);
             let zoomLevelProperties = this.getLayerZoomLevelOptions(service);
             let new_layer;
             let url = URL + "/api/map/service/" + service.name + "/MapServer/";
+
             if (isLayer) {
-                var isDynamic = serviceHelper.isDynamic(service);
+                const isDynamic = serviceHelper.isDynamic(service);
+
                 if (isDynamic) {
                     if (serviceHelper.isLocalService(service)) {
                         new_layer = new VectorTileLayer({
@@ -1171,13 +1174,13 @@ export default {
                     }
                 }
             } else {
-                var queryParams = service.layers.map((item, index) => {
+                const queryParams = service.layers.map((item, index) => {
                     return {
                         layerId: item.id,
                         query: item.query,
                     };
                 });
-                var params = { queries: queryParams };
+                const params = { queries: queryParams };
                 new_layer = new VectorTileLayer({
                     id: service.id,
                     source: new VectorTileSource({
@@ -1194,14 +1197,14 @@ export default {
                             }),
                     }),
                     style: feature => {
-                        var featureLayerId = feature.get("layerId");
-                        var layerIds = service.layers.map(item => {
+                        const featureLayerId = feature.get("layerId");
+                        const layerIds = service.layers.map(item => {
                             return item.id;
                         });
-                        var index = layerIds.indexOf(featureLayerId);
+                        const index = layerIds.indexOf(featureLayerId);
 
-                        var color = materialColors[index];
-                        var colorObj = {
+                        const color = materialColors[index];
+                        const colorObj = {
                             border: {
                                 hex8: color,
                             },
@@ -1230,18 +1233,18 @@ export default {
                     ]);
             }
 
-            var newService = this.renderNewService(service);
+            const newService = this.renderNewService(service);
             this.getOrderNumber(this.dynamicLayerList, service);
 
             newService.set("name", service.name);
-            var zIndex = this.getZIndex(service);
+            const zIndex = this.getZIndex(service);
             newService.setZIndex(zIndex);
 
             this.mapLayer.addLayer(newService);
         },
         getOrderNumber(array, service) {
-            var index = 0;
-            var result = 0;
+            let index = 0;
+            let result = 0;
             layerHelper.recursiveLayerMapping(array, function(layer) {
                 index++;
                 if (layer.name == service.name) {
@@ -1288,7 +1291,7 @@ export default {
         getLayer(id) {
             let layer = null;
             this.mapLayer.getLayers().forEach(function(lyr) {
-                var layerId = lyr.values_.id;
+                const layerId = lyr.values_.id;
                 if (layerId !== undefined && layerId === id) {
                     layer = lyr;
                 }
@@ -1327,7 +1330,7 @@ export default {
         },
         async dynamicLayersReset(service, status) {
             if (serviceHelper.isDynamicFromArcgis(service)) {
-                var isColorEnabled = await this.isLayerColorEnabled(service);
+                const isColorEnabled = await this.isLayerColorEnabled(service);
 
                 this.dynamicLayerList = layerHelper.recursiveLayerMapping(
                     this.dynamicLayerList,
@@ -1366,7 +1369,7 @@ export default {
             }
         },
         async selectService(service, isChecked) {
-            // var isChecked = e.target.checked;
+            // const isChecked = e.target.checked;
 
             // this.isHashLoaded = isHashLoaded;
             if (serviceHelper.isLayer(service)) {
@@ -1423,7 +1426,7 @@ export default {
                 this.dynamicLayerList,
                 async layer => {
                     if (layer != null && layer.id == service.id) {
-                        var subLayer = layer.layers.find(c => c.id == id);
+                        const subLayer = layer.layers.find(c => c.id == id);
                         subLayer.isSelected = isChecked;
                     }
                 }
@@ -1446,14 +1449,14 @@ export default {
         },
         saveColor(service, colorObj) {
             const { fillColor, borderColor } = colorObj;
-            var isLayer = serviceHelper.isLayer(service);
-            var isSubLayer = serviceHelper.isSublayer(service);
-            var isBunch = serviceHelper.isBunch(service);
+            const isLayer = serviceHelper.isLayer(service);
+            const isSubLayer = serviceHelper.isSublayer(service);
+            const isBunch = serviceHelper.isBunch(service);
 
-            var color = { fill: fillColor, border: borderColor };
+            const color = { fill: fillColor, border: borderColor };
 
             if (isLayer || isSubLayer) {
-                var service = isSubLayer ? service.parent : service;
+                const service = isSubLayer ? service.parent : service;
 
                 layerController.setColor(service, color, isSubLayer);
             } else if (isBunch) {
@@ -1464,8 +1467,8 @@ export default {
     },
     computed: {
         defaultColorObject() {
-            var fill = this.$store.state.colorPicker.fill;
-            var border = this.$store.state.colorPicker.border;
+            const fill = this.$store.state.colorPicker.fill;
+            const border = this.$store.state.colorPicker.border;
             return { fill, border };
         },
         selectedLayers() {
