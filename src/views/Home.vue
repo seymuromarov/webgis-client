@@ -3,44 +3,38 @@
         <!-- Main content -->
         <div class="padding-0 map-layout">
             <div id="map">
-                <MapControls
-                    :map="mapLayer"
-                    :mapHelpers="mapHelper"
-                    :nextHistoryEvent="nextHistoryEvent"
-                    :previousHistoryEvent="previousHistoryEvent"
-                />
-                <Sidebar
-                    :baseMaps="baseMaps"
-                    @selectService="selectService"
-                    @selectSubLayer="selectSubService"
-                    @dynamicLayersReset="dynamicLayersReset"
-                    @getTableData="getTableData"
-                    @showInfoModal="showInfoModal = true"
-                    @exportPNG="pngExport"
-                    @exportData="exportData"
-                    @setBaseLayout="setBaseLayout"
-                    @setDrawType="setDrawType"
-                    @delete="deleteFeatureOn"
-                    @reset="resetFeatures"
-                    @pickColor="eyeDropper"
-                    @changeDetector="changeDetector"
-                    @addGraticule="addGraticule"
-                    @addPlace="setMarkerTrue"
-                    @saveColor="saveColor"
-                    @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
-                    @onMoveCallbackDynamicLayerList="
+                <MapControls :map="mapLayer"
+                             :mapHelpers="mapHelper"
+                             :nextHistoryEvent="nextHistoryEvent"
+                             :previousHistoryEvent="previousHistoryEvent" />
+                <Sidebar :baseMaps="baseMaps"
+                         @selectService="selectService"
+                         @selectSubLayer="selectSubService"
+                         @dynamicLayersReset="dynamicLayersReset"
+                         @getTableData="getTableData"
+                         @showInfoModal="showInfoModal = true"
+                         @exportPNG="pngExport"
+                         @exportData="exportData"
+                         @setBaseLayout="setBaseLayout"
+                         @setDrawType="setDrawType"
+                         @delete="deleteFeatureOn"
+                         @reset="resetFeatures"
+                         @pickColor="eyeDropper"
+                         @changeDetector="changeDetector"
+                         @addGraticule="addGraticule"
+                         @addPlace="setMarkerTrue"
+                         @saveColor="saveColor"
+                         @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
+                         @onMoveCallbackDynamicLayerList="
                         onMoveCallbackDynamicLayerList
-                    "
-                />
+                    " />
             </div>
         </div>
 
         <!-- Data table -->
-        <DataTable
-            ref="dataTable"
-            @showFilterModal="showFilterModal"
-            @mapSetCenter="mapSetCenter"
-        />
+        <DataTable ref="dataTable"
+                   @showFilterModal="showFilterModal"
+                   @mapSetCenter="mapSetCenter" />
 
         <!-- Report -->
         <CustomModal name="arithmeticResultModal" :maxWidth="600">
@@ -48,18 +42,14 @@
         </CustomModal>
 
         <!-- Filter -->
-        <FilterModal
-            :filterValues="filterValues"
-            @filterSelectedColumn="filterSelectedColumn"
-            @filterData="filterData"
-        />
+        <FilterModal :filterValues="filterValues"
+                     @filterSelectedColumn="filterSelectedColumn"
+                     @filterData="filterData" />
 
         <!-- Shape Color Picker -->
-        <CustomModal
-            name="colorPickerModal"
-            title="Color picker"
-            :minWidth="300"
-        >
+        <CustomModal name="colorPickerModal"
+                     title="Color picker"
+                     :minWidth="300">
             <ShapeColorPicker @setShapeColor="setShapeColor" />
         </CustomModal>
 

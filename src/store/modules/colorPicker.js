@@ -1,10 +1,10 @@
 const state = {
-  fill: {
-    hex8: "#FFFFFF00"
-  },
-  border: {
-    hex8: "#F44336FF"
-  },
+    fill: {
+        hex8: "#FFFFFF00"
+    },
+    border: {
+        hex8: "#F44336FF"
+    },
 
     // fillColor: {
     //     hex: "var(--transparent)",

@@ -4,7 +4,7 @@ const functions = {
     deleteService(service) {
         let layersToRemove = [];
         const mapLayer = $store.getters.mapLayer;
-        mapLayer.getLayers().forEach(function(layer) {
+        mapLayer.getLayers().forEach(function (layer) {
             if (
                 layer.get("name") != undefined &&
                 layer.get("name") === service.name

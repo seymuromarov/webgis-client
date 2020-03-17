@@ -28,40 +28,40 @@
     </div>
 </template>
 <script>
-import { Chrome } from "vue-color";
-export default {
-  name: "color",
-  props: {},
-  components: {
-    ColorScheme: Chrome
-  },
-  mounted() {},
-  data() {
-    return {
-      isBorder: false,
-      borderColor: {
-        hex8: "#000000",
-        rgba: { r: 255, g: 255, b: 255, a: 1 }
-      },
-      fillColor: {
-        hex8: "#00000000",
-        rgba: { r: 255, g: 255, b: 255, a: 1 }
-      }
+    import { Chrome } from "vue-color";
+    export default {
+        name: "color",
+        props: {},
+        components: {
+            ColorScheme: Chrome
+        },
+        mounted() { },
+        data() {
+            return {
+                isBorder: false,
+                borderColor: {
+                    hex8: "#000000",
+                    rgba: { r: 255, g: 255, b: 255, a: 1 }
+                },
+                fillColor: {
+                    hex8: "#00000000",
+                    rgba: { r: 255, g: 255, b: 255, a: 1 }
+                }
+            };
+        },
+        methods: {
+            borderClick(status) {
+                this.isBorder = status;
+            },
+            save() {
+                this.$store.dispatch("SAVE_COLORPICKER_SHAPEFILLCOLOR", this.fillColor);
+                this.$store.dispatch(
+                    "SAVE_COLORPICKER_SHAPEBORDERCOLOR",
+                    this.borderColor
+                );
+                this.$emit("setShapeColor");
+            }
+        },
+        computed: {}
     };
-  },
-  methods: {
-    borderClick(status) {
-      this.isBorder = status;
-    },
-    save() {
-      this.$store.dispatch("SAVE_COLORPICKER_SHAPEFILLCOLOR", this.fillColor);
-      this.$store.dispatch(
-        "SAVE_COLORPICKER_SHAPEBORDERCOLOR",
-        this.borderColor
-      );
-      this.$emit("setShapeColor");
-    }
-  },
-  computed: {}
-};
 </script>
