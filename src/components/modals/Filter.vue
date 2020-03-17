@@ -75,7 +75,7 @@
                     rows="4"
                     cols="69"
                     :value="activeTabQuery"
-                    @input="activeTabQuery = $event.target.value"
+                    @input="handleQueryChange"
                 ></textarea>
             </div>
 
@@ -152,6 +152,15 @@ export default {
         };
     },
     methods: {
+        handleQueryChange(e) {
+            let value = e.target.value;
+
+            if (value === "") {
+                value = " ";
+            }
+
+            this.activeTabQuery = value;
+        },
         // getValueKey(alias) {
         //     return Object.keys(this.activeTabData.tableHeadersWithAlias).find(
         //         key => this.activeTabData.tableHeadersWithAlias[key] === alias
@@ -160,7 +169,6 @@ export default {
         isValString(value) {
             return typeof value == "string";
         },
-
         appendFilterQuery(value, typeCheck) {
             if (typeCheck && this.isValString(value)) value = `'${value}'`;
             this.activeTabQuery = this.activeTabQuery + value + " ";
@@ -173,7 +181,7 @@ export default {
             this.$emit(
                 "filterData",
                 this.activeTabService,
-                this.activeTabQuery
+                this.activeTabQuery.trim()
             );
             this.$moodal.filterModal.hide();
         },
@@ -239,7 +247,6 @@ export default {
             },
             set(query) {
                 if (query) {
-                    console.log(query);
                     let activeService = this.$store.getters.tableActiveService;
                     let isBunch = serviceHelper.isBunch(activeService);
                     if (isBunch) {

@@ -868,7 +868,6 @@ export default {
                     name: item.service.name,
                 };
             });
-            console.log({ tableData });
             this.$store.dispatch("SAVE_DATATABLE", tableData);
             this.$store.dispatch("SAVE_DATATABLE_TABS", tabs);
         },
