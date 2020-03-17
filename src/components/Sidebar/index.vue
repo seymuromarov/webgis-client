@@ -96,6 +96,7 @@
                 :data="layer"
                 @dynamicLayersReset="dynamicLayersReset"
                 @saveColor="saveColor"
+                @selectService="selectService"
                 @selectSubLayer="selectSubLayer"
                 @getTableData="getTableData"
               />
@@ -121,6 +122,7 @@
                 v-for="(bunch, index) in bunchLayerList"
                 :key="bunch.name + index"
                 :data="bunch"
+                @selectService="selectService"
                 @saveColor="saveColor"
                 @getTableData="getTableData"
               />
@@ -156,6 +158,7 @@
                 v-for="(layer, index) in baselayerList"
                 :key="layer.name + index"
                 :data="layer"
+                @selectService="selectService"
                 @selectSubLayer="selectSubLayer"
                 @getTableData="getTableData"
               />
@@ -443,6 +446,9 @@ export default {
     },
     selectSubLayer(service, index, id, event) {
       this.$emit("selectSubLayer", service, index, id, event);
+    },
+    selectService(data, isChecked) {
+      this.$emit("selectService", data, isChecked);
     },
     getTableData(service, itemId, itemName, query) {
       this.$store.dispatch("SAVE_DATATABLE_ACTIVE_SERVICE", service);

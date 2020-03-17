@@ -230,7 +230,7 @@ export default {
           let isBunch = serviceHelper.isBunch(activeService);
           if (isBunch) {
             bunchController.setQuery(activeService, this.activeTabId, query);
-          } else layerControllxer.setQuery(activeService, query);
+          } else layerController.setQuery(activeService, query);
         }
       }
     },

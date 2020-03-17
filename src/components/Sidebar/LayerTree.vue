@@ -63,6 +63,8 @@
         :data="children"
         :parent="data"
         :loop="loop + 1"
+        @saveColor="saveColor"
+        @selectService="selectService"
         @selectSubLayer="selectSubLayer"
         @dynamicLayersReset="dynamicLayersReset"
         @getTableData="getTableData"
@@ -75,6 +77,7 @@
         :parent="data"
         :loop="loop + 1"
         @saveColor="saveColor"
+        @selectService="selectService"
         @selectSubLayer="selectSubLayer"
         @dynamicLayersReset="dynamicLayersReset"
         @getTableData="getTableData"
@@ -215,11 +218,14 @@ export default {
           isChecked
         );
       } else {
-        serviceController.selectService(this.data, isChecked);
+        // serviceController.selectService(this.data, isChecked);
+        this.$emit("selectService", this.data, isChecked);
         this.$emit("dynamicLayersReset", this.data, isChecked);
       }
     },
-
+    selectService(data, isChecked) {
+      this.$emit("selectService", data, isChecked);
+    },
     selectSubLayer(parent, order, itemId, event) {
       this.$emit("selectSubLayer", parent, order, itemId, event);
     },

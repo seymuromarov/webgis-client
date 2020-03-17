@@ -11,6 +11,7 @@
         />
         <Sidebar
           :baseMaps="baseMaps"
+          @selectService="selectService"
           @selectSubLayer="selectSubService"
           @dynamicLayersReset="dynamicLayersReset"
           @getTableData="getTableData"
@@ -878,14 +879,14 @@ export default {
             queryParams = service.layers.map((item, index) => {
               return {
                 layerId: item.id,
-                query: item.query
+                query: { ...item.query, paging: this.tablePaging }
               };
             });
           } else {
             queryParams = [
               {
                 layerId: service.id,
-                query: service.query
+                query: { ...service.query, paging: this.tablePaging }
               }
             ];
           }
@@ -1062,7 +1063,84 @@ export default {
       });
       return style;
     },
+    async selectService(service, isChecked) {
+      if (serviceHelper.isLayer(service)) {
+        if (serviceHelper.isDynamic(service)) {
+          if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
+            let subLayerResponse = await this.getResponseDynamic(service);
+            service.layers = subLayerResponse.data.layers;
+          }
+        }
+        layerController.setSelected(service, isChecked);
+      } else {
+        bunchController.setSelected(service, isChecked);
+      }
 
+      if (isChecked) this.addService(service);
+      else mapController.deleteService(service);
+    },
+    addService(service) {
+      if (service.extent != null) {
+        this.mapLayer
+          .getView()
+          .fit([
+            service.extent.minX,
+            service.extent.minY,
+            service.extent.maxX,
+            service.extent.maxY
+          ]);
+      }
+
+      var newService = this.renderNewService(service);
+      this.getOrderNumber(this.dynamicLayerList, service);
+
+      newService.set("name", service.name);
+      var zIndex = this.getZIndex(service);
+      newService.setZIndex(zIndex);
+
+      this.mapLayer.addLayer(newService);
+    },
+
+    setZIndex(service) {
+      this.mapLayer.getLayers().forEach(layer => {
+        if (
+          layer.get("name") != undefined &&
+          layer.get("name") === service.name
+        ) {
+          layer.setZIndex(this.getZIndex(service));
+        }
+      });
+    },
+    getZIndex(service) {
+      let zIndex = 0;
+      let orderNo = 0;
+      if (serviceHelper.isLayer(service)) {
+        if (serviceHelper.isDynamic(service)) {
+          zIndex = layerSettings.dynamicZIndex;
+          orderNo = this.getOrderNumber(this.dynamicLayerList, service);
+        } else {
+          zIndex = layerSettings.basemapZIndex;
+          orderNo = this.getOrderNumber(this.baseLayerList, service);
+        }
+      } else {
+        zIndex = layerSettings.bunchZIndex;
+        orderNo = this.getOrderNumber(this.bunchLayerList, service);
+      }
+
+      return zIndex - orderNo;
+    },
+
+    getOrderNumber(array, service) {
+      var index = 0;
+      var result = 0;
+      layerHelper.recursiveLayerMapping(array, function(layer) {
+        index++;
+        if (layer.name == service.name) {
+          result = index;
+        }
+      });
+      return result;
+    },
     getLayerZoomLevelOptions(service) {
       return {
         maxResolution: createXYZ().getResolution(service.minZoomLevel) * 1.01,
