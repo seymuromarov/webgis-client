@@ -33,7 +33,6 @@
 
 <script>
     import Multiselect from "vue-multiselect";
-    import LayerService from "@/services/LayerService";
     import { URL } from "@/config/urls";
     import { Modal as CustomModal } from "../";
     import { layerController } from "@/controllers";
