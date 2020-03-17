@@ -6,11 +6,11 @@
             <div class="card" v-for="question in questions" :key="question.id">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <button
-                            class="btn btn-link"
-                            :class="{'collapsed': activeQuestionIds !== question.id}"
-                            @click="toggleAccordion(question.id)"
-                        >{{ question.question }}</button>
+                        <button class="btn btn-link"
+                                :class="{'collapsed': activeQuestionIds !== question.id}"
+                                @click="toggleAccordion(question.id)">
+                            {{ question.question }}
+                        </button>
                     </h5>
                 </div>
 
@@ -25,77 +25,82 @@
 </template>
 
 <script>
-import API from "../../services/InfoService";
-import Loader from "./parts/Loader";
+    import API from "../../services/InfoService";
+    import Loader from "./parts/Loader";
 
-export default {
-    name: "FAQ",
-    components: {
-        Loader
-    },
-    data() {
-        return {
-            activeQuestionIds: [],
-            loading: false
-        };
-    },
-    methods: {
-        getFAQ() {
-            this.loading = true;
-
-            API.getFAQ()
-                .then(response => {
-                    if (response.data) {
-                        this.$store.commit("SET_FAQ_DATA", response.data);
-                    }
-                    this.loading = false;
-                })
-                .catch(error => {
-                    this.loading = false;
-                });
+    export default {
+        name: "FAQ",
+        components: {
+            Loader
         },
-        toggleAccordion(id) {
-            if (this.activeQuestionIds.includes(id)) {
-                const index = this.activeQuestionIds.findIndex(x => x === id);
-                this.activeQuestionIds.splice(index, 1);
-            } else {
-                this.activeQuestionIds.push(id);
+        data() {
+            return {
+                activeQuestionIds: [],
+                loading: false
+            };
+        },
+        methods: {
+            getFAQ() {
+                this.loading = true;
+
+                API.getFAQ()
+                    .then(response => {
+                        if (response.data) {
+                            this.$store.commit("SET_FAQ_DATA", response.data);
+                        }
+                        this.loading = false;
+                    })
+                    .catch(error => {
+                        this.loading = false;
+                    });
+            },
+            toggleAccordion(id) {
+                if (this.activeQuestionIds.includes(id)) {
+                    const index = this.activeQuestionIds.findIndex(x => x === id);
+                    this.activeQuestionIds.splice(index, 1);
+                } else {
+                    this.activeQuestionIds.push(id);
+                }
+            },
+            labelClick(e) {
+                if (e.target.checked === true) {
+                    document.querySelectorAll(".toggle").forEach(item => {
+                        if (
+                            item.getAttribute("data-index") !==
+                            e.target.getAttribute("data-index")
+                        ) {
+                            item.checked = false;
+                        }
+                    });
+                }
             }
         },
-        labelClick(e) {
-            if (e.target.checked === true) {
-                document.querySelectorAll(".toggle").forEach(item => {
-                    if (
-                        item.getAttribute("data-index") !==
-                        e.target.getAttribute("data-index")
-                    ) {
-                        item.checked = false;
-                    }
-                });
+        mounted() {
+            if (!this.questions.length) {
+                this.getFAQ();
+            }
+        },
+        computed: {
+            questions() {
+                return this.$store.state.information.faq.data;
             }
         }
-    },
-    mounted() {
-        if (!this.questions.length) {
-            this.getFAQ();
-        }
-    },
-    computed: {
-        questions() {
-            return this.$store.state.information.faq.data;
-        }
-    }
-};
+    };
 </script>
 
 <style lang="scss">
-.accordion {
-    .card-header {
+    .accordion {
+        .card-header
+
+    {
         padding: 0;
-        .btn-link {
-            color: #5a5a5a;
-            padding: 8px 12px;
-        }
+        .btn-link
+
+    {
+        color: #5a5a5a;
+        padding: 8px 12px;
+    }
+
     }
 
     .collapse-body {
@@ -108,9 +113,10 @@ export default {
         transition: max-height 0.5s ease-in-out;
         transition-delay: 0s;
     }
+
     .collapse-enter,
     .collapse-leave-to {
         max-height: 0;
     }
-}
+    }
 </style>

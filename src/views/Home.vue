@@ -1,77 +1,67 @@
 <template>
-  <div class="row container-fluid padding-0">
-    <!-- Main content -->
-    <div class="padding-0 map-layout">
-      <div id="map">
-        <MapControls
-          :map="mapLayer"
-          :mapHelpers="mapHelper"
-          :nextHistoryEvent="nextHistoryEvent"
-          :previousHistoryEvent="previousHistoryEvent"
-        />
-        <Sidebar
-          :baseMaps="baseMaps"
-          @selectService="selectService"
-          @selectSubLayer="selectSubService"
-          @dynamicLayersReset="dynamicLayersReset"
-          @getTableData="getTableData"
-          @showInfoModal="showInfoModal = true"
-          @exportPNG="pngExport"
-          @exportData="exportData"
-          @setBaseLayout="setBaseLayout"
-          @setDrawType="setDrawType"
-          @delete="deleteFeatureOn"
-          @reset="resetFeatures"
-          @pickColor="eyeDropper"
-          @changeDetector="changeDetector"
-          @addGraticule="addGraticule"
-          @addPlace="setMarkerTrue"
-          @saveColor="saveColor"
-          @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
-          @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList"
-        />
-      </div>
-    </div>
+    <div class="row container-fluid padding-0">
+        <!-- Main content -->
+        <div class="padding-0 map-layout">
+            <div id="map">
+                <MapControls :map="mapLayer"
+                             :mapHelpers="mapHelper"
+                             :nextHistoryEvent="nextHistoryEvent"
+                             :previousHistoryEvent="previousHistoryEvent" />
+                <Sidebar :baseMaps="baseMaps"
+                         @selectService="selectService"
+                         @selectSubLayer="selectSubService"
+                         @dynamicLayersReset="dynamicLayersReset"
+                         @getTableData="getTableData"
+                         @showInfoModal="showInfoModal = true"
+                         @exportPNG="pngExport"
+                         @exportData="exportData"
+                         @setBaseLayout="setBaseLayout"
+                         @setDrawType="setDrawType"
+                         @delete="deleteFeatureOn"
+                         @reset="resetFeatures"
+                         @pickColor="eyeDropper"
+                         @changeDetector="changeDetector"
+                         @addGraticule="addGraticule"
+                         @addPlace="setMarkerTrue"
+                         @saveColor="saveColor"
+                         @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
+                         @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList" />
+            </div>
+        </div>
 
-    <!-- Data table -->
-    <DataTable
-      ref="dataTable"
-      @showFilterModal="showFilterModal"
-      @mapSetCenter="mapSetCenter"
-    />
+        <!-- Data table -->
+        <DataTable ref="dataTable"
+                   @showFilterModal="showFilterModal"
+                   @mapSetCenter="mapSetCenter" />
 
-    <!-- Report -->
-    <CustomModal name="arithmeticResultModal" :maxWidth="600">
-      <Report :arithmeticDataResult="ArithmeticDataResult" />
-    </CustomModal>
+        <!-- Report -->
+        <CustomModal name="arithmeticResultModal" :maxWidth="600">
+            <Report :arithmeticDataResult="ArithmeticDataResult" />
+        </CustomModal>
 
-    <!-- Filter -->
-    <FilterModal
-      :filterValues="filterValues"
-      @filterSelectedColumn="filterSelectedColumn"
-      @filterData="filterData"
-    />
+        <!-- Filter -->
+        <FilterModal :filterValues="filterValues"
+                     @filterSelectedColumn="filterSelectedColumn"
+                     @filterData="filterData" />
 
-    <!-- Shape Color Picker -->
-    <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
-      <ShapeColorPicker @setShapeColor="setShapeColor" />
-    </CustomModal>
+        <!-- Shape Color Picker -->
+        <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
+            <ShapeColorPicker @setShapeColor="setShapeColor" />
+        </CustomModal>
 
-    <!-- Change Detection -->
-    <detector-modal
-      :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
-      v-bind="{ lastBBOXOfShape, token }"
-      @close="
+        <!-- Change Detection -->
+        <detector-modal :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
+                        v-bind="{ lastBBOXOfShape, token }"
+                        @close="
         ($store.state.dataTable.lastBBOXOfShape = []) &
           (isDrawnShapeForDetection = false)
-      "
-    ></detector-modal>
-    <!-- Information Modal -->
-    <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
+      "></detector-modal>
+        <!-- Information Modal -->
+        <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
 
-    <!-- Information Modal -->
-    <ComputedLayersModal />
-  </div>
+        <!-- Information Modal -->
+        <ComputedLayersModal />
+    </div>
 </template>
 
 <script>

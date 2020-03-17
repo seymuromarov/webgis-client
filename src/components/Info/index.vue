@@ -1,42 +1,33 @@
 <template>
     <transition name="fade">
-        <div
-            class="modal overlay"
-            id="infoModal"
-            tabindex="-1"
-            role="dialog"
-            aria-labelledby="infoModalLabel"
-            aria-hidden="true"
-            v-show="isOpen"
-            @click.self="$emit('close')"
-        >
+        <div class="modal overlay"
+             id="infoModal"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="infoModalLabel"
+             aria-hidden="true"
+             v-show="isOpen"
+             @click.self="$emit('close')">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <ul class="nav nav-tabs">
                             <!-- List item -->
-                            <li
-                                class="nav-item"
+                            <li class="nav-item"
                                 v-for="tab in tabs"
-                                :key="tab.key"
-                            >
-                                <a
-                                    class="nav-link"
-                                    :class="{ active: tab.key === activeTab }"
-                                    href="#"
-                                    @click="changeTab(tab.key)"
-                                    >{{ tab.text }}</a
-                                >
+                                :key="tab.key">
+                                <a class="nav-link"
+                                   :class="{ active: tab.key === activeTab }"
+                                   href="#"
+                                   @click="changeTab(tab.key)">{{ tab.text }}</a>
                             </li>
 
                             <!-- Close button -->
-                            <button
-                                type="button"
-                                class="close"
-                                data-dismiss="modal"
-                                aria-label="Close"
-                                @click="$emit('close')"
-                            >
+                            <button type="button"
+                                    class="close"
+                                    data-dismiss="modal"
+                                    aria-label="Close"
+                                    @click="$emit('close')">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </ul>
@@ -115,63 +106,82 @@ export default {
 </script>
 
 <style lang="scss">
-#infoModal {
-    display: block;
-    overflow: auto;
-    &.overlay {
+    #infoModal {
+        display: block;
+        overflow: auto;
+        &.overlay
+
+    {
         background-color: rgba(0, 0, 0, 0.5);
     }
+
     .modal-dialog {
         max-width: 650px;
-        .modal-content {
-            border: 1px solid var(--primary-color);
-            .modal-header {
-                padding: 0px;
-                border-bottom: 0;
-                position: relative;
-                background-color: var(--primary-color);
-                .nav {
-                    width: 100%;
+        .modal-content
 
-                    &.nav-tabs {
-                        border-bottom: 1px solid #dee2e6;
-                        .nav-link {
-                            color: var(--white);
-                            padding: 0.35rem 1rem;
-                            &.active {
-                                border-color: var(--primary-color)
-                                    var(--primary-color) #fff;
-                                color: var(--primary-color);
-                                font-weight: 500;
-                            }
-                        }
-                    }
-                    .close {
-                        position: absolute;
-                        right: 10px;
-                        height: 100%;
-                        padding: 0;
-                        margin: 0;
-                        color: #fff;
-                        opacity: 1;
+    {
+        border: 1px solid var(--primary-color);
+        .modal-header
 
-                        &:focus {
-                            outline: none;
-                        }
-                    }
-                }
-            }
-            .modal-body {
-                text-align: left;
-                min-height: 400px;
-            }
-        }
+    {
+        padding: 0px;
+        border-bottom: 0;
+        position: relative;
+        background-color: var(--primary-color);
+        .nav
+
+    {
+        width: 100%;
+        &.nav-tabs
+
+    {
+        border-bottom: 1px solid #dee2e6;
+        .nav-link
+
+    {
+        color: var(--white);
+        padding: 0.35rem 1rem;
+        &.active
+
+    {
+        border-color: var(--primary-color) var(--primary-color) #fff;
+        color: var(--primary-color);
+        font-weight: 500;
     }
-}
 
-// Animations
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s;
-}
+    }
+    }
+
+    .close {
+        position: absolute;
+        right: 10px;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        color: #fff;
+        opacity: 1;
+        &:focus
+
+    {
+        outline: none;
+    }
+
+    }
+    }
+    }
+
+    .modal-body {
+        text-align: left;
+        min-height: 400px;
+    }
+
+    }
+    }
+    }
+
+    // Animations
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity 0.3s;
+    }
 </style>

@@ -1,90 +1,74 @@
 <template>
-  <li class="list__item">
-    <span class="item__header" :style="`padding-left: ${paddingLeft}`">
-      <span class="title">
-        <!-- Switch -->
-        <ToggleSwitch v-if="!isCategory" class="pre" v-model="switchModel" />
-        <i class="far fa-folder pre" v-else></i>
-        {{ data.name }}
-      </span>
+    <li class="list__item">
+        <span class="item__header" :style="`padding-left: ${paddingLeft}`">
+            <span class="title">
+                <!-- Switch -->
+                <ToggleSwitch v-if="!isCategory" class="pre" v-model="switchModel" />
+                <i class="far fa-folder pre" v-else></i>
+                {{ data.name }}
+            </span>
 
-      <!-- Caret icons -->
-      <span v-if="caretIconsVisibility">
-        <i
-          class="fas fa-caret-down"
-          v-show="subListVisibility"
-          @click="toggleSubList"
-        />
-        <i
-          class="fas fa-caret-left"
-          v-show="!subListVisibility"
-          @click="toggleSubList"
-        />
-      </span>
+            <!-- Caret icons -->
+            <span v-if="caretIconsVisibility">
+                <i class="fas fa-caret-down"
+                   v-show="subListVisibility"
+                   @click="toggleSubList" />
+                <i class="fas fa-caret-left"
+                   v-show="!subListVisibility"
+                   @click="toggleSubList" />
+            </span>
 
-      <!-- Color and Table icons -->
-      <span v-if="operationsVisibility" class="icons">
-        <img
-          v-if="colorIconVisibility"
-          src="@/assets/images/icons/color_fill.svg"
-          alt=""
-          @click="toggleColorPicker"
-        />
+            <!-- Color and Table icons -->
+            <span v-if="operationsVisibility" class="icons">
+                <img v-if="colorIconVisibility"
+                     src="@/assets/images/icons/color_fill.svg"
+                     alt=""
+                     @click="toggleColorPicker" />
 
-        <img
-          v-if="tableIconVisibility"
-          src="@/assets/images/icons/list.svg"
-          alt=""
-          @click="
+                <img v-if="tableIconVisibility"
+                     src="@/assets/images/icons/list.svg"
+                     alt=""
+                     @click="
             $emit('getTableData', data, data.id, data.name, {
               where: '1=1'
             })
-          "
-        />
-        <img
-          v-if="deleteIconVisibility"
-          src="@/assets/images/icons/delete.svg"
-          alt=""
-          @click="deleteBunch"
-        />
-      </span>
-    </span>
+          " />
+                <img v-if="deleteIconVisibility"
+                     src="@/assets/images/icons/delete.svg"
+                     alt=""
+                     @click="deleteBunch" />
+            </span>
+        </span>
 
-    <!-- Color Picker -->
-    <LayerColorPicker
-      v-if="colorPickerVisibility"
-      @onSave="onColorPickerSave"
-      @onClose="colorPickerOnClose"
-    />
+        <!-- Color Picker -->
+        <LayerColorPicker v-if="colorPickerVisibility"
+                          @onSave="onColorPickerSave"
+                          @onClose="colorPickerOnClose" />
 
-    <ul v-if="data.layers && subListVisibility" class="list__content">
-      <LayerTree
-        v-for="(children, index) in data.children"
-        :key="children.name + index"
-        :data="children"
-        :parent="data"
-        :loop="loop + 1"
-        @saveColor="saveColor"
-        @selectService="selectService"
-        @selectSubLayer="selectSubLayer"
-        @dynamicLayersReset="dynamicLayersReset"
-        @getTableData="getTableData"
-      />
+        <ul v-if="data.layers && subListVisibility" class="list__content">
+            <LayerTree v-for="(children, index) in data.children"
+                       :key="children.name + index"
+                       :data="children"
+                       :parent="data"
+                       :loop="loop + 1"
+                       @saveColor="saveColor"
+                       @selectService="selectService"
+                       @selectSubLayer="selectSubLayer"
+                       @dynamicLayersReset="dynamicLayersReset"
+                       @getTableData="getTableData" />
 
-      <LayerTree
-        v-for="(layer, index) in data.layers"
-        :key="layer.name + index"
-        :data="layer"
-        :parent="data"
-        :loop="loop + 1"
-        @saveColor="saveColor"
-        @selectService="selectService"
-        @selectSubLayer="selectSubLayer"
-        @dynamicLayersReset="dynamicLayersReset"
-        @getTableData="getTableData"
-      />
-    </ul>
-  </li>
+            <LayerTree v-for="(layer, index) in data.layers"
+                       :key="layer.name + index"
+                       :data="layer"
+                       :parent="data"
+                       :loop="loop + 1"
+                       @saveColor="saveColor"
+                       @selectService="selectService"
+                       @selectSubLayer="selectSubLayer"
+                       @dynamicLayersReset="dynamicLayersReset"
+                       @getTableData="getTableData" />
+        </ul>
+    </li>
 </template>
 
 <script>

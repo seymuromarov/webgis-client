@@ -12,11 +12,12 @@ export default {
 </script>
 
 <style>
-.about {
-    font-size: 1.25rem;
-    margin: 1rem 2rem;
-}
-h3 {
-    margin-bottom: 2rem;
-}
+    .about {
+        font-size: 1.25rem;
+        margin: 1rem 2rem;
+    }
+
+    h3 {
+        margin-bottom: 2rem;
+    }
 </style>

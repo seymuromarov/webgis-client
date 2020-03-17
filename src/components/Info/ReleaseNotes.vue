@@ -59,18 +59,22 @@ export default {
 </script>
 
 <style lang="scss">
-.release-note {
-    &:not(:last-of-type) {
+    .release-note {
+        &:not(:last-of-type)
+
+    {
         padding-bottom: 1rem;
         border-bottom: 1px solid #e5e5e5;
     }
+
     &:not(:first-of-type) {
         padding-top: 1rem;
     }
+
     .content {
         padding-left: 1rem;
         margin-top: 0.5rem;
         margin-bottom: 0;
     }
-}
+    }
 </style>
