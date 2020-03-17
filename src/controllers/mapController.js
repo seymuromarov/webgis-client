@@ -17,9 +17,11 @@ const functions = {
       }
     });
     let len = layersToRemove.length;
-    for (let i = 0; i < len; i++) {
-      mapLayer.removeLayer(layersToRemove[i]);
-    }
+    for (let i = 0; i < len; i++) functions.removeLayer(layersToRemove[i]);
+  },
+  removeLayer(layer) {
+    var mapLayer = $store.getters.mapLayer;
+    mapLayer.removeLayer(layer);
     $store.dispatch("saveMap", mapLayer);
   }
 };

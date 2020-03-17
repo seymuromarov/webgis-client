@@ -29,6 +29,12 @@ import "quill/dist/quill.bubble.css";
 // VueSweetalert2
 import "sweetalert2/dist/sweetalert2.min.css";
 
+// Import component
+import Loading from "vue-loading-overlay";
+// Import stylesheet
+import "vue-loading-overlay/dist/vue-loading.css";
+
+Vue.use(Loading);
 Vue.use(Toasted);
 Vue.use(VModal);
 Vue.component("downloadExcel", JsonExcel);

@@ -30,12 +30,7 @@
           alt=""
           @click="toggleColorPicker"
         />
-        <img
-          v-if="deleteIconVisibility"
-          src="@/assets/images/icons/delete.svg"
-          alt=""
-          @click="deleteBunch"
-        />
+
         <img
           v-if="tableIconVisibility"
           src="@/assets/images/icons/list.svg"
@@ -45,6 +40,12 @@
               where: '1=1'
             })
           "
+        />
+        <img
+          v-if="deleteIconVisibility"
+          src="@/assets/images/icons/delete.svg"
+          alt=""
+          @click="deleteBunch"
         />
       </span>
     </span>
@@ -175,7 +176,11 @@ export default {
       return this.data.isColorEnabled && serviceHelper.isBunch(this.data); // && this.color;
     },
     operationsVisibility() {
-      return this.tableIconVisibility || this.colorIconVisibility;
+      return (
+        this.tableIconVisibility ||
+        this.colorIconVisibility ||
+        this.deleteIconVisibility
+      );
     },
     colorPickerVisibility() {
       return (

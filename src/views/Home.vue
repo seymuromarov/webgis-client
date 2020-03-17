@@ -718,6 +718,7 @@ export default {
         this.mapSetFocusedPolygon(vectorLayer);
       }
     },
+
     mapSetFocusedPolygon(vectorLayer) {
       //if last vector exist
       if (this.focusedPolygonVector != null)
@@ -743,18 +744,7 @@ export default {
         this.setZIndex(item);
       });
     },
-    isItemCategory(item) {
-      return serviceHelper.isCategory(item);
-    },
-    isWhereExist(query) {
-      return (
-        query &&
-        query.where &&
-        query.where !== null &&
-        query.where !== "" &&
-        query.where !== "1=1"
-      );
-    },
+
     setTableData(dataArr) {
       var dataTableArr = [];
       for (let i = 0; i < dataArr.length; i++) {
@@ -816,8 +806,7 @@ export default {
         });
       }
       let tableData = this.$store.getters.tableData;
-      let activeService = this.$store.getters.tableActiveService;
-      if (serviceHelper.isBunch(activeService)) {
+      if (serviceHelper.isBunch(this.tableActiveService)) {
         for (let i = 0; i < dataTableArr.length; i++) {
           const item = dataTableArr[i];
           let isExist = tableData.some(c => c.service.id === item.service.id);
@@ -845,15 +834,12 @@ export default {
           name: item.service.name
         };
       });
-      console.log({ tableData });
       this.$store.dispatch("SAVE_DATATABLE", tableData);
       this.$store.dispatch("SAVE_DATATABLE_TABS", tabs);
     },
     async getTableData(service, layerId, layerName, query) {
       var layer = this.getLayer(service.id);
-      console.log("service", service);
       let response;
-      let activeService = this.$store.getters.tableActiveService;
       this.dataTableVisibility = true;
       this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
 
@@ -871,9 +857,9 @@ export default {
           limit: 25
         };
 
-        var isBunch = serviceHelper.isBunch(activeService);
+        var isBunch = serviceHelper.isBunch(this.tableActiveService);
         if (isBunch) {
-          var isSameService = activeService.type === service.type;
+          var isSameService = this.tableActiveService.type === service.type;
           var queryParams;
           if (isSameService) {
             queryParams = service.layers.map((item, index) => {
@@ -893,7 +879,7 @@ export default {
 
           var params = { layerQueries: queryParams };
           response = await LayerService.getIntersectLocalTableData(
-            activeService.id,
+            this.tableActiveService.id,
             params
           );
           response.data = response.data.map(item => {
@@ -920,8 +906,8 @@ export default {
 
         // if (!serviceHelper.isBunch(service)) {
         //     if (query.where !== service.query.where) {
-
-        this.refreshService(activeService);
+        if (serviceHelper.isQueryExist(service))
+          this.refreshService(this.tableActiveService);
       }
 
       let data = [];
@@ -957,7 +943,7 @@ export default {
 
       // this.dynamicLayersReset(service, true);
     },
-    async getGeometryData(service, layer_id, layer_name, query, coords) {
+    async getGeometryData(service, layer_id, layer_name, coords) {
       let response = null;
       let geometry = null;
       if (serviceHelper.isLayer(service)) {
@@ -967,53 +953,27 @@ export default {
             token: this.token,
             name: service.name,
             layer: layer_id,
-            where: query,
+            where: service.query.where,
             geometry: geometry
           };
           response = await LayerService.getGeometryData(params);
         } else {
           var params = {
             layerId: service.id,
-            where: query,
+            where: service.query.where,
             geometry: coords[0] + "," + coords[1]
           };
           response = await LayerService.getLocalTableData(params);
         }
 
         if (response.data.totalCount > 0) {
-          this.$refs.dataTable.showDataModal(response.data.features[0]);
+          let features = response.data.features[0];
+          this.$refs.dataTable.showDataModal(features.attributes);
+          this.mapSetCenter(features);
         }
       }
     },
-    async getLayers() {
-      // LayerService.getLayersWithFullDataFromServer({
-      //     token: this.token,
-      // }).then(response => {
-      //     let layers = layerHelper.mapLayers(response.data);
-      //     let e = { target: { checked: true } };
-      //     this.baseLayerList = layers.baseLayers;
-      //     this.dynamicLayerList = layers.dynamicLayers;
-      //     var selectedIds =
-      //         this.hashResolveResult.selectedLayers !== null
-      //             ? this.hashResolveResult.selectedLayers
-      //             : [];
-      //     this.dynamicLayerList = layerHelper.recursiveLayerMapping(
-      //         this.dynamicLayerList,
-      //         layer => {
-      //             if (selectedIds.includes(layer.id)) {
-      //                 layer.isSelected = true;
-      //                 this.selectService(
-      //                     layer,
-      //                     layer.order,
-      //                     layer.mapType === "dynamic",
-      //                     e,
-      //                     false
-      //                 );
-      //             }
-      //         }
-      //     );
-      // });
-    },
+
     checkIfLayerNeedsToTurnOn(layer, value) {
       let isChecked = true;
 
@@ -1063,7 +1023,21 @@ export default {
       });
       return style;
     },
+
     async selectService(service, isChecked) {
+      if (!isChecked) {
+        this.mapLayer.getLayers().forEach(function(layer) {
+          if (layer.get("type") === "draw") {
+            mapController.removeLayer(layer);
+          }
+        });
+      }
+      var tableActiveService = this.tableActiveService;
+      if (!isChecked && tableActiveService) {
+        if (serviceHelper.isEqual(service, tableActiveService))
+          this.dataTableVisibility = false;
+      }
+
       if (serviceHelper.isLayer(service)) {
         if (serviceHelper.isDynamic(service)) {
           if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
@@ -1152,13 +1126,18 @@ export default {
       var isLayer = serviceHelper.isLayer(service);
       let zoomLevelProperties = this.getLayerZoomLevelOptions(service);
       let new_layer;
+
+      let defaultParams = {
+        id: service.id,
+        type: "layer"
+      };
       let url = URL + "/api/map/service/" + service.name + "/MapServer/";
       if (isLayer) {
         var isDynamic = serviceHelper.isDynamic(service);
         if (isDynamic) {
           if (serviceHelper.isLocalService(service)) {
             new_layer = new VectorTileLayer({
-              id: service.id,
+              ...defaultParams,
               ...zoomLevelProperties,
               source: new VectorTileSource({
                 format: new MVT({
@@ -1177,6 +1156,7 @@ export default {
             });
           } else {
             new_layer = new ImageLayer({
+              ...defaultParams,
               ...zoomLevelProperties,
               source: new ImageArcGISRest({
                 url: url,
@@ -1193,6 +1173,7 @@ export default {
           if (service.spatial === 3857) {
             url = url + "/tile/{z}/{y}/{x}?token=" + this.token;
             new_layer = new TileLayer({
+              ...defaultParams,
               ...zoomLevelProperties,
               source: new XYZ({
                 url: url,
@@ -1202,6 +1183,7 @@ export default {
             });
           } else {
             new_layer = new TileLayer({
+              ...defaultParams,
               ...zoomLevelProperties,
               source: new TileArcGISRest({
                 url: url,
@@ -1223,7 +1205,7 @@ export default {
         });
         var params = { queries: queryParams };
         new_layer = new VectorTileLayer({
-          id: service.id,
+          ...defaultParams,
           source: new VectorTileSource({
             format: new MVT({
               geometryName: "geom"
@@ -1381,6 +1363,9 @@ export default {
       var fill = this.$store.state.colorPicker.fill;
       var border = this.$store.state.colorPicker.border;
       return { fill, border };
+    },
+    tableActiveService() {
+      return this.$store.getters.tableActiveService;
     },
     selectedLayers() {
       return layerController.getSelectedLayers();

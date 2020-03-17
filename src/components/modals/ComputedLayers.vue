@@ -6,7 +6,7 @@
     :height="400"
   >
     <form>
-      <div class="form-group">
+      <div class="form-group" ref="computedForm">
         <label for="label">Label</label>
         <input
           type="text"
@@ -72,6 +72,7 @@ export default {
   data() {
     return {
       value: null,
+      isLoading: false,
       data: {
         label: "",
         layers: []
@@ -86,18 +87,19 @@ export default {
       };
     },
     add() {
+      let loader = this.$loading.show({
+        // Optional parameters
+        container: this.$refs.computedForm,
+        canCancel: false
+      });
       const { label, layers } = this.data;
       if (label != "" && layers.length > 0) {
-        bunchService
-          .add(this.data)
-          .then(response => {
-            bunchController.add(response.data);
-            this.resetData();
-            this.$moodal.computedLayerModal.hide();
-          })
-          .catch(() => {
-            "faild";
-          });
+        bunchService.add(this.data).then(response => {
+          bunchController.add(response.data);
+          this.resetData();
+          this.$moodal.computedLayerModal.hide();
+          loader.hide();
+        });
       }
     }
   },
