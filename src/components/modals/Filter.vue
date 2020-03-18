@@ -21,7 +21,13 @@
                             :key="column"
                             class="list__item"
                             @dblclick="appendFilterQuery(alias, false)"
-                            @click="$emit('filterSelectedColumn', activeTabId, alias)">
+                            @click="
+                                $emit(
+                                    'filterSelectedColumn',
+                                    activeTabId,
+                                    alias
+                                )
+                            ">
                             {{ alias }}
                         </li>
                     </ul>
@@ -60,46 +66,46 @@
                           rows="4"
                           cols="69"
                           :value="activeTabQuery"
-                          @input="activeTabQuery = $event.target.value"></textarea>
+                          @input="handleQueryChange"></textarea>
             </div>
 
             <!-- Sum -->
             <!-- <div v-show="serviceInfo.resourceType === 'local'">
-                      <label>
-                          <input
-                              class="parent-checkbox"
-                              type="checkbox"
-                              id="isSum"
-                              :value="false"
-                              v-model="filterQueryIsSum"
-                              style="opacity:0;"
-                          />
-                          <i
-                              class="far fa-check-circle"
-                              v-if="filterQueryIsSum"
-                              style="cursor: pointer; color:#008422"
-                          ></i>
-                          <i
-                              class="far fa-check-circle"
-                              v-else
-                              style="cursor: pointer;"
-                          ></i>
-                          Sum
-                      </label>
+                <label>
+                    <input
+                        class="parent-checkbox"
+                        type="checkbox"
+                        id="isSum"
+                        :value="false"
+                        v-model="filterQueryIsSum"
+                        style="opacity:0;"
+                    />
+                    <i
+                        class="far fa-check-circle"
+                        v-if="filterQueryIsSum"
+                        style="cursor: pointer; color:#008422"
+                    ></i>
+                    <i
+                        class="far fa-check-circle"
+                        v-else
+                        style="cursor: pointer;"
+                    ></i>
+                    Sum
+                </label>
 
-                      <label class="ml-4" v-if="filterQueryIsSum">
-                          <select v-model="filterQueryArithmeticColumn">
-                              <option
-                                  v-for="alias in tableFeaturesHeader"
-                                  :value="alias"
-                                  :key="alias"
-                              >
-                                  {{ alias }}
-                              </option>
-                          </select>
-                          Sum Column
-                      </label>
-                  </div> -->
+                <label class="ml-4" v-if="filterQueryIsSum">
+                    <select v-model="filterQueryArithmeticColumn">
+                        <option
+                            v-for="alias in tableFeaturesHeader"
+                            :value="alias"
+                            :key="alias"
+                        >
+                            {{ alias }}
+                        </option>
+                    </select>
+                    Sum Column
+                </label>
+            </div> -->
             <!-- Apply button -->
             <button class="btn filter__apply-btn" @click="applyFilter">
                 Apply
@@ -116,7 +122,7 @@
     export default {
         name: "FilterBox",
         components: {
-            Modal
+            Modal,
         },
         data() {
             return {
@@ -130,12 +136,21 @@
                     "AND",
                     "OR",
                     "LIKE",
-                    "IS NULL"
+                    "IS NULL",
                 ],
-                currentTabId: null
+                currentTabId: null,
             };
         },
         methods: {
+            handleQueryChange(e) {
+                let value = e.target.value;
+
+                if (value === "") {
+                    value = " ";
+                }
+
+                this.activeTabQuery = value;
+            },
             // getValueKey(alias) {
             //     return Object.keys(this.activeTabData.tableHeadersWithAlias).find(
             //         key => this.activeTabData.tableHeadersWithAlias[key] === alias
@@ -144,7 +159,6 @@
             isValString(value) {
                 return typeof value == "string";
             },
-
             appendFilterQuery(value, typeCheck) {
                 if (typeCheck && this.isValString(value)) value = `'${value}'`;
                 this.activeTabQuery = this.activeTabQuery + value + " ";
@@ -154,9 +168,13 @@
                 this.activeTabId = tab;
             },
             applyFilter() {
-                this.$emit("filterData", this.activeTabService, this.activeTabQuery);
+                this.$emit(
+                    "filterData",
+                    this.activeTabService,
+                    this.activeTabQuery.trim()
+                );
                 this.$moodal.filterModal.hide();
-            }
+            },
         },
         computed: {
             tabs() {
@@ -168,7 +186,7 @@
                 },
                 set(id) {
                     this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
-                }
+                },
             },
             activeTab() {
                 return this.$store.state.dataTable.data.find(
@@ -183,7 +201,7 @@
             },
             activeTabService() {
                 let isBunch = serviceHelper.isBunch(this.activeService);
-                var service = null;
+                let service = null;
 
                 if (this.activeTab) {
                     if (isBunch)
@@ -191,7 +209,8 @@
                             this.activeService.id,
                             this.activeTabId
                         );
-                    else service = layerController.getDynamicLayer(this.activeTabId);
+                    else
+                        service = layerController.getDynamicLayer(this.activeTabId);
                 }
                 return service;
             },
@@ -208,7 +227,9 @@
                         );
                         where = bunchLayer ? bunchLayer.query.where : "";
                     } else {
-                        let layer = layerController.getDynamicLayer(this.activeTabId);
+                        let layer = layerController.getDynamicLayer(
+                            this.activeTabId
+                        );
                         where = layer.query.where;
                     }
 
@@ -219,10 +240,14 @@
                         let activeService = this.$store.getters.tableActiveService;
                         let isBunch = serviceHelper.isBunch(activeService);
                         if (isBunch) {
-                            bunchController.setQuery(activeService, this.activeTabId, query);
+                            bunchController.setQuery(
+                                activeService,
+                                this.activeTabId,
+                                query
+                            );
                         } else layerController.setQuery(activeService, query);
                     }
-                }
+                },
             },
             tableFeaturesHeader() {
                 if (this.activeTabData) {
@@ -242,7 +267,7 @@
                 get() {
                     const data = this.$store.getters.activeTableData;
                     return data ? data.filterValues : [];
-                }
+                },
             },
             filterQueryIsSum: {
                 get() {
@@ -259,7 +284,7 @@
                         "SAVE_FILTER_QUERY_IS_SUM",
                         filterQueryIsSum
                     );
-                }
+                },
             },
             filterQueryArithmeticColumn: {
                 get() {
@@ -270,13 +295,13 @@
                         "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
                         filterQueryArithmeticColumn
                     );
-                }
-            }
+                },
+            },
         },
         watch: {
             activeTabId(val) {
                 this.currentTabId = val;
-            }
-        }
+            },
+        },
     };
 </script>

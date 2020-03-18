@@ -1,67 +1,77 @@
 <template>
-    <div class="row container-fluid padding-0">
-        <!-- Main content -->
-        <div class="padding-0 map-layout">
-            <div id="map">
-                <MapControls :map="mapLayer"
-                             :mapHelpers="mapHelper"
-                             :nextHistoryEvent="nextHistoryEvent"
-                             :previousHistoryEvent="previousHistoryEvent" />
-                <Sidebar :baseMaps="baseMaps"
-                         @selectService="selectService"
-                         @selectSubLayer="selectSubService"
-                         @dynamicLayersReset="dynamicLayersReset"
-                         @getTableData="getTableData"
-                         @showInfoModal="showInfoModal = true"
-                         @exportPNG="pngExport"
-                         @exportData="exportData"
-                         @setBaseLayout="setBaseLayout"
-                         @setDrawType="setDrawType"
-                         @delete="deleteFeatureOn"
-                         @reset="resetFeatures"
-                         @pickColor="eyeDropper"
-                         @changeDetector="changeDetector"
-                         @addGraticule="addGraticule"
-                         @addPlace="setMarkerTrue"
-                         @saveColor="saveColor"
-                         @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
-                         @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList" />
-            </div>
-        </div>
+  <div class="row container-fluid padding-0">
+    <!-- Main content -->
+    <div class="padding-0 map-layout">
+      <div id="map">
+        <MapControls
+          :map="mapLayer"
+          :mapHelpers="mapHelper"
+          :nextHistoryEvent="nextHistoryEvent"
+          :previousHistoryEvent="previousHistoryEvent"
+        />
+        <Sidebar
+          :baseMaps="baseMaps"
+          @selectService="selectService"
+          @selectSubLayer="selectSubService"
+          @dynamicLayersReset="dynamicLayersReset"
+          @getTableData="getTableData"
+          @showInfoModal="showInfoModal = true"
+          @exportPNG="pngExport"
+          @exportData="exportData"
+          @setBaseLayout="setBaseLayout"
+          @setDrawType="setDrawType"
+          @delete="deleteFeatureOn"
+          @reset="resetFeatures"
+          @pickColor="eyeDropper"
+          @changeDetector="changeDetector"
+          @addGraticule="addGraticule"
+          @addPlace="setMarkerTrue"
+          @saveColor="saveColor"
+          @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
+          @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList"
+        />
+      </div>
+    </div>
 
-        <!-- Data table -->
-        <DataTable ref="dataTable"
-                   @showFilterModal="showFilterModal"
-                   @mapSetCenter="mapSetCenter" />
+    <!-- Data table -->
+    <DataTable
+      ref="dataTable"
+      @showFilterModal="showFilterModal"
+      @mapSetCenter="mapSetCenter"
+    />
 
-        <!-- Report -->
-        <CustomModal name="arithmeticResultModal" :maxWidth="600">
-            <Report :arithmeticDataResult="ArithmeticDataResult" />
-        </CustomModal>
+    <!-- Report -->
+    <CustomModal name="arithmeticResultModal" :maxWidth="600">
+      <Report :arithmeticDataResult="ArithmeticDataResult" />
+    </CustomModal>
 
-        <!-- Filter -->
-        <FilterModal :filterValues="filterValues"
-                     @filterSelectedColumn="filterSelectedColumn"
-                     @filterData="filterData" />
+    <!-- Filter -->
+    <FilterModal
+      :filterValues="filterValues"
+      @filterSelectedColumn="filterSelectedColumn"
+      @filterData="filterData"
+    />
 
-        <!-- Shape Color Picker -->
-        <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
-            <ShapeColorPicker @setShapeColor="setShapeColor" />
-        </CustomModal>
+    <!-- Shape Color Picker -->
+    <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
+      <ShapeColorPicker @setShapeColor="setShapeColor" />
+    </CustomModal>
 
-        <!-- Change Detection -->
-        <detector-modal :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
-                        v-bind="{ lastBBOXOfShape, token }"
-                        @close="
+    <!-- Change Detection -->
+    <detector-modal
+      :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
+      v-bind="{ lastBBOXOfShape, token }"
+      @close="
         ($store.state.dataTable.lastBBOXOfShape = []) &
           (isDrawnShapeForDetection = false)
-      "></detector-modal>
-        <!-- Information Modal -->
-        <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
+      "
+    ></detector-modal>
+    <!-- Information Modal -->
+    <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
 
-        <!-- Information Modal -->
-        <ComputedLayersModal />
-    </div>
+    <!-- Information Modal -->
+    <ComputedLayersModal />
+  </div>
 </template>
 
 <script>
@@ -202,7 +212,7 @@ export default {
       typeSelect: null,
       draw: null,
 
-      hashResolveResult: [],
+      hashResolveResult: {},
 
       tableFeaturesData: [],
       stackedTableFeaturesHeader: [],
@@ -244,12 +254,10 @@ export default {
       }
     };
   },
-  created() {
-    this.$store.dispatch("getLayers");
-  },
+  created() {},
   mounted() {
     this.hashResolveResult = this.resolveHash(window.location.hash);
-    // this.token = this.$cookie.get("token");
+
     this.token = localStorage.getItem("token");
 
     if (this.token === null) this.$router.push("/login");
@@ -471,27 +479,10 @@ export default {
           );
         }
       });
-
-      let view = this.mapLayer.getView();
-      let updateHistoryMap = function() {
-        if (self.historyUpdate) {
-          let state = {
-            zoom: view.getZoom(),
-            center: view.getCenter(),
-            rotation: view.getRotation()
-          };
-          self.updateHash();
-          self.historyEvents.push(state);
-          self.historyEventsIndex = self.historyEvents.length;
-          self.nextHistoryEvent = false;
-          if (self.historyEventsIndex !== 1) {
-            self.previousHistoryEvent = true;
-          }
-        } else {
-          self.historyUpdate = true;
-        }
-      };
-      self.mapLayer.on("moveend", updateHistoryMap);
+      this.$store.dispatch("getLayers").then(() => {
+        this.setHashSelectedServices();
+        self.mapLayer.on("moveend", this.updateHistoryMap);
+      });
       window.addEventListener("popstate", function(event) {
         if (event.state === null) {
           return;
@@ -503,6 +494,26 @@ export default {
     });
   },
   methods: {
+    updateHistoryMap() {
+      if (this.historyUpdate) {
+        let view = this.mapLayer.getView();
+
+        let state = {
+          zoom: view.getZoom(),
+          center: view.getCenter(),
+          rotation: view.getRotation()
+        };
+        this.updateHash();
+        this.historyEvents.push(state);
+        this.historyEventsIndex = this.historyEvents.length;
+        this.nextHistoryEvent = false;
+        if (this.historyEventsIndex !== 1) {
+          this.previousHistoryEvent = true;
+        }
+      } else {
+        this.historyUpdate = true;
+      }
+    },
     objectToQueryString(obj) {
       var str = [];
       for (var p in obj)
@@ -510,6 +521,14 @@ export default {
           str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
         }
       return "?" + str.join("&");
+    },
+    setHashSelectedServices() {
+      var serviceIds = this.hashResolveResult.selectedLayers;
+      for (let i = 0; i < serviceIds.length; i++) {
+        const item = serviceIds[i];
+        var service = layerController.getLayer(item);
+        if (service) this.selectService(service, true);
+      }
     },
     updateHash() {
       let view = this.mapLayer.getView();
