@@ -960,7 +960,7 @@ export default {
       let geometry = null;
       if (serviceHelper.isLayer(service)) {
         if (serviceHelper.isDynamicFromArcgis(service)) {
-          geometry = coords[0] + "," + coor ds[1];
+          geometry = coords[0] + "," + coords[1];
           var params = {
             token: this.token,
             name: service.name,
