@@ -523,11 +523,14 @@ export default {
       return "?" + str.join("&");
     },
     setHashSelectedServices() {
-      var serviceIds = this.hashResolveResult.selectedLayers;
-      for (let i = 0; i < serviceIds.length; i++) {
-        const item = serviceIds[i];
-        var service = layerController.getLayer(item);
-        if (service) this.selectService(service, true);
+      if (this.hashResolveResult !== null) {
+        var serviceIds = this.hashResolveResult.selectedLayers;
+        if (serviceIds)
+          for (let i = 0; i < serviceIds.length; i++) {
+            const item = serviceIds[i];
+            var service = layerController.getLayer(item);
+            if (service) this.selectService(service, true);
+          }
       }
     },
     updateHash() {
@@ -907,7 +910,6 @@ export default {
             response = await LayerService.getLocalArithmeticData(params);
             this.ArithmeticDataResult = response.data.result;
             this.$moodal.arithmeticResultModal.show();
-            this.filterQueryIsSum = false;
           } else {
             response = await LayerService.getLocalTableData(params);
           }
@@ -940,6 +942,7 @@ export default {
         this.tableNextRequest["layerName"] = layerName;
 
         this.dataTableVisibility = false;
+
         this.setTableData(data);
 
         this.dataTableVisibility = true;
@@ -949,7 +952,7 @@ export default {
       }
       this.filterQuery = "";
       this.filterValues = [];
-
+      this.filterQueryIsSum = false;
       // this.dynamicLayersReset(service, true);
     },
     async getGeometryData(service, layer_id, layer_name, coords) {
@@ -957,7 +960,7 @@ export default {
       let geometry = null;
       if (serviceHelper.isLayer(service)) {
         if (serviceHelper.isDynamicFromArcgis(service)) {
-          geometry = coords[0] + "," + coords[1];
+          geometry = coords[0] + "," + coor ds[1];
           var params = {
             token: this.token,
             name: service.name,

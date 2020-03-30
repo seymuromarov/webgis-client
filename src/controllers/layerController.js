@@ -79,7 +79,6 @@ const getters = {
   getSelectedLayers() {
     var selectedLayers = [];
     var layers = [...dynamicLayerList.get(), ...baseLayerList.get()];
-    console.log("getSelectedLayers -> layers", layers);
     layerHelper.recursiveLayerMapping(layers, layer => {
       if (layer.isSelected) {
         selectedLayers.push(layer);

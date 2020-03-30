@@ -37,12 +37,16 @@ const checker = {
     return s1.id == s2.id && s1.type == s2.type;
   },
   isQueryExist(service) {
-    return (
-      service.query &&
-      service.query.where &&
-      service.query.where !== "" &&
-      service.query.where.trim() !== "1=1"
-    );
+    if (checker.isLayer(service))
+      return (
+        service.query &&
+        service.query.where &&
+        service.query.where !== "" &&
+        service.query.where.trim() !== "1=1"
+      );
+    else if (checker.isBunch(service)) {
+      return service.layers.some(c => checker.isQueryExist(c));
+    } else return false;
   }
 };
 
