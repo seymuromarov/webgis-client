@@ -4,9 +4,9 @@ import bunchController from "./bunchController";
 import tableController from "./tableController";
 import serviceController from "./serviceController";
 export {
-  mapController,
-  layerController,
-  bunchController,
-  tableController,
-  serviceController
+    mapController,
+    layerController,
+    bunchController,
+    tableController,
+    serviceController
 };

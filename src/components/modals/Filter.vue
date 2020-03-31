@@ -69,47 +69,43 @@
           rows="4"
           cols="69"
           :value="activeTabQuery"
-          @input="activeTabQuery = $event.target.value"
+          @input="handleQueryChange"
         ></textarea>
       </div>
 
       <!-- Sum -->
-      <!-- <div v-show="serviceInfo.resourceType === 'local'">
-                <label>
-                    <input
-                        class="parent-checkbox"
-                        type="checkbox"
-                        id="isSum"
-                        :value="false"
-                        v-model="filterQueryIsSum"
-                        style="opacity:0;"
-                    />
-                    <i
-                        class="far fa-check-circle"
-                        v-if="filterQueryIsSum"
-                        style="cursor: pointer; color:#008422"
-                    ></i>
-                    <i
-                        class="far fa-check-circle"
-                        v-else
-                        style="cursor: pointer;"
-                    ></i>
-                    Sum
-                </label>
+      <div v-show="reportCheckboxVisibility">
+        <label>
+          <input
+            class="parent-checkbox"
+            type="checkbox"
+            id="isSum"
+            :value="false"
+            v-model="filterQueryIsSum"
+            style="opacity:0;"
+          />
+          <i
+            class="far fa-check-circle"
+            v-if="filterQueryIsSum"
+            style="cursor: pointer; color:#008422"
+          ></i>
+          <i class="far fa-check-circle" v-else style="cursor: pointer;"></i>
+          Sum
+        </label>
 
-                <label class="ml-4" v-if="filterQueryIsSum">
-                    <select v-model="filterQueryArithmeticColumn">
-                        <option
-                            v-for="alias in tableFeaturesHeader"
-                            :value="alias"
-                            :key="alias"
-                        >
-                            {{ alias }}
-                        </option>
-                    </select>
-                    Sum Column
-                </label>
-            </div> -->
+        <label class="ml-4" v-if="filterQueryIsSum">
+          <select v-model="filterQueryArithmeticColumn">
+            <option
+              v-for="alias in tableFeaturesHeader"
+              :value="alias"
+              :key="alias"
+            >
+              {{ alias }}
+            </option>
+          </select>
+          Sum Column
+        </label>
+      </div>
       <!-- Apply button -->
       <button class="btn filter__apply-btn" @click="applyFilter">
         Apply
@@ -146,6 +142,15 @@ export default {
     };
   },
   methods: {
+    handleQueryChange(e) {
+      let value = e.target.value;
+
+      if (value === "") {
+        value = " ";
+      }
+
+      this.activeTabQuery = value;
+    },
     // getValueKey(alias) {
     //     return Object.keys(this.activeTabData.tableHeadersWithAlias).find(
     //         key => this.activeTabData.tableHeadersWithAlias[key] === alias
@@ -154,7 +159,6 @@ export default {
     isValString(value) {
       return typeof value == "string";
     },
-
     appendFilterQuery(value, typeCheck) {
       if (typeCheck && this.isValString(value)) value = `'${value}'`;
       this.activeTabQuery = this.activeTabQuery + value + " ";
@@ -164,11 +168,14 @@ export default {
       this.activeTabId = tab;
     },
     applyFilter() {
-      this.$emit("filterData", this.activeTabService, this.activeTabQuery);
+      this.$emit("filterData", this.activeService, this.activeTabQuery.trim());
       this.$moodal.filterModal.hide();
     }
   },
   computed: {
+    reportCheckboxVisibility() {
+      return this.activeService && serviceHelper.isLayer(this.activeService);
+    },
     tabs() {
       return this.$store.state.dataTable.tabs;
     },
@@ -192,8 +199,9 @@ export default {
       return this.activeTab ? this.activeTab.data : null;
     },
     activeTabService() {
+      if (!this.activeService) return null;
       let isBunch = serviceHelper.isBunch(this.activeService);
-      var service = null;
+      let service = null;
 
       if (this.activeTab) {
         if (isBunch)
@@ -230,7 +238,7 @@ export default {
           let isBunch = serviceHelper.isBunch(activeService);
           if (isBunch) {
             bunchController.setQuery(activeService, this.activeTabId, query);
-          } else layerControllxer.setQuery(activeService, query);
+          } else layerController.setQuery(activeService, query);
         }
       }
     },

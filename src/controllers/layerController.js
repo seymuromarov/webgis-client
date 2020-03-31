@@ -36,8 +36,18 @@ const getters = {
     var options = layerHelper.recursiveTreeMapping(arr);
     return options;
   },
+  getLayer(layerId) {
+    var layer = getters.getDynamicLayer(layerId);
+    if (!layer) layer = getters.getBaseLayer(layerId);
+    return layer;
+  },
   getDynamicLayer(layerId) {
     let layers = getters.getDynamicLayersWithoutCategory();
+    let layer = layers.find(c => c.id === layerId);
+    return layer;
+  },
+  getBaseLayer(layerId) {
+    let layers = getters.getBaseLayersWithoutCategory();
     let layer = layers.find(c => c.id === layerId);
     return layer;
   },

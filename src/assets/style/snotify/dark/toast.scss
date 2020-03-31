@@ -1,0 +1,91 @@
+$snotify-toast-bg: var(--primary-color) !default;
+$snotify-toast-color: var(--white) !default;
+$snotify-toast-progressBar: var(--white-opacity-10) !default;
+$snotify-toast-progressBarPercentage: var(--primary-color-lighten-200) !default;
+
+.snotifyToast {
+	display: block;
+	cursor: pointer;
+	background-color: $snotify-toast-bg;
+	max-height: 300px;
+	height: 100%;
+	margin: 5px 0;
+	opacity: 0;
+	overflow: hidden;
+	pointer-events: auto;
+
+	&--in {
+		animation-name: appear;
+	}
+
+	&--out {
+		animation-name: disappear;
+	}
+
+	&__inner {
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: flex-start;
+		justify-content: center;
+		position: relative;
+		padding: 5px 65px 5px 15px;
+		min-height: 50px;
+		font-size: 16px;
+		color: $snotify-toast-color;
+	}
+
+	&__noIcon {
+		padding: 5px 15px 5px 15px;
+	}
+
+	&__progressBar {
+		position: relative;
+		width: 100%;
+		height: 5px;
+		background-color: $snotify-toast-progressBar;
+
+		&__percentage {
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 5px;
+			background-color: $snotify-toast-progressBarPercentage;
+			max-width: 100%;
+		}
+	}
+
+	&__title {
+		font-size: 1.8em;
+		line-height: 1.2em;
+		margin-bottom: 5px;
+		color: $snotify-toast-color;
+	}
+
+	&__body {
+		font-size: 1em;
+		color: $snotify-toast-color;
+	}
+}
+
+.snotifyToast-show {
+	transform: translate(0, 0);
+	opacity: 1;
+}
+
+.snotifyToast-remove {
+	max-height: 0;
+	overflow: hidden;
+	transform: translate(0, 50%);
+	opacity: 0;
+}
+
+/***************
+ ** Modifiers **
+ **************/
+
+.snotify-confirm,
+.snotify-prompt {
+	.snotifyToast__inner {
+		padding: 10px 15px;
+	}
+}

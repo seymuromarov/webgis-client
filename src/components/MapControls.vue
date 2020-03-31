@@ -2,7 +2,8 @@
     <div class="map-controls" id="map-controls">
         <div class="search">
             <div class="search__logo">
-                <img src="../assets/images/ac_logo.svg" alt="Azercosmos logo" />
+                <img src="../assets/images/ac_logo.svg"
+                     alt="Azercosmos logo" />
             </div>
             <div class="search__select">
                 <input type="text"
