@@ -1,7 +1,7 @@
 import { layerHelper } from "@/helpers";
 const mapper = {
     bunchMapper: item => {
-        var data = {
+        const data = {
             id: item.id,
             name: item.label,
             layers: item.layers.map(item => layerHelper.dynamicMapping(item)),
@@ -9,16 +9,16 @@ const mapper = {
             isActive: item.isActive,
             color: null,
             isSelected: false,
-            isColorEnabled: true
+            isColorEnabled: true,
         };
         return data;
     },
     mapBunchs: bunchs => {
         let mapResult = bunchs.map(item => mapper.bunchMapper(item));
         return mapResult;
-    }
+    },
 };
 
 export default {
-    ...mapper
+    ...mapper,
 };

@@ -109,28 +109,28 @@
             </div>
         </Resizable>
 
-        <CustomModal name="dataModal" :minWidth="200" :minHeight="200">
-            <p class="tableModalHeader">{{ tableName }}</p>
-            <div class="row" style="overflow: auto">
-                <table class="table popupTable">
-                    <thead>
-                        <tr class="fields">
-                            <th class="paddingLeft">Field</th>
-                            <th class="paddingRight">Value</th>
-                        </tr>
-                    </thead>
-                    <tbody class="popupTableBody">
-                        <tr v-for="(value, key) in selectedData" :key="key">
-                            <td class="paddingLeft">
-                                {{ selectedData[key] }}
-                            </td>
-                            <td class="paddingRight">{{ value }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </CustomModal>
-    </div>
+    <CustomModal name="dataModal" :minWidth="200" :minHeight="200">
+      <p class="tableModalHeader">{{ tableName }}</p>
+      <div class="row" style="overflow: auto">
+        <table class="table popupTable">
+          <thead>
+            <tr class="fields">
+              <th class="paddingLeft">Field</th>
+              <th class="paddingRight">Value</th>
+            </tr>
+          </thead>
+          <tbody class="popupTableBody">
+            <tr v-for="(value, key) in selectedData" :key="key">
+              <td class="paddingLeft">
+                {{ selectedData[key] }}
+              </td>
+              <td class="paddingRight">{{ value }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </CustomModal>
+  </div>
 </template>
 
 <script>

@@ -1,5 +1,4 @@
 import $store from "@/store/store.js";
-import { bunchService } from "@/services";
 import { bunchHelper } from "@/helpers";
 
 const bunchLayerList = {
@@ -21,7 +20,7 @@ const functions = {
     remove(bunchId) {
         let list = bunchLayerList.get();
         for (let i = 0; i < list.length; i++) {
-            var item = list[i];
+            const item = list[i];
             if (item.id === bunchId) {
                 const index = list.indexOf(item);
                 list.splice(index, 1);
@@ -66,7 +65,7 @@ const setters = {
         let list = bunchLayerList.get();
         list = list.map((item, index) => {
             if (item.id === bunch.id) {
-                var services = bunch.layers;
+                const services = bunch.layers;
                 services.map(s => {
                     if (s.id === serviceId) s.query.where = where;
                     return s;

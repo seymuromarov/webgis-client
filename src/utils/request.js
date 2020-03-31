@@ -1,9 +1,9 @@
 import axios from "axios";
 import { baseUrl } from "../config/urls";
-import { getToken } from "./token";
+
 const service = axios.create({
     baseURL: `${baseUrl}/arcgis/rest/services`,
-    withCredentials: false
+    withCredentials: false,
 });
 
 service.interceptors.request.use(

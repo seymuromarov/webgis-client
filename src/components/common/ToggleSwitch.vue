@@ -6,19 +6,19 @@
 </template>
 
 <script>
-export default {
-    name: "ToggleSwitch",
-    props: {
-        value: {
-            type: Boolean,
+    export default {
+        name: "ToggleSwitch",
+        props: {
+            value: {
+                type: Boolean,
+            },
         },
-    },
-    methods: {
-        onChange(e) {
-            this.$emit("input", e);
+        methods: {
+            onChange(e) {
+                this.$emit("input", e);
+            },
         },
-    },
-};
+    };
 </script>
 
 <style lang="scss">

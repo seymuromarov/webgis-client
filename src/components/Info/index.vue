@@ -48,61 +48,61 @@
 </template>
 
 <script>
-import About from "./About";
-import FAQ from "./FAQ";
-import ReleaseNotes from "./ReleaseNotes";
-import Contact from "./Contact";
-import Forum from "./Forum/index";
-import API from "../../services/InfoService";
+    import About from "./About";
+    import FAQ from "./FAQ";
+    import ReleaseNotes from "./ReleaseNotes";
+    import Contact from "./Contact";
+    import Forum from "./Forum/index";
+    import API from "../../services/InfoService";
 
-export default {
-    name: "InfoModal",
-    components: {
-        About,
-        FAQ,
-        ReleaseNotes,
-        Contact,
-        Forum,
-    },
-    props: {
-        isOpen: {
-            required: true,
-            type: Boolean,
+    export default {
+        name: "InfoModal",
+        components: {
+            About,
+            FAQ,
+            ReleaseNotes,
+            Contact,
+            Forum,
         },
-    },
-    data() {
-        return {
-            activeTab: "about",
-            tabs: [
-                {
-                    key: "about",
-                    text: "About",
-                },
-                {
-                    key: "faq",
-                    text: "FAQ",
-                },
-                {
-                    key: "releaseNotes",
-                    text: "Release notes",
-                },
-                {
-                    key: "forum",
-                    text: "Forum",
-                },
-                {
-                    key: "contact",
-                    text: "Contact us",
-                },
-            ],
-        };
-    },
-    methods: {
-        changeTab(tab) {
-            this.activeTab = tab;
+        props: {
+            isOpen: {
+                required: true,
+                type: Boolean,
+            },
         },
-    },
-};
+        data() {
+            return {
+                activeTab: "about",
+                tabs: [
+                    {
+                        key: "about",
+                        text: "About",
+                    },
+                    {
+                        key: "faq",
+                        text: "FAQ",
+                    },
+                    {
+                        key: "releaseNotes",
+                        text: "Release notes",
+                    },
+                    {
+                        key: "forum",
+                        text: "Forum",
+                    },
+                    {
+                        key: "contact",
+                        text: "Contact us",
+                    },
+                ],
+            };
+        },
+        methods: {
+            changeTab(tab) {
+                this.activeTab = tab;
+            },
+        },
+    };
 </script>
 
 <style lang="scss">
