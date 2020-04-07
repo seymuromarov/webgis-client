@@ -4,4 +4,4 @@ const serviceTypeEnum = {
   SUBLAYER: "subLayer",
   BUNCH: "bunch"
 };
-export { serviceTypeEnum };
+export default serviceTypeEnum;

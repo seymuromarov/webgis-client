@@ -1,74 +1,82 @@
 <template>
-    <li class="list__item">
-        <span class="item__header" :style="`padding-left: ${paddingLeft}`">
-            <span class="title">
-                <!-- Switch -->
-                <ToggleSwitch v-if="!isCategory" class="pre" v-model="switchModel" />
-                <i class="far fa-folder pre" v-else></i>
-                {{ data.name }}
-            </span>
+  <li class="list__item">
+    <span class="item__header" :style="`padding-left: ${paddingLeft}`">
+      <span class="title">
+        <!-- Switch -->
+        <ToggleSwitch v-if="!isCategory" class="pre" v-model="switchModel" />
+        <i class="far fa-folder pre" v-else></i>
+        {{ data.name }}
+      </span>
 
-            <!-- Caret icons -->
-            <span v-if="caretIconsVisibility">
-                <i class="fas fa-caret-down"
-                   v-show="subListVisibility"
-                   @click="toggleSubList" />
-                <i class="fas fa-caret-left"
-                   v-show="!subListVisibility"
-                   @click="toggleSubList" />
-            </span>
+      <!-- Caret icons -->
+      <span v-if="caretIconsVisibility">
+        <i
+          class="fas fa-caret-down"
+          v-show="subListVisibility"
+          @click="toggleSubList"
+        />
+        <i
+          class="fas fa-caret-left"
+          v-show="!subListVisibility"
+          @click="toggleSubList"
+        />
+      </span>
 
-            <!-- Color and Table icons -->
-            <span v-if="operationsVisibility" class="icons">
-                <img v-if="colorIconVisibility"
-                     src="@/assets/images/icons/color_fill.svg"
-                     alt=""
-                     @click="toggleColorPicker" />
+      <!-- Color and Table icons -->
+      <span v-if="operationsVisibility" class="icons">
+        <img
+          v-if="colorIconVisibility"
+          src="@/assets/images/icons/color_fill.svg"
+          alt=""
+          @click="toggleColorPicker"
+        />
 
-                <img v-if="tableIconVisibility"
-                     src="@/assets/images/icons/list.svg"
-                     alt=""
-                     @click="
+        <img
+          v-if="tableIconVisibility"
+          src="@/assets/images/icons/list.svg"
+          alt=""
+          @click="
             $emit('getTableData', data, data.id, data.name, {
-              where: '1=1'
+              where: '1=1',
             })
-          " />
-                <img v-if="deleteIconVisibility"
-                     src="@/assets/images/icons/delete.svg"
-                     alt=""
-                     @click="deleteBunch" />
-            </span>
-        </span>
+          "
+        />
+        <img
+          v-if="deleteIconVisibility"
+          src="@/assets/images/icons/delete.svg"
+          alt=""
+          @click="deleteBunch"
+        />
+      </span>
+    </span>
 
-        <!-- Color Picker -->
-        <LayerColorPicker v-if="colorPickerVisibility"
-                          @onSave="onColorPickerSave"
-                          @onClose="colorPickerOnClose" />
+    <!-- Color Picker -->
+    <LayerColorPicker
+      v-if="colorPickerVisibility"
+      @onSave="onColorPickerSave"
+      @onClose="colorPickerOnClose"
+    />
 
-        <ul v-if="data.layers && subListVisibility" class="list__content">
-            <LayerTree v-for="(children, index) in data.children"
-                       :key="children.name + index"
-                       :data="children"
-                       :parent="data"
-                       :loop="loop + 1"
-                       @saveColor="saveColor"
-                       @selectService="selectService"
-                       @selectSubLayer="selectSubLayer"
-                       @dynamicLayersReset="dynamicLayersReset"
-                       @getTableData="getTableData" />
+    <ul v-if="data.layers && subListVisibility" class="list__content">
+      <LayerTree
+        v-for="(children, index) in data.children"
+        :key="children.name + index"
+        :data="children"
+        :parent="data"
+        :loop="loop + 1"
+        @getTableData="getTableData"
+      />
 
-            <LayerTree v-for="(layer, index) in data.layers"
-                       :key="layer.name + index"
-                       :data="layer"
-                       :parent="data"
-                       :loop="loop + 1"
-                       @saveColor="saveColor"
-                       @selectService="selectService"
-                       @selectSubLayer="selectSubLayer"
-                       @dynamicLayersReset="dynamicLayersReset"
-                       @getTableData="getTableData" />
-        </ul>
-    </li>
+      <LayerTree
+        v-for="(layer, index) in data.layers"
+        :key="layer.name + index"
+        :data="layer"
+        :parent="data"
+        :loop="loop + 1"
+        @getTableData="getTableData"
+      />
+    </ul>
+  </li>
 </template>
 
 <script>
@@ -78,7 +86,7 @@ import { layerHelper, serviceHelper } from "@/helpers";
 import {
   bunchController,
   mapController,
-  serviceController
+  serviceController,
 } from "@/controllers";
 import { bunchService } from "@/services";
 
@@ -86,24 +94,24 @@ export default {
   name: "LayerTree",
   components: {
     ToggleSwitch,
-    LayerColorPicker
+    LayerColorPicker,
   },
   props: {
     data: {
-      type: Object
+      type: Object,
     },
     parent: {
-      type: Object
+      type: Object,
     },
     loop: {
       type: Number,
-      default: 1
-    }
+      default: 1,
+    },
   },
   data() {
     return {
       subListVisibility: false,
-      layerIsSelected: false
+      layerIsSelected: false,
     };
   },
   computed: {
@@ -121,7 +129,7 @@ export default {
         }
 
         this.layerPicker(e);
-      }
+      },
     },
     paddingLeft() {
       return this.loop * 16 + "px";
@@ -177,17 +185,20 @@ export default {
       },
       set(value) {
         this.$store.dispatch("SAVE_ACTIVE_COLOR_PICKER_ID", value);
-      }
-    }
+      },
+    },
   },
   methods: {
     toggleSubList() {
       this.subListVisibility = !this.subListVisibility;
       if (this.subListVisibility)
-        this.dynamicLayersReset(this.data, this.subListVisibility);
+        serviceController.dynamicLayersReset(this.data, this.subListVisibility);
+      // this.dynamicLayersReset(this.data, this.subListVisibility);
     },
     onColorPickerSave(color) {
-      this.$emit("saveColor", this.data, color);
+      console.log("onColorPickerSave -> color", color);
+      // this.$emit("saveColor", this.data, color);
+      serviceController.saveColor(this.data, color);
     },
     saveColor(data, color) {
       this.$emit("saveColor", data, color);
@@ -199,28 +210,36 @@ export default {
       let isChecked = event.target.checked;
 
       if (serviceHelper.isSublayer(this.data)) {
-        this.$emit(
-          "selectSubLayer",
+        serviceController.selectSubLayer(
           this.parent,
           this.parent.order,
           this.data.id,
           isChecked
         );
+        // this.$emit(
+        //   "selectSubLayer",
+        //   this.parent,
+        //   this.parent.order,
+        //   this.data.id,
+        //   isChecked
+        // );
       } else {
+        serviceController.selectService(this.data, isChecked);
         // serviceController.selectService(this.data, isChecked);
-        this.$emit("selectService", this.data, isChecked);
-        this.$emit("dynamicLayersReset", this.data, isChecked);
+        // this.$emit("selectService", this.data, isChecked);
+        // this.$emit("dynamicLayersReset", this.data, isChecked);
+        serviceController.dynamicLayersReset(this.data, isChecked);
       }
     },
-    selectService(data, isChecked) {
-      this.$emit("selectService", data, isChecked);
-    },
-    selectSubLayer(parent, order, itemId, event) {
-      this.$emit("selectSubLayer", parent, order, itemId, event);
-    },
-    dynamicLayersReset(data, status) {
-      this.$emit("dynamicLayersReset", data, status);
-    },
+    // selectService(data, isChecked) {
+    //   this.$emit("selectService", data, isChecked);
+    // },
+    // selectSubLayer(parent, order, itemId, event) {
+    //   this.$emit("selectSubLayer", parent, order, itemId, event);
+    // },
+    // dynamicLayersReset(data, status) {
+    //   this.$emit("dynamicLayersReset", data, status);
+    // },
     getTableData(data, layerId, layerName, query) {
       var service = serviceHelper.isSublayer(data) ? data.parent : data;
       this.$emit("getTableData", service, layerId, layerName, query);
@@ -245,11 +264,11 @@ export default {
       }
     },
     deleteBunch() {
-      bunchService.remove(this.data.id).then(response => {
+      bunchService.remove(this.data.id).then((response) => {
         bunchController.remove(this.data.id);
         mapController.deleteService(this.data);
       });
-    }
-  }
+    },
+  },
 };
 </script>

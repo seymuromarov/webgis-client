@@ -1,102 +1,145 @@
 import $store from "@/store/store.js";
 import { serviceHelper, layerHelper } from "@/helpers";
-import { layerController, mapController, bunchController } from "@/controllers";
+import { layerSettings } from "@/config/settings";
+import { layerService, tokenService } from "@/services";
+
+import {
+  layerController,
+  mapController,
+  bunchController,
+  tableController,
+} from "@/controllers";
 const functions = {
-    async selectService(service, isChecked) {
-        if (serviceHelper.isLayer(service)) {
-            if (serviceHelper.isDynamic(service)) {
-                if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
-                    let subLayerResponse = await this.getResponseDynamic(service);
-                    service.layers = subLayerResponse.data.layers;
-                }
-            }
-            layerController.setSelected(service, isChecked);
-        } else {
-            bunchController.setSelected(service, isChecked);
-        }
-
-        if (isChecked) functions.addService(service);
-        else functions.deleteService(service);
-    },
-    addService(service) {
-        if (service.extent != null) {
-            const { minX, minY, maxX, maxY } = service.extent;
-            var extent = [minX, minY, maxX, maxY];
-            mapController.fitView(extent);
-        }
-
-        var newService = mapController.renderNewService(service);
-        newService.set("name", service.name);
-        var zIndex = this.getZIndex(service);
-        newService.setZIndex(zIndex);
-
-        this.mapLayer.addLayer(newService);
-    },
-    deleteService(service) {
-        let layersToRemove = [];
-        var mapLayer = $store.getters.mapLayer;
-        mapLayer
-            .get()
-            .getLayers()
-            .forEach(function (layer) {
-                if (
-                    layer.get("name") != undefined &&
-                    layer.get("name") === service.name
-                ) {
-                    layersToRemove.push(layer);
-                }
-            });
-        let len = layersToRemove.length;
-        for (let i = 0; i < len; i++) {
-            mapLayer.removeLayer(layersToRemove[i]);
-        }
-        $store.dispatch("saveMap", mapLayer);
-    },
-    refreshService(service) {
-        functions.deleteService(service, false);
-        functions.addService(service);
+  async selectService(service, isChecked) {
+    if (!isChecked) {
+      mapController.removeDrawPolygons();
     }
+    var tableActiveService = tableController.getTableActiveService();
+    if (!isChecked && tableActiveService) {
+      if (serviceHelper.isEqual(service, tableActiveService))
+        tableController.setUnvisible();
+    }
+
+    if (serviceHelper.isLayer(service)) {
+      if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
+        let subLayerResponse = await functions.getResponseDynamic(service);
+        service.layers = subLayerResponse.data.layers;
+      }
+      layerController.setSelected(service, isChecked);
+    } else {
+      bunchController.setSelected(service, isChecked);
+    }
+
+    if (isChecked) mapController.addService(service);
+    else mapController.deleteService(service);
+  },
+  async getResponseDynamic(service) {
+    let responseDynamic = null;
+    if (serviceHelper.isDynamicFromArcgis(service)) {
+      responseDynamic = await layerService.getDynamicLayers({
+        token: tokenService.getToken(),
+        name: service.name,
+      });
+    }
+    return responseDynamic;
+  },
+  async dynamicLayersReset(service, status) {
+    if (serviceHelper.isDynamicFromArcgis(service)) {
+      var isColorEnabled = await serviceHelper.isLayerColorEnabled(service);
+
+      let list = layerHelper.recursiveLayerMapping(
+        layerController.getDynamicLayerList(),
+        async (layer) => {
+          if (layer != null && layer.id == service.id) {
+            if (layer.layers !== undefined && layer.layers !== null) {
+              layer.layers = layer.layers.map((item, index) => {
+                return {
+                  ...item,
+                  isColorEnabled,
+                };
+              });
+            }
+          }
+        }
+      );
+      layerController.setDynamicLayerList(list);
+    }
+  },
+
+  async selectSubService(service, index, subLayerId, e) {
+    let isChecked = e.target.checked;
+
+    let list = layerHelper.recursiveLayerMapping(
+      layerController.getDynamicLayerList(),
+      async (layer) => {
+        if (layer != null && layer.id == service.id) {
+          var subLayer = layer.layers.find((c) => c.id == subLayerId);
+          subLayer.isSelected = isChecked;
+        }
+      }
+    );
+    layerController.setDynamicLayerList(list);
+    functions.dynamicLayersReset(service, isChecked);
+    mapController.refreshService(service);
+  },
+  saveColor(service, colorObj) {
+    const { fillColor, borderColor } = colorObj;
+    var isLayer = serviceHelper.isLayer(service);
+    var isSubLayer = serviceHelper.isSublayer(service);
+    var isBunch = serviceHelper.isBunch(service);
+
+    var color = { fill: fillColor, border: borderColor };
+
+    if (isLayer || isSubLayer) {
+      var service = isSubLayer ? service.parent : service;
+
+      layerController.setColor(service, color, isSubLayer);
+    } else if (isBunch) {
+      bunchController.setColor(service.id, color);
+    }
+    mapController.refreshService(service);
+  },
 };
 const setters = {};
 const getters = {
-    getZIndex(service) {
-        let zIndex = 0;
-        let orderNo = 0;
-        if (serviceHelper.isLayer(service)) {
-            if (serviceHelper.isDynamic(service)) {
-                zIndex = layerSettings.dynamicZIndex;
-                orderNo = getters.getOrderNumber(
-                    layerController.getDynamicLayerList(),
-                    service
-                );
-            } else {
-                zIndex = layerSettings.basemapZIndex;
-                orderNo = getters.getOrderNumber(
-                    layerController.getBaseLayerList(),
-                    service
-                );
-            }
-        } else {
-            zIndex = layerSettings.bunchZIndex;
-            orderNo = getters.getOrderNumber(
-                bunchController.getBunchLayerList(),
-                service
-            );
-        }
+  getZIndex(service) {
+    let zIndex = 0;
+    let orderNo = 0;
+    if (serviceHelper.isLayer(service)) {
+      if (serviceHelper.isDynamic(service)) {
+        zIndex = layerSettings.dynamicZIndex;
 
-        return zIndex - orderNo;
-    },
-
-    getOrderNumber(array, service) {
-        var index = 0;
-        var result = 0;
-        layerHelper.recursiveLayerMapping(array, function (layer) {
-            index++;
-            if (layer.name == service.name) {
-                result = index;
-            }
-        });
-        return result;
+        orderNo = getters.getOrderNumber(
+          layerController.getDynamicLayerList(),
+          service
+        );
+      } else {
+        zIndex = layerSettings.basemapZIndex;
+        orderNo = getters.getOrderNumber(
+          layerController.getBaseLayerList(),
+          service
+        );
+      }
+    } else {
+      zIndex = layerSettings.bunchZIndex;
+      orderNo = getters.getOrderNumber(
+        bunchController.getBunchLayerList(),
+        service
+      );
     }
+
+    return zIndex - orderNo;
+  },
+  getOrderNumber(array, service) {
+    var index = 0;
+    var result = 0;
+    layerHelper.recursiveLayerMapping(array, function(layer) {
+      index++;
+      if (layer.name == service.name) {
+        result = index;
+      }
+    });
+    return result;
+  },
 };
-export default { ...functions, ...getters };
+export default { ...functions, ...getters, ...setters };

@@ -6,14 +6,16 @@ import dateFormatter from "./dateFormatter";
 import hashHelper from "./hashHelper";
 import bunchHelper from "./bunchHelper";
 import serviceHelper from "./serviceHelper";
+import tileHelper from "./tileHelper";
 
 export {
-    toggler,
-    mapHelper,
-    colorHelper,
-    layerHelper,
-    dateFormatter,
-    hashHelper,
-    bunchHelper,
-    serviceHelper
+  toggler,
+  mapHelper,
+  colorHelper,
+  layerHelper,
+  dateFormatter,
+  hashHelper,
+  bunchHelper,
+  serviceHelper,
+  tileHelper,
 };

@@ -11,9 +11,6 @@
         />
         <Sidebar
           :baseMaps="baseMaps"
-          @selectService="selectService"
-          @selectSubLayer="selectSubService"
-          @dynamicLayersReset="dynamicLayersReset"
           @getTableData="getTableData"
           @showInfoModal="showInfoModal = true"
           @exportPNG="pngExport"
@@ -82,7 +79,7 @@ import {
   Modify,
   defaults as defaultInteractions,
   DragRotateAndZoom,
-  DragAndDrop
+  DragAndDrop,
 } from "ol/interaction";
 import TileDebug from "ol/source/TileDebug";
 import {
@@ -91,12 +88,12 @@ import {
   Fill,
   Stroke,
   Style,
-  Icon
+  Icon,
 } from "ol/style.js";
 import {
   Tile as TileLayer,
   Vector as VectorLayer,
-  Image as ImageLayer
+  Image as ImageLayer,
 } from "ol/layer.js";
 import VectorTileLayer from "ol/layer/VectorTile.js";
 import VectorTileSource from "ol/source/VectorTile.js";
@@ -106,7 +103,7 @@ import {
   OSM,
   TileArcGISRest,
   Vector as VectorSource,
-  ImageArcGISRest
+  ImageArcGISRest,
 } from "ol/source.js";
 import {
   fromLonLat,
@@ -114,14 +111,14 @@ import {
   transform,
   transformExtent,
   get as getProjection,
-  getTransform
+  getTransform,
 } from "ol/proj";
 import XYZ from "ol/source/XYZ.js";
 import { bbox as bboxStrategy } from "ol/loadingstrategy";
 import {
   ZoomSlider,
   defaults as defaultControls,
-  FullScreen
+  FullScreen,
 } from "ol/control.js";
 import MousePosition from "ol/control/MousePosition.js";
 import { createStringXY } from "ol/coordinate.js";
@@ -145,7 +142,7 @@ import {
   InfoModal,
   Modal as CustomModal,
   ComputedLayersModal,
-  ChangeDetector as DetectorModal
+  ChangeDetector as DetectorModal,
 } from "@/components/";
 
 // Utils
@@ -159,11 +156,10 @@ import {
   layerController,
   bunchController,
   mapController,
-  serviceController
+  serviceController,
 } from "@/controllers";
 
 // Services
-import LoginService from "@/services/LoginService";
 import LayerService from "@/services/LayerService";
 import tileService from "@/services/tileService";
 import qs from "qs";
@@ -183,7 +179,7 @@ export default {
     Report,
     MapControls,
     CustomModal,
-    ComputedLayersModal
+    ComputedLayersModal,
   },
   data() {
     return {
@@ -230,28 +226,28 @@ export default {
       baseMaps: {
         none: new XYZ({
           crossOrigin: "Anonymous",
-          url: ""
+          url: "",
         }),
         satellite: new XYZ({
           name: "sat",
           url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         }),
         street: new XYZ({
           url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
         }),
         gray: new XYZ({
           crossOrigin: "Anonymous",
           url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-        })
+            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+        }),
       },
       showInfoModal: false,
       isHashLoaded: false,
       dataTable: {
-        activeTab: null
-      }
+        activeTab: null,
+      },
     };
   },
   created() {},
@@ -267,12 +263,12 @@ export default {
     this.citySearchOptions = cities;
 
     this.source = new VectorSource({
-      wrapX: false
+      wrapX: false,
     });
 
     this.vector = new VectorLayer({
       source: this.source,
-      features: []
+      features: [],
     });
 
     this.vector.setZIndex(9999);
@@ -280,20 +276,20 @@ export default {
     var debug = new TileLayer({
       source: new TileDebug({
         projection: "EPSG:3857",
-        tileGrid: new OSM().getTileGrid()
-      })
+        tileGrid: new OSM().getTileGrid(),
+      }),
     });
 
     let gray = new TileLayer({
       source: new XYZ({
         crossOrigin: "Anonymous",
         url:
-          "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-      })
+          "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+      }),
     });
 
     var dynamics = this.dynamicLayerList;
-    this.$nextTick(function() {
+    this.$nextTick(function () {
       // var vectorGetTest = new VectorTileLayer({
       //   id: 999,
       //   source: new VectorTileSource({
@@ -322,7 +318,7 @@ export default {
       // });
 
       let dragAndDropInteraction = new DragAndDrop({
-        formatConstructors: [GPX, GeoJSON, IGC, KML, TopoJSON]
+        formatConstructors: [GPX, GeoJSON, IGC, KML, TopoJSON],
       });
       this.layers = [gray, this.vector];
       let zoom =
@@ -336,7 +332,7 @@ export default {
       this.mapLayer = new Map({
         interactions: defaultInteractions().extend([
           new DragRotateAndZoom(),
-          dragAndDropInteraction
+          dragAndDropInteraction,
         ]),
         controls: [], // defaultControls(), //.extend([new FullScreen()]),
         target: "map",
@@ -344,24 +340,24 @@ export default {
         view: new View({
           center: center,
           zoom: zoom,
-          rotation: rotation
-        })
+          rotation: rotation,
+        }),
       });
 
       let modify = new Modify({
-        source: this.source
+        source: this.source,
       });
       this.mapLayer.addInteraction(modify);
       let self = this;
 
-      dragAndDropInteraction.on("addfeatures", function(event) {
+      dragAndDropInteraction.on("addfeatures", function (event) {
         self.source.addFeatures(event.features);
         self.mapLayer.getView().fit(self.source.getExtent());
       });
 
-      let displayFeatureInfo = function(pixel) {
+      let displayFeatureInfo = function (pixel) {
         let features = [];
-        self.mapLayer.forEachFeatureAtPixel(pixel, function(feature) {
+        self.mapLayer.forEachFeatureAtPixel(pixel, function (feature) {
           features.push(feature);
         });
         if (features.length > 0) {
@@ -381,7 +377,7 @@ export default {
         }
       };
 
-      this.mapLayer.on("pointermove", function(evt) {
+      this.mapLayer.on("pointermove", function (evt) {
         if (evt.dragging) {
           return;
         }
@@ -391,12 +387,12 @@ export default {
           coord = fromLonLat([coord[0], coord[1]]);
           coord = [
             coord[1].toString().substring(0, 10),
-            coord[0].toString().substring(0, 10)
+            coord[0].toString().substring(0, 10),
           ];
         } else {
           coord = [
             coord[1].toString().substring(0, 7),
-            coord[0].toString().substring(0, 7)
+            coord[0].toString().substring(0, 7),
           ];
         }
         // document.getElementById("mouse-position").innerHTML =
@@ -407,7 +403,7 @@ export default {
         //     coord[0].toString();
       });
 
-      this.mapLayer.on("click", function(evt) {
+      this.mapLayer.on("click", function (evt) {
         //displayFeatureInfo(evt.pixel);
         let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
         if (self.isMarker) {
@@ -415,7 +411,7 @@ export default {
             crossOrigin: "Anonymous",
             geometry: new Point(fromLonLat([coord[0], coord[1]])),
             name: "",
-            id: "232"
+            id: "232",
           });
           iconFeature.setStyle(
             new Style({
@@ -425,14 +421,14 @@ export default {
                 anchorXUnits: "fraction",
                 anchorYUnits: "pixels",
                 src:
-                  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAD2ElEQVRogdWaQYgcRRSGv2724HER8eBBFhHJWSWB6ClEood+5pyzJ3P1Ih5EwjKERUQPopJDlICYg4R6IQQMXkxEPETwoBAWWYLIIrIsYQ9xWaY8TPdsbU3XdFV1z5j8UPSb1139/lf16vWr7imstTzOKIDy/ybRB4W1lqIoSmvteKr0fqdARI4BrwMngDVgFRgDO8AfwB3ghqr+1dhw7SXLZMyAtXZcFMWRflVVnQXeA16MvM0t4IKq3k6176LouwZE5BngS+B05i2+As4bY/ZyOh8JIfcIk5GG9ukriqKsquo4oMBTmeQb3APOqOp9107DwZfda7IXcVVVJ4HvgCd6km+wDbyiqlspnbJCSETWgF+YLNAhcQ94KSWcSjicLvfoLlJXFpEV4BuGJw/wAvC5z2GePBM+PvGWjm8BxzuI/A38BGwCe8ABsAtsAQ87+p4TkVdDfPyLV+BwsXblfhEpgXcjyD9dNxerHM7amPlr731r7WsddrDWjo+ETgROA8/OOX/ALPE2dNk7JSJrUSHUFjKhBrzZYXglgnwMSiZP82AINXJprR27ITSvAS8PRDAGJ7r4zISQf/S9BZ5bogPPJ4VQKJV6+ieX6MCqyyckl7HhU1+XVaFmopPPNIR8r0JTBjxYogO7XaMPEAyhgLy5YNIuthq78wa2jJkmJ4R61e6J+CE7C/k6R//1ksjvA9eSQsg9GXJIVe+ynFm4oqo7bXyCIQTRmejCgsmPgVFsWCeFUD0Lt4C7C3TgW2PMZoiPL7dmoa6MBIwWRh9GsXuBoijK7E29iPwOHBuKdY2bxpg3UjoEy2l/V+bqa3Eji+J8jGJHvpFnp8Qj3qavj1eAPwck/2Pzjigm9rNqIbcZY/YZdhbWUzkEa6GQruX8F8A/A5D/1RhzI6djMAt1rv5JSt0HPh7AgZFvN7Yl1UKBB9sn9KtSN4GrufajdmQu/JkwxjxgEkq52FDV6b2Ts1AbsTaiIcdq3YdMCrBUbAOX/XunyNO3CE028uHqQzKwLSKXgLcTHdios1k2knZkbc8IlwyT90Kx2AE+yx35Rk7dkU1l3ylVvQ9cTXDgU1V9GLpfrNw7C3kZaZ24jf8e8NEQNrNrobYRMcb8BlyPcOCSqu72Hf2+tRABeb2D/AGTrJWdeVx5xdqjn20GwM8i8j1wKnD+sjFmsCKwby0UwgcB/T5wMZpdBBb2obuqqovAO45qDJxX1T5P7Rn0/sw6DyJyEjgD/Atcqxf5sKgdKNuObc295lGQp9+JA87NfKP15TkD03nNEGj9r8TjhMFqoa5sNUTOb5P/A8dYOKnlHRBqAAAAAElFTkSuQmCC"
-              })
+                  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAD2ElEQVRogdWaQYgcRRSGv2724HER8eBBFhHJWSWB6ClEood+5pyzJ3P1Ih5EwjKERUQPopJDlICYg4R6IQQMXkxEPETwoBAWWYLIIrIsYQ9xWaY8TPdsbU3XdFV1z5j8UPSb1139/lf16vWr7imstTzOKIDy/ybRB4W1lqIoSmvteKr0fqdARI4BrwMngDVgFRgDO8AfwB3ghqr+1dhw7SXLZMyAtXZcFMWRflVVnQXeA16MvM0t4IKq3k6176LouwZE5BngS+B05i2+As4bY/ZyOh8JIfcIk5GG9ukriqKsquo4oMBTmeQb3APOqOp9107DwZfda7IXcVVVJ4HvgCd6km+wDbyiqlspnbJCSETWgF+YLNAhcQ94KSWcSjicLvfoLlJXFpEV4BuGJw/wAvC5z2GePBM+PvGWjm8BxzuI/A38BGwCe8ABsAtsAQ87+p4TkVdDfPyLV+BwsXblfhEpgXcjyD9dNxerHM7amPlr731r7WsddrDWjo+ETgROA8/OOX/ALPE2dNk7JSJrUSHUFjKhBrzZYXglgnwMSiZP82AINXJprR27ITSvAS8PRDAGJ7r4zISQf/S9BZ5bogPPJ4VQKJV6+ieX6MCqyyckl7HhU1+XVaFmopPPNIR8r0JTBjxYogO7XaMPEAyhgLy5YNIuthq78wa2jJkmJ4R61e6J+CE7C/k6R//1ksjvA9eSQsg9GXJIVe+ynFm4oqo7bXyCIQTRmejCgsmPgVFsWCeFUD0Lt4C7C3TgW2PMZoiPL7dmoa6MBIwWRh9GsXuBoijK7E29iPwOHBuKdY2bxpg3UjoEy2l/V+bqa3Eji+J8jGJHvpFnp8Qj3qavj1eAPwck/2Pzjigm9rNqIbcZY/YZdhbWUzkEa6GQruX8F8A/A5D/1RhzI6djMAt1rv5JSt0HPh7AgZFvN7Yl1UKBB9sn9KtSN4GrufajdmQu/JkwxjxgEkq52FDV6b2Ts1AbsTaiIcdq3YdMCrBUbAOX/XunyNO3CE028uHqQzKwLSKXgLcTHdios1k2knZkbc8IlwyT90Kx2AE+yx35Rk7dkU1l3ylVvQ9cTXDgU1V9GLpfrNw7C3kZaZ24jf8e8NEQNrNrobYRMcb8BlyPcOCSqu72Hf2+tRABeb2D/AGTrJWdeVx5xdqjn20GwM8i8j1wKnD+sjFmsCKwby0UwgcB/T5wMZpdBBb2obuqqovAO45qDJxX1T5P7Rn0/sw6DyJyEjgD/Atcqxf5sKgdKNuObc295lGQp9+JA87NfKP15TkD03nNEGj9r8TjhMFqoa5sNUTOb5P/A8dYOKnlHRBqAAAAAElFTkSuQmCC",
+              }),
             })
           );
           self.source.addFeature(iconFeature);
         }
         if (self.isRemove) {
-          self.mapLayer.forEachFeatureAtPixel(evt.pixel, function(
+          self.mapLayer.forEachFeatureAtPixel(evt.pixel, function (
             feature,
             layer
           ) {
@@ -445,25 +441,25 @@ export default {
           });
         }
         if (self.isColorPick) {
-          self.mapLayer.forEachFeatureAtPixel(evt.pixel, function(
+          self.mapLayer.forEachFeatureAtPixel(evt.pixel, function (
             feature,
             layer
           ) {
             try {
               let newStyle = new Style({
                 fill: new Fill({
-                  color: self.shapeFillColor.hex8
+                  color: self.shapeFillColor.hex8,
                 }),
                 stroke: new Stroke({
                   color: self.shapeBorderColor.hex8,
-                  width: 2
+                  width: 2,
                 }),
                 image: new CircleStyle({
                   radius: 7,
                   fill: new Fill({
-                    color: self.shapeFillColor.hex8
-                  })
-                })
+                    color: self.shapeFillColor.hex8,
+                  }),
+                }),
               });
 
               feature.setStyle(newStyle);
@@ -483,7 +479,7 @@ export default {
         this.setHashSelectedServices();
         self.mapLayer.on("moveend", this.updateHistoryMap);
       });
-      window.addEventListener("popstate", function(event) {
+      window.addEventListener("popstate", function (event) {
         if (event.state === null) {
           return;
         }
@@ -501,7 +497,7 @@ export default {
         let state = {
           zoom: view.getZoom(),
           center: view.getCenter(),
-          rotation: view.getRotation()
+          rotation: view.getRotation(),
         };
         this.updateHash();
         this.historyEvents.push(state);
@@ -514,14 +510,14 @@ export default {
         this.historyUpdate = true;
       }
     },
-    objectToQueryString(obj) {
-      var str = [];
-      for (var p in obj)
-        if (obj.hasOwnProperty(p)) {
-          str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-        }
-      return "?" + str.join("&");
-    },
+    // objectToQueryString(obj) {
+    //   var str = [];
+    //   for (var p in obj)
+    //     if (obj.hasOwnProperty(p)) {
+    //       str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+    //     }
+    //   return "?" + str.join("&");
+    // },
     setHashSelectedServices() {
       if (this.hashResolveResult !== null) {
         var serviceIds = this.hashResolveResult.selectedLayers;
@@ -538,10 +534,10 @@ export default {
       let state = {
         zoom: view.getZoom(),
         center: view.getCenter(),
-        rotation: view.getRotation()
+        rotation: view.getRotation(),
       };
       var selectedLayers = layerController.getSelectedLayers();
-      var selectedLayerIds = selectedLayers.map(item => {
+      var selectedLayerIds = selectedLayers.map((item) => {
         return item.id;
       });
       let hash =
@@ -564,9 +560,9 @@ export default {
     },
     LatLongFormToggle() {
       let loc = document.getElementById("mouse-position").innerHTML;
-      loc = loc.split(":").map(item => item.trim());
+      loc = loc.split(":").map((item) => item.trim());
       let long = loc[2];
-      let lat = loc[1].split(",").map(item => item.trim());
+      let lat = loc[1].split(",").map((item) => item.trim());
       lat = lat[0];
       this.longChange = long;
       this.latChange = lat;
@@ -594,7 +590,7 @@ export default {
     },
     async filterSelectedColumn(id, column) {
       const service = this.$store.getters.tableData.find(
-        x => x.service.id === id
+        (x) => x.service.id === id
       ).service;
 
       const params = { id };
@@ -610,7 +606,7 @@ export default {
         this.filterValues =
           result[
             Object.keys(result).find(
-              key => key.toLowerCase() === column.toLowerCase()
+              (key) => key.toLowerCase() === column.toLowerCase()
             )
           ];
       } else {
@@ -653,7 +649,7 @@ export default {
         {
           theme: "outline",
           position: "bottom-center",
-          duration: 3500
+          duration: 3500,
         }
       );
     },
@@ -689,7 +685,7 @@ export default {
         this.checkedColumnsData.push(this.stackedTableFeaturesHeader[key]);
       } else {
         this.checkedColumnsData = this.checkedColumnsData.filter(
-          data => data != alias
+          (data) => data != alias
         );
       }
     },
@@ -724,7 +720,7 @@ export default {
         this.mapLayer.getView().fit(extent, {
           padding: [-50, 50, 30, 150],
           size: [50, 100],
-          maxZoom: 16
+          maxZoom: 16,
         });
         var vectorLayer = this.mapHelper.renderPolygonVector(geometry);
         this.mapSetFocusedPolygon(vectorLayer);
@@ -770,7 +766,7 @@ export default {
         let defaultUnCheckedColumns = [
           "OBJECTID",
           "Shape_Length",
-          "Shape_Area"
+          "Shape_Area",
         ];
 
         for (let alias in tableHeaders) {
@@ -808,23 +804,23 @@ export default {
             filterValues: [],
             target,
             checkedColumnsData,
-            checkedColumns
+            checkedColumns,
           },
           paging: {
             isBusy: false,
             page: 1,
-            limit: 25
-          }
+            limit: 25,
+          },
         });
       }
       let tableData = this.$store.getters.tableData;
       if (serviceHelper.isBunch(this.tableActiveService)) {
         for (let i = 0; i < dataTableArr.length; i++) {
           const item = dataTableArr[i];
-          let isExist = tableData.some(c => c.service.id === item.service.id);
+          let isExist = tableData.some((c) => c.service.id === item.service.id);
 
           if (isExist) {
-            tableData = tableData.map(val => {
+            tableData = tableData.map((val) => {
               const { service, data } = item;
 
               if (val.service.id === item.service.id) {
@@ -843,7 +839,7 @@ export default {
       let tabs = tableData.map((item, index) => {
         return {
           id: item.service.id,
-          name: item.service.name
+          name: item.service.name,
         };
       });
       this.$store.dispatch("SAVE_DATATABLE", tableData);
@@ -860,13 +856,13 @@ export default {
           token: this.token,
           name: service.name,
           layer: layerId,
-          ...query
+          ...query,
         };
         response = await LayerService.getTableData(params);
       } else {
         this.tablePaging = {
           page: 1,
-          limit: 25
+          limit: 25,
         };
 
         var isBunch = serviceHelper.isBunch(this.tableActiveService);
@@ -877,15 +873,15 @@ export default {
             queryParams = service.layers.map((item, index) => {
               return {
                 layerId: item.id,
-                query: { ...item.query, paging: this.tablePaging }
+                query: { ...item.query, paging: this.tablePaging },
               };
             });
           } else {
             queryParams = [
               {
                 layerId: service.id,
-                query: { ...service.query, paging: this.tablePaging }
-              }
+                query: { ...service.query, paging: this.tablePaging },
+              },
             ];
           }
 
@@ -894,7 +890,7 @@ export default {
             this.tableActiveService.id,
             params
           );
-          response.data = response.data.map(item => {
+          response.data = response.data.map((item) => {
             item.service = layerHelper.dynamicMapping(item.service);
             return item;
           });
@@ -902,7 +898,7 @@ export default {
           let params = {
             layerId: service.id,
             ...query,
-            paging: this.tablePaging
+            paging: this.tablePaging,
           };
           if (this.filterQueryIsSum && service.resourceType === "local") {
             params.isSum = this.filterQueryIsSum;
@@ -966,14 +962,14 @@ export default {
             name: service.name,
             layer: layer_id,
             where: service.query.where,
-            geometry: geometry
+            geometry: geometry,
           };
           response = await LayerService.getGeometryData(params);
         } else {
           var params = {
             layerId: service.id,
             where: service.query.where,
-            geometry: coords[0] + "," + coords[1]
+            geometry: coords[0] + "," + coords[1],
           };
           response = await LayerService.getLocalTableData(params);
         }
@@ -986,23 +982,10 @@ export default {
       }
     },
 
-    checkIfLayerNeedsToTurnOn(layer, value) {
-      let isChecked = true;
-
-      if (layer.hasOwnProperty("children")) {
-        layer.layers.map(async item => {
-          this.checkIfLayerNeedsToTurnOn(item, value);
-        });
-      } else {
-        if (layer.id === value) {
-          serviceController.selectService(layer, isChecked);
-        }
-      }
-    },
     resetServiceQuery(service) {
       this.dynamicLayerList = layerHelper.recursiveLayerMapping(
         this.dynamicLayerList,
-        layer => {
+        (layer) => {
           if (layer.id === service.id) {
             layer.query = { where: "" };
           }
@@ -1016,263 +999,260 @@ export default {
 
       var style = new Style({
         fill: new Fill({
-          color: color.fill.hex8
+          color: color.fill.hex8,
         }),
         stroke: new Stroke({
           color: color.border.hex8,
-          width: 0.5
+          width: 0.5,
         }),
         image: new CircleStyle({
           radius: 7,
           fill: new Fill({
-            color: color.fill.hex8
+            color: color.fill.hex8,
           }),
           stroke: new Stroke({
             color: color.border.hex8,
-            width: 0.5
-          })
-        })
+            width: 0.5,
+          }),
+        }),
       });
       return style;
     },
 
-<<<<<<< HEAD
-=======
-    async selectService(service, isChecked) {
-      if (!isChecked) {
-        this.mapLayer.getLayers().forEach(function(layer) {
-          if (layer.get("type") === "draw") {
-            mapController.removeLayer(layer);
-          }
-        });
-      }
-      var tableActiveService = this.tableActiveService;
-      if (!isChecked && tableActiveService) {
-        if (serviceHelper.isEqual(service, tableActiveService))
-          this.dataTableVisibility = false;
-      }
+    // async selectService(service, isChecked) {
+    //   if (!isChecked) {
+    //     this.mapLayer.getLayers().forEach(function(layer) {
+    //       if (layer.get("type") === "draw") {
+    //         mapController.removeLayer(layer);
+    //       }
+    //     });
+    //   }
+    //   var tableActiveService = this.tableActiveService;
+    //   if (!isChecked && tableActiveService) {
+    //     if (serviceHelper.isEqual(service, tableActiveService))
+    //       this.dataTableVisibility = false;
+    //   }
 
-      if (serviceHelper.isLayer(service)) {
-        if (serviceHelper.isDynamic(service)) {
-          if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
-            let subLayerResponse = await this.getResponseDynamic(service);
-            service.layers = subLayerResponse.data.layers;
-          }
-        }
-        layerController.setSelected(service, isChecked);
-      } else {
-        bunchController.setSelected(service, isChecked);
-      }
+    //   if (serviceHelper.isLayer(service)) {
+    //     if (serviceHelper.isDynamic(service)) {
+    //       if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
+    //         let subLayerResponse = await this.getResponseDynamic(service);
+    //         service.layers = subLayerResponse.data.layers;
+    //       }
+    //     }
+    //     layerController.setSelected(service, isChecked);
+    //   } else {
+    //     bunchController.setSelected(service, isChecked);
+    //   }
 
-      if (isChecked) this.addService(service);
-      else mapController.deleteService(service);
-    },
-    addService(service) {
-      if (service.extent != null) {
-        this.mapLayer
-          .getView()
-          .fit([
-            service.extent.minX,
-            service.extent.minY,
-            service.extent.maxX,
-            service.extent.maxY
-          ]);
-      }
+    //   if (isChecked) this.addService(service);
+    //   else mapController.deleteService(service);
+    // },
+    // addService(service) {
+    //   if (service.extent != null) {
+    //     this.mapLayer
+    //       .getView()
+    //       .fit([
+    //         service.extent.minX,
+    //         service.extent.minY,
+    //         service.extent.maxX,
+    //         service.extent.maxY
+    //       ]);
+    //   }
 
-      var newService = this.renderNewService(service);
-      this.getOrderNumber(this.dynamicLayerList, service);
+    //   var newService = this.renderNewService(service);
+    //   this.getOrderNumber(this.dynamicLayerList, service);
 
-      newService.set("name", service.name);
-      var zIndex = this.getZIndex(service);
-      newService.setZIndex(zIndex);
+    //   newService.set("name", service.name);
+    //   var zIndex = this.getZIndex(service);
+    //   newService.setZIndex(zIndex);
 
-      this.mapLayer.addLayer(newService);
-    },
+    //   this.mapLayer.addLayer(newService);
+    // },
 
-    setZIndex(service) {
-      this.mapLayer.getLayers().forEach(layer => {
-        if (
-          layer.get("name") != undefined &&
-          layer.get("name") === service.name
-        ) {
-          layer.setZIndex(this.getZIndex(service));
-        }
-      });
-    },
-    getZIndex(service) {
-      let zIndex = 0;
-      let orderNo = 0;
-      if (serviceHelper.isLayer(service)) {
-        if (serviceHelper.isDynamic(service)) {
-          zIndex = layerSettings.dynamicZIndex;
-          orderNo = this.getOrderNumber(this.dynamicLayerList, service);
-        } else {
-          zIndex = layerSettings.basemapZIndex;
-          orderNo = this.getOrderNumber(this.baseLayerList, service);
-        }
-      } else {
-        zIndex = layerSettings.bunchZIndex;
-        orderNo = this.getOrderNumber(this.bunchLayerList, service);
-      }
+    // setZIndex(service) {
+    //   this.mapLayer.getLayers().forEach(layer => {
+    //     if (
+    //       layer.get("name") != undefined &&
+    //       layer.get("name") === service.name
+    //     ) {
+    //       layer.setZIndex(this.getZIndex(service));
+    //     }
+    //   });
+    // },
+    // getZIndex(service) {
+    //   let zIndex = 0;
+    //   let orderNo = 0;
+    //   if (serviceHelper.isLayer(service)) {
+    //     if (serviceHelper.isDynamic(service)) {
+    //       zIndex = layerSettings.dynamicZIndex;
+    //       orderNo = this.getOrderNumber(this.dynamicLayerList, service);
+    //     } else {
+    //       zIndex = layerSettings.basemapZIndex;
+    //       orderNo = this.getOrderNumber(this.baseLayerList, service);
+    //     }
+    //   } else {
+    //     zIndex = layerSettings.bunchZIndex;
+    //     orderNo = this.getOrderNumber(this.bunchLayerList, service);
+    //   }
 
-      return zIndex - orderNo;
-    },
+    //   return zIndex - orderNo;
+    // },
 
-    getOrderNumber(array, service) {
-      var index = 0;
-      var result = 0;
-      layerHelper.recursiveLayerMapping(array, function(layer) {
-        index++;
-        if (layer.name == service.name) {
-          result = index;
-        }
-      });
-      return result;
-    },
-    getLayerZoomLevelOptions(service) {
-      return {
-        maxResolution: createXYZ().getResolution(service.minZoomLevel) * 1.01,
-        minResolution: createXYZ().getResolution(service.maxZoomLevel)
-      };
-    },
+    // getOrderNumber(array, service) {
+    //   var index = 0;
+    //   var result = 0;
+    //   layerHelper.recursiveLayerMapping(array, function(layer) {
+    //     index++;
+    //     if (layer.name == service.name) {
+    //       result = index;
+    //     }
+    //   });
+    //   return result;
+    // },
+    // getLayerZoomLevelOptions(service) {
+    //   return {
+    //     maxResolution: createXYZ().getResolution(service.minZoomLevel) * 1.01,
+    //     minResolution: createXYZ().getResolution(service.maxZoomLevel)
+    //   };
+    // },
 
-    renderNewService(service) {
-      var isLayer = serviceHelper.isLayer(service);
-      let zoomLevelProperties = this.getLayerZoomLevelOptions(service);
-      let new_layer;
+    // renderNewService(service) {
+    //   var isLayer = serviceHelper.isLayer(service);
+    //   let zoomLevelProperties = this.getLayerZoomLevelOptions(service);
+    //   let new_layer;
 
-      let defaultParams = {
-        id: service.id,
-        type: "layer"
-      };
-      let url = URL + "/api/map/service/" + service.name + "/MapServer/";
-      if (isLayer) {
-        var isDynamic = serviceHelper.isDynamic(service);
-        if (isDynamic) {
-          if (serviceHelper.isLocalService(service)) {
-            new_layer = new VectorTileLayer({
-              ...defaultParams,
-              ...zoomLevelProperties,
-              source: new VectorTileSource({
-                format: new MVT({
-                  geometryName: "geom"
-                }),
-                url:
-                  URL +
-                  "/" +
-                  MAP_URLS.MVT +
-                  `/${service.id}/{z}/{x}/{y}/` +
-                  (service.query.where != ""
-                    ? this.objectToQueryString(service.query)
-                    : "")
-              }),
-              style: this.getVectorStyle(service.color)
-            });
-          } else {
-            new_layer = new ImageLayer({
-              ...defaultParams,
-              ...zoomLevelProperties,
-              source: new ImageArcGISRest({
-                url: url,
-                crossOrigin: "Anonymous",
-                params: {
-                  token: this.token,
-                  layers: layerHelper.renderArcgisSublayerConfig(service),
-                  dynamicLayers: layerHelper.renderSubLayersColorString(service)
-                }
-              })
-            });
-          }
-        } else {
-          if (service.spatial === 3857) {
-            url = url + "/tile/{z}/{y}/{x}?token=" + this.token;
-            new_layer = new TileLayer({
-              ...defaultParams,
-              ...zoomLevelProperties,
-              source: new XYZ({
-                url: url,
-                projection: "EPSG:3857",
-                crossOrigin: "Anonymous"
-              })
-            });
-          } else {
-            new_layer = new TileLayer({
-              ...defaultParams,
-              ...zoomLevelProperties,
-              source: new TileArcGISRest({
-                url: url,
-                crossOrigin: "Anonymous",
-                params: {
-                  token: this.token,
-                  FORMAT: "png8"
-                }
-              })
-            });
-          }
-        }
-      } else {
-        var queryParams = service.layers.map((item, index) => {
-          return {
-            layerId: item.id,
-            query: item.query
-          };
-        });
-        var params = { queries: queryParams };
-        new_layer = new VectorTileLayer({
-          ...defaultParams,
-          source: new VectorTileSource({
-            format: new MVT({
-              geometryName: "geom"
-            }),
-            url:
-              URL +
-              "/api/Tile/Intersect/VectorAsMvt" +
-              `/${service.id}/{z}/{x}/{y}/?` +
-              qs.stringify(params, {
-                arrayFormat: "indices",
-                allowDots: true
-              })
-          }),
-          style: feature => {
-            var featureLayerId = feature.get("layerId");
-            var layerIds = service.layers.map(item => {
-              return item.id;
-            });
-            var index = layerIds.indexOf(featureLayerId);
+    //   let defaultParams = {
+    //     id: service.id,
+    //     type: "layer"
+    //   };
+    //   let url = URL + "/api/map/service/" + service.name + "/MapServer/";
+    //   if (isLayer) {
+    //     var isDynamic = serviceHelper.isDynamic(service);
+    //     if (isDynamic) {
+    //       if (serviceHelper.isLocalService(service)) {
+    //         new_layer = new VectorTileLayer({
+    //           ...defaultParams,
+    //           ...zoomLevelProperties,
+    //           source: new VectorTileSource({
+    //             format: new MVT({
+    //               geometryName: "geom"
+    //             }),
+    //             url:
+    //               URL +
+    //               "/" +
+    //               MAP_URLS.MVT +
+    //               `/${service.id}/{z}/{x}/{y}/` +
+    //               (service.query.where != ""
+    //                 ? this.objectToQueryString(service.query)
+    //                 : "")
+    //           }),
+    //           style: this.getVectorStyle(service.color)
+    //         });
+    //       } else {
+    //         new_layer = new ImageLayer({
+    //           ...defaultParams,
+    //           ...zoomLevelProperties,
+    //           source: new ImageArcGISRest({
+    //             url: url,
+    //             crossOrigin: "Anonymous",
+    //             params: {
+    //               token: this.token,
+    //               layers: layerHelper.renderArcgisSublayerConfig(service),
+    //               dynamicLayers: layerHelper.renderSubLayersColorString(service)
+    //             }
+    //           })
+    //         });
+    //       }
+    //     } else {
+    //       if (service.spatial === 3857) {
+    //         url = url + "/tile/{z}/{y}/{x}?token=" + this.token;
+    //         new_layer = new TileLayer({
+    //           ...defaultParams,
+    //           ...zoomLevelProperties,
+    //           source: new XYZ({
+    //             url: url,
+    //             projection: "EPSG:3857",
+    //             crossOrigin: "Anonymous"
+    //           })
+    //         });
+    //       } else {
+    //         new_layer = new TileLayer({
+    //           ...defaultParams,
+    //           ...zoomLevelProperties,
+    //           source: new TileArcGISRest({
+    //             url: url,
+    //             crossOrigin: "Anonymous",
+    //             params: {
+    //               token: this.token,
+    //               FORMAT: "png8"
+    //             }
+    //           })
+    //         });
+    //       }
+    //     }
+    //   } else {
+    //     var queryParams = service.layers.map((item, index) => {
+    //       return {
+    //         layerId: item.id,
+    //         query: item.query
+    //       };
+    //     });
+    //     var params = { queries: queryParams };
+    //     new_layer = new VectorTileLayer({
+    //       ...defaultParams,
+    //       source: new VectorTileSource({
+    //         format: new MVT({
+    //           geometryName: "geom"
+    //         }),
+    //         url:
+    //           URL +
+    //           "/api/Tile/Intersect/VectorAsMvt" +
+    //           `/${service.id}/{z}/{x}/{y}/?` +
+    //           qs.stringify(params, {
+    //             arrayFormat: "indices",
+    //             allowDots: true
+    //           })
+    //       }),
+    //       style: feature => {
+    //         var featureLayerId = feature.get("layerId");
+    //         var layerIds = service.layers.map(item => {
+    //           return item.id;
+    //         });
+    //         var index = layerIds.indexOf(featureLayerId);
 
-            var color = materialColors[index];
-            var colorObj = {
-              border: {
-                hex8: color
-              },
-              fill: {
-                hex8: "#FFFFFF00"
-              }
-            };
+    //         var color = materialColors[index];
+    //         var colorObj = {
+    //           border: {
+    //             hex8: color
+    //           },
+    //           fill: {
+    //             hex8: "#FFFFFF00"
+    //           }
+    //         };
 
-            return this.getVectorStyle(colorObj);
-          }
-        });
-      }
+    //         return this.getVectorStyle(colorObj);
+    //       }
+    //     });
+    //   }
 
-      return new_layer;
-    },
+    //   return new_layer;
+    // },
 
-    refreshService(service) {
-      mapController.deleteService(service, false);
-      this.addService(service);
-    },
-    getLayer(id) {
-      let layer = null;
-      this.mapLayer.getLayers().forEach(function(lyr) {
-        var layerId = lyr.values_.id;
-        if (layerId !== undefined && layerId === id) {
-          layer = lyr;
-        }
-      });
-      return layer;
-    },
->>>>>>> dev.khayyam
+    // refreshService(service) {
+    //   mapController.deleteService(service, false);
+    //   this.addService(service);
+    // },
+    // getLayer(id) {
+    //   let layer = null;
+    //   this.mapLayer.getLayers().forEach(function(lyr) {
+    //     var layerId = lyr.values_.id;
+    //     if (layerId !== undefined && layerId === id) {
+    //       layer = lyr;
+    //     }
+    //   });
+    //   return layer;
+    // },
     setBaseLayout(index) {
       let layers = this.mapLayer.getLayers().getArray();
       layers[0].setSource(this.baseMaps[index]);
@@ -1281,7 +1261,7 @@ export default {
       let isColorEnabled = false;
       let response = await LayerService.getLayerDynamic({
         token: this.token,
-        name: service.name
+        name: service.name,
       });
       if (response.data.layers[0].drawingInfo !== undefined) {
         if (response.data.layers[0].drawingInfo.renderer.symbol !== undefined) {
@@ -1301,13 +1281,13 @@ export default {
 
         this.dynamicLayerList = layerHelper.recursiveLayerMapping(
           this.dynamicLayerList,
-          async layer => {
+          async (layer) => {
             if (layer != null && layer.id == service.id) {
               if (layer.layers !== undefined && layer.layers !== null) {
                 layer.layers = layer.layers.map((item, index) => {
                   return {
                     ...item,
-                    isColorEnabled
+                    isColorEnabled,
                   };
                 });
               }
@@ -1316,25 +1296,25 @@ export default {
         );
       }
     },
-    async getResponseDynamic(service) {
-      let responseDynamic = null;
-      if (serviceHelper.isDynamicFromArcgis(service)) {
-        responseDynamic = await LayerService.getDynamicLayers({
-          token: this.token,
-          name: service.name
-        });
-      }
-      return responseDynamic;
-    },
+    // async getResponseDynamic(service) {
+    //   let responseDynamic = null;
+    //   if (serviceHelper.isDynamicFromArcgis(service)) {
+    //     responseDynamic = await LayerService.getDynamicLayers({
+    //       token: this.token,
+    //       name: service.name
+    //     });
+    //   }
+    //   return responseDynamic;
+    // },
 
     async selectSubService(service, index, id, e) {
       let isChecked = e.target.checked;
 
       this.dynamicLayerList = layerHelper.recursiveLayerMapping(
         this.dynamicLayerList,
-        async layer => {
+        async (layer) => {
           if (layer != null && layer.id == service.id) {
-            var subLayer = layer.layers.find(c => c.id == id);
+            var subLayer = layer.layers.find((c) => c.id == id);
             subLayer.isSelected = isChecked;
           }
         }
@@ -1371,7 +1351,7 @@ export default {
         bunchController.setColor(service.id, color);
       }
       this.refreshService(service);
-    }
+    },
   },
   computed: {
     defaultColorObject() {
@@ -1392,7 +1372,7 @@ export default {
       set(value) {
         // this.filterQueryIsSum = false;
         this.$store.dispatch("saveMap", value);
-      }
+      },
     },
     dataTableVisibility: {
       get() {
@@ -1400,7 +1380,7 @@ export default {
       },
       set(value) {
         this.$store.dispatch("SAVE_DATATABLE_VISIBLE", value);
-      }
+      },
     },
 
     focusedPolygonVector: {
@@ -1409,7 +1389,7 @@ export default {
       },
       set(value) {
         this.$store.dispatch("saveFocusePolygonVector", value);
-      }
+      },
     },
 
     // This should not work
@@ -1419,7 +1399,7 @@ export default {
       },
       set(value) {
         this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
-      }
+      },
     },
     selectedServiceInfo() {
       return this.$store.state.dataTable.serviceInfo;
@@ -1430,7 +1410,7 @@ export default {
       },
       set(value) {
         this.$store.dispatch("SAVE_FILTER_QUERY_IS_SUM", value);
-      }
+      },
     },
 
     filterQueryArithmeticColumn() {
@@ -1442,7 +1422,7 @@ export default {
       },
       set(val) {
         this.$store.dispatch("saveDynamicLayerList", val);
-      }
+      },
     },
 
     bunchLayerList: {
@@ -1451,7 +1431,7 @@ export default {
       },
       set(val) {
         this.$store.dispatch("saveBunchLayerList", val);
-      }
+      },
     },
     baseLayerList: {
       get() {
@@ -1459,11 +1439,11 @@ export default {
       },
       set(val) {
         this.$store.dispatch("saveBaseLayerList", val);
-      }
+      },
     },
 
     tableData(id) {
-      return this.$store.dataTable.filter(x => x.service.id === id);
+      return this.$store.dataTable.filter((x) => x.service.id === id);
     },
 
     tableHeadersWithAlias() {
@@ -1516,11 +1496,11 @@ export default {
       set(value) {
         this.$store.dispatch("SAVE_DATATABLE_FILTER_VALUES", {
           id: this.activeTabId,
-          value
+          value,
         });
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 

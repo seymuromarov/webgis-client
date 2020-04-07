@@ -6,7 +6,7 @@ const baseLayerList = {
   },
   set(val) {
     $store.dispatch("saveBaseLayerList", val);
-  }
+  },
 };
 const dynamicLayerList = {
   get() {
@@ -14,7 +14,7 @@ const dynamicLayerList = {
   },
   set(data) {
     $store.dispatch("saveDynamicLayerList", data);
-  }
+  },
 };
 
 const getters = {
@@ -43,17 +43,17 @@ const getters = {
   },
   getDynamicLayer(layerId) {
     let layers = getters.getDynamicLayersWithoutCategory();
-    let layer = layers.find(c => c.id === layerId);
+    let layer = layers.find((c) => c.id === layerId);
     return layer;
   },
   getBaseLayer(layerId) {
     let layers = getters.getBaseLayersWithoutCategory();
-    let layer = layers.find(c => c.id === layerId);
+    let layer = layers.find((c) => c.id === layerId);
     return layer;
   },
   getBaseLayersWithoutCategory() {
     let list = [];
-    layerHelper.recursiveLayerMapping(baseLayerList.get(), layer => {
+    layerHelper.recursiveLayerMapping(baseLayerList.get(), (layer) => {
       list.push(layer);
     });
     return list;
@@ -61,7 +61,7 @@ const getters = {
   getDynamicLayersWithoutCategory(isLocalOnly) {
     let list = [];
 
-    layerHelper.recursiveLayerMapping(dynamicLayerList.get(), layer => {
+    layerHelper.recursiveLayerMapping(dynamicLayerList.get(), (layer) => {
       var isLocal = isLocalOnly
         ? serviceHelper.isDynamicFromLocal(layer)
         : true;
@@ -71,7 +71,7 @@ const getters = {
   },
   getSelectedBasemaps() {
     let list = [];
-    layerHelper.recursiveLayerMapping(baseLayerList.get(), layer => {
+    layerHelper.recursiveLayerMapping(baseLayerList.get(), (layer) => {
       if (layer.isSelected) list.push(layer);
     });
     return list;
@@ -79,13 +79,13 @@ const getters = {
   getSelectedLayers() {
     var selectedLayers = [];
     var layers = [...dynamicLayerList.get(), ...baseLayerList.get()];
-    layerHelper.recursiveLayerMapping(layers, layer => {
+    layerHelper.recursiveLayerMapping(layers, (layer) => {
       if (layer.isSelected) {
         selectedLayers.push(layer);
       }
     });
     return selectedLayers;
-  }
+  },
 };
 const setters = {
   setSelected(service, isChecked) {
@@ -93,11 +93,11 @@ const setters = {
 
     if (serviceHelper.isDynamic(service)) {
       list = dynamicLayerList.get();
-      list = layerHelper.recursiveLayerMapping(list, async item => {
+      list = layerHelper.recursiveLayerMapping(list, async (item) => {
         if (item != null && item.id == service.id) {
           item.isSelected = isChecked;
           if (isChecked && serviceHelper.isDynamicFromArcgis(item)) {
-            item.layers = service.layers.map(item =>
+            item.layers = service.layers.map((item) =>
               layerHelper.subLayerMapping(item, item)
             );
           }
@@ -107,7 +107,7 @@ const setters = {
       dynamicLayerList.set(list);
     } else if (serviceHelper.isBasemap(service)) {
       list = baseLayerList.get();
-      list = layerHelper.recursiveLayerMapping(list, async item => {
+      list = layerHelper.recursiveLayerMapping(list, async (item) => {
         if (item != null && item.id == service.id) {
           item.isSelected = isChecked;
         }
@@ -118,7 +118,7 @@ const setters = {
   setColor(service, color, isSubLayer) {
     var list = layerHelper.recursiveLayerMapping(
       dynamicLayerList.get(),
-      async layer => {
+      async (layer) => {
         if (layer != null && layer.id == service.id) {
           if (isSubLayer) {
             layer.layers = layer.layers.map((item, index) => {
@@ -138,18 +138,25 @@ const setters = {
   setQuery(service, query) {
     var list = layerHelper.recursiveLayerMapping(
       dynamicLayerList.get(),
-      async layer => {
+      async (layer) => {
         if (layer != null && layer.id == service.id) {
           service.query.where = query;
         }
       }
     );
     dynamicLayerList.set(list);
-  }
+  },
+
+  setBaseLayerList(data) {
+    $store.dispatch("saveBaseLayerList", data);
+  },
+  setDynamicLayerList(data) {
+    $store.dispatch("saveDynamicLayerList", data);
+  },
 };
 const functions = {};
 export default {
   ...getters,
   ...setters,
-  ...functions
+  ...functions,
 };

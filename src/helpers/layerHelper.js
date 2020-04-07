@@ -1,8 +1,8 @@
-import { serviceTypeEnum } from "@/constants/enums";
+import { serviceTypeEnum } from "@/enums";
 import { colorHelper, serviceHelper } from "@/helpers";
 
 const mapper = {
-  basemapMapping: val => {
+  basemapMapping: (val) => {
     return {
       id: val.id,
       name: val.label,
@@ -25,10 +25,10 @@ const mapper = {
           ? mapper.basemapMapping(val.unitedDynamicLayer)
           : null,
 
-      layers: null
+      layers: null,
     };
   },
-  dynamicMapping: val => {
+  dynamicMapping: (val) => {
     return {
       id: val.resourceTypeId === "local" ? val.id : val.id,
       name: val.label,
@@ -50,10 +50,10 @@ const mapper = {
 
       query: { where: "" },
       layers: null,
-      apiFrom: "internal"
+      apiFrom: "internal",
     };
   },
-  recursiveMap: val => {
+  recursiveMap: (val) => {
     if (val.layers !== undefined) {
       return {
         id: val.id,
@@ -65,7 +65,7 @@ const mapper = {
           val.mapTypeId == "basemap"
             ? mapper.basemapMapping(val)
             : mapper.dynamicMapping(val)
-        )
+        ),
       };
     } else
       return val.mapTypeId == "basemap"
@@ -80,18 +80,18 @@ const mapper = {
     item.parent = layer;
     return item;
   },
-  mapLayers: layers => {
+  mapLayers: (layers) => {
     let baseLayers = layers
-      .filter(c => c.mapTypeId === "basemap")
-      .map(val => mapper.recursiveMap(val));
+      .filter((c) => c.mapTypeId === "basemap")
+      .map((val) => mapper.recursiveMap(val));
 
     let dynamicLayers = layers
-      .filter(c => c.mapTypeId === "dynamic")
-      .map(val => mapper.recursiveMap(val));
+      .filter((c) => c.mapTypeId === "dynamic")
+      .map((val) => mapper.recursiveMap(val));
 
     var mapResult = {
       baseLayers,
-      dynamicLayers
+      dynamicLayers,
     };
     return mapResult;
   },
@@ -129,7 +129,7 @@ const mapper = {
     }
   },
 
-  recursiveTreeMapping: arr => {
+  recursiveTreeMapping: (arr) => {
     var list = [];
     for (let i = 0; i < arr.length; i++) {
       var item = arr[i];
@@ -138,13 +138,13 @@ const mapper = {
     }
     return list;
   },
-  recursiveTreeSelectMapping: item => {
+  recursiveTreeSelectMapping: (item) => {
     var isCategory = serviceHelper.isCategory(item);
     if (isCategory) {
       var category = {
         id: item.id,
         label: item.name,
-        children: [...item.children, ...item.layers]
+        children: [...item.children, ...item.layers],
       };
 
       for (var i = 0; i < category.children.length; i++) {
@@ -156,19 +156,19 @@ const mapper = {
     } else {
       return { id: item.id, label: item.name };
     }
-  }
+  },
 };
 
 const functions = {
-  renderArcgisSublayerConfig: service => {
+  renderArcgisSublayerConfig: (service) => {
     var subLayers = service.layers;
     var activeLayers = subLayers
-      .filter(c => c.isSelected)
+      .filter((c) => c.isSelected)
       .map((item, index) => {
         return item.id;
       });
     var hiddenLayers = subLayers
-      .filter(c => !c.isSelected)
+      .filter((c) => !c.isSelected)
       .map((item, index) => {
         return item.id;
       });
@@ -181,7 +181,7 @@ const functions = {
 
     return config;
   },
-  renderSubLayersColorString: layer => {
+  renderSubLayersColorString: (layer) => {
     var colorStringArr = [];
     for (var i = 0; i < layer.layers.length; i++) {
       let subLayer = layer.layers[i];
@@ -201,11 +201,11 @@ const functions = {
       result = "[" + colorStringArr.join(" , ") + "]";
 
     return result;
-  }
+  },
 };
 
 export default {
   ...functions,
   // ...serviceHelper,
-  ...mapper
+  ...mapper,
 };
