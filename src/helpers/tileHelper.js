@@ -1,4 +1,5 @@
 import { tileTypeEnum } from "@/enums";
+import { serviceHelper } from "@/helpers";
 import $store from "@/store/store.js";
 import { URL, MAP_URLS } from "@/config/urls";
 import qs from "qs";
@@ -13,14 +14,38 @@ const functions = {
       TILE_ARCGIS_REST,
       IMAGE_ARCGIS_REST,
     } = tileTypeEnum;
+    console.log("buildTileUrl -> serviceHelper", serviceHelper);
 
     switch (type) {
       case LOCAL_MVT:
-        let queryString = qs.stringify(service.query, {
-          arrayFormat: "indices",
-          allowDots: true,
-        });
-        url = `${URL}/${MAP_URLS.MVT}/${service.id}/{z}/{x}/{y}/?${queryString}`;
+        if (serviceHelper.isLayer(service)) {
+          let params = service.query;
+
+          let queryString = qs.stringify(params, {
+            arrayFormat: "indices",
+            allowDots: true,
+          });
+
+          url = `${URL}/${MAP_URLS.MVT}/${service.id}/{z}/{x}/{y}/?${queryString}`;
+        } else {
+          var params = service.layers.map((item, index) => {
+            return {
+              layerId: item.id,
+              query: item.query,
+            };
+          });
+
+          let queryString = qs.stringify(
+            { queries: params },
+            {
+              arrayFormat: "indices",
+              allowDots: true,
+            }
+          );
+
+          url = `${URL}/api/Tile/Intersect/VectorAsMvt/${service.id}/{z}/{x}/{y}/?${queryString}`;
+        }
+
         break;
       case XYZ:
         url = `${URL}/api/map/service/${service.name}/MapServer/tile/{z}/{y}/{x}?token=${token}`;

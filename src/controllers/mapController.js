@@ -1,6 +1,8 @@
 import $store from "@/store/store.js";
-import { tileTypeEnum } from "@/enums";
+import { tileTypeEnum, layerTypeEnum } from "@/enums";
 import { serviceController } from "@/controllers";
+import { defaultZoomLevelSettings } from "@/config/settings";
+import { materialColors } from "@/config/colors";
 import { tokenService } from "@/services";
 import { serviceHelper, layerHelper, tileHelper, colorHelper } from "@/helpers";
 import {
@@ -43,10 +45,7 @@ const functions = {
   deleteService(service) {
     var map = mapLayer.get();
     map.getLayers().forEach(function(layer) {
-      if (
-        layer.get("name") != undefined &&
-        layer.get("name") === service.name
-      ) {
+      if (layer.get("id") != undefined && layer.get("id") === service.id) {
         functions.removeLayer(layer);
       }
     });
@@ -76,21 +75,21 @@ const functions = {
   },
   buildLayer(service) {
     const token = tokenService.getToken();
+
     const defaultProps = {
       id: service.id,
       name: service.name,
       zoomLevelProperties: getters.getZoomLevelOptions(service),
+      type: service.type,
     };
     const isLayer = serviceHelper.isLayer(service);
 
-    let new_layer;
-
-    let url = URL + "/api/map/service/" + service.name + "/MapServer/";
+    let layer;
     if (isLayer) {
       var isDynamic = serviceHelper.isDynamic(service);
       if (isDynamic) {
         if (serviceHelper.isLocalService(service)) {
-          new_layer = new VectorTileLayer({
+          layer = new VectorTileLayer({
             ...defaultProps,
             source: new VectorTileSource({
               format: new MVT({
@@ -101,8 +100,8 @@ const functions = {
             style: colorHelper.buildVectorStyle(service.color),
           });
         } else {
-          new_layer = new ImageLayer({
-            ...zoomLevelProperties,
+          layer = new ImageLayer({
+            ...defaultProps,
             source: new ImageArcGISRest({
               url: tileHelper.buildTileUrl(
                 service,
@@ -119,20 +118,22 @@ const functions = {
         }
       } else {
         if (service.spatial === 3857) {
-          url = url + "/tile/{z}/{y}/{x}?token=" + token;
-          new_layer = new TileLayer({
-            ...zoomLevelProperties,
+          layer = new TileLayer({
+            ...defaultProps,
             source: new XYZ({
-              url: url,
+              url: tileHelper.buildTileUrl(service, tileTypeEnum.XYZ),
               projection: "EPSG:3857",
               crossOrigin: "Anonymous",
             }),
           });
         } else {
-          new_layer = new TileLayer({
-            ...zoomLevelProperties,
+          layer = new TileLayer({
+            ...defaultProps,
             source: new TileArcGISRest({
-              url: url,
+              url: tileHelper.buildTileUrl(
+                service,
+                tileTypeEnum.TILE_ARCGIS_REST
+              ),
               crossOrigin: "Anonymous",
               params: {
                 token: token,
@@ -143,27 +144,13 @@ const functions = {
         }
       }
     } else {
-      var queryParams = service.layers.map((item, index) => {
-        return {
-          layerId: item.id,
-          query: item.query,
-        };
-      });
-      var params = { queries: queryParams };
-      new_layer = new VectorTileLayer({
-        id: service.id,
+      layer = new VectorTileLayer({
+        ...defaultProps,
         source: new VectorTileSource({
           format: new MVT({
             geometryName: "geom",
           }),
-          url:
-            URL +
-            "/api/Tile/Intersect/VectorAsMvt" +
-            `/${service.id}/{z}/{x}/{y}/?` +
-            qs.stringify(params, {
-              arrayFormat: "indices",
-              allowDots: true,
-            }),
+          url: tileHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
         }),
         style: (feature) => {
           var featureLayerId = feature.get("layerId");
@@ -182,23 +169,23 @@ const functions = {
             },
           };
 
-          return colorHelper.buildVectorStyle(service.color);
+          return colorHelper.buildVectorStyle(colorObj);
         },
       });
     }
 
-    return new_layer;
+    return layer;
   },
 };
 
 const setters = {
+  setMap(val) {
+    $store.dispatch("saveMap", val);
+  },
   setZIndex(service) {
     let map = mapLayer.get();
     map.getLayers().forEach((layer) => {
-      if (
-        layer.get("name") != undefined &&
-        layer.get("name") === service.name
-      ) {
+      if (layer.get("id") != undefined && layer.get("id") === service.id) {
         layer.setZIndex(serviceController.calculateZIndex(service));
       }
     });
@@ -206,6 +193,9 @@ const setters = {
 };
 
 const getters = {
+  getMap() {
+    return $store.getters.mapLayer;
+  },
   getLayer(id) {
     let map = mapLayer.get();
     let layer = null;
@@ -219,9 +209,17 @@ const getters = {
     return layer;
   },
   getZoomLevelOptions(service) {
+    let min, max;
+    if (serviceHelper.isLayer(service)) {
+      min = service.minZoomLevel;
+      max = service.maxZoomLevel;
+    } else {
+      min = defaultZoomLevelSettings.minZoomLevel;
+      max = defaultZoomLevelSettings.maxZoomLevel;
+    }
     return {
-      maxResolution: createXYZ().getResolution(service.minZoomLevel) * 1.01,
-      minResolution: createXYZ().getResolution(service.maxZoomLevel),
+      maxResolution: createXYZ().getResolution(min) * 1.01,
+      minResolution: createXYZ().getResolution(max),
     };
   },
 };

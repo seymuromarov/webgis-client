@@ -50,9 +50,9 @@ class MapHelper {
     let area = new KML({
       maxDepth: 10,
       extractStyles: true,
-      featureProjection: "EPSG:3857"
+      featureProjection: "EPSG:3857",
     }).writeFeatures(features, {
-      featureProjection: "EPSG:3857"
+      featureProjection: "EPSG:3857",
     });
     const blob = new Blob([area], { type: "text/plain" });
     const e = document.createEvent("MouseEvents"),
@@ -80,37 +80,37 @@ class MapHelper {
     a.dispatchEvent(e);
   }
 
-  addGraticule() {
-    if (this.data.graticule) {
-      this.data.graticuleLayer.setMap(null);
-      this.data.graticule = false;
-    } else {
-      this.data.graticuleLayer = new Graticule({
-        strokeStyle: new Stroke({
-          color: "rgba(255,120,0,0.9)",
-          width: 2,
-          lineDash: [0.5, 4]
-        }),
-        showLabels: true,
-        map: this.data.mapLayer
-      });
-      this.data.graticule = true;
-    }
-  }
+  // addGraticule() {
+  //   if (this.data.graticule) {
+  //     this.data.graticuleLayer.setMap(null);
+  //     this.data.graticule = false;
+  //   } else {
+  //     this.data.graticuleLayer = new Graticule({
+  //       strokeStyle: new Stroke({
+  //         color: "rgba(255,120,0,0.9)",
+  //         width: 2,
+  //         lineDash: [0.5, 4],
+  //       }),
+  //       showLabels: true,
+  //       map: this.data.mapLayer,
+  //     });
+  //     this.data.graticule = true;
+  //   }
+  // }
 
-  pngExport() {
-    this.data.mapLayer.once("rendercomplete", function(event) {
-      let canvas = event.context.canvas;
-      if (navigator.msSaveBlob) {
-        navigator.msSaveBlob(canvas.msToBlob(), "map.png");
-      } else {
-        canvas.toBlob(function(blob) {
-          saveAs(blob, "map.png");
-        });
-      }
-    });
-    this.data.mapLayer.renderSync();
-  }
+  // pngExport() {
+  //   this.data.mapLayer.once("rendercomplete", function(event) {
+  //     let canvas = event.context.canvas;
+  //     if (navigator.msSaveBlob) {
+  //       navigator.msSaveBlob(canvas.msToBlob(), "map.png");
+  //     } else {
+  //       canvas.toBlob(function(blob) {
+  //         saveAs(blob, "map.png");
+  //       });
+  //     }
+  //   });
+  //   this.data.mapLayer.renderSync();
+  // }
 
   resetFeatures() {
     this.data.setDrawType("None");
@@ -141,14 +141,14 @@ class MapHelper {
         source: this.data.source,
         type: value,
         geometryFunction: geometryFunction,
-        freehandCondition: shiftKeyOnly
+        freehandCondition: shiftKeyOnly,
       });
       this.data.mapLayer.addInteraction(this.data.draw);
     } else {
       this.data.draw = new Draw({
         source: this.data.source,
         type: this.data.typeSelect,
-        freehandCondition: shiftKeyOnly
+        freehandCondition: shiftKeyOnly,
       });
 
       this.data.mapLayer.addInteraction(this.data.draw);
@@ -211,15 +211,15 @@ class MapHelper {
 
         e.feature.setProperties({
           id: self.data.featureIDSet,
-          name: ""
+          name: "",
         });
         let newStyle = new Style({
           fill: new Fill({ color: "#00000000" }),
           stroke: new Stroke({ color: "#C672F5", width: 2 }),
           image: new CircleStyle({
             radius: 7,
-            fill: new Fill({ color: "#00000000" })
-          })
+            fill: new Fill({ color: "#00000000" }),
+          }),
         });
 
         if (self.data.typeSelect !== "Point") {
@@ -235,7 +235,7 @@ class MapHelper {
   renderPolygonVector(coordinates) {
     var polygon = new Polygon([coordinates]);
     var feature = new Feature({
-      geometry: polygon
+      geometry: polygon,
     });
     var vectorSource = new VectorSource();
     vectorSource.addFeature(feature);
@@ -243,13 +243,13 @@ class MapHelper {
     var style = new Style({
       stroke: new Stroke({
         color: "#FF0000",
-        width: 3
-      })
+        width: 3,
+      }),
     });
     var vectorLayer = new VectorLayer({
       type: "draw",
       source: vectorSource,
-      style: style
+      style: style,
     });
     return vectorLayer;
   }
@@ -265,7 +265,7 @@ class MapHelper {
     this.data.helpmaptooltip = new Overlay({
       element: this.data.helpmaptooltipElement,
       offset: [15, 0],
-      positioning: "center-left"
+      positioning: "center-left",
     });
     this.data.mapLayer.addOverlay(this.data.helpmaptooltip);
   }
@@ -282,7 +282,7 @@ class MapHelper {
     this.data.measuremaptooltip = new Overlay({
       element: this.data.measuremaptooltipElement,
       offset: [0, -15],
-      positioning: "bottom-center"
+      positioning: "bottom-center",
     });
     this.data.mapLayer.addOverlay(this.data.measuremaptooltip);
   }

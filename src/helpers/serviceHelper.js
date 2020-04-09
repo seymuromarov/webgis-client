@@ -1,5 +1,5 @@
 import { serviceTypeEnum } from "@/enums";
-import { layerService } from "@/services/";
+import { layerService, tokenService } from "@/services/";
 const checker = {
   isLocalService: (service) => {
     return service.resourceType === "local";
@@ -55,7 +55,7 @@ const checker = {
 
     if (checker.isDynamicFromArcgis()) {
       let response = await layerService.getLayerDynamic({
-        token: this.token,
+        token: tokenService.getToken(),
         name: service.name,
       });
       if (response.data.layers[0].drawingInfo !== undefined) {

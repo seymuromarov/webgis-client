@@ -48,7 +48,6 @@ const functions = {
     return layerDyn;
   },
   buildVectorStyle(color) {
-    console.log("buildVectorStyle -> color", color);
     if (color === null) {
       color = getters.getDefaultColorObject();
     }

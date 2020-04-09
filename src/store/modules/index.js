@@ -6,14 +6,16 @@ import forum from "./forum";
 import layers from "./layers";
 import filter from "./filter";
 import map from "./map";
+import tool from "./tool";
 
 export default {
-    auth,
-    dataTable,
-    colorPicker,
-    information,
-    forum,
-    layers,
-    filter,
-    map
+  auth,
+  dataTable,
+  colorPicker,
+  information,
+  forum,
+  layers,
+  filter,
+  map,
+  tool,
 };

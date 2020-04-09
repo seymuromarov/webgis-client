@@ -196,12 +196,7 @@ export default {
       // this.dynamicLayersReset(this.data, this.subListVisibility);
     },
     onColorPickerSave(color) {
-      console.log("onColorPickerSave -> color", color);
-      // this.$emit("saveColor", this.data, color);
       serviceController.saveColor(this.data, color);
-    },
-    saveColor(data, color) {
-      this.$emit("saveColor", data, color);
     },
     colorPickerOnClose() {
       this.activeColorPickerId = null;

@@ -1,6 +1,6 @@
 import $store from "@/store/store.js";
 import { serviceHelper, layerHelper } from "@/helpers";
-import { layerSettings } from "@/config/settings";
+import { serviceZIndexSettings } from "@/config/settings";
 import { layerService, tokenService } from "@/services";
 
 import {
@@ -11,6 +11,7 @@ import {
 } from "@/controllers";
 const functions = {
   async selectService(service, isChecked) {
+    console.log("selectService -> service, isChecked", service, isChecked);
     if (!isChecked) {
       mapController.removeDrawPolygons();
     }
@@ -107,21 +108,21 @@ const getters = {
     let orderNo = 0;
     if (serviceHelper.isLayer(service)) {
       if (serviceHelper.isDynamic(service)) {
-        zIndex = layerSettings.dynamicZIndex;
+        zIndex = serviceZIndexSettings.dynamicZIndex;
 
         orderNo = getters.getOrderNumber(
           layerController.getDynamicLayerList(),
           service
         );
       } else {
-        zIndex = layerSettings.basemapZIndex;
+        zIndex = serviceZIndexSettings.basemapZIndex;
         orderNo = getters.getOrderNumber(
           layerController.getBaseLayerList(),
           service
         );
       }
     } else {
-      zIndex = layerSettings.bunchZIndex;
+      zIndex = serviceZIndexSettings.bunchZIndex;
       orderNo = getters.getOrderNumber(
         bunchController.getBunchLayerList(),
         service
