@@ -1,7 +1,8 @@
 const state = {
   mapLayer: null,
   graticuleLayer: null,
-  n: null,
+  draw: null,
+  drawSource: null
 };
 
 const mutations = {
@@ -14,6 +15,9 @@ const mutations = {
   SET_DRAW(state, payload) {
     state.draw = payload;
   },
+  SET_DRAW_SOURCE(state, payload) {
+    state.drawSource = payload;
+  }
 };
 
 const actions = {
@@ -26,23 +30,29 @@ const actions = {
   saveDraw(context, payload) {
     context.commit("SET_DRAW", payload);
   },
+  saveDrawSource(context, payload) {
+    context.commit("SET_DRAW_SOURCE", payload);
+  }
 };
 
 const getters = {
-  mapLayer: (state) => {
+  mapLayer: state => {
     return state.mapLayer;
   },
-  graticuleLayer: (state) => {
+  graticuleLayer: state => {
     return state.graticuleLayer;
   },
-  draw: (state) => {
+  draw: state => {
     return state.draw;
   },
+  drawSource: state => {
+    return state.drawSource;
+  }
 };
 
 export default {
   state,
   mutations,
   actions,
-  getters,
+  getters
 };

@@ -112,14 +112,14 @@ class MapHelper {
   //   this.data.mapLayer.renderSync();
   // }
 
-  resetFeatures() {
-    this.data.setDrawType("None");
-    let elements = document.getElementsByClassName("maptooltip");
-    for (let i = 0; i < elements.length; i++) {
-      elements[i].setAttribute("style", "display:none;");
-    }
-    this.data.source.clear();
-  }
+  // resetFeatures() {
+  //   this.data.setDrawType("None");
+  //   let elements = document.getElementsByClassName("maptooltip");
+  //   for (let i = 0; i < elements.length; i++) {
+  //     elements[i].setAttribute("style", "display:none;");
+  //   }
+  //   this.data.source.clear();
+  // }
 
   addInteraction() {
     this.data.isMarker = false;

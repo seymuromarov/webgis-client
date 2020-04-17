@@ -7,6 +7,7 @@ import layers from "./layers";
 import filter from "./filter";
 import map from "./map";
 import tool from "./tool";
+import menu from "./menu";
 
 export default {
   auth,
@@ -18,4 +19,5 @@ export default {
   filter,
   map,
   tool,
+  menu,
 };

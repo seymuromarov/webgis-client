@@ -5,7 +5,6 @@ const state = {
   activeService: null,
   isVisible: false,
   loading: false,
-  lastBBOXOfShape: []
 };
 
 const mutations = {
@@ -22,13 +21,13 @@ const mutations = {
     state.activeService = payload;
   },
   SET_DATATABLE_CHECKED_COLUMNS(state, { id, value }) {
-    state.data.find(x => x.service.id === id).data.checkedColumnsData = value;
+    state.data.find((x) => x.service.id === id).data.checkedColumnsData = value;
   },
   SET_DATATABLE_CHECKED_COLUMNS_DATA(state, { id, value }) {
-    state.data.find(x => x.service.id === id).data.checkedColumns = value;
+    state.data.find((x) => x.service.id === id).data.checkedColumns = value;
   },
   SET_DATATABLE_FILTER_VALUES(state, { id, value }) {
-    state.data.find(x => x.service.id === id).data.filterValues = value;
+    state.data.find((x) => x.service.id === id).data.filterValues = value;
   },
   SET_DATATABLE_VISIBLE(state, isVisible) {
     state.isVisible = isVisible;
@@ -39,23 +38,20 @@ const mutations = {
   SET_DATATABLE_PAGING(state, paging) {
     state.paging = paging;
   },
-  SET_DRAW_BBOX(state, drawBBOX) {
-    state.lastBBOXOfShape = drawBBOX;
-  }
 };
 
 const getters = {
-  dataTableLoading: state => state.loading,
-  tableData: state => state.data,
-  tableActiveService: state => state.activeService,
-  activeTableData: state => {
-    const item = state.data.find(x => x.service.id === state.activeTabId);
+  dataTableLoading: (state) => state.loading,
+  tableData: (state) => state.data,
+  tableActiveService: (state) => state.activeService,
+  activeTableData: (state) => {
+    const item = state.data.find((x) => x.service.id === state.activeTabId);
     return item ? item.data : {};
   },
-  activeTableService: state => {
-    const item = state.data.find(x => x.service.id === state.activeTabId);
+  activeTableService: (state) => {
+    const item = state.data.find((x) => x.service.id === state.activeTabId);
     return item ? item.data : {};
-  }
+  },
 };
 
 const actions = {
@@ -93,13 +89,11 @@ const actions = {
   SAVE_DATATABLE_PAGING(context, payload) {
     context.commit("SET_DATATABLE_PAGING", payload);
   },
-  SAVE_DRAW_BBOX(context, payload) {
-    context.commit("SET_DRAW_BBOX", payload);
-  },
+
   RESET_DATATABLE(context) {
     context.dispatch("SAVE_DATATABLE", []);
     context.dispatch("SAVE_DATATABLE_TABS", []);
-  }
+  },
 };
 
 export default { state, mutations, actions, getters };

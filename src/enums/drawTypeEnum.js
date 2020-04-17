@@ -3,5 +3,7 @@ const drawTypeEnum = {
   SQUARE: "Square",
   BOX: "Box",
   CIRCLE: "Circle",
+  LINESTRING: "LineString",
+  POLYGON: "Polygon"
 };
 export default drawTypeEnum;

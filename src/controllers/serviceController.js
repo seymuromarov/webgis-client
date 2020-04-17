@@ -1,5 +1,6 @@
 import $store from "@/store/store.js";
 import { serviceHelper, layerHelper } from "@/helpers";
+import { serviceTypeEnum } from "@/enums";
 import { serviceZIndexSettings } from "@/config/settings";
 import { layerService, tokenService } from "@/services";
 
@@ -11,7 +12,6 @@ import {
 } from "@/controllers";
 const functions = {
   async selectService(service, isChecked) {
-    console.log("selectService -> service, isChecked", service, isChecked);
     if (!isChecked) {
       mapController.removeDrawPolygons();
     }
@@ -101,6 +101,34 @@ const functions = {
     mapController.refreshService(service);
   },
 };
+
+const events = {
+  onDraggableMoveCallback(type) {
+    switch (type) {
+      case serviceTypeEnum.DYNAMIC_LAYER:
+        var list = layerController.getDynamicLayerList();
+        list.map((item, index) => {
+          mapController.setZIndex(item);
+        });
+        layerController.setDynamicLayerList(list);
+        break;
+      case serviceTypeEnum.BASE_LAYER:
+        var list = layerController.getBaseLayerList();
+        list.map((item, index) => {
+          mapController.setZIndex(item);
+        });
+        layerController.setBaseLayerList(list);
+        break;
+      case serviceTypeEnum.BUNCH:
+        var list = bunchController.getBunchLayerList();
+        list.map((item, index) => {
+          mapController.setZIndex(item);
+        });
+        bunchController.setBunchLayerList(list);
+        break;
+    }
+  },
+};
 const setters = {};
 const getters = {
   getZIndex(service) {
@@ -143,4 +171,4 @@ const getters = {
     return result;
   },
 };
-export default { ...functions, ...getters, ...setters };
+export default { ...functions, ...getters, ...setters, ...events };

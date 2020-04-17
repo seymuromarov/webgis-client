@@ -5,8 +5,11 @@ const state = {
   isColorPick: false,
   isMarker: false,
   isRemove: false,
+  isDrawForChangeDetection: false,
+  isDrawForTable: false,
   drawType: drawTypeEnum.NONE,
   featureIdCounter: 0,
+  bbox: [],
 };
 
 const mutations = {
@@ -19,6 +22,9 @@ const mutations = {
   SET_MARKER_STATUS(state, payload) {
     state.isMarker = payload;
   },
+  SET_DRAW_FOR_CHANGE_DETECTION_STATUS(state, payload) {
+    state.isChangeDetection = payload;
+  },
   SET_REMOVE_STATUS(state, payload) {
     state.isRemove = payload;
   },
@@ -27,6 +33,9 @@ const mutations = {
   },
   SET_FEATURE_ID_COUNTER(state, payload) {
     state.featureIdCounter = payload;
+  },
+  SET_BBOX(state, payload) {
+    state.bbox = payload;
   },
 };
 
@@ -40,6 +49,9 @@ const actions = {
   saveMarkerStatus(context, payload) {
     context.commit("SET_MARKER_STATUS", payload);
   },
+  saveDrawForChangeDetectionStatus(context, payload) {
+    context.commit("SET_DRAW_FOR_CHANGE_DETECTION_STATUS", payload);
+  },
   saveRemoveStatus(context, payload) {
     context.commit("SET_REMOVE_STATUS", payload);
   },
@@ -48,6 +60,9 @@ const actions = {
   },
   saveFeatureIdCounter(context, payload) {
     context.commit("SET_FEATURE_ID_COUNTER", payload);
+  },
+  saveBbox(context, payload) {
+    context.commit("SET_BBOX", payload);
   },
 };
 
@@ -64,11 +79,17 @@ const getters = {
   isRemove: (state) => {
     return state.isRemove;
   },
+  isDrawForChangeDetection: (state) => {
+    return state.isDrawForChangeDetection;
+  },
   drawType: (state) => {
     return state.drawType;
   },
   featureIdCounter: (state) => {
     return state.featureIdCounter;
+  },
+  bbox: (state) => {
+    return state.bbox;
   },
 };
 

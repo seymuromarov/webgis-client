@@ -1,8 +1,38 @@
 import $store from "@/store/store.js";
 import { mapController } from "@/controllers";
 import { drawTypeEnum } from "@/enums";
-import { Graticule, Stroke } from "@/wrappers/openLayerImports";
+import { Graticule, Stroke, KML } from "@/wrappers/openLayerImports";
+const events = {
+  onDrawStart(evt) {
+    // let sketch = evt.feature;
+    // /** @type {module:ol/coordinate~Coordinate|undefined} */
+    // let maptooltipCoord = evt.coordinate;
+    // listener = sketch.getGeometry().on("change", function(evt) {
+    //   let geom = evt.target;
+    //   let output;
+    //   if (geom instanceof Polygon) {
+    //     output = MapHelper.formatArea(geom);
+    //     maptooltipCoord = geom.getInteriorPoint().getCoordinates();
+    //   } else if (geom instanceof LineString) {
+    //     output = MapHelper.formatLength(geom);
+    //     maptooltipCoord = geom.getLastCoordinate();
+    //   } else if (geom instanceof Circle) {
+    //     output = MapHelper.formatCircleRadius(geom);
+    //     maptooltipCoord = geom.getLastCoordinate();
+    //   }
+    //   try {
+    //     self.data.measuremaptooltipElement.innerHTML = output;
+    //     self.data.measuremaptooltip.setPosition(maptooltipCoord);
+    //   } catch (e) {
+    //     self.createMeasuremaptooltip();
+    //     self.data.measuremaptooltipElement.innerHTML = output;
+    //     self.data.measuremaptooltip.setPosition(maptooltipCoord);
+    //   }
+    // });
+  },
+};
 const functions = {
+  buildEventListener() {},
   setDrawType(type) {
     let map = mapController.getMap();
     setters.setDrawType(type);
@@ -33,17 +63,71 @@ const functions = {
     }
     return geometryFunction;
   },
+  deleteFeature() {
+    functions.setDrawType(drawTypeEnum.NONE);
+    setters.setRemoveStatus(true);
+  },
+  eyeDropper() {
+    functions.setDrawType(drawTypeEnum.NONE);
+    this.$moodal.colorPickerModal.show();
+    setters.setColorPickStatus(true);
+  },
+  resetFeatures() {
+    functions.setDrawType(drawTypeEnum.NONE);
+
+    let elements = document.getElementsByClassName("maptooltip");
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].setAttribute("style", "display:none;");
+    }
+    let source = mapController.getDrawSource();
+    mapController.setDrawSource(source.clear());
+  },
+  exportData() {
+    let source = mapController.getDrawSource();
+    mapController.setDrawSource(source.clear());
+    let features = source.getFeatures();
+    let area = new KML({
+      maxDepth: 10,
+      extractStyles: true,
+      featureProjection: "EPSG:3857",
+    }).writeFeatures(features, {
+      featureProjection: "EPSG:3857",
+    });
+    const blob = new Blob([area], { type: "text/plain" });
+    const e = document.createEvent("MouseEvents"),
+      a = document.createElement("a");
+    a.download = "shapes.kml";
+    a.href = window.URL.createObjectURL(blob);
+    a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+    e.initEvent(
+      "click",
+      true,
+      false,
+      window,
+      0,
+      0,
+      0,
+      0,
+      0,
+      false,
+      false,
+      false,
+      false,
+      0,
+      null
+    );
+    a.dispatchEvent(e);
+  },
   addInteraction(type) {
     setters.setColorPickStatus(false);
     setters.setMarkerStatus(false);
     setters.setRemoveStatus(false);
 
-    let value = type;
     let geometryFunction = functions.buildGeometryFunction();
 
     var options = {
-      source: this.data.source,
-      type,
+      source: mapController.getDrawSource(),
+      type: type,
       freehandCondition: shiftKeyOnly,
     };
     if (geometryFunction) options.geometryFunction = geometryFunction;
@@ -58,81 +142,81 @@ const functions = {
 
     mapController.setMap(map);
 
-    let listener;
-    let self = this;
-    self.data.draw.on(
-      "drawstart",
-      function(evt) {
-        self.data.sketch = evt.feature;
-        /** @type {module:ol/coordinate~Coordinate|undefined} */
-        let maptooltipCoord = evt.coordinate;
-        listener = self.data.sketch.getGeometry().on("change", function(evt) {
-          let geom = evt.target;
-          let output;
+    // let listener;
+    // let self = this;
+    // self.data.draw.on(
+    //   "drawstart",
+    //   function(evt) {
+    //     self.data.sketch = evt.feature;
+    //     /** @type {module:ol/coordinate~Coordinate|undefined} */
+    //     let maptooltipCoord = evt.coordinate;
+    //     listener = self.data.sketch.getGeometry().on("change", function(evt) {
+    //       let geom = evt.target;
+    //       let output;
 
-          if (geom instanceof Polygon) {
-            output = MapHelper.formatArea(geom);
-            maptooltipCoord = geom.getInteriorPoint().getCoordinates();
-          } else if (geom instanceof LineString) {
-            output = MapHelper.formatLength(geom);
-            maptooltipCoord = geom.getLastCoordinate();
-          } else if (geom instanceof Circle) {
-            output = MapHelper.formatCircleRadius(geom);
-            maptooltipCoord = geom.getLastCoordinate();
-          }
-          try {
-            self.data.measuremaptooltipElement.innerHTML = output;
-            self.data.measuremaptooltip.setPosition(maptooltipCoord);
-          } catch (e) {
-            self.createMeasuremaptooltip();
-            self.data.measuremaptooltipElement.innerHTML = output;
-            self.data.measuremaptooltip.setPosition(maptooltipCoord);
-          }
-        });
-      },
-      this
-    );
+    //       if (geom instanceof Polygon) {
+    //         output = MapHelper.formatArea(geom);
+    //         maptooltipCoord = geom.getInteriorPoint().getCoordinates();
+    //       } else if (geom instanceof LineString) {
+    //         output = MapHelper.formatLength(geom);
+    //         maptooltipCoord = geom.getLastCoordinate();
+    //       } else if (geom instanceof Circle) {
+    //         output = MapHelper.formatCircleRadius(geom);
+    //         maptooltipCoord = geom.getLastCoordinate();
+    //       }
+    //       try {
+    //         self.data.measuremaptooltipElement.innerHTML = output;
+    //         self.data.measuremaptooltip.setPosition(maptooltipCoord);
+    //       } catch (e) {
+    //         self.createMeasuremaptooltip();
+    //         self.data.measuremaptooltipElement.innerHTML = output;
+    //         self.data.measuremaptooltip.setPosition(maptooltipCoord);
+    //       }
+    //     });
+    //   },
+    //   this
+    // );
 
-    self.data.draw.on(
-      "drawend",
-      function(e) {
-        try {
-          self.data.measuremaptooltipElement.className =
-            "maptooltip maptooltip-static " + self.data.featureIDSet;
-          self.data.measuremaptooltip.setOffset([0, -7]);
-          let bbox = e.feature.getGeometry().getExtent();
-          store.dispatch("SAVE_DRAW_BBOX", bbox);
-        } catch (e) {
-          self.createMeasuremaptooltip();
-          self.data.measuremaptooltipElement.className =
-            "maptooltip maptooltip-static " + self.data.featureIDSet;
-          self.data.measuremaptooltip.setOffset([0, -7]);
-        }
-        self.data.sketch = null;
-        self.data.measuremaptooltipElement = null;
-        unByKey(listener);
+    // self.data.draw.on(
+    //   "drawend",
+    //   function(e) {
+    //     try {
+    //       self.data.measuremaptooltipElement.className =
+    //         "maptooltip maptooltip-static " + self.data.featureIDSet;
+    //       self.data.measuremaptooltip.setOffset([0, -7]);
+    //       let bbox = e.feature.getGeometry().getExtent();
+    //       store.dispatch("SAVE_DRAW_BBOX", bbox);
+    //     } catch (e) {
+    //       self.createMeasuremaptooltip();
+    //       self.data.measuremaptooltipElement.className =
+    //         "maptooltip maptooltip-static " + self.data.featureIDSet;
+    //       self.data.measuremaptooltip.setOffset([0, -7]);
+    //     }
+    //     self.data.sketch = null;
+    //     self.data.measuremaptooltipElement = null;
+    //     unByKey(listener);
 
-        e.feature.setProperties({
-          id: self.data.featureIDSet,
-          name: "",
-        });
-        let newStyle = new Style({
-          fill: new Fill({ color: "#00000000" }),
-          stroke: new Stroke({ color: "#C672F5", width: 2 }),
-          image: new CircleStyle({
-            radius: 7,
-            fill: new Fill({ color: "#00000000" }),
-          }),
-        });
+    //     e.feature.setProperties({
+    //       id: self.data.featureIDSet,
+    //       name: ""
+    //     });
+    //     let newStyle = new Style({
+    //       fill: new Fill({ color: "#00000000" }),
+    //       stroke: new Stroke({ color: "#C672F5", width: 2 }),
+    //       image: new CircleStyle({
+    //         radius: 7,
+    //         fill: new Fill({ color: "#00000000" })
+    //       })
+    //     });
 
-        if (self.data.typeSelect !== "Point") {
-          e.feature.setStyle(newStyle);
-        }
+    //     if (self.data.typeSelect !== "Point") {
+    //       e.feature.setStyle(newStyle);
+    //     }
 
-        self.data.featureIDSet += 10;
-      },
-      this
-    );
+    //     self.data.featureIDSet += 10;
+    //   },
+    //   this
+    // );
   },
 
   createHelpOverlay() {
@@ -223,6 +307,25 @@ const functions = {
       setters.setGraticuleVisibility(true);
     }
   },
+  addPlace() {
+    functions.setDrawType(drawTypeEnum.NONE);
+    setters.setMarkerStatus(true);
+  },
+  fullScreen() {
+    if (
+      window.innerWidth == screen.width &&
+      window.innerHeight == screen.height
+    ) {
+      document.exitFullscreen();
+    } else {
+      document.querySelector("body").requestFullscreen();
+    }
+  },
+  changeDetector() {
+    setters.setBbox([]);
+    functions.setDrawType("Box");
+    setter.setDrawForChangeDetectionStatus(true);
+  },
 };
 const getters = {
   getGraticuleVisibility() {
@@ -233,6 +336,9 @@ const getters = {
   },
   getDraw() {
     return $store.getters.draw;
+  },
+  getBbox() {
+    return $store.getters.bbox;
   },
   getColorPickStatus() {
     return $store.getters.isColorPick;
@@ -246,6 +352,9 @@ const getters = {
   getFeatureIdCounter() {
     return $store.getters.featureIdCounter;
   },
+  getDrawForChangeDetectionStatus() {
+    return$store.getters.isDrawForChangeDetection;
+  },
 };
 const setters = {
   setGraticuleVisibility(val) {
@@ -254,8 +363,14 @@ const setters = {
   setGraticuleLayer(val) {
     $store.dispatch("saveGraticule", val);
   },
+  setDrawForChangeDetectionStatus(val) {
+    $store.dispatch("saveDrawForChangeDetectionStatus", val);
+  },
   setDraw(val) {
     $store.dispatch("saveDraw", val);
+  },
+  setBbox(val) {
+    $store.dispatch("saveBbox", val);
   },
   setColorPickStatus(val) {
     $store.dispatch("saveColorPickStatus", val);

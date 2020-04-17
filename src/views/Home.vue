@@ -12,18 +12,7 @@
         <Sidebar
           :baseMaps="baseMaps"
           @getTableData="getTableData"
-          @showInfoModal="showInfoModal = true"
-          @exportData="exportData"
           @setBaseLayout="setBaseLayout"
-          @setDrawType="setDrawType"
-          @delete="deleteFeatureOn"
-          @reset="resetFeatures"
-          @pickColor="eyeDropper"
-          @changeDetector="changeDetector"
-          @addGraticule="addGraticule"
-          @addPlace="setMarkerTrue"
-          @onMoveCallbackBaseLayerList="onMoveCallbackBaseLayerList"
-          @onMoveCallbackDynamicLayerList="onMoveCallbackDynamicLayerList"
         />
       </div>
     </div>
@@ -62,7 +51,10 @@
       "
     ></detector-modal>
     <!-- Information Modal -->
-    <InfoModal :isOpen="showInfoModal" @close="showInfoModal = false" />
+    <InfoModal
+      :isOpen="isInformationModalVisible"
+      @close="isInformationModalVisible = false"
+    />
 
     <!-- Information Modal -->
     <ComputedLayersModal />
@@ -205,7 +197,7 @@ export default {
       featureIDSet: 0,
       typeSelect: null,
       draw: null,
-
+      sketch: null,
       hashResolveResult: {},
 
       tableFeaturesData: [],
@@ -241,7 +233,7 @@ export default {
             "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
         }),
       },
-      showInfoModal: false,
+      // showInfoModal: false,
       isHashLoaded: false,
       dataTable: {
         activeTab: null,
@@ -260,12 +252,12 @@ export default {
     this.toggler = new toggler(this);
     this.citySearchOptions = cities;
 
-    this.source = new VectorSource({
+    this.drawSource = new VectorSource({
       wrapX: false,
     });
 
     this.vector = new VectorLayer({
-      source: this.source,
+      source: this.drawSource,
       features: [],
     });
 
@@ -343,14 +335,14 @@ export default {
       });
 
       let modify = new Modify({
-        source: this.source,
+        source: this.drawSource,
       });
       this.mapLayer.addInteraction(modify);
       let self = this;
 
       dragAndDropInteraction.on("addfeatures", function(event) {
-        self.source.addFeatures(event.features);
-        self.mapLayer.getView().fit(self.source.getExtent());
+        this.drawSource.addFeatures(event.features);
+        self.mapLayer.getView().fit(this.drawSource.getExtent());
       });
 
       let displayFeatureInfo = function(pixel) {
@@ -423,7 +415,7 @@ export default {
               }),
             })
           );
-          self.source.addFeature(iconFeature);
+          this.drawSource.addFeature(iconFeature);
         }
         if (self.isRemove) {
           self.mapLayer.forEachFeatureAtPixel(evt.pixel, function(
@@ -431,7 +423,7 @@ export default {
             layer
           ) {
             try {
-              self.source.removeFeature(feature);
+              this.drawSource.removeFeature(feature);
               let elem = document.getElementsByClassName(feature.get("id"));
 
               elem[0].className = "hidden";
@@ -666,11 +658,11 @@ export default {
       this.$moodal.colorPickerModal.show();
       this.isColorPick = true;
     },
-    changeDetector() {
-      this.$store.state.dataTable.lastBBOXOfShape = [];
-      this.setDrawType("Box");
-      this.isDrawnShapeForDetection = true;
-    },
+    // changeDetector() {
+    //   this.$store.state.dataTable.lastBBOXOfShape = [];
+    //   this.setDrawType("Box");
+    //   this.isDrawnShapeForDetection = true;
+    // },
     deleteFeatureOn() {
       this.setDrawType("None");
       this.isRemove = true;
@@ -741,16 +733,16 @@ export default {
       this.mapHelper.addInteraction();
     },
 
-    onMoveCallbackDynamicLayerList(evt, originalEvent) {
-      this.dynamicLayerList.map((item, index) => {
-        this.setZIndex(item);
-      });
-    },
-    onMoveCallbackBaseLayerList(evt, originalEvent) {
-      this.baseLayerList.map((item, index) => {
-        this.setZIndex(item);
-      });
-    },
+    // onMoveCallbackDynamicLayerList(evt, originalEvent) {
+    //   this.dynamicLayerList.map((item, index) => {
+    //     this.setZIndex(item);
+    //   });
+    // },
+    // onMoveCallbackBaseLayerList(evt, originalEvent) {
+    //   this.baseLayerList.map((item, index) => {
+    //     this.setZIndex(item);
+    //   });
+    // },
 
     setTableData(dataArr) {
       var dataTableArr = [];
@@ -1349,11 +1341,29 @@ export default {
       var border = this.$store.state.colorPicker.border;
       return { fill, border };
     },
+    isInformationModalVisible: {
+      get() {
+        return this.$store.getters.isInformationModalVisible;
+      },
+      set(value) {
+        // this.filterQueryIsSum = false;
+        this.$store.dispatch("saveInformationModalVisibility", value);
+      },
+    },
     tableActiveService() {
       return this.$store.getters.tableActiveService;
     },
     selectedLayers() {
       return layerController.getSelectedLayers();
+    },
+    drawSource: {
+      get() {
+        return this.$store.getters.drawSource;
+      },
+      set(value) {
+        // this.filterQueryIsSum = false;
+        this.$store.dispatch("saveDrawSource", value);
+      },
     },
     mapLayer: {
       get() {
@@ -1455,7 +1465,7 @@ export default {
       return this.$store.state.colorPicker;
     },
     lastBBOXOfShape() {
-      return this.$store.state.dataTable.lastBBOXOfShape;
+      return this.$store.getters.bbox;
     },
     featuresToExcel() {
       let features = [];

@@ -35,7 +35,7 @@
     </div>
 
     <!-- User Profile -->
-    <div class="user-profile" v-show="activeMenu === 'profile'">
+    <div class="user-profile" v-show="isProfileTabActive">
       <div class="user__name">{{ userName }}</div>
       <div class="logout" @click="logout">
         <i title="Log out" class="fas fa-power-off"></i>
@@ -43,7 +43,7 @@
     </div>
 
     <!-- Layer Types -->
-    <div class="layer-types" v-show="activeMenu === 'layerTypes'">
+    <div class="layer-types" v-show="isBaseMapTypeTabActive">
       <div
         v-for="(layer, key) in baseMaps"
         :key="key"
@@ -56,7 +56,7 @@
     </div>
 
     <!-- Dynamic Layers -->
-    <div class="list layers" v-show="activeMenu === 'dynamicLayers'">
+    <div class="list layers" v-show="isDynamicLayerTabActive">
       <div class="list__header">Dynamic layers</div>
       <div class="list__tabs">
         <div
@@ -85,9 +85,13 @@
           <Draggable
             key="dynamicLayer"
             :v-bind="() => dragOptions('dynamicDragger')"
-            v-model="dynamicLayerListModel"
+            v-model="dynamicLayersList"
             @start="isDragging = true"
-            @end="$emit('onMoveCallbackDynamicLayerList', $event)"
+            @end="
+              () => {
+                onDraggableMoveCallback(serviceTypeEnum.DYNAMIC_LAYER);
+              }
+            "
           >
             <transition-group type="transition" name="flip-list">
               <LayerTree
@@ -111,7 +115,11 @@
             :v-bind="() => dragOptions('bunchDragger')"
             v-model="bunchLayerList"
             @start="isDragging = true"
-            @end="$emit('onMoveCallbackDynamicLayerList', $event)"
+            @end="
+              () => {
+                onDraggableMoveCallback(serviceTypeEnum.BUNCH);
+              }
+            "
           >
             <transition-group type="transition" name="flip-list">
               <LayerTree
@@ -135,17 +143,21 @@
     </div>
 
     <!-- Basemaps -->
-    <div class="list layers" v-show="activeMenu === 'baseMap'">
+    <div class="list layers" v-show="isBaseLayerTabActive">
       <div class="list__header">Basemaps</div>
 
       <ul class="list__content list__content--parent custom-scrollbar">
         <transition name="slide-fade">
           <Draggable
             key="baseLayers"
-            v-model="baseLayerListModel"
+            v-model="baselayerList"
             :v-bind="() => dragOptions('baseDragger')"
             @start="isDragging = true"
-            @end="$emit('onMoveCallbackBaseLayerList', $event)"
+            @end="
+              () => {
+                onDraggableMoveCallback(serviceTypeEnum.BASE_LAYER);
+              }
+            "
           >
             <transition-group type="transition" name="flip-list">
               <LayerTree
@@ -161,7 +173,7 @@
     </div>
 
     <!-- Tools -->
-    <div class="list tools" v-show="activeMenu === 'tools'">
+    <div class="list tools" v-show="isToolTabActive">
       <div class="list__header">Tools</div>
 
       <ul class="list__content list__content--parent custom-scrollbar">
@@ -185,7 +197,12 @@
 <script>
 import LayerTree from "./LayerTree";
 import Draggable from "vuedraggable";
-import { toolController } from "@/controllers";
+import {
+  toolController,
+  menuController,
+  serviceController,
+} from "@/controllers";
+import { drawTypeEnum, menuTabEnum, serviceTypeEnum } from "@/enums";
 export default {
   name: "Sidebar",
   components: {
@@ -197,6 +214,7 @@ export default {
   },
   data() {
     return {
+      serviceTypeEnum: serviceTypeEnum,
       activeMenu: "",
       activeLayerType: "gray",
       layerTypesVisible: false,
@@ -208,180 +226,35 @@ export default {
     userName() {
       return localStorage.getItem("username");
     },
+
+    isProfileTabActive() {
+      return this.activeMenuTab === menuTabEnum.PROFILE;
+    },
+    isToolTabActive() {
+      return this.activeMenuTab === menuTabEnum.TOOL;
+    },
+    isDynamicLayerTabActive() {
+      return this.activeMenuTab === menuTabEnum.DYNAMIC_LAYER;
+    },
+    isBaseLayerTabActive() {
+      return this.activeMenuTab === menuTabEnum.BASE_LAYER;
+    },
+    isBaseMapTypeTabActive() {
+      return this.activeMenuTab === menuTabEnum.BASE_MAP_TYPE;
+    },
+
+    activeMenuTab() {
+      return menuController.getActiveMenuTab();
+    },
     topMenu() {
-      return [
-        {
-          key: "profile",
-          label: "Profile",
-          image: "user.svg",
-          click: () => {
-            this.toggleActiveMenu("profile");
-          },
-        },
-        {
-          key: "tools",
-          label: "Tools",
-          image: "pencil.svg",
-          click: () => {
-            this.toggleActiveMenu("tools");
-          },
-        },
-        {
-          key: "dynamicLayers",
-          label: "Dynamic Layers",
-          image: "layer.svg",
-          click: () => {
-            this.toggleActiveMenu("dynamicLayers");
-          },
-        },
-        {
-          key: "baseMap",
-          label: "Basemaps",
-          image: "map.svg",
-          click: () => {
-            this.toggleActiveMenu("baseMap");
-          },
-        },
-      ];
+      return menuController.getTopMenu();
     },
     bottomMenu() {
-      return [
-        {
-          key: "information",
-          label: "Information",
-          image: "information.svg",
-          click: this.showInfoModal,
-        },
-        {
-          key: "layerTypes",
-          label: "Layer Types",
-          image: "hamburger.svg",
-          click: () => {
-            this.toggleActiveMenu("layerTypes");
-          },
-        },
-        {
-          key: "exportPNG",
-          label: "Export PNG",
-          image: "picture.svg",
-          click: toolController.pngExport,
-        },
-        {
-          key: "exportGeojson",
-          label: "Export GeoJSON",
-          image: "file_download.svg",
-          click: this.exportData,
-        },
-        {
-          key: "fullscreen",
-          label: "Full screen",
-          image: "fullscreen.svg",
-          click: this.fullScreen,
-        },
-      ];
+      return menuController.getBottomMenu();
     },
-    dynamicLayersList() {
-      return this.$store.getters.dynamicLayerList;
-    },
-    bunchLayerList() {
-      return this.$store.getters.bunchLayerList;
-    },
-    baselayerList() {
-      return this.$store.getters.baseLayerList;
-    },
+
     toolList() {
-      return [
-        {
-          key: "mouse",
-          label: "Mouse",
-          image: "mouse.svg",
-          click: () => {
-            this.setDrawType("None");
-          },
-        },
-        {
-          key: "addPoint",
-          label: "Add point",
-          image: "point.svg",
-          click: this.addPlace,
-        },
-        {
-          key: "rectangle",
-          label: "Rectangle",
-          image: "rectangle.svg",
-          click: () => {
-            this.setDrawType("Box");
-          },
-        },
-        {
-          key: "square",
-          label: "Square",
-          image: "square.svg",
-          click: () => {
-            this.setDrawType("Square");
-          },
-        },
-        {
-          key: "circle",
-          label: "Circle",
-          image: "circle.svg",
-          click: () => {
-            this.setDrawType("Circle");
-          },
-        },
-        {
-          key: "polygon",
-          label: "Polygon",
-          image: "polygon.svg",
-          click: () => {
-            this.setDrawType("Polygon");
-          },
-        },
-        {
-          key: "line",
-          label: "Line",
-          image: "line.svg",
-          click: () => {
-            this.setDrawType("LineString");
-          },
-        },
-        {
-          key: "addPlace",
-          label: "Add place",
-          image: "place.svg",
-          click: () => {},
-        },
-        {
-          key: "reset",
-          label: "Reset",
-          image: "reset.svg",
-          click: this.reset,
-        },
-        {
-          key: "delete",
-          label: "Delete",
-          image: "delete.svg",
-          click: this.delete,
-        },
-        {
-          key: "pickColor",
-          label: "Pick color",
-          image: "color_picker.svg",
-          click: this.pickColor,
-        },
-        {
-          key: "changeDetection",
-          label: "Change detection",
-          image: "world.svg",
-          click: this.changeDetector,
-        },
-        {
-          key: "graticule",
-          label: "Graticule",
-          image: "grid.svg",
-          click: toolController.addGraticule,
-        },
-      ];
+      return menuController.getToolList();
     },
 
     dragOptions(group) {
@@ -392,15 +265,25 @@ export default {
         ghostClass: "ghost",
       };
     },
-    dynamicLayerListModel: {
+
+    bunchLayerList: {
       get() {
-        return this.dynamicLayerList;
+        return this.$store.getters.bunchLayerList;
+      },
+      set(val) {
+        this.$store.dispatch("saveBuncLayerList", val);
+      },
+    },
+
+    dynamicLayersList: {
+      get() {
+        return this.$store.getters.dynamicLayerList;
       },
       set(val) {
         this.$store.dispatch("saveDynamicLayerList", val);
       },
     },
-    baseLayerListModel: {
+    baselayerList: {
       get() {
         return this.$store.getters.baseLayerList;
       },
@@ -415,36 +298,15 @@ export default {
       localStorage.removeItem("username");
       this.$router.push("/login");
     },
-    fullScreen() {
-      if (
-        window.innerWidth == screen.width &&
-        window.innerHeight == screen.height
-      ) {
-        document.exitFullscreen();
-      } else {
-        document.querySelector("body").requestFullscreen();
-      }
+    onDraggableMoveCallback(type) {
+      serviceController.onDraggableMoveCallback(type);
     },
-    toggleActiveMenu(menu) {
-      if (this.activeMenu === menu) {
-        this.activeMenu = "";
-      } else {
-        this.activeMenu = menu;
-      }
-    },
-
     getTableData(service, itemId, itemName, query) {
       this.$store.dispatch("SAVE_DATATABLE_ACTIVE_SERVICE", service);
       this.$store.dispatch("RESET_DATATABLE", service);
       this.$emit("getTableData", service, itemId, itemName, query);
     },
-    showInfoModal() {
-      this.$emit("showInfoModal");
-    },
 
-    exportData() {
-      this.$emit("exportData");
-    },
     setBaseLayout(key) {
       this.activeLayerType = key;
       this.$emit("setBaseLayout", key);
@@ -452,27 +314,7 @@ export default {
     saveColor(service, color) {
       this.$emit("saveColor", service, color);
     },
-    setDrawType(key) {
-      this.$emit("setDrawType", key);
-    },
-    pickColor() {
-      this.$emit("pickColor");
-    },
-    changeDetector() {
-      this.$emit("changeDetector");
-    },
-    addGraticule() {
-      this.$emit("addGraticule");
-    },
-    addPlace() {
-      this.$emit("addPlace");
-    },
-    delete() {
-      this.$emit("delete");
-    },
-    reset() {
-      this.$emit("reset");
-    },
+
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
