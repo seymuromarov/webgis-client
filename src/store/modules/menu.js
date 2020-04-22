@@ -16,6 +16,9 @@ const actions = {
   saveInformationModalVisibility(context, payload) {
     context.commit("SET_INFORMATION_MODAL_VISIBILITY", payload);
   },
+  saveActiveMenuTab(context, payload) {
+    context.commit("SET_ACTIVE_MENU_TAB", payload);
+  },
 };
 
 const getters = {

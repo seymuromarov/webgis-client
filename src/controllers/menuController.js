@@ -175,7 +175,6 @@ const getters = {
 
 const setters = {
   setActiveMenuTab(val) {
-    console.log("setActiveMenuTab -> val", val);
     if (val === getters.getActiveMenuTab()) val = "";
     $store.dispatch("saveActiveMenuTab", val);
   },

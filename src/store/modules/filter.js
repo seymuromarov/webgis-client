@@ -1,29 +1,36 @@
 const state = {
-    filterQueryIsSum: false,
-    filterQueryArithmeticColumn: '',
-}
+  isSumFilter: false,
+  sumFilterColumn: "",
+};
 
 const mutations = {
-    SET_FILTER_QUERY_IS_SUM(state, filterQueryIsSum) {
-        state.filterQueryIsSum = filterQueryIsSum;
-    },
-    SET_FILTER_QUERY_ARITHMETIC_COLUMN(state, filterQueryArithmeticColumn) {
-        state.filterQueryArithmeticColumn = filterQueryArithmeticColumn;
-    },
-}
+  SET_IS_SUM_FILTER(state, payload) {
+    state.isSumFilter = payload;
+  },
+  SET_SUM_FILTER_COLUMN(state, filterQueryArithmeticColumn) {
+    state.filterQueryArithmeticColumn = filterQueryArithmeticColumn;
+  },
+};
 
 const actions = {
-    SAVE_FILTER_QUERY_IS_SUM(context, filterQueryIsSum) {
-        context.commit("SET_FILTER_QUERY_IS_SUM", filterQueryIsSum);
-    },
-    SAVE_FILTER_QUERY_ARITHMETIC_COLUMN(context, filterQueryArithmeticColumn) {
-        context.commit("SET_FILTER_QUERY_ARITHMETIC_COLUMN", filterQueryArithmeticColumn);
-    },
-
-}
+  saveIsSumFilter(context, filterQueryIsSum) {
+    context.commit("SET_IS_SUM_FILTER", filterQueryIsSum);
+  },
+  saveSumFilterColumn(context, filterQueryArithmeticColumn) {
+    context.commit("SET_SUM_FILTER_COLUMN", filterQueryArithmeticColumn);
+  },
+};
+const getters = {
+  isSumFilter: (state) => {
+    return state.isSumFilter;
+  },
+  sumFilterColumn: (state) => {
+    return state.sumFilterColumn;
+  },
+};
 
 export default {
-    state,
-    mutations,
-    actions
-}
+  state,
+  mutations,
+  actions,
+};

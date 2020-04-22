@@ -145,6 +145,7 @@ import { toggler, mapHelper, layerHelper, serviceHelper } from "@/helpers";
 import {
   layerController,
   bunchController,
+  tableController,
   mapController,
   serviceController,
 } from "@/controllers";
@@ -836,25 +837,30 @@ export default {
       this.$store.dispatch("SAVE_DATATABLE", tableData);
       this.$store.dispatch("SAVE_DATATABLE_TABS", tabs);
     },
+
     async getTableData(service, layerId, layerName, query) {
-      var layer = this.getLayer(service.id);
+      // var layer = this.getLayer(service.id);
       let response;
-      this.dataTableVisibility = true;
-      this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
+
+      tableController.setVisible();
+      tableController.setLoading();
+      // this.dataTableVisibility = true;
+      // this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
 
       if (serviceHelper.isArcgisService(service)) {
         let params = {
           token: this.token,
           name: service.name,
-          layer: layerId,
-          ...query,
+          layer: service.id,
+          ...service.query,
         };
         response = await LayerService.getTableData(params);
       } else {
-        this.tablePaging = {
-          page: 1,
-          limit: 25,
-        };
+        let paging = tableController.getDefaultPagingOptions();
+        // this.tablePaging = {
+        //   page: 1,
+        //   limit: 25,
+        // };
 
         var isBunch = serviceHelper.isBunch(this.tableActiveService);
         if (isBunch) {
@@ -864,14 +870,14 @@ export default {
             queryParams = service.layers.map((item, index) => {
               return {
                 layerId: item.id,
-                query: { ...item.query, paging: this.tablePaging },
+                query: { ...item.query, paging: paging },
               };
             });
           } else {
             queryParams = [
               {
                 layerId: service.id,
-                query: { ...service.query, paging: this.tablePaging },
+                query: { ...service.query, paging: paging },
               },
             ];
           }
@@ -881,6 +887,7 @@ export default {
             this.tableActiveService.id,
             params
           );
+
           response.data = response.data.map((item) => {
             item.service = layerHelper.dynamicMapping(item.service);
             return item;

@@ -19,13 +19,13 @@
 </template>
 
 <script>
-import { loginService, tokenService } from "@/services";
+import { authService, tokenService } from "@/services";
 
 export default {
   mounted() {
     this.error = this.$store.getters.authError;
   },
-  data: function () {
+  data: function() {
     return {
       username: "",
       password: "",
@@ -35,8 +35,8 @@ export default {
   methods: {
     async login() {
       const { username, password } = this;
-      const response = await loginService.getToken({
-        username: username,
+      const response = await authService.login({
+        emailOrUsername: username,
         password: password,
       });
       if (response.status === 400) {
@@ -44,20 +44,17 @@ export default {
       }
       // response.data.username = username
       else {
-        // this.$store.commit('getToken', response.data)
-        // this.$cookie.set("username", username, { expires: "1D" });
+        let token = response.data.token;
         localStorage.setItem("username", username);
-        this.$store.dispatch("SAVE_AUTH_TOKEN", response.data.token);
 
         // Check admin privilege
         const isAdmin = response.data.user.distinctPermissions.find(
           (x) => x.label.toLowerCase() === "admin"
         );
-        // this.$cookie.set("isAdmin", Boolean(isAdmin), {
-        //   expires: "1D"
-        // });
+
         localStorage.setItem("isAdmin", Boolean(isAdmin));
-        tokenService.setToken(response.data.token);
+        tokenService.setToken(token);
+        this.$store.dispatch("SAVE_AUTH_TOKEN", token);
         // setToken(response.data.token);
         this.$router.push("/");
       }

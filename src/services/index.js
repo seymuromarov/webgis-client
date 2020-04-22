@@ -1,6 +1,6 @@
 import bunchService from "./bunchService";
 import layerService from "./LayerService";
 import tokenService from "./tokenService";
-import loginService from "./loginService";
+import authService from "./authService";
 
-export { bunchService, layerService, tokenService, loginService };
+export { bunchService, layerService, tokenService, authService };
