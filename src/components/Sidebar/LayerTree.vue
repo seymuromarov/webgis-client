@@ -35,11 +35,7 @@
           v-if="tableIconVisibility"
           src="@/assets/images/icons/list.svg"
           alt=""
-          @click="
-            $emit('getTableData', data, data.id, data.name, {
-              where: '1=1',
-            })
-          "
+          @click="getTableData(data)"
         />
         <img
           v-if="deleteIconVisibility"
@@ -64,7 +60,6 @@
         :data="children"
         :parent="data"
         :loop="loop + 1"
-        @getTableData="getTableData"
       />
 
       <LayerTree
@@ -73,7 +68,6 @@
         :data="layer"
         :parent="data"
         :loop="loop + 1"
-        @getTableData="getTableData"
       />
     </ul>
   </li>
@@ -87,6 +81,7 @@ import {
   bunchController,
   mapController,
   serviceController,
+  tableController,
 } from "@/controllers";
 import { bunchService } from "@/services";
 
@@ -235,9 +230,10 @@ export default {
     // dynamicLayersReset(data, status) {
     //   this.$emit("dynamicLayersReset", data, status);
     // },
-    getTableData(data, layerId, layerName, query) {
+    getTableData(data) {
       var service = serviceHelper.isSublayer(data) ? data.parent : data;
-      this.$emit("getTableData", service, layerId, layerName, query);
+      tableController.setTableActiveService(service);
+      tableController.getTableData(service);
     },
     getLayerId() {
       var id = 0;

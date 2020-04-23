@@ -1,7 +1,7 @@
 import $store from "@/store/store.js";
 import { serviceHelper, layerHelper } from "@/helpers";
 import { layerService, tokenService } from "@/services";
-import { mapController } from "@/controllers";
+import { mapController, modalController } from "@/controllers";
 const tableData = {
   get() {
     return $store.getters.tableData;
@@ -106,16 +106,19 @@ const functions = {
   async getTableData(service) {
     setters.setVisible();
     setters.setLoading(true);
-
-    let response = functions.getTableResponse();
+    modalController.showSumResultModal();
+    let response = await functions.getTableResponse(service);
+    console.log("getTableData -> response", response);
     let isSumFilter = getters.getIsSumFilter();
     let activeService = getters.getTableActiveService();
+    console.log("getTableData -> activeService", activeService);
     let isLayer = serviceHelper.isLayer(activeService);
     let isLocalService = serviceHelper.isLocalService(activeService);
 
     if (isLocalService) {
       if (isSumFilter && isLayer) {
         setters.setSumData(response.data.result);
+
         this.$moodal.arithmeticResultModal.show();
       }
 
@@ -131,8 +134,8 @@ const functions = {
     } else {
       data = response.data;
     }
+    console.log("getTableData -> data", data);
 
-    setters.setLoading(false);
     if (response.data.error !== undefined) {
       return;
     }
@@ -145,26 +148,28 @@ const functions = {
       setters.setVisible();
     }
     setters.setIsSumFilter(false);
+    setters.setLoading(false);
   },
-  getTableResponse: async () => {
+  getTableResponse: async (service) => {
     let response;
     let params = {};
     let token = tokenService.getToken();
-    let paging = tableController.getDefaultPagingOptions();
+    let paging = getters.getDefaultPagingOptions();
+    let activeService = getters.getTableActiveService();
     let isArcgisService = serviceHelper.isArcgisService(service);
 
     if (isArcgisService) {
-      let params = {
+      params = {
         token: token,
         name: service.name,
         layer: service.id,
         ...service.query,
       };
-      response = await LayerService.getTableData(params);
+      response = await layerService.getTableData(params);
     } else {
-      var isBunch = serviceHelper.isBunch(this.tableActiveService);
+      var isBunch = serviceHelper.isBunch(activeService);
       if (isBunch) {
-        var isSameService = this.tableActiveService.type === service.type;
+        var isSameService = activeService.type === service.type;
 
         var queryParams;
         if (isSameService) {
@@ -183,7 +188,7 @@ const functions = {
           ];
         }
 
-        var params = { layerQueries: queryParams };
+        params = { layerQueries: queryParams };
         response = await layerService.getIntersectLocalTableData(
           this.tableActiveService.id,
           params
@@ -194,10 +199,10 @@ const functions = {
           return item;
         });
       } else {
-        let params = {
+        params = {
           layerId: service.id,
-          ...query,
-          paging: this.tablePaging,
+          ...service.query,
+          paging: paging,
         };
 
         let isSumFilter = getters.getIsSumFilter();
@@ -247,6 +252,11 @@ const setters = {
   setTableData(val) {
     $store.dispatch("SAVE_DATATABLE", val);
   },
+  setTableActiveService(val) {
+    console.log("setTableActiveService -> val", val);
+
+    $store.dispatch("saveTableActiveService", val);
+  },
   setTableTabs(val) {
     $store.dispatch("SAVE_DATATABLE_TABS", val);
   },
@@ -258,7 +268,7 @@ const setters = {
     $store.dispatch("SAVE_DATATABLE_VISIBLE", false);
   },
   setLoading(val) {
-    $store.dispatch("SAVE_DATATABLE_LOADING", true);
+    $store.dispatch("SAVE_DATATABLE_LOADING", val);
   },
 
   setIsSumFilter(val) {

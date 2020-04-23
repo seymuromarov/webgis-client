@@ -98,7 +98,6 @@
                 v-for="(layer, index) in dynamicLayersList"
                 :key="layer.name + index"
                 :data="layer"
-                @getTableData="getTableData"
               />
             </transition-group>
           </Draggable>
@@ -126,7 +125,6 @@
                 v-for="(bunch, index) in bunchLayerList"
                 :key="bunch.name + index"
                 :data="bunch"
-                @getTableData="getTableData"
               />
             </transition-group>
           </Draggable>
@@ -164,7 +162,6 @@
                 v-for="(layer, index) in baselayerList"
                 :key="layer.name + index"
                 :data="layer"
-                @getTableData="getTableData"
               />
             </transition-group>
           </Draggable>
@@ -300,11 +297,6 @@ export default {
     },
     onDraggableMoveCallback(type) {
       serviceController.onDraggableMoveCallback(type);
-    },
-    getTableData(service, itemId, itemName, query) {
-      this.$store.dispatch("SAVE_DATATABLE_ACTIVE_SERVICE", service);
-      this.$store.dispatch("RESET_DATATABLE", service);
-      this.$emit("getTableData", service, itemId, itemName, query);
     },
 
     setBaseLayout(key) {

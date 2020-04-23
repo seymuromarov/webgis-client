@@ -1,4 +1,3 @@
-import $store from "@/store/store.js";
 import { serviceHelper, layerHelper } from "@/helpers";
 import { serviceTypeEnum } from "@/enums";
 import { serviceZIndexSettings } from "@/config/settings";

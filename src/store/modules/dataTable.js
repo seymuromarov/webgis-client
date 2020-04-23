@@ -72,7 +72,7 @@ const actions = {
   SAVE_DATATABLE_ACTIVE_TAB_ID(context, id) {
     context.commit("SET_DATATABLE_ACTIVE_TAB_ID", id);
   },
-  SAVE_DATATABLE_ACTIVE_SERVICE(context, payload) {
+  saveTableActiveService(context, payload) {
     context.commit("SET_DATATABLE_ACTIVE_SERVICE", payload);
   },
   SAVE_DATATABLE_CHECKED_COLUMNS(context, { id, value }) {

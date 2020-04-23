@@ -9,11 +9,7 @@
           :nextHistoryEvent="nextHistoryEvent"
           :previousHistoryEvent="previousHistoryEvent"
         />
-        <Sidebar
-          :baseMaps="baseMaps"
-          @getTableData="getTableData"
-          @setBaseLayout="setBaseLayout"
-        />
+        <Sidebar :baseMaps="baseMaps" @setBaseLayout="setBaseLayout" />
       </div>
     </div>
 
@@ -25,7 +21,11 @@
     />
 
     <!-- Report -->
-    <CustomModal name="arithmeticResultModal" :maxWidth="600">
+    <CustomModal
+      name="sumResultModal"
+      :maxWidth="600"
+      @onClose="sumFilterVisibility = false"
+    >
       <Report :arithmeticDataResult="ArithmeticDataResult" />
     </CustomModal>
 
@@ -148,11 +148,11 @@ import {
   tableController,
   mapController,
   serviceController,
+  modalController,
 } from "@/controllers";
 
 // Services
-import LayerService from "@/services/LayerService";
-import tileService from "@/services/tileService";
+import { layerService, tileService } from "@/services";
 import qs from "qs";
 // Styles
 import "ol/ol.css";
@@ -214,6 +214,9 @@ export default {
       historyEventsIndex: 0,
       graticule: false,
       isMetricCoordinateSystem: false,
+
+      modalIsVisible: true,
+
       baseMaps: {
         none: new XYZ({
           crossOrigin: "Anonymous",
@@ -279,7 +282,7 @@ export default {
       }),
     });
 
-    var dynamics = this.dynamicLayerList;
+    // var dynamics = this.dynamicLayerList;
     this.$nextTick(function() {
       // var vectorGetTest = new VectorTileLayer({
       //   id: 999,
@@ -293,7 +296,7 @@ export default {
       //         a: "test"
       //       };
       //       tile.setLoader(function(extent, resolution, projection) {
-      //         LayerService.postData(url, params).then(function(response) {
+      //         layerService.postData(url, params).then(function(response) {
       //           response.arrayBuffer().then(function(data) {
       //             const format = tile.getFormat(); // ol/format/MVT configured as source format
       //             const features = format.readFeatures(data, {
@@ -589,7 +592,7 @@ export default {
       this.filterValues = [];
 
       if (serviceHelper.isLocalService(service)) {
-        const getLayerColumnsDistinctData = await LayerService.getLayerColumnsDistinctData(
+        const getLayerColumnsDistinctData = await layerService.getLayerColumnsDistinctData(
           params
         );
         const result = getLayerColumnsDistinctData.data.result;
@@ -644,30 +647,30 @@ export default {
         }
       );
     },
-    addGraticule() {
-      this.mapHelper.addGraticule();
-    },
-    pngExport() {
-      this.mapHelper.pngExport();
-    },
-    setMarkerTrue() {
-      this.setDrawType("None");
-      this.isMarker = true;
-    },
-    eyeDropper() {
-      this.setDrawType("None");
-      this.$moodal.colorPickerModal.show();
-      this.isColorPick = true;
-    },
+    // addGraticule() {
+    //   this.mapHelper.addGraticule();
+    // },
+    // pngExport() {
+    //   this.mapHelper.pngExport();
+    // },
+    // setMarkerTrue() {
+    //   this.setDrawType("None");
+    //   this.isMarker = true;
+    // },
+    // eyeDropper() {
+    //   this.setDrawType("None");
+    //   this.$moodal.colorPickerModal.show();
+    //   this.isColorPick = true;
+    // },
     // changeDetector() {
     //   this.$store.state.dataTable.lastBBOXOfShape = [];
     //   this.setDrawType("Box");
     //   this.isDrawnShapeForDetection = true;
     // },
-    deleteFeatureOn() {
-      this.setDrawType("None");
-      this.isRemove = true;
-    },
+    // deleteFeatureOn() {
+    //   this.setDrawType("None");
+    //   this.isRemove = true;
+    // },
     resetFeatures() {
       this.mapHelper.resetFeatures();
     },
@@ -745,210 +748,210 @@ export default {
     //   });
     // },
 
-    setTableData(dataArr) {
-      var dataTableArr = [];
-      for (let i = 0; i < dataArr.length; i++) {
-        const item = dataArr[i];
-        let target = item.fieldAliases;
-        let tableHeadersWithAlias = item.fieldAliases;
-        let tableHeaders = Object.keys(tableHeadersWithAlias);
-        let checkedColumnsData = [];
-        let checkedColumns = [];
+    // setTableData(dataArr) {
+    //   var dataTableArr = [];
+    //   for (let i = 0; i < dataArr.length; i++) {
+    //     const item = dataArr[i];
+    //     let target = item.fieldAliases;
+    //     let tableHeadersWithAlias = item.fieldAliases;
+    //     let tableHeaders = Object.keys(tableHeadersWithAlias);
+    //     let checkedColumnsData = [];
+    //     let checkedColumns = [];
 
-        let defaultUnCheckedColumns = [
-          "OBJECTID",
-          "Shape_Length",
-          "Shape_Area",
-        ];
+    //     let defaultUnCheckedColumns = [
+    //       "OBJECTID",
+    //       "Shape_Length",
+    //       "Shape_Area",
+    //     ];
 
-        for (let alias in tableHeaders) {
-          if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
-            checkedColumnsData.push(tableHeaders[alias]);
-            checkedColumns.push(tableHeaders[alias]);
-          }
-        }
+    //     for (let alias in tableHeaders) {
+    //       if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
+    //         checkedColumnsData.push(tableHeaders[alias]);
+    //         checkedColumns.push(tableHeaders[alias]);
+    //       }
+    //     }
 
-        tableHeaders = tableHeaders.map((item, index) => {
-          let name = item;
-          for (let k in target) {
-            if (typeof target[k] !== "function") {
-              if (item === k) {
-                name = target[k];
-              }
-            }
-          }
-          return name;
-        });
+    //     tableHeaders = tableHeaders.map((item, index) => {
+    //       let name = item;
+    //       for (let k in target) {
+    //         if (typeof target[k] !== "function") {
+    //           if (item === k) {
+    //             name = target[k];
+    //           }
+    //         }
+    //       }
+    //       return name;
+    //     });
 
-        checkedColumns = checkedColumns.map((item, index) => {
-          return tableHeadersWithAlias[item];
-        });
+    //     checkedColumns = checkedColumns.map((item, index) => {
+    //       return tableHeadersWithAlias[item];
+    //     });
 
-        dataTableArr.push({
-          service: item.service,
-          data: {
-            totalCount: item.totalCount,
-            tableName: item.service.name,
-            tableHeaders: tableHeaders,
-            tableStackedHeaders: Object.keys(tableHeadersWithAlias),
-            tableHeadersWithAlias,
-            tableData: item.features,
-            filterValues: [],
-            target,
-            checkedColumnsData,
-            checkedColumns,
-          },
-          paging: {
-            isBusy: false,
-            page: 1,
-            limit: 25,
-          },
-        });
-      }
-      let tableData = this.$store.getters.tableData;
-      if (serviceHelper.isBunch(this.tableActiveService)) {
-        for (let i = 0; i < dataTableArr.length; i++) {
-          const item = dataTableArr[i];
-          let isExist = tableData.some((c) => c.service.id === item.service.id);
+    //     dataTableArr.push({
+    //       service: item.service,
+    //       data: {
+    //         totalCount: item.totalCount,
+    //         tableName: item.service.name,
+    //         tableHeaders: tableHeaders,
+    //         tableStackedHeaders: Object.keys(tableHeadersWithAlias),
+    //         tableHeadersWithAlias,
+    //         tableData: item.features,
+    //         filterValues: [],
+    //         target,
+    //         checkedColumnsData,
+    //         checkedColumns,
+    //       },
+    //       paging: {
+    //         isBusy: false,
+    //         page: 1,
+    //         limit: 25,
+    //       },
+    //     });
+    //   }
+    //   let tableData = this.$store.getters.tableData;
+    //   if (serviceHelper.isBunch(this.tableActiveService)) {
+    //     for (let i = 0; i < dataTableArr.length; i++) {
+    //       const item = dataTableArr[i];
+    //       let isExist = tableData.some((c) => c.service.id === item.service.id);
 
-          if (isExist) {
-            tableData = tableData.map((val) => {
-              const { service, data } = item;
+    //       if (isExist) {
+    //         tableData = tableData.map((val) => {
+    //           const { service, data } = item;
 
-              if (val.service.id === item.service.id) {
-                val.service = service;
-                val.data = data;
-              }
-              return val;
-            });
-          } else {
-            tableData.push(item);
-          }
-        }
-      } else {
-        tableData = dataTableArr;
-      }
-      let tabs = tableData.map((item, index) => {
-        return {
-          id: item.service.id,
-          name: item.service.name,
-        };
-      });
-      this.$store.dispatch("SAVE_DATATABLE", tableData);
-      this.$store.dispatch("SAVE_DATATABLE_TABS", tabs);
-    },
+    //           if (val.service.id === item.service.id) {
+    //             val.service = service;
+    //             val.data = data;
+    //           }
+    //           return val;
+    //         });
+    //       } else {
+    //         tableData.push(item);
+    //       }
+    //     }
+    //   } else {
+    //     tableData = dataTableArr;
+    //   }
+    //   let tabs = tableData.map((item, index) => {
+    //     return {
+    //       id: item.service.id,
+    //       name: item.service.name,
+    //     };
+    //   });
+    //   this.$store.dispatch("SAVE_DATATABLE", tableData);
+    //   this.$store.dispatch("SAVE_DATATABLE_TABS", tabs);
+    // },
 
-    async getTableData(service, layerId, layerName, query) {
-      // var layer = this.getLayer(service.id);
-      let response;
+    // async getTableData(service, layerId, layerName, query) {
+    //   // var layer = this.getLayer(service.id);
+    //   let response;
 
-      tableController.setVisible();
-      tableController.setLoading();
-      // this.dataTableVisibility = true;
-      // this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
+    //   tableController.setVisible();
+    //   tableController.setLoading();
+    //   // this.dataTableVisibility = true;
+    //   // this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
 
-      if (serviceHelper.isArcgisService(service)) {
-        let params = {
-          token: this.token,
-          name: service.name,
-          layer: service.id,
-          ...service.query,
-        };
-        response = await LayerService.getTableData(params);
-      } else {
-        let paging = tableController.getDefaultPagingOptions();
-        // this.tablePaging = {
-        //   page: 1,
-        //   limit: 25,
-        // };
+    //   if (serviceHelper.isArcgisService(service)) {
+    //     let params = {
+    //       token: this.token,
+    //       name: service.name,
+    //       layer: service.id,
+    //       ...service.query,
+    //     };
+    //     response = await layerService.getTableData(params);
+    //   } else {
+    //     let paging = tableController.getDefaultPagingOptions();
+    //     // this.tablePaging = {
+    //     //   page: 1,
+    //     //   limit: 25,
+    //     // };
 
-        var isBunch = serviceHelper.isBunch(this.tableActiveService);
-        if (isBunch) {
-          var isSameService = this.tableActiveService.type === service.type;
-          var queryParams;
-          if (isSameService) {
-            queryParams = service.layers.map((item, index) => {
-              return {
-                layerId: item.id,
-                query: { ...item.query, paging: paging },
-              };
-            });
-          } else {
-            queryParams = [
-              {
-                layerId: service.id,
-                query: { ...service.query, paging: paging },
-              },
-            ];
-          }
+    //     var isBunch = serviceHelper.isBunch(this.tableActiveService);
+    //     if (isBunch) {
+    //       var isSameService = this.tableActiveService.type === service.type;
+    //       var queryParams;
+    //       if (isSameService) {
+    //         queryParams = service.layers.map((item, index) => {
+    //           return {
+    //             layerId: item.id,
+    //             query: { ...item.query, paging: paging },
+    //           };
+    //         });
+    //       } else {
+    //         queryParams = [
+    //           {
+    //             layerId: service.id,
+    //             query: { ...service.query, paging: paging },
+    //           },
+    //         ];
+    //       }
 
-          var params = { layerQueries: queryParams };
-          response = await LayerService.getIntersectLocalTableData(
-            this.tableActiveService.id,
-            params
-          );
+    //       var params = { layerQueries: queryParams };
+    //       response = await layerService.getIntersectLocalTableData(
+    //         this.tableActiveService.id,
+    //         params
+    //       );
 
-          response.data = response.data.map((item) => {
-            item.service = layerHelper.dynamicMapping(item.service);
-            return item;
-          });
-        } else {
-          let params = {
-            layerId: service.id,
-            ...query,
-            paging: this.tablePaging,
-          };
-          if (this.filterQueryIsSum && service.resourceType === "local") {
-            params.isSum = this.filterQueryIsSum;
-            params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
-            response = await LayerService.getLocalArithmeticData(params);
-            this.ArithmeticDataResult = response.data.result;
-            this.$moodal.arithmeticResultModal.show();
-          } else {
-            response = await LayerService.getLocalTableData(params);
-          }
-        }
+    //       response.data = response.data.map((item) => {
+    //         item.service = layerHelper.dynamicMapping(item.service);
+    //         return item;
+    //       });
+    //     } else {
+    //       let params = {
+    //         layerId: service.id,
+    //         ...query,
+    //         paging: this.tablePaging,
+    //       };
+    //       if (this.filterQueryIsSum && service.resourceType === "local") {
+    //         params.isSum = this.filterQueryIsSum;
+    //         params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
+    //         response = await layerService.getLocalArithmeticData(params);
+    //         this.ArithmeticDataResult = response.data.result;
+    //         this.$moodal.arithmeticResultModal.show();
+    //       } else {
+    //         response = await layerService.getLocalTableData(params);
+    //       }
+    //     }
 
-        // if (!serviceHelper.isBunch(service)) {
-        //     if (query.where !== service.query.where) {
-        if (serviceHelper.isQueryExist(service))
-          this.refreshService(this.tableActiveService);
-      }
+    //     // if (!serviceHelper.isBunch(service)) {
+    //     //     if (query.where !== service.query.where) {
+    //     if (serviceHelper.isQueryExist(service))
+    //       this.refreshService(this.tableActiveService);
+    //   }
 
-      let data = [];
+    //   let data = [];
 
-      if (!Array.isArray(response.data)) {
-        response.data["service"] = service;
-        data = [response.data];
-      } else {
-        data = response.data;
-      }
+    //   if (!Array.isArray(response.data)) {
+    //     response.data["service"] = service;
+    //     data = [response.data];
+    //   } else {
+    //     data = response.data;
+    //   }
 
-      this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
-      if (response.data.error !== undefined) {
-        return;
-      }
+    //   this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
+    //   if (response.data.error !== undefined) {
+    //     return;
+    //   }
 
-      if (!this.filterQueryIsSum) {
-        let self = this;
-        this.tableNextRequest["service"] = service;
-        this.tableNextRequest["layerId"] = layerId;
-        this.tableNextRequest["layerName"] = layerName;
+    //   if (!this.filterQueryIsSum) {
+    //     let self = this;
+    //     this.tableNextRequest["service"] = service;
+    //     this.tableNextRequest["layerId"] = layerId;
+    //     this.tableNextRequest["layerName"] = layerName;
 
-        this.dataTableVisibility = false;
+    //     this.dataTableVisibility = false;
 
-        this.setTableData(data);
+    //     this.setTableData(data);
 
-        this.dataTableVisibility = true;
-        this.tableFeaturesData = response.data.features;
-        this.tableFeaturesHeader = response.data.tableHeaders;
-        this.stackedTableFeaturesHeader = response.data.tableHeaders;
-      }
-      this.filterQuery = "";
-      this.filterValues = [];
-      this.filterQueryIsSum = false;
-      // this.dynamicLayersReset(service, true);
-    },
+    //     this.dataTableVisibility = true;
+    //     this.tableFeaturesData = response.data.features;
+    //     this.tableFeaturesHeader = response.data.tableHeaders;
+    //     this.stackedTableFeaturesHeader = response.data.tableHeaders;
+    //   }
+    //   this.filterQuery = "";
+    //   this.filterValues = [];
+    //   this.filterQueryIsSum = false;
+    //   // this.dynamicLayersReset(service, true);
+    // },
     async getGeometryData(service, layer_id, layer_name, coords) {
       let response = null;
       let geometry = null;
@@ -962,14 +965,14 @@ export default {
             where: service.query.where,
             geometry: geometry,
           };
-          response = await LayerService.getGeometryData(params);
+          response = await layerService.getGeometryData(params);
         } else {
           var params = {
             layerId: service.id,
             where: service.query.where,
             geometry: coords[0] + "," + coords[1],
           };
-          response = await LayerService.getLocalTableData(params);
+          response = await layerService.getLocalTableData(params);
         }
 
         if (response.data.totalCount > 0) {
@@ -1247,7 +1250,7 @@ export default {
     },
     // async isLayerColorEnabled(service) {
     //   let isColorEnabled = false;
-    //   let response = await LayerService.getLayerDynamic({
+    //   let response = await layerService.getLayerDynamic({
     //     token: this.token,
     //     name: service.name,
     //   });
@@ -1287,7 +1290,7 @@ export default {
     // async getResponseDynamic(service) {
     //   let responseDynamic = null;
     //   if (serviceHelper.isDynamicFromArcgis(service)) {
-    //     responseDynamic = await LayerService.getDynamicLayers({
+    //     responseDynamic = await layerService.getDynamicLayers({
     //       token: this.token,
     //       name: service.name
     //     });
@@ -1311,18 +1314,18 @@ export default {
     //   this.dynamicLayersReset(service, isChecked);
     //   this.refreshService(service);
     // },
-    setDrawType(name) {
-      this.typeSelect = name;
-      this.mapLayer.removeInteraction(this.draw);
-      this.isColorPick = false;
-      this.isMarker = false;
-      this.isRemove = false;
-      if (name !== "None") {
-        this.addInteraction();
-      }
-      this.featureIDSet += 10;
-      document.body.style.cursor = "default";
-    },
+    // setDrawType(name) {
+    //   this.typeSelect = name;
+    //   this.mapLayer.removeInteraction(this.draw);
+    //   this.isColorPick = false;
+    //   this.isMarker = false;
+    //   this.isRemove = false;
+    //   if (name !== "None") {
+    //     this.addInteraction();
+    //   }
+    //   this.featureIDSet += 10;
+    //   document.body.style.cursor = "default";
+    // },
     //   saveColor(service, colorObj) {
     //     const { fillColor, borderColor } = colorObj;
     //     var isLayer = serviceHelper.isLayer(service);
@@ -1381,6 +1384,19 @@ export default {
         this.$store.dispatch("saveMap", value);
       },
     },
+    sumFilterVisibility: {
+      get() {
+        var status = this.$store.getters.sumResultModalVisibility;
+        console.log("get -> status", status);
+
+        if (status) this.$moodal.sumResultModal.show();
+        else this.$moodal.sumResultModal.hide();
+        return status;
+      },
+      set(value) {
+        modalController.setSumResultVisibility(value);
+      },
+    },
     dataTableVisibility: {
       get() {
         return this.$store.state.dataTable.isVisible;
@@ -1400,54 +1416,54 @@ export default {
     },
 
     // This should not work
-    tablePaging: {
-      get() {
-        return this.$store.state.dataTable.paging;
-      },
-      set(value) {
-        this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
-      },
-    },
-    selectedServiceInfo() {
-      return this.$store.state.dataTable.serviceInfo;
-    },
-    filterQueryIsSum: {
-      get() {
-        return this.$store.state.filter.filterQueryIsSum;
-      },
-      set(value) {
-        this.$store.dispatch("SAVE_FILTER_QUERY_IS_SUM", value);
-      },
-    },
+    // tablePaging: {
+    //   get() {
+    //     return this.$store.state.dataTable.paging;
+    //   },
+    //   set(value) {
+    //     this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
+    //   },
+    // },
+    // selectedServiceInfo() {
+    //   return this.$store.state.dataTable.serviceInfo;
+    // },
+    // filterQueryIsSum: {
+    //   get() {
+    //     return this.$store.state.filter.filterQueryIsSum;
+    //   },
+    //   set(value) {
+    //     this.$store.dispatch("SAVE_FILTER_QUERY_IS_SUM", value);
+    //   },
+    // },
 
-    filterQueryArithmeticColumn() {
-      return this.$store.state.filter.filterQueryArithmeticColumn;
-    },
-    dynamicLayerList: {
-      get() {
-        return this.$store.getters.dynamicLayerList;
-      },
-      set(val) {
-        this.$store.dispatch("saveDynamicLayerList", val);
-      },
-    },
+    // filterQueryArithmeticColumn() {
+    //   return this.$store.state.filter.filterQueryArithmeticColumn;
+    // },
+    // dynamicLayerList: {
+    //   get() {
+    //     return this.$store.getters.dynamicLayerList;
+    //   },
+    //   set(val) {
+    //     this.$store.dispatch("saveDynamicLayerList", val);
+    //   },
+    // },
 
-    bunchLayerList: {
-      get() {
-        return this.$store.getters.bunchLayerList;
-      },
-      set(val) {
-        this.$store.dispatch("saveBunchLayerList", val);
-      },
-    },
-    baseLayerList: {
-      get() {
-        return this.$store.getters.baseLayerList;
-      },
-      set(val) {
-        this.$store.dispatch("saveBaseLayerList", val);
-      },
-    },
+    // bunchLayerList: {
+    //   get() {
+    //     return this.$store.getters.bunchLayerList;
+    //   },
+    //   set(val) {
+    //     this.$store.dispatch("saveBunchLayerList", val);
+    //   },
+    // },
+    // baseLayerList: {
+    //   get() {
+    //     return this.$store.getters.baseLayerList;
+    //   },
+    //   set(val) {
+    //     this.$store.dispatch("saveBaseLayerList", val);
+    //   },
+    // },
 
     tableData(id) {
       return this.$store.dataTable.filter((x) => x.service.id === id);

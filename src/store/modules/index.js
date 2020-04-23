@@ -8,6 +8,7 @@ import filter from "./filter";
 import map from "./map";
 import tool from "./tool";
 import menu from "./menu";
+import modal from "./modal";
 
 export default {
   auth,
@@ -20,4 +21,5 @@ export default {
   map,
   tool,
   menu,
+  modal,
 };

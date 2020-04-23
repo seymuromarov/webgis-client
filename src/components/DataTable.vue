@@ -1,113 +1,141 @@
 <template>
-    <div v-show="isVisible" class="table-wrapper">
-        <Resizable class="resizable"
-                   ref="resizable"
-                   :active="resize.handlers"
-                   :fit-parent="resize.fit"
-                   :max-width="resize.maxW | checkEmpty"
-                   :max-height="resize.maxH | checkEmpty"
-                   :min-width="resize.minW | checkEmpty"
-                   :min-height="resize.minH | checkEmpty"
-                   :width="resize.width"
-                   :height="resize.height"
-                   :left="resize.left"
-                   :top="resize.top"
-                   @mount="resizeHandler"
-                   @resize:move="resizeHandler"
-                   @resize:start="resizeHandler"
-                   @resize:end="resizeHandler"
-                   @drag:move="resizeHandler"
-                   @drag:start="resizeHandler"
-                   @drag:end="resizeHandler">
-            <div class="tableDiv howMuchWidthHaveMap">
-                <div class="tableHeader">
-                    <div class="table__tabs">
-                        <div class="table__tab"
-                             v-for="tab in tabs"
-                             :key="tab.id"
-                             :class="{
-                'table__tab--active': tab.id == currentTabId
+  <div v-show="isVisible" class="table-wrapper">
+    <Resizable
+      class="resizable"
+      ref="resizable"
+      :active="resize.handlers"
+      :fit-parent="resize.fit"
+      :max-width="resize.maxW | checkEmpty"
+      :max-height="resize.maxH | checkEmpty"
+      :min-width="resize.minW | checkEmpty"
+      :min-height="resize.minH | checkEmpty"
+      :width="resize.width"
+      :height="resize.height"
+      :left="resize.left"
+      :top="resize.top"
+      @mount="resizeHandler"
+      @resize:move="resizeHandler"
+      @resize:start="resizeHandler"
+      @resize:end="resizeHandler"
+      @drag:move="resizeHandler"
+      @drag:start="resizeHandler"
+      @drag:end="resizeHandler"
+    >
+      <div class="tableDiv howMuchWidthHaveMap">
+        <div class="tableHeader">
+          <div class="table__tabs">
+            <div
+              class="table__tab"
+              v-for="tab in tabs"
+              :key="tab.id"
+              :class="{
+                'table__tab--active': tab.id == currentTabId,
               }"
-                             @click="setActiveTab(tab.id)">
-                            {{ tab.name }}
-                        </div>
-                    </div>
-                    <div class="table__operations">
-                        <download-excel v-if="tableHeaders"
-                                        :fetch="fetchFullData"
-                                        :fields="checkedColumnsToExcel()"
-                                        type="xls"
-                                        :name="'test' + '_report.xls'">
-                            <i title="Export As Excel"
-                               class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"></i>
-                        </download-excel>
-                        <i title="Filter"
-                           class="fas fa-filter tableFilter makeMePoint icon"
-                           @click="showFilterModal" />
-                        <i title="Show/Hide Table Columns"
-                           class="fas fa-columns tableColumns makeMePoint icon"
-                           @click="togglePopup">
-                        </i>
-                        <i title="Close"
-                           class="fas fa-times tableClose makeMePoint icon"
-                           @click="toggleIsVisible" />
-                        <div id="table-columns"
-                             class="tableShowColumns custom-scrollbar"
-                             v-show="isColumnPopupShowing">
-                            <div class="columnsDiv">
-                                <div v-for="(alias, index) in tableHeaders"
-                                     :key="index"
-                                     class="table__column">
-                                    <input @click="selectColumns(alias, index, $event)"
-                                           type="checkbox"
-                                           :id="alias"
-                                           :value="alias"
-                                           v-model="checkedColumns"
-                                           checked="checked"
-                                           class="column__checkbox" />
-                                    <label class="column__name">
-                                        {{ alias }}
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tableContent custom-scrollbar"
-                     id="dataTable"
-                     ref="dataTableContent">
-                    <!-- Loader -->
-                    <div class="loader" v-if="loading">
-                        <img src="@/assets/loading.svg" alt />
-                    </div>
-
-                    <!-- Table -->
-                    <table class="selfTable table" v-else>
-                        <thead>
-                            <tr>
-                                <th v-show="checkedColumns.includes(alias)"
-                                    v-for="(alias, index) in tableHeaders"
-                                    :key="index">
-                                    {{ alias }}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="tableBody custom-scrollbar">
-                            <tr v-for="(data, index) in activeTableData.tableData"
-                                :key="index">
-                                <td class="makeMePoint"
-                                    @click="fitToPolygon(data)"
-                                    v-show="checkedColumnsData.includes(key)"
-                                    v-for="(attr, key) in data.attributes"
-                                    :key="key">
-                                    {{ attr }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+              @click="setActiveTab(tab.id)"
+            >
+              {{ tab.name }}
             </div>
-        </Resizable>
+          </div>
+          <div class="table__operations">
+            <download-excel
+              v-if="tableHeaders"
+              :fetch="fetchFullData"
+              :fields="checkedColumnsToExcel()"
+              type="xls"
+              :name="'test' + '_report.xls'"
+            >
+              <i
+                title="Export As Excel"
+                class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
+              ></i>
+            </download-excel>
+            <i
+              title="Filter"
+              class="fas fa-filter tableFilter makeMePoint icon"
+              @click="showFilterModal"
+            />
+            <i
+              title="Show/Hide Table Columns"
+              class="fas fa-columns tableColumns makeMePoint icon"
+              @click="togglePopup"
+            >
+            </i>
+            <i
+              title="Close"
+              class="fas fa-times tableClose makeMePoint icon"
+              @click="toggleIsVisible"
+            />
+            <div
+              id="table-columns"
+              class="tableShowColumns custom-scrollbar"
+              v-show="isColumnPopupShowing"
+            >
+              <div class="columnsDiv">
+                <div
+                  v-for="(alias, index) in tableHeaders"
+                  :key="index"
+                  class="table__column"
+                >
+                  <input
+                    @click="selectColumns(alias, index, $event)"
+                    type="checkbox"
+                    :id="alias"
+                    :value="alias"
+                    v-model="checkedColumns"
+                    checked="checked"
+                    class="column__checkbox"
+                  />
+                  <label class="column__name">
+                    {{ alias }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="tableContent custom-scrollbar"
+          id="dataTable"
+          ref="dataTableContent"
+        >
+          <!-- Loader -->
+          <div class="loader" v-if="loading">
+            <img src="@/assets/loading.svg" alt />
+          </div>
+
+          <!-- Table -->
+          <table class="selfTable table" v-else>
+            <thead>
+              <tr>
+                <th
+                  v-show="checkedColumns.includes(alias)"
+                  v-for="(alias, index) in tableHeaders"
+                  :key="index"
+                >
+                  {{ alias }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="tableBody custom-scrollbar">
+              <tr
+                v-for="(data, index) in activeTableData.tableData"
+                :key="index"
+              >
+                <td
+                  class="makeMePoint"
+                  @click="fitToPolygon(data)"
+                  v-show="checkedColumnsData.includes(key)"
+                  v-for="(attr, key) in data.attributes"
+                  :key="key"
+                >
+                  {{ attr }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </Resizable>
 
     <CustomModal name="dataModal" :minWidth="200" :minHeight="200">
       <p class="tableModalHeader">{{ tableName }}</p>
@@ -136,7 +164,7 @@
 <script>
 import { toggler } from "../helpers";
 import Multiselect from "vue-multiselect";
-import LayerService from "../services/LayerService";
+import { layerService } from "@/services";
 import Resizable from "vue-resizable";
 import CustomModal from "./common/Modal";
 import { tableController } from "@/controllers";
@@ -146,7 +174,7 @@ export default {
   components: {
     Multiselect,
     Resizable,
-    CustomModal
+    CustomModal,
   },
   data() {
     return {
@@ -165,8 +193,8 @@ export default {
         minW: 150,
         minH: 200,
         fit: true,
-        event: ""
-      }
+        event: "",
+      },
     };
   },
   mounted() {
@@ -185,15 +213,15 @@ export default {
         this.resetPaging();
       },
       deep: true,
-      immediate: false
+      immediate: false,
     },
     activeTabId: {
       handler(val) {
         this.currentTabId = Number(val);
       },
       deep: true,
-      immediate: false
-    }
+      immediate: false,
+    },
   },
   methods: {
     resetScroll() {
@@ -206,7 +234,7 @@ export default {
     },
     scrollHandler() {
       const table = document.getElementById("dataTable");
-      table.addEventListener("scroll", e => {
+      table.addEventListener("scroll", (e) => {
         if (
           table.scrollTop + table.clientHeight >= table.scrollHeight &&
           !this.paging.isBusy &&
@@ -218,7 +246,7 @@ export default {
           this.isPagingBusy(true);
           this.paging = {
             ...this.paging,
-            page: page++
+            page: page++,
           };
 
           this.getDatas();
@@ -229,27 +257,27 @@ export default {
     isPagingBusy(isBusy) {
       this.paging = {
         ...this.paging,
-        isBusy
+        isBusy,
       };
     },
     async getDatas() {
       var params = {
         layerId: this.activeTableService.id,
         ...this.activeTableService.query,
-        paging: this.paging
+        paging: this.paging,
       };
-      var response = await LayerService.getLocalTableData(params);
+      var response = await layerService.getLocalTableData(params);
       var data = response.data.features;
       this.activeTableData.tableData = [
         ...this.activeTableData.tableData,
-        ...data
+        ...data,
       ];
     },
     resetPaging() {
       this.paging = {
         isBusy: false,
         page: 1,
-        limit: 25
+        limit: 25,
       };
     },
     toggleIsVisible() {
@@ -276,10 +304,10 @@ export default {
       this.toggler.showColumnsChange();
     },
     async fetchFullData() {
-      var response = await LayerService.getLocalTableData({
+      var response = await layerService.getLocalTableData({
         layerId: this.activeTableService.id,
         ...this.activeTableService.query,
-        isGeometryDataExist: false
+        isGeometryDataExist: false,
       });
       var attributes = response.data.features.map((item, index) => {
         return item.attributes;
@@ -319,10 +347,10 @@ export default {
         this.checkedColumnsData.push(tempAlias);
       } else {
         const checkedColumnsDataIndex = this.checkedColumnsData.findIndex(
-          x => x.toLowerCase() === alias.toLowerCase()
+          (x) => x.toLowerCase() === alias.toLowerCase()
         );
         const checkedColumnsIndex = this.checkedColumns.findIndex(
-          x => x.toLowerCase() === alias.toLowerCase()
+          (x) => x.toLowerCase() === alias.toLowerCase()
         );
 
         this.checkedColumnsData.splice(checkedColumnsDataIndex, 1);
@@ -357,7 +385,7 @@ export default {
     },
     setActiveTab(tab) {
       this.activeTabId = tab;
-    }
+    },
   },
   computed: {
     isVisible() {
@@ -375,7 +403,7 @@ export default {
       },
       set(value) {
         tableController.setPaging(this.currentTabId, value);
-      }
+      },
     },
     serviceInfo() {
       return this.activeTableData.serviceInfo;
@@ -392,7 +420,7 @@ export default {
       },
       set(value) {
         this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-      }
+      },
     },
     tableHeadersWithAlias() {
       return this.activeTableData.tableHeadersWithAlias;
@@ -400,7 +428,7 @@ export default {
     tableData: {
       get() {
         return this.$store.getters.tableData;
-      }
+      },
     },
     target() {
       return this.activeTableData.target;
@@ -412,9 +440,9 @@ export default {
       set(value) {
         this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", {
           id: this.currentTabId,
-          value
+          value,
         });
-      }
+      },
     },
     tabs() {
       return this.$store.state.dataTable.tabs;
@@ -426,9 +454,9 @@ export default {
       set(value) {
         this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", {
           id: this.currentTabId,
-          value
+          value,
         });
-      }
+      },
     },
     lastBBOXOfShape() {
       return this.activeTableData.lastBBOXOfShape;
@@ -439,172 +467,143 @@ export default {
       },
       set(id) {
         this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
-      }
+      },
     },
     activeTableData() {
       return this.$store.getters.activeTableData;
     },
     activeTableService() {
-      const item = this.tableData.find(x => x.service.id === this.currentTabId);
+      const item = this.tableData.find(
+        (x) => x.service.id === this.currentTabId
+      );
 
       if (item) {
         return item.service;
       } else {
         return [];
       }
-    }
+    },
   },
   filters: {
     checkEmpty(value) {
       return typeof value !== "number" ? 0 : value;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="scss">
-    .table-wrapper {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        bottom: 0;
-        top: 0;
-        display: flex;
-        align-items: flex-end;
-        pointer-events: none;
-        & > *
+.table-wrapper {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
+  & > * {
+    pointer-events: all;
+  }
+}
 
-    {
-        pointer-events: all;
+.resizable {
+  position: absolute !important;
+  .resizable-t {
+    z-index: 10 !important;
+    &:hover {
+      background-color: #2a354baa;
     }
+  }
+}
 
-    }
-
-    .resizable {
-        position: absolute !important;
-        .resizable-t
-
-    {
-        z-index: 10 !important;
-        &:hover
-
-    {
-        background-color: #2a354baa;
-    }
-
-    }
-    }
-
-    .tableDiv {
-        top: 0;
-        .tableHeader
-
-    {
-        background-color: #1b2537;
-        color: #ffffff;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        .table__tabs
-
-    {
-        display: flex;
-        .table__tab
-
-    {
+.tableDiv {
+  top: 0;
+  .tableHeader {
+    background-color: #1b2537;
+    color: #ffffff;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    .table__tabs {
+      display: flex;
+      .table__tab {
         margin: 0 10px 0 0;
         padding: 0 10px;
         font-size: 16px;
         font-weight: 500;
         opacity: 0.6;
-        &:hover
+        &:hover {
+          cursor: pointer;
+        }
 
-    {
-        cursor: pointer;
-    }
-
-    &--active {
-        opacity: 1;
-    }
-
-    }
+        &--active {
+          opacity: 1;
+        }
+      }
     }
 
     .table__operations {
-        display: flex;
-        align-items: center;
-        color: var(--primary-color);
-        & i
-
-    {
+      display: flex;
+      align-items: center;
+      color: var(--primary-color);
+      & i {
         color: var(--white);
-    }
+      }
 
-    & > *:not(:first-child) {
+      & > *:not(:first-child) {
         margin-left: 1rem;
+      }
     }
+  }
 
-    }
-    }
-
-    .tableContent {
-        background-color: var(--primary-color-lighten-100);
-        .loader
-
-    {
-        font-size: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-grow: 1;
-        left: 0;
-        bottom: 0;
-        top: 0;
-        right: 0;
-        position: absolute;
-        img
-
-    {
+  .tableContent {
+    background-color: var(--primary-color-lighten-100);
+    .loader {
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      left: 0;
+      bottom: 0;
+      top: 0;
+      right: 0;
+      position: absolute;
+      img {
         width: 60px;
+      }
     }
+  }
 
-    }
-    }
-
-    .selfTable {
-        thead
-
-    {
-        background-color: var(--primary-color-lighten-200);
-        color: var(--white);
-        th
-
-    {
+  .selfTable {
+    thead {
+      background-color: var(--primary-color-lighten-200);
+      color: var(--white);
+      th {
         font-weight: 400;
         border: 0;
-    }
-
+      }
     }
 
     tbody {
-        background: var(--primary-color-lighten-100);
-        color: #fff;
+      background: var(--primary-color-lighten-100);
+      color: #fff;
     }
 
     th,
     td {
-        font-size: 14px;
-        padding: 4px 20px;
-        text-align: left;
-        vertical-align: middle;
+      font-size: 14px;
+      padding: 4px 20px;
+      text-align: left;
+      vertical-align: middle;
     }
 
     td {
-        border-color: var(--primary-color-lighten-200);
+      border-color: var(--primary-color-lighten-200);
     }
-
-    }
-    }
+  }
+}
 </style>
