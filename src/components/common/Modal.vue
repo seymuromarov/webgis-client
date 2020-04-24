@@ -158,19 +158,14 @@ export default {
     // Show
     show() {
       this.$emit("beforeShow");
-      this.visibility = true;
+      this.visible = true;
       this.$emit("afterShow");
     },
     // Hide
     hide() {
       this.$emit("beforeHide");
-      this.visibility = false;
+      this.visible = false;
       this.$emit("afterHide");
-      this.onClose();
-    },
-
-    onClose() {
-      $emit("onClose");
     },
   },
   created() {

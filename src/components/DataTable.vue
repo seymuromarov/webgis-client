@@ -167,7 +167,7 @@ import Multiselect from "vue-multiselect";
 import { layerService } from "@/services";
 import Resizable from "vue-resizable";
 import CustomModal from "./common/Modal";
-import { tableController } from "@/controllers";
+import { tableController, modalController } from "@/controllers";
 import { serviceHelper } from "@/helpers";
 export default {
   name: "DataTable",
@@ -287,7 +287,7 @@ export default {
       this.isColumnPopupShowing = !this.isColumnPopupShowing;
     },
     showFilterModal() {
-      this.$emit("showFilterModal");
+      modalController.showFilterModalModal();
     },
     showSimpleFilterModal() {
       this.$moodal.dataModal.show();

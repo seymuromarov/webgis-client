@@ -14,7 +14,6 @@ const functions = {
       TILE_ARCGIS_REST,
       IMAGE_ARCGIS_REST,
     } = tileTypeEnum;
-    console.log("buildTileUrl -> serviceHelper", serviceHelper);
 
     switch (type) {
       case LOCAL_MVT:

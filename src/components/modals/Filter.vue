@@ -24,7 +24,7 @@
               :key="column"
               class="list__item"
               @dblclick="appendFilterQuery(alias, false)"
-              @click="$emit('filterSelectedColumn', activeTabId, alias)"
+              @click="getFilterColumnValues(alias)"
             >
               {{ alias }}
             </li>
@@ -115,14 +115,18 @@
 </template>
 
 <script>
-import { layerController, bunchController } from "@/controllers";
+import {
+  layerController,
+  bunchController,
+  tableController,
+} from "@/controllers";
 import { layerHelper, serviceHelper } from "@/helpers";
 import { Modal } from "@/components";
 
 export default {
   name: "FilterBox",
   components: {
-    Modal
+    Modal,
   },
   data() {
     return {
@@ -136,9 +140,9 @@ export default {
         "AND",
         "OR",
         "LIKE",
-        "IS NULL"
+        "IS NULL",
       ],
-      currentTabId: null
+      currentTabId: null,
     };
   },
   methods: {
@@ -170,11 +174,14 @@ export default {
     applyFilter() {
       this.$emit("filterData", this.activeService, this.activeTabQuery.trim());
       this.$moodal.filterModal.hide();
-    }
+    },
   },
   computed: {
     reportCheckboxVisibility() {
       return this.activeService && serviceHelper.isLayer(this.activeService);
+    },
+    getFilterColumnValues(alias) {
+      return filterController.getFilterColumnValues(this.activeTabId, alias);
     },
     tabs() {
       return this.$store.state.dataTable.tabs;
@@ -185,12 +192,10 @@ export default {
       },
       set(id) {
         this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
-      }
+      },
     },
     activeTab() {
-      return this.$store.state.dataTable.data.find(
-        x => x.service.id === this.activeTabId
-      );
+      return tableController.getServiceData(this.activeTabId);
     },
     activeService() {
       return this.$store.getters.tableActiveService;
@@ -240,7 +245,7 @@ export default {
             bunchController.setQuery(activeService, this.activeTabId, query);
           } else layerController.setQuery(activeService, query);
         }
-      }
+      },
     },
     tableFeaturesHeader() {
       if (this.activeTabData) {
@@ -260,7 +265,7 @@ export default {
       get() {
         const data = this.$store.getters.activeTableData;
         return data ? data.filterValues : [];
-      }
+      },
     },
     filterQueryIsSum: {
       get() {
@@ -277,7 +282,7 @@ export default {
           "SAVE_FILTER_QUERY_IS_SUM",
           filterQueryIsSum
         );
-      }
+      },
     },
     filterQueryArithmeticColumn: {
       get() {
@@ -288,13 +293,13 @@ export default {
           "SAVE_FILTER_QUERY_ARITHMETIC_COLUMN",
           filterQueryArithmeticColumn
         );
-      }
-    }
+      },
+    },
   },
   watch: {
     activeTabId(val) {
       this.currentTabId = val;
-    }
-  }
+    },
+  },
 };
 </script>

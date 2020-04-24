@@ -6,6 +6,7 @@ import serviceController from "./serviceController";
 import toolController from "./toolController";
 import menuController from "./menuController";
 import modalController from "./modalController";
+import filterController from "./filterController";
 export {
   mapController,
   layerController,
@@ -15,4 +16,5 @@ export {
   toolController,
   menuController,
   modalController,
+  filterController,
 };

@@ -14,8 +14,28 @@ import {
   ImageArcGISRest,
   TileLayer,
   XYZ,
-  TileArcGISRest
+  TileArcGISRest,
 } from "@/wrappers/openLayerImports";
+const baseMaps = {
+  none: new XYZ({
+    crossOrigin: "Anonymous",
+    url: "",
+  }),
+  satellite: new XYZ({
+    name: "sat",
+    url:
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  }),
+  street: new XYZ({
+    url:
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+  }),
+  gray: new XYZ({
+    crossOrigin: "Anonymous",
+    url:
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+  }),
+};
 
 const mapLayer = {
   get() {
@@ -23,7 +43,7 @@ const mapLayer = {
   },
   set(val) {
     $store.dispatch("saveMap", val);
-  }
+  },
 };
 
 const functions = {
@@ -80,7 +100,7 @@ const functions = {
       id: service.id,
       name: service.name,
       zoomLevelProperties: getters.getZoomLevelOptions(service),
-      type: service.type
+      type: service.type,
     };
     const isLayer = serviceHelper.isLayer(service);
 
@@ -93,11 +113,11 @@ const functions = {
             ...defaultProps,
             source: new VectorTileSource({
               format: new MVT({
-                geometryName: "geom"
+                geometryName: "geom",
               }),
-              url: tileHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT)
+              url: tileHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
             }),
-            style: colorHelper.buildVectorStyle(service.color)
+            style: colorHelper.buildVectorStyle(service.color),
           });
         } else {
           layer = new ImageLayer({
@@ -111,9 +131,9 @@ const functions = {
               params: {
                 token: token,
                 layers: layerHelper.renderArcgisSublayerConfig(service),
-                dynamicLayers: layerHelper.renderSubLayersColorString(service)
-              }
-            })
+                dynamicLayers: layerHelper.renderSubLayersColorString(service),
+              },
+            }),
           });
         }
       } else {
@@ -123,8 +143,8 @@ const functions = {
             source: new XYZ({
               url: tileHelper.buildTileUrl(service, tileTypeEnum.XYZ),
               projection: "EPSG:3857",
-              crossOrigin: "Anonymous"
-            })
+              crossOrigin: "Anonymous",
+            }),
           });
         } else {
           layer = new TileLayer({
@@ -137,9 +157,9 @@ const functions = {
               crossOrigin: "Anonymous",
               params: {
                 token: token,
-                FORMAT: "png8"
-              }
-            })
+                FORMAT: "png8",
+              },
+            }),
           });
         }
       }
@@ -148,13 +168,13 @@ const functions = {
         ...defaultProps,
         source: new VectorTileSource({
           format: new MVT({
-            geometryName: "geom"
+            geometryName: "geom",
           }),
-          url: tileHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT)
+          url: tileHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
         }),
-        style: feature => {
+        style: (feature) => {
           var featureLayerId = feature.get("layerId");
-          var layerIds = service.layers.map(item => {
+          var layerIds = service.layers.map((item) => {
             return item.id;
           });
           var index = layerIds.indexOf(featureLayerId);
@@ -162,20 +182,20 @@ const functions = {
           var color = materialColors[index];
           var colorObj = {
             border: {
-              hex8: color
+              hex8: color,
             },
             fill: {
-              hex8: "#FFFFFF00"
-            }
+              hex8: "#FFFFFF00",
+            },
           };
 
           return colorHelper.buildVectorStyle(colorObj);
-        }
+        },
       });
     }
 
     return layer;
-  }
+  },
 };
 
 const events = {};
@@ -189,12 +209,18 @@ const setters = {
   },
   setZIndex(service) {
     let map = mapLayer.get();
-    map.getLayers().forEach(layer => {
+    map.getLayers().forEach((layer) => {
       if (layer.get("id") != undefined && layer.get("id") === service.id) {
         layer.setZIndex(serviceController.calculateZIndex(service));
       }
     });
-  }
+  },
+  setBaseLayout(index) {
+    let map = mapLayer.get();
+    let layers = map.getLayers().getArray();
+    layers[0].setSource(baseMaps[index]);
+    setters.setMap(map);
+  },
 };
 
 const getters = {
@@ -216,6 +242,9 @@ const getters = {
     });
     return layer;
   },
+  getBaseMaps() {
+    return baseMaps;
+  },
   getZoomLevelOptions(service) {
     let min, max;
     if (serviceHelper.isLayer(service)) {
@@ -227,8 +256,8 @@ const getters = {
     }
     return {
       maxResolution: createXYZ().getResolution(min) * 1.01,
-      minResolution: createXYZ().getResolution(max)
+      minResolution: createXYZ().getResolution(max),
     };
-  }
+  },
 };
 export default { ...functions, ...getters, ...setters };

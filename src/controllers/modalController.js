@@ -1,16 +1,18 @@
 import $store from "@/store/store.js";
 const functions = {
   showSumResultModal() {
-    setters.setSumResultVisibility(true);
+    let moodal = getters.getMoodal();
+    moodal.sumResultModal.show();
   },
-  hideSumResultModal() {
-    setters.setSumResultVisibility(false);
+  showFilterModalModal() {
+    let moodal = getters.getMoodal();
+    moodal.filterModal.show();
   },
 };
 
 const getters = {
-  getSumResultVisibility() {
-    return $store.getters.sumResultModalVisibility;
+  getMoodal() {
+    return $store.getters.moodal;
   },
 };
 const setters = {

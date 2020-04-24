@@ -68,7 +68,7 @@ const functions = {
       });
     }
 
-    let tableData = getters.setTableData();
+    let tableData = getters.getTableData();
     let activeService = getters.getTableActiveService();
     if (serviceHelper.isBunch(activeService)) {
       for (let i = 0; i < dataTableArr.length; i++) {
@@ -100,26 +100,22 @@ const functions = {
     });
     setters.setTableData(tableData);
     setters.setTableTabs(tabs);
-    // this.$store.dispatch("SAVE_DATATABLE", tableData);
-    // this.$store.dispatch("SAVE_DATATABLE_TABS", tabs);
   },
   async getTableData(service) {
-    setters.setVisible();
-    setters.setLoading(true);
-    modalController.showSumResultModal();
+    setters.setTableVisible();
+    setters.setTableLoading(true);
+
+    alert();
     let response = await functions.getTableResponse(service);
-    console.log("getTableData -> response", response);
     let isSumFilter = getters.getIsSumFilter();
     let activeService = getters.getTableActiveService();
-    console.log("getTableData -> activeService", activeService);
     let isLayer = serviceHelper.isLayer(activeService);
     let isLocalService = serviceHelper.isLocalService(activeService);
 
     if (isLocalService) {
       if (isSumFilter && isLayer) {
         setters.setSumData(response.data.result);
-
-        this.$moodal.arithmeticResultModal.show();
+        modalController.showSumResultModal();
       }
 
       if (serviceHelper.isQueryExist(service))
@@ -134,7 +130,6 @@ const functions = {
     } else {
       data = response.data;
     }
-    console.log("getTableData -> data", data);
 
     if (response.data.error !== undefined) {
       return;
@@ -145,10 +140,10 @@ const functions = {
 
       functions.buildTableData(data);
 
-      setters.setVisible();
+      setters.setTableVisible();
     }
     setters.setIsSumFilter(false);
-    setters.setLoading(false);
+    setters.setTableLoading(false);
   },
   getTableResponse: async (service) => {
     let response;
@@ -226,8 +221,11 @@ const functions = {
 };
 
 const getters = {
-  setTableData(serviceId) {
-    let data = tableData.get();
+  getTableData() {
+    return $store.getters.tableData;
+  },
+  getServiceData(serviceId) {
+    let data = getters.getTableData();
     let result = data.find((x) => x.service.id === serviceId);
     return result;
   },
@@ -253,21 +251,19 @@ const setters = {
     $store.dispatch("SAVE_DATATABLE", val);
   },
   setTableActiveService(val) {
-    console.log("setTableActiveService -> val", val);
-
     $store.dispatch("saveTableActiveService", val);
   },
   setTableTabs(val) {
     $store.dispatch("SAVE_DATATABLE_TABS", val);
   },
-  setVisible() {
+  setTableVisible() {
     $store.dispatch("SAVE_DATATABLE_VISIBLE", true);
   },
 
   setUnvisible() {
     $store.dispatch("SAVE_DATATABLE_VISIBLE", false);
   },
-  setLoading(val) {
+  setTableLoading(val) {
     $store.dispatch("SAVE_DATATABLE_LOADING", val);
   },
 

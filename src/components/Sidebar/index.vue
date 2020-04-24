@@ -197,6 +197,7 @@ import Draggable from "vuedraggable";
 import {
   toolController,
   menuController,
+  mapController,
   serviceController,
 } from "@/controllers";
 import { drawTypeEnum, menuTabEnum, serviceTypeEnum } from "@/enums";
@@ -206,9 +207,7 @@ export default {
     LayerTree,
     Draggable,
   },
-  props: {
-    baseMaps: { type: Object },
-  },
+
   data() {
     return {
       serviceTypeEnum: serviceTypeEnum,
@@ -217,7 +216,11 @@ export default {
       layerTypesVisible: false,
       isDragging: false,
       dynamicActiveTab: "dynamicTab",
+      baseMaps: [],
     };
+  },
+  mounted() {
+    this.baseMaps = mapController.getBaseMaps();
   },
   computed: {
     userName() {
@@ -301,10 +304,7 @@ export default {
 
     setBaseLayout(key) {
       this.activeLayerType = key;
-      this.$emit("setBaseLayout", key);
-    },
-    saveColor(service, color) {
-      this.$emit("saveColor", service, color);
+      mapController.setBaseLayout(key);
     },
 
     capitalize(str) {

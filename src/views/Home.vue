@@ -9,16 +9,13 @@
           :nextHistoryEvent="nextHistoryEvent"
           :previousHistoryEvent="previousHistoryEvent"
         />
-        <Sidebar :baseMaps="baseMaps" @setBaseLayout="setBaseLayout" />
+        <!-- <Sidebar @setBaseLayout="setBaseLayout" /> -->
+        <Sidebar />
       </div>
     </div>
 
     <!-- Data table -->
-    <DataTable
-      ref="dataTable"
-      @showFilterModal="showFilterModal"
-      @mapSetCenter="mapSetCenter"
-    />
+    <DataTable ref="dataTable" @mapSetCenter="mapSetCenter" />
 
     <!-- Report -->
     <CustomModal
@@ -30,11 +27,11 @@
     </CustomModal>
 
     <!-- Filter -->
-    <FilterModal
-      :filterValues="filterValues"
+    <FilterModal @filterData="filterData" />
+    <!-- <FilterModal
       @filterSelectedColumn="filterSelectedColumn"
       @filterData="filterData"
-    />
+    /> -->
 
     <!-- Shape Color Picker -->
     <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
@@ -217,26 +214,26 @@ export default {
 
       modalIsVisible: true,
 
-      baseMaps: {
-        none: new XYZ({
-          crossOrigin: "Anonymous",
-          url: "",
-        }),
-        satellite: new XYZ({
-          name: "sat",
-          url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        }),
-        street: new XYZ({
-          url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-        }),
-        gray: new XYZ({
-          crossOrigin: "Anonymous",
-          url:
-            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-        }),
-      },
+      // baseMaps: {
+      //   none: new XYZ({
+      //     crossOrigin: "Anonymous",
+      //     url: "",
+      //   }),
+      //   satellite: new XYZ({
+      //     name: "sat",
+      //     url:
+      //       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      //   }),
+      //   street: new XYZ({
+      //     url:
+      //       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+      //   }),
+      //   gray: new XYZ({
+      //     crossOrigin: "Anonymous",
+      //     url:
+      //       "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+      //   }),
+      // },
       // showInfoModal: false,
       isHashLoaded: false,
       dataTable: {
@@ -246,6 +243,18 @@ export default {
   },
   created() {},
   mounted() {
+    let baseLayer = new TileLayer({
+      source: mapController.getBaseMaps()["gray"],
+    });
+    var debugLayer = new TileLayer({
+      source: new TileDebug({
+        projection: "EPSG:3857",
+        tileGrid: new OSM().getTileGrid(),
+      }),
+    });
+
+    this.moodal = this.$moodal;
+
     this.hashResolveResult = this.resolveHash(window.location.hash);
 
     this.token = localStorage.getItem("token");
@@ -267,54 +276,11 @@ export default {
 
     this.vector.setZIndex(9999);
 
-    var debug = new TileLayer({
-      source: new TileDebug({
-        projection: "EPSG:3857",
-        tileGrid: new OSM().getTileGrid(),
-      }),
-    });
-
-    let gray = new TileLayer({
-      source: new XYZ({
-        crossOrigin: "Anonymous",
-        url:
-          "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-      }),
-    });
-
-    // var dynamics = this.dynamicLayerList;
     this.$nextTick(function() {
-      // var vectorGetTest = new VectorTileLayer({
-      //   id: 999,
-      //   source: new VectorTileSource({
-      //     format: new MVT({
-      //       geometryName: "geom"
-      //     }),
-      //     url: URL + "/api/Tile/VectorPost",
-      //     tileLoadFunction: function(tile, url) {
-      //       var params = {
-      //         a: "test"
-      //       };
-      //       tile.setLoader(function(extent, resolution, projection) {
-      //         layerService.postData(url, params).then(function(response) {
-      //           response.arrayBuffer().then(function(data) {
-      //             const format = tile.getFormat(); // ol/format/MVT configured as source format
-      //             const features = format.readFeatures(data, {
-      //               extent: extent,
-      //               featureProjection: projection
-      //             });
-      //             tile.setFeatures(features);
-      //           });
-      //         });
-      //       });
-      //     }
-      //   })
-      // });
-
       let dragAndDropInteraction = new DragAndDrop({
         formatConstructors: [GPX, GeoJSON, IGC, KML, TopoJSON],
       });
-      this.layers = [gray, this.vector];
+      this.layers = [baseLayer, this.vector];
       let zoom =
         this.hashResolveResult !== null ? this.hashResolveResult.zoom : 8;
       let center =
@@ -588,7 +554,6 @@ export default {
       ).service;
 
       const params = { id };
-
       this.filterValues = [];
 
       if (serviceHelper.isLocalService(service)) {
@@ -730,9 +695,9 @@ export default {
       this.focusedPolygonVector = vectorLayer;
       this.mapLayer.addLayer(vectorLayer);
     },
-    showFilterModal() {
-      this.$moodal.filterModal.show();
-    },
+    // showFilterModal() {
+    //   this.$moodal.filterModal.show();
+    // },
     addInteraction() {
       this.mapHelper.addInteraction();
     },
@@ -1244,10 +1209,10 @@ export default {
     //   });
     //   return layer;
     // },
-    setBaseLayout(index) {
-      let layers = this.mapLayer.getLayers().getArray();
-      layers[0].setSource(this.baseMaps[index]);
-    },
+    // setBaseLayout(index) {
+    //   let layers = this.mapLayer.getLayers().getArray();
+    //   layers[0].setSource(this.baseMaps[index]);
+    // },
     // async isLayerColorEnabled(service) {
     //   let isColorEnabled = false;
     //   let response = await layerService.getLayerDynamic({
@@ -1346,6 +1311,14 @@ export default {
     // },
   },
   computed: {
+    moodal: {
+      get() {
+        return this.$store.getters.moodal;
+      },
+      set(value) {
+        this.$store.dispatch("saveMoodal", value);
+      },
+    },
     defaultColorObject() {
       var fill = this.$store.state.colorPicker.fill;
       var border = this.$store.state.colorPicker.border;
