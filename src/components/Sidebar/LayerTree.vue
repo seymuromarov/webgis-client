@@ -230,10 +230,10 @@ export default {
     // dynamicLayersReset(data, status) {
     //   this.$emit("dynamicLayersReset", data, status);
     // },
-    getTableData(data) {
+    async getTableData(data) {
       var service = serviceHelper.isSublayer(data) ? data.parent : data;
       tableController.setTableActiveService(service);
-      tableController.getTableData(service);
+      await tableController.getTable(service);
     },
     getLayerId() {
       var id = 0;

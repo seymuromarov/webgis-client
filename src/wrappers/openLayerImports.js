@@ -4,7 +4,7 @@ import {
   Modify,
   defaults as defaultInteractions,
   DragRotateAndZoom,
-  DragAndDrop
+  DragAndDrop,
 } from "ol/interaction";
 import TileDebug from "ol/source/TileDebug";
 import {
@@ -13,12 +13,12 @@ import {
   Fill,
   Stroke,
   Style,
-  Icon
+  Icon,
 } from "ol/style.js";
 import {
   Tile as TileLayer,
   Vector as VectorLayer,
-  Image as ImageLayer
+  Image as ImageLayer,
 } from "ol/layer.js";
 import VectorTileLayer from "ol/layer/VectorTile.js";
 import VectorTileSource from "ol/source/VectorTile.js";
@@ -28,7 +28,7 @@ import {
   OSM,
   TileArcGISRest,
   Vector as VectorSource,
-  ImageArcGISRest
+  ImageArcGISRest,
 } from "ol/source.js";
 import {
   fromLonLat,
@@ -36,14 +36,14 @@ import {
   transform,
   transformExtent,
   get as getProjection,
-  getTransform
+  getTransform,
 } from "ol/proj";
 import XYZ from "ol/source/XYZ.js";
 import { bbox as bboxStrategy } from "ol/loadingstrategy";
 import {
   ZoomSlider,
   defaults as defaultControls,
-  FullScreen
+  FullScreen,
 } from "ol/control.js";
 import MousePosition from "ol/control/MousePosition.js";
 import { createStringXY } from "ol/coordinate.js";
@@ -141,5 +141,5 @@ export {
   getArea,
   getLength,
   //""ol/Observable.js""
-  unByKey
+  unByKey,
 };

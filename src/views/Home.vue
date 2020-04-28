@@ -27,7 +27,7 @@
     </CustomModal>
 
     <!-- Filter -->
-    <FilterModal @filterData="filterData" />
+    <FilterModal />
     <!-- <FilterModal
       @filterSelectedColumn="filterSelectedColumn"
       @filterData="filterData"
@@ -60,59 +60,52 @@
 
 <script>
 // OpenLayers
-import { Map, View, Overlay, Feature } from "ol";
-import { LineString, Polygon, Circle, Point } from "ol/geom.js";
+
 import {
+  Map,
+  View,
+  Feature,
+  Polygon,
+  Circle,
+  Point,
   Modify,
-  defaults as defaultInteractions,
+  defaultInteractions,
   DragRotateAndZoom,
   DragAndDrop,
-} from "ol/interaction";
-import TileDebug from "ol/source/TileDebug";
-import {
-  Circle as CircleStyle,
-  Text,
-  Fill,
-  Stroke,
-  Style,
-  Icon,
-} from "ol/style.js";
-import {
-  Tile as TileLayer,
-  Vector as VectorLayer,
-  Image as ImageLayer,
-} from "ol/layer.js";
-import VectorTileLayer from "ol/layer/VectorTile.js";
-import VectorTileSource from "ol/source/VectorTile.js";
-import MVT from "ol/format/MVT.js";
-import { createXYZ } from "ol/tilegrid";
-import {
+  TileDebug,
+  TileLayer,
+  VectorLayer,
+  ImageLayer,
+  VectorTileLayer,
+  VectorTileSource,
+  MVT,
+  createXYZ,
   OSM,
   TileArcGISRest,
-  Vector as VectorSource,
+  VectorSource,
   ImageArcGISRest,
-} from "ol/source.js";
-import {
   fromLonLat,
   METERS_PER_UNIT,
   transform,
   transformExtent,
-  get as getProjection,
+  getProjection,
   getTransform,
-} from "ol/proj";
-import XYZ from "ol/source/XYZ.js";
-import { bbox as bboxStrategy } from "ol/loadingstrategy";
-import {
+  XYZ,
+  bboxStrategy,
   ZoomSlider,
-  defaults as defaultControls,
+  defaultControls,
   FullScreen,
-} from "ol/control.js";
-import MousePosition from "ol/control/MousePosition.js";
-import { createStringXY } from "ol/coordinate.js";
-import { GPX, GeoJSON, IGC, KML, TopoJSON } from "ol/format.js";
-import { register } from "ol/proj/proj4.js";
-import { applyTransform } from "ol/extent";
-import * as format from "ol/format";
+  MousePosition,
+  createStringXY,
+  GPX,
+  GeoJSON,
+  IGC,
+  KML,
+  TopoJSON,
+  register,
+  applyTransform,
+  format,
+} from "@/wrappers/openLayerImports";
 
 // Other dependencies
 import proj4 from "proj4";
@@ -214,27 +207,6 @@ export default {
 
       modalIsVisible: true,
 
-      // baseMaps: {
-      //   none: new XYZ({
-      //     crossOrigin: "Anonymous",
-      //     url: "",
-      //   }),
-      //   satellite: new XYZ({
-      //     name: "sat",
-      //     url:
-      //       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      //   }),
-      //   street: new XYZ({
-      //     url:
-      //       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-      //   }),
-      //   gray: new XYZ({
-      //     crossOrigin: "Anonymous",
-      //     url:
-      //       "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-      //   }),
-      // },
-      // showInfoModal: false,
       isHashLoaded: false,
       dataTable: {
         activeTab: null,
@@ -427,12 +399,8 @@ export default {
           });
         }
         if (self.dataTableVisibility) {
-          self.getGeometryData(
-            self.tableNextRequest["service"],
-            self.tableNextRequest["layerId"],
-            self.tableNextRequest["layerName"],
-            coord
-          );
+          self.getGeometryData(coord);
+          self.mapSetFocusedPolygon(evt.pixel);
         }
       });
       this.$store.dispatch("getLayers").then(() => {
@@ -589,19 +557,19 @@ export default {
         }
       }
     },
-    filterData(service, query) {
-      // this.tableNextRequest["service"],
-      this.getTableData(
-        service,
-        this.tableNextRequest["layerId"],
-        this.tableNextRequest["layerName"],
-        query == "" ? {} : { where: query }
-      );
-    },
-    addValueToQuery(value) {
-      if (typeof value == "string") value = "'" + value + "'";
-      this.filterQuery += value + " ";
-    },
+    // filterData(service, query) {
+    //   // this.tableNextRequest["service"],
+    //   this.getTableData(
+    //     service,
+    //     this.tableNextRequest["layerId"],
+    //     this.tableNextRequest["layerName"],
+    //     query == "" ? {} : { where: query }
+    //   );
+    // },
+    // addValueToQuery(value) {
+    //   if (typeof value == "string") value = "'" + value + "'";
+    //   this.filterQuery += value + " ";
+    // },
     dragAndDropToast() {
       let toast = this.$toasted.show(
         "Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map",
@@ -636,21 +604,21 @@ export default {
     //   this.setDrawType("None");
     //   this.isRemove = true;
     // },
-    resetFeatures() {
-      this.mapHelper.resetFeatures();
-    },
-    selectColumns(alias, key, e) {
-      if (e.target.checked) {
-        this.checkedColumnsData.push(this.stackedTableFeaturesHeader[key]);
-      } else {
-        this.checkedColumnsData = this.checkedColumnsData.filter(
-          (data) => data != alias
-        );
-      }
-    },
-    showColumnsChange() {
-      this.toggler.showColumnsChange();
-    },
+    // resetFeatures() {
+    //   this.mapHelper.resetFeatures();
+    // },
+    // selectColumns(alias, key, e) {
+    //   if (e.target.checked) {
+    //     this.checkedColumnsData.push(this.stackedTableFeaturesHeader[key]);
+    //   } else {
+    //     this.checkedColumnsData = this.checkedColumnsData.filter(
+    //       (data) => data != alias
+    //     );
+    //   }
+    // },
+    // showColumnsChange() {
+    //   this.toggler.showColumnsChange();
+    // },
     resolveHash(hash) {
       var result = null;
       if (hash !== "") {
@@ -681,26 +649,38 @@ export default {
           size: [50, 100],
           maxZoom: 16,
         });
-        var vectorLayer = this.mapHelper.renderPolygonVector(geometry);
-        this.mapSetFocusedPolygon(vectorLayer);
+        // var vectorLayer = this.mapHelper.renderPolygonVector(geometry);
+        // this.mapSetFocusedPolygon(vectorLayer);
       }
     },
 
-    mapSetFocusedPolygon(vectorLayer) {
-      //if last vector exist
-      if (this.focusedPolygonVector != null)
-        //reset
-        this.mapLayer.removeLayer(this.focusedPolygonVector);
-      //set new vector
-      this.focusedPolygonVector = vectorLayer;
-      this.mapLayer.addLayer(vectorLayer);
+    mapSetFocusedPolygon(pixel) {
+      console.log("mapSetFocusedPolygon -> pixel", pixel);
+      let activeService = this.tableActiveService;
+      let layer = mapController.getLayer(activeService.id);
+      console.log("mapSetFocusedPolygon -> layer", layer);
+      console.log(
+        "mapSetFocusedPolygon -> layer.getSource()",
+        layer.getFeatures()
+      );
+      // layer.getFeatures();
+      // layer.getFeatures(pixel).then(function(features) {
+      //   console.log("mapSetFocusedPolygon -> features", features);
+      // });
+      // //if last vector exist
+      // if (this.focusedPolygonVector != null)
+      //   //reset
+      //   this.mapLayer.removeLayer(this.focusedPolygonVector);
+      // //set new vector
+      // this.focusedPolygonVector = vectorLayer;
+      // this.mapLayer.addLayer(vectorLayer);
     },
     // showFilterModal() {
     //   this.$moodal.filterModal.show();
     // },
-    addInteraction() {
-      this.mapHelper.addInteraction();
-    },
+    // addInteraction() {
+    //   this.mapHelper.addInteraction();
+    // },
 
     // onMoveCallbackDynamicLayerList(evt, originalEvent) {
     //   this.dynamicLayerList.map((item, index) => {
@@ -917,16 +897,17 @@ export default {
     //   this.filterQueryIsSum = false;
     //   // this.dynamicLayersReset(service, true);
     // },
-    async getGeometryData(service, layer_id, layer_name, coords) {
+    async getGeometryData(coords) {
       let response = null;
       let geometry = null;
+      let service = this.tableActiveService;
       if (serviceHelper.isLayer(service)) {
         if (serviceHelper.isDynamicFromArcgis(service)) {
           geometry = coords[0] + "," + coords[1];
           var params = {
             token: this.token,
             name: service.name,
-            layer: layer_id,
+            layer: service.name,
             where: service.query.where,
             geometry: geometry,
           };

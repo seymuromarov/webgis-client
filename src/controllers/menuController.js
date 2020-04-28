@@ -1,6 +1,6 @@
 import $store from "@/store/store.js";
 import { toolController } from "@/controllers";
-import { menuTabEnum } from "@/enums";
+import { menuTabEnum, drawTypeEnum } from "@/enums";
 const getters = {
   getToolList() {
     return [

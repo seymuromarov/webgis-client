@@ -111,8 +111,10 @@ const functions = {
         if (serviceHelper.isLocalService(service)) {
           layer = new VectorTileLayer({
             ...defaultProps,
+            declutter: true,
             source: new VectorTileSource({
               format: new MVT({
+                idProperty: "iso_a3",
                 geometryName: "geom",
               }),
               url: tileHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
@@ -193,7 +195,11 @@ const functions = {
         },
       });
     }
-
+    console.log(new VectorTileLayer().getFeatures([732, 290]));
+    // console.log("buildLayer -> layer", layer);
+    layer.getFeatures([732, 290]).then(function(features) {
+      console.log("buildLayer -> features", features);
+    });
     return layer;
   },
 };
@@ -204,7 +210,7 @@ const setters = {
   setMap(val) {
     $store.dispatch("saveMap", val);
   },
-  setDrawSource() {
+  setDrawSource(val) {
     $store.dispatch("saveDrawSource", val);
   },
   setZIndex(service) {

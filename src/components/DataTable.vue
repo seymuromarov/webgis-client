@@ -244,6 +244,7 @@ export default {
           var page = this.paging.page;
           page += 1;
           this.isPagingBusy(true);
+          tableController.setTableLoading(true);
           this.paging = {
             ...this.paging,
             page: page++,
@@ -251,6 +252,7 @@ export default {
 
           this.getDatas();
           this.isPagingBusy(false);
+          tableController.setTableLoading(false);
         }
       });
     },
@@ -355,14 +357,6 @@ export default {
 
         this.checkedColumnsData.splice(checkedColumnsDataIndex, 1);
         this.checkedColumns.splice(checkedColumnsIndex, 1);
-
-        // this.checkedColumnsData = this.checkedColumnsData.filter(
-        //     data => data.toLowerCase() !== alias.toLowerCase()
-        // );
-
-        // this.checkedColumns = this.checkedColumns.filter(
-        //     data => data.toLowerCase() !== alias.toLowerCase()
-        // );
       }
     },
     resizeHandler(data) {
@@ -399,7 +393,9 @@ export default {
     },
     paging: {
       get() {
-        return tableController.getData(this.currentTabId).paging;
+        var data = tableController.getServiceData(this.currentTabId);
+        var paging = data.paging;
+        return paging;
       },
       set(value) {
         tableController.setPaging(this.currentTabId, value);

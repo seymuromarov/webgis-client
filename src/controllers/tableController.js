@@ -60,11 +60,7 @@ const functions = {
           checkedColumnsData,
           checkedColumns,
         },
-        paging: {
-          isBusy: false,
-          page: 1,
-          limit: 25,
-        },
+        paging: getters.getDefaultPagingOptions(),
       });
     }
 
@@ -101,11 +97,11 @@ const functions = {
     setters.setTableData(tableData);
     setters.setTableTabs(tabs);
   },
-  async getTableData(service) {
+
+  getTable: async (service) => {
     setters.setTableVisible();
     setters.setTableLoading(true);
 
-    alert();
     let response = await functions.getTableResponse(service);
     let isSumFilter = getters.getIsSumFilter();
     let activeService = getters.getTableActiveService();
@@ -236,6 +232,7 @@ const getters = {
     return {
       page: 1,
       limit: 25,
+      isBusy: false,
     };
   },
   getIsSumFilter() {

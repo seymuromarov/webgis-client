@@ -1,7 +1,29 @@
 import $store from "@/store/store.js";
 import { mapController } from "@/controllers";
 import { drawTypeEnum } from "@/enums";
-import { Graticule, Stroke, KML } from "@/wrappers/openLayerImports";
+import {
+  Graticule,
+  Stroke,
+  KML,
+  shiftKeyOnly,
+  Draw,
+  createRegularPolygon,
+  createBox,
+  Feature,
+  VectorLayer,
+  VectorSource,
+  getArea,
+  getLength,
+  LineString,
+  Polygon,
+  Circle,
+  unByKey,
+  Style,
+  CircleStyle,
+  Overlay,
+  Fill,
+} from "@/wrappers/openLayerImports";
+
 const events = {
   onDrawStart(evt) {
     // let sketch = evt.feature;
@@ -47,6 +69,7 @@ const functions = {
     document.body.style.cursor = "default";
   },
   buildGeometryFunction(type) {
+    console.log("buildGeometryFunction -> type", type);
     let geometryFunction = null;
     if (type !== drawTypeEnum.NONE) {
       switch (type) {
@@ -61,6 +84,7 @@ const functions = {
           break;
       }
     }
+    console.log("buildGeometryFunction -> geometryFunction", geometryFunction);
     return geometryFunction;
   },
   deleteFeature() {
@@ -119,11 +143,12 @@ const functions = {
     a.dispatchEvent(e);
   },
   addInteraction(type) {
+    console.log("addInteraction -> type", type);
     setters.setColorPickStatus(false);
     setters.setMarkerStatus(false);
     setters.setRemoveStatus(false);
 
-    let geometryFunction = functions.buildGeometryFunction();
+    let geometryFunction = functions.buildGeometryFunction(type);
 
     var options = {
       source: mapController.getDrawSource(),
@@ -131,6 +156,7 @@ const functions = {
       freehandCondition: shiftKeyOnly,
     };
     if (geometryFunction) options.geometryFunction = geometryFunction;
+    console.log("addInteraction -> options", options);
 
     let draw = new Draw(options);
 
@@ -142,40 +168,40 @@ const functions = {
 
     mapController.setMap(map);
 
-    // let listener;
-    // let self = this;
-    // self.data.draw.on(
-    //   "drawstart",
-    //   function(evt) {
-    //     self.data.sketch = evt.feature;
-    //     /** @type {module:ol/coordinate~Coordinate|undefined} */
-    //     let maptooltipCoord = evt.coordinate;
-    //     listener = self.data.sketch.getGeometry().on("change", function(evt) {
-    //       let geom = evt.target;
-    //       let output;
+    let listener;
+    let self = this;
+    draw.on(
+      "drawstart",
+      function(evt) {
+        self.data.sketch = evt.feature;
+        /** @type {module:ol/coordinate~Coordinate|undefined} */
+        let maptooltipCoord = evt.coordinate;
+        listener = self.data.sketch.getGeometry().on("change", function(evt) {
+          let geom = evt.target;
+          let output;
 
-    //       if (geom instanceof Polygon) {
-    //         output = MapHelper.formatArea(geom);
-    //         maptooltipCoord = geom.getInteriorPoint().getCoordinates();
-    //       } else if (geom instanceof LineString) {
-    //         output = MapHelper.formatLength(geom);
-    //         maptooltipCoord = geom.getLastCoordinate();
-    //       } else if (geom instanceof Circle) {
-    //         output = MapHelper.formatCircleRadius(geom);
-    //         maptooltipCoord = geom.getLastCoordinate();
-    //       }
-    //       try {
-    //         self.data.measuremaptooltipElement.innerHTML = output;
-    //         self.data.measuremaptooltip.setPosition(maptooltipCoord);
-    //       } catch (e) {
-    //         self.createMeasuremaptooltip();
-    //         self.data.measuremaptooltipElement.innerHTML = output;
-    //         self.data.measuremaptooltip.setPosition(maptooltipCoord);
-    //       }
-    //     });
-    //   },
-    //   this
-    // );
+          if (geom instanceof Polygon) {
+            output = MapHelper.formatArea(geom);
+            maptooltipCoord = geom.getInteriorPoint().getCoordinates();
+          } else if (geom instanceof LineString) {
+            output = MapHelper.formatLength(geom);
+            maptooltipCoord = geom.getLastCoordinate();
+          } else if (geom instanceof Circle) {
+            output = MapHelper.formatCircleRadius(geom);
+            maptooltipCoord = geom.getLastCoordinate();
+          }
+          try {
+            self.data.measuremaptooltipElement.innerHTML = output;
+            self.data.measuremaptooltip.setPosition(maptooltipCoord);
+          } catch (e) {
+            self.createMeasuremaptooltip();
+            self.data.measuremaptooltipElement.innerHTML = output;
+            self.data.measuremaptooltip.setPosition(maptooltipCoord);
+          }
+        });
+      },
+      this
+    );
 
     // self.data.draw.on(
     //   "drawend",
@@ -323,8 +349,8 @@ const functions = {
   },
   changeDetector() {
     setters.setBbox([]);
-    functions.setDrawType("Box");
-    setter.setDrawForChangeDetectionStatus(true);
+    functions.setDrawType(drawTypeEnum.BOX);
+    setters.setDrawForChangeDetectionStatus(true);
   },
 };
 const getters = {
@@ -385,7 +411,7 @@ const setters = {
     $store.dispatch("saveDrawType", val);
   },
   setFeatureIdCounter(val) {
-    $store.dispatch("featureIdCounter", val);
+    $store.dispatch("saveFeatureIdCounter", val);
   },
   addFeatureIdCounter(val) {
     val += getters.getFeatureIdCounter();

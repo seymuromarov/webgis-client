@@ -119,6 +119,7 @@ import {
   layerController,
   bunchController,
   tableController,
+  filterController,
 } from "@/controllers";
 import { layerHelper, serviceHelper } from "@/helpers";
 import { Modal } from "@/components";
@@ -142,6 +143,7 @@ export default {
         "LIKE",
         "IS NULL",
       ],
+      filterValues: [],
       currentTabId: null,
     };
   },
@@ -172,17 +174,22 @@ export default {
       this.activeTabId = tab;
     },
     applyFilter() {
-      this.$emit("filterData", this.activeService, this.activeTabQuery.trim());
+      tableController.getTable(this.activeService);
+      // this.$emit("filterData", , this.activeTabQuery.trim());
       this.$moodal.filterModal.hide();
+    },
+    async getFilterColumnValues(val) {
+      this.filterValues = await filterController.getFilterColumnValues(
+        this.activeTabId,
+        val
+      );
     },
   },
   computed: {
     reportCheckboxVisibility() {
       return this.activeService && serviceHelper.isLayer(this.activeService);
     },
-    getFilterColumnValues(alias) {
-      return filterController.getFilterColumnValues(this.activeTabId, alias);
-    },
+
     tabs() {
       return this.$store.state.dataTable.tabs;
     },
@@ -261,12 +268,12 @@ export default {
         return {};
       }
     },
-    filterValues: {
-      get() {
-        const data = this.$store.getters.activeTableData;
-        return data ? data.filterValues : [];
-      },
-    },
+    // filterValues: {
+    //   get() {
+    //     const data = this.$store.getters.activeTableData;
+    //     return data ? data.filterValues : [];
+    //   },
+    // },
     filterQueryIsSum: {
       get() {
         return this.$store.state.filter.filterQueryIsSum;
