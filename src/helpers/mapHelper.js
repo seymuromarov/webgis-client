@@ -1,6 +1,6 @@
 import { KML } from "ol/format.js";
 import Stroke from "ol/style/Stroke";
-import Graticule from "ol/Graticule";
+// import Graticule from "ol/Graticule";
 import { shiftKeyOnly } from "ol/events/condition";
 import Draw, { createRegularPolygon, createBox } from "ol/interaction/Draw.js";
 import { Overlay, Feature } from "ol";

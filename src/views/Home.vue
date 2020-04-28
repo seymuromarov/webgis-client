@@ -69,6 +69,9 @@ import {
   Circle,
   Point,
   Modify,
+  Style,
+  Stroke,
+  Fill,
   defaultInteractions,
   DragRotateAndZoom,
   DragAndDrop,
@@ -211,6 +214,18 @@ export default {
       dataTable: {
         activeTab: null,
       },
+
+      selectionId: 0,
+
+      selectedLayerStyle: new Style({
+        stroke: new Stroke({
+          color: "rgba(200,20,20,0.8)",
+          width: 2,
+        }),
+        fill: new Fill({
+          color: "rgba(200,20,20,0.4)",
+        }),
+      }),
     };
   },
   created() {},
@@ -400,7 +415,8 @@ export default {
         }
         if (self.dataTableVisibility) {
           self.getGeometryData(coord);
-          self.mapSetFocusedPolygon(evt.pixel);
+          mapController.focusToServicePolygon(evt.pixel);
+          // self.mapSetFocusedPolygon(evt.pixel);
         }
       });
       this.$store.dispatch("getLayers").then(() => {
@@ -438,14 +454,7 @@ export default {
         this.historyUpdate = true;
       }
     },
-    // objectToQueryString(obj) {
-    //   var str = [];
-    //   for (var p in obj)
-    //     if (obj.hasOwnProperty(p)) {
-    //       str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-    //     }
-    //   return "?" + str.join("&");
-    // },
+
     setHashSelectedServices() {
       if (this.hashResolveResult !== null) {
         var serviceIds = this.hashResolveResult.selectedLayers;
@@ -479,84 +488,84 @@ export default {
         selectedLayerIds;
       window.history.pushState(state, "map", hash);
     },
-    changeLocation() {
-      this.mapLayer
-        .getView()
-        .setCenter(
-          fromLonLat([parseFloat(this.longChange), parseFloat(this.latChange)])
-        );
-    },
-    LatLongFormToggle() {
-      let loc = document.getElementById("mouse-position").innerHTML;
-      loc = loc.split(":").map((item) => item.trim());
-      let long = loc[2];
-      let lat = loc[1].split(",").map((item) => item.trim());
-      lat = lat[0];
-      this.longChange = long;
-      this.latChange = lat;
-      this.toggler.setLatLongShowForm();
-    },
+    // changeLocation() {
+    //   this.mapLayer
+    //     .getView()
+    //     .setCenter(
+    //       fromLonLat([parseFloat(this.longChange), parseFloat(this.latChange)])
+    //     );
+    // },
+    // LatLongFormToggle() {
+    //   let loc = document.getElementById("mouse-position").innerHTML;
+    //   loc = loc.split(":").map((item) => item.trim());
+    //   let long = loc[2];
+    //   let lat = loc[1].split(",").map((item) => item.trim());
+    //   lat = lat[0];
+    //   this.longChange = long;
+    //   this.latChange = lat;
+    //   this.toggler.setLatLongShowForm();
+    // },
     setShapeColor() {
       document.body.style.cursor = "crosshair";
       this.$moodal.colorPickerModal.hide();
     },
-    cityInputToggle() {
-      this.toggler.cityInputToggle(this);
-    },
-    onCitySelect(city) {
-      this.mapLayer
-        .getView()
-        .setCenter(fromLonLat([parseFloat(city.lng), parseFloat(city.lat)]));
-      this.mapLayer.getView().setZoom(11);
-      this.citySearchInputShow = false;
-    },
+    // cityInputToggle() {
+    //   this.toggler.cityInputToggle(this);
+    // },
+    // onCitySelect(city) {
+    //   this.mapLayer
+    //     .getView()
+    //     .setCenter(fromLonLat([parseFloat(city.lng), parseFloat(city.lat)]));
+    //   this.mapLayer.getView().setZoom(11);
+    //   this.citySearchInputShow = false;
+    // },
     // nameWithCountry({ city, country }) {
     //   return `${city} , ${country}`;
     // },
-    exportData() {
-      this.mapHelper.exportData(this);
-    },
-    async filterSelectedColumn(id, column) {
-      const service = this.$store.getters.tableData.find(
-        (x) => x.service.id === id
-      ).service;
+    // exportData() {
+    //   this.mapHelper.exportData(this);
+    // },
+    // async filterSelectedColumn(id, column) {
+    //   const service = this.$store.getters.tableData.find(
+    //     (x) => x.service.id === id
+    //   ).service;
 
-      const params = { id };
-      this.filterValues = [];
+    //   const params = { id };
+    //   this.filterValues = [];
 
-      if (serviceHelper.isLocalService(service)) {
-        const getLayerColumnsDistinctData = await layerService.getLayerColumnsDistinctData(
-          params
-        );
-        const result = getLayerColumnsDistinctData.data.result;
+    //   if (serviceHelper.isLocalService(service)) {
+    //     const getLayerColumnsDistinctData = await layerService.getLayerColumnsDistinctData(
+    //       params
+    //     );
+    //     const result = getLayerColumnsDistinctData.data.result;
 
-        this.filterValues =
-          result[
-            Object.keys(result).find(
-              (key) => key.toLowerCase() === column.toLowerCase()
-            )
-          ];
-      } else {
-        const keys = Object.keys(this.tableHeadersWithAlias);
-        for (let i = 0; i < keys.length; i++) {
-          if (this.tableHeadersWithAlias[keys[i]] === column) {
-            column = keys[i];
-            break;
-          }
-        }
-        for (let i = 0; i < this.tableFeaturesData.length; i++) {
-          if (
-            !this.filterValues.includes(
-              this.tableFeaturesData[i].attributes[column]
-            )
-          ) {
-            this.filterValues.push(
-              this.tableFeaturesData[i].attributes[column]
-            );
-          }
-        }
-      }
-    },
+    //     this.filterValues =
+    //       result[
+    //         Object.keys(result).find(
+    //           (key) => key.toLowerCase() === column.toLowerCase()
+    //         )
+    //       ];
+    //   } else {
+    //     const keys = Object.keys(this.tableHeadersWithAlias);
+    //     for (let i = 0; i < keys.length; i++) {
+    //       if (this.tableHeadersWithAlias[keys[i]] === column) {
+    //         column = keys[i];
+    //         break;
+    //       }
+    //     }
+    //     for (let i = 0; i < this.tableFeaturesData.length; i++) {
+    //       if (
+    //         !this.filterValues.includes(
+    //           this.tableFeaturesData[i].attributes[column]
+    //         )
+    //       ) {
+    //         this.filterValues.push(
+    //           this.tableFeaturesData[i].attributes[column]
+    //         );
+    //       }
+    //     }
+    //   }
+    // },
     // filterData(service, query) {
     //   // this.tableNextRequest["service"],
     //   this.getTableData(
@@ -649,32 +658,36 @@ export default {
           size: [50, 100],
           maxZoom: 16,
         });
-        // var vectorLayer = this.mapHelper.renderPolygonVector(geometry);
-        // this.mapSetFocusedPolygon(vectorLayer);
       }
     },
 
-    mapSetFocusedPolygon(pixel) {
-      console.log("mapSetFocusedPolygon -> pixel", pixel);
-      let activeService = this.tableActiveService;
-      let layer = mapController.getLayer(activeService.id);
-      console.log("mapSetFocusedPolygon -> layer", layer);
-      console.log(
-        "mapSetFocusedPolygon -> layer.getSource()",
-        layer.getFeatures()
-      );
-      // layer.getFeatures();
-      // layer.getFeatures(pixel).then(function(features) {
-      //   console.log("mapSetFocusedPolygon -> features", features);
-      // });
-      // //if last vector exist
-      // if (this.focusedPolygonVector != null)
-      //   //reset
-      //   this.mapLayer.removeLayer(this.focusedPolygonVector);
-      // //set new vector
-      // this.focusedPolygonVector = vectorLayer;
-      // this.mapLayer.addLayer(vectorLayer);
-    },
+    // mapSetFocusedPolygon(pixel) {
+    //   let activeService = this.tableActiveService;
+    //   let layer = mapController.getLayer(activeService.id);
+    //   let source = layer.getSource();
+
+    //   layer.getFeatures(pixel).then((features) => {
+    //     if (!features.length) {
+    //       this.selection = 0;
+    //       this.selectionLayer.changed();
+    //       return;
+    //     }
+    //     var feature = features[0];
+    //     if (!feature) {
+    //       return;
+    //     }
+    //     var fid = feature.getId();
+    //     this.selectionId = fid;
+    //     this.selectionLayer.changed();
+    //   });
+    //   // //if last vector exist
+    //   // if (this.focusedPolygonVector != null)
+    //   //   //reset
+    //   //   this.mapLayer.removeLayer(this.focusedPolygonVector);
+    //   // //set new vector
+    //   // this.focusedPolygonVector = vectorLayer;
+    //   // this.mapLayer.addLayer(vectorLayer);
+    // },
     // showFilterModal() {
     //   this.$moodal.filterModal.show();
     // },
@@ -1336,6 +1349,15 @@ export default {
       set(value) {
         // this.filterQueryIsSum = false;
         this.$store.dispatch("saveMap", value);
+      },
+    },
+    selectionLayer: {
+      get() {
+        return this.$store.getters.selectionLayer;
+      },
+      set(value) {
+        // this.filterQueryIsSum = false;
+        this.$store.dispatch("saveSelectionLayer", value);
       },
     },
     sumFilterVisibility: {

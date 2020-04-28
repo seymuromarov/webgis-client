@@ -1,6 +1,6 @@
 import $store from "@/store/store.js";
 import { tileTypeEnum, layerTypeEnum } from "@/enums";
-import { serviceController } from "@/controllers";
+import { serviceController, tableController } from "@/controllers";
 import { defaultZoomLevelSettings } from "@/config/settings";
 import { materialColors } from "@/config/colors";
 import { tokenService } from "@/services";
@@ -15,7 +15,19 @@ import {
   TileLayer,
   XYZ,
   TileArcGISRest,
+  Style,
+  Stroke,
+  Fill,
 } from "@/wrappers/openLayerImports";
+const selectedLayerStyle = new Style({
+  stroke: new Stroke({
+    color: "rgba(200,20,20,1)",
+    width: 1,
+  }),
+  fill: new Fill({
+    color: "rgba(200,20,20,0.4)",
+  }),
+});
 const baseMaps = {
   none: new XYZ({
     crossOrigin: "Anonymous",
@@ -62,13 +74,51 @@ const functions = {
     map.addLayer(layer);
     mapLayer.set(map);
   },
-  deleteService(service) {
-    var map = mapLayer.get();
-    map.getLayers().forEach(function(layer) {
-      if (layer.get("id") != undefined && layer.get("id") === service.id) {
-        functions.removeLayer(layer);
+  focusToServicePolygon(pixel) {
+    let activeService = tableController.getTableActiveService();
+    let layer = getters.getLayer(activeService.id);
+
+    layer.getFeatures(pixel).then((features) => {
+      //after getfeatures , ol adding chunk canvas sections into html.this is for delete them
+      var canvases = document
+        .querySelectorAll('canvas[width="256"][height="256"]')
+        .forEach((el) => el.remove());
+
+      let selectionLayer = getters.getSelectionLayer();
+      if (!features.length) {
+        setters.setSelectedFeatureId(0);
+        selectionLayer.changed();
+        return;
       }
+      var feature = features[0];
+      if (!feature) {
+        return;
+      }
+      var fid = feature.getId();
+      setters.setSelectedFeatureId(fid);
+      selectionLayer.changed();
     });
+  },
+  buildSelectionLayer(service) {
+    let layer = getters.getLayer(service.id);
+    let source = layer.getSource();
+    let selectionLayer = new VectorTileLayer({
+      map: getters.getMap(),
+      renderMode: "vector",
+      source: source,
+      style: (feature) => {
+        if (feature != null)
+          if (feature.getId() == getters.getSelectedFeatureId()) {
+            return selectedLayerStyle;
+          }
+      },
+    });
+    setters.setSelectionLayer(selectionLayer);
+  },
+
+  deleteService(service) {
+    var layer = getters.getLayer(service.id);
+    functions.removeLayer(layer);
   },
   refreshService(service) {
     functions.deleteService(service, false);
@@ -114,7 +164,7 @@ const functions = {
             declutter: true,
             source: new VectorTileSource({
               format: new MVT({
-                idProperty: "iso_a3",
+                idProperty: "gid",
                 geometryName: "geom",
               }),
               url: tileHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
@@ -195,11 +245,7 @@ const functions = {
         },
       });
     }
-    console.log(new VectorTileLayer().getFeatures([732, 290]));
-    // console.log("buildLayer -> layer", layer);
-    layer.getFeatures([732, 290]).then(function(features) {
-      console.log("buildLayer -> features", features);
-    });
+
     return layer;
   },
 };
@@ -209,6 +255,12 @@ const events = {};
 const setters = {
   setMap(val) {
     $store.dispatch("saveMap", val);
+  },
+  setSelectionLayer(val) {
+    $store.dispatch("saveSelectionLayer", val);
+  },
+  setSelectedFeatureId(val) {
+    $store.dispatch("saveSelectedFeatureId", val);
   },
   setDrawSource(val) {
     $store.dispatch("saveDrawSource", val);
@@ -232,6 +284,12 @@ const setters = {
 const getters = {
   getMap() {
     return $store.getters.mapLayer;
+  },
+  getSelectionLayer() {
+    return $store.getters.selectionLayer;
+  },
+  getSelectedFeatureId() {
+    return $store.getters.selectedFeatureId;
   },
   getDrawSource() {
     return $store.getters.drawSource;

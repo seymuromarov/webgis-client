@@ -1,8 +1,10 @@
 const state = {
   mapLayer: null,
   graticuleLayer: null,
+  selectionLayer: null,
+  selectedFeatureId: 0,
   draw: null,
-  drawSource: null
+  drawSource: null,
 };
 
 const mutations = {
@@ -17,7 +19,13 @@ const mutations = {
   },
   SET_DRAW_SOURCE(state, payload) {
     state.drawSource = payload;
-  }
+  },
+  SET_SELECTION_LAYER(state, payload) {
+    state.selectionLayer = payload;
+  },
+  SET_SELECTED_FEATURE_ID(state, payload) {
+    state.selectedFeatureId = payload;
+  },
 };
 
 const actions = {
@@ -32,27 +40,39 @@ const actions = {
   },
   saveDrawSource(context, payload) {
     context.commit("SET_DRAW_SOURCE", payload);
-  }
+  },
+  saveSelectionLayer(context, payload) {
+    context.commit("SET_SELECTION_LAYER", payload);
+  },
+  saveSelectedFeatureId(context, payload) {
+    context.commit("SET_SELECTED_FEATURE_ID", payload);
+  },
 };
 
 const getters = {
-  mapLayer: state => {
+  mapLayer: (state) => {
     return state.mapLayer;
   },
-  graticuleLayer: state => {
+  graticuleLayer: (state) => {
     return state.graticuleLayer;
   },
-  draw: state => {
+  draw: (state) => {
     return state.draw;
   },
-  drawSource: state => {
+  drawSource: (state) => {
     return state.drawSource;
-  }
+  },
+  selectionLayer: (state) => {
+    return state.selectionLayer;
+  },
+  selectedFeatureId: (state) => {
+    return state.selectedFeatureId;
+  },
 };
 
 export default {
   state,
   mutations,
   actions,
-  getters
+  getters,
 };

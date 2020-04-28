@@ -30,8 +30,10 @@ const functions = {
       bunchController.setSelected(service, isChecked);
     }
 
-    if (isChecked) mapController.addService(service);
-    else mapController.deleteService(service);
+    if (isChecked) {
+      mapController.addService(service);
+      mapController.buildSelectionLayer(service);
+    } else mapController.deleteService(service);
   },
   async getResponseDynamic(service) {
     let responseDynamic = null;

@@ -51,7 +51,7 @@ import { GPX, GeoJSON, IGC, KML, TopoJSON } from "ol/format.js";
 import { register } from "ol/proj/proj4.js";
 import { applyTransform } from "ol/extent";
 import * as format from "ol/format";
-import Graticule from "ol/Graticule";
+import Graticule from "ol/layer/Graticule";
 import { shiftKeyOnly } from "ol/events/condition";
 import Draw, { createRegularPolygon, createBox } from "ol/interaction/Draw.js";
 import { getArea, getLength } from "ol/sphere.js";
