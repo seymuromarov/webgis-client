@@ -10,6 +10,11 @@ const state = {
   drawType: drawTypeEnum.NONE,
   featureIdCounter: 0,
   bbox: [],
+
+  measuremaptooltipElement: null,
+  measuremaptooltip: null,
+  helpmaptooltipElement: null,
+  helpmaptooltip: null,
 };
 
 const mutations = {
@@ -36,6 +41,19 @@ const mutations = {
   },
   SET_BBOX(state, payload) {
     state.bbox = payload;
+  },
+
+  SET_MEASUREMAP_TOOLTIP_ELEMENT(state, payload) {
+    state.measuremaptooltipElement = payload;
+  },
+  SET_MEASUREMAP_TOOLTIP(state, payload) {
+    state.measuremaptooltip = payload;
+  },
+  SET_HELPMAP_TOOLTIP_ELEMENT(state, payload) {
+    state.helpmaptooltipElement = payload;
+  },
+  SET_HELPMAP_TOOLTIP(state, payload) {
+    state.helpmaptooltip = payload;
   },
 };
 
@@ -64,6 +82,19 @@ const actions = {
   saveBbox(context, payload) {
     context.commit("SET_BBOX", payload);
   },
+
+  saveMeasuremapTooltipElement(context, payload) {
+    context.commit("SET_MEASUREMAP_TOOLTIP_ELEMENT", payload);
+  },
+  saveMeasuremapTooltip(context, payload) {
+    context.commit("SET_MEASUREMAP_TOOLTIP", payload);
+  },
+  saveHelpmapTooltipElement(context, payload) {
+    context.commit("SET_HELPMAP_TOOLTIP_ELEMENT", payload);
+  },
+  saveHelpmapTooltip(context, payload) {
+    context.commit("SET_HELPMAP_TOOLTIP", payload);
+  },
 };
 
 const getters = {
@@ -91,8 +122,19 @@ const getters = {
   bbox: (state) => {
     return state.bbox;
   },
+  measuremaptooltipElement: (state) => {
+    return state.measuremaptooltipElement;
+  },
+  measuremaptooltip: (state) => {
+    return state.measuremaptooltip;
+  },
+  helpmaptooltipElement: (state) => {
+    return state.helpmaptooltipElement;
+  },
+  helpmaptooltip: (state) => {
+    return state.helpmaptooltip;
+  },
 };
-
 export default {
   state,
   mutations,

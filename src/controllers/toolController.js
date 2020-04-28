@@ -23,36 +23,8 @@ import {
   Overlay,
   Fill,
 } from "@/wrappers/openLayerImports";
+import { get } from "ol/proj";
 
-const events = {
-  onDrawStart(evt) {
-    // let sketch = evt.feature;
-    // /** @type {module:ol/coordinate~Coordinate|undefined} */
-    // let maptooltipCoord = evt.coordinate;
-    // listener = sketch.getGeometry().on("change", function(evt) {
-    //   let geom = evt.target;
-    //   let output;
-    //   if (geom instanceof Polygon) {
-    //     output = MapHelper.formatArea(geom);
-    //     maptooltipCoord = geom.getInteriorPoint().getCoordinates();
-    //   } else if (geom instanceof LineString) {
-    //     output = MapHelper.formatLength(geom);
-    //     maptooltipCoord = geom.getLastCoordinate();
-    //   } else if (geom instanceof Circle) {
-    //     output = MapHelper.formatCircleRadius(geom);
-    //     maptooltipCoord = geom.getLastCoordinate();
-    //   }
-    //   try {
-    //     self.data.measuremaptooltipElement.innerHTML = output;
-    //     self.data.measuremaptooltip.setPosition(maptooltipCoord);
-    //   } catch (e) {
-    //     self.createMeasuremaptooltip();
-    //     self.data.measuremaptooltipElement.innerHTML = output;
-    //     self.data.measuremaptooltip.setPosition(maptooltipCoord);
-    //   }
-    // });
-  },
-};
 const functions = {
   buildEventListener() {},
   setDrawType(type) {
@@ -69,7 +41,6 @@ const functions = {
     document.body.style.cursor = "default";
   },
   buildGeometryFunction(type) {
-    console.log("buildGeometryFunction -> type", type);
     let geometryFunction = null;
     if (type !== drawTypeEnum.NONE) {
       switch (type) {
@@ -84,7 +55,6 @@ const functions = {
           break;
       }
     }
-    console.log("buildGeometryFunction -> geometryFunction", geometryFunction);
     return geometryFunction;
   },
   deleteFeature() {
@@ -150,152 +120,146 @@ const functions = {
 
     let geometryFunction = functions.buildGeometryFunction(type);
 
+    switch (type) {
+      case drawTypeEnum.SQUARE:
+        type = drawTypeEnum.CIRCLE;
+        break;
+      case drawTypeEnum.BOX:
+        type = drawTypeEnum.CIRCLE;
+        break;
+    }
+
+    console.log(type);
     var options = {
       source: mapController.getDrawSource(),
       type: type,
       freehandCondition: shiftKeyOnly,
     };
+
     if (geometryFunction) options.geometryFunction = geometryFunction;
-    console.log("addInteraction -> options", options);
 
     let draw = new Draw(options);
 
     let map = mapController.getMap();
     map.addInteraction(draw);
-
-    map.addOverlay(functions.createMeasureOverlay());
-    map.addOverlay(functions.createHelpOverlay());
-
     mapController.setMap(map);
+    // map.addOverlay(functions.createMeasureOverlay());
+    // map.addOverlay(functions.createHelpOverlay());
+
+    functions.createMeasuremaptooltip();
+    functions.createHelpmaptooltip();
 
     let listener;
-    let self = this;
+    let sketch = null;
     draw.on(
       "drawstart",
       function(evt) {
-        self.data.sketch = evt.feature;
+        sketch = evt.feature;
         /** @type {module:ol/coordinate~Coordinate|undefined} */
         let maptooltipCoord = evt.coordinate;
-        listener = self.data.sketch.getGeometry().on("change", function(evt) {
+        listener = sketch.getGeometry().on("change", function(evt) {
           let geom = evt.target;
           let output;
 
           if (geom instanceof Polygon) {
-            output = MapHelper.formatArea(geom);
+            output = functions.formatArea(geom);
             maptooltipCoord = geom.getInteriorPoint().getCoordinates();
           } else if (geom instanceof LineString) {
-            output = MapHelper.formatLength(geom);
+            output = functions.formatLength(geom);
             maptooltipCoord = geom.getLastCoordinate();
           } else if (geom instanceof Circle) {
-            output = MapHelper.formatCircleRadius(geom);
+            output = functions.formatCircleRadius(geom);
             maptooltipCoord = geom.getLastCoordinate();
           }
+          let measuremaptooltipElement = getters.getMeasureMapTooltipElement();
+          let measuremaptooltip = getters.getMeasureMapTooltip();
           try {
-            self.data.measuremaptooltipElement.innerHTML = output;
-            self.data.measuremaptooltip.setPosition(maptooltipCoord);
+            measuremaptooltipElement.innerHTML = output;
+            measuremaptooltip.setPosition(maptooltipCoord);
           } catch (e) {
-            self.createMeasuremaptooltip();
-            self.data.measuremaptooltipElement.innerHTML = output;
-            self.data.measuremaptooltip.setPosition(maptooltipCoord);
+            functions.createMeasuremaptooltip();
+            measuremaptooltipElement.innerHTML = output;
+            measuremaptooltip.setPosition(maptooltipCoord);
           }
         });
       },
       this
     );
 
-    // self.data.draw.on(
-    //   "drawend",
-    //   function(e) {
-    //     try {
-    //       self.data.measuremaptooltipElement.className =
-    //         "maptooltip maptooltip-static " + self.data.featureIDSet;
-    //       self.data.measuremaptooltip.setOffset([0, -7]);
-    //       let bbox = e.feature.getGeometry().getExtent();
-    //       store.dispatch("SAVE_DRAW_BBOX", bbox);
-    //     } catch (e) {
-    //       self.createMeasuremaptooltip();
-    //       self.data.measuremaptooltipElement.className =
-    //         "maptooltip maptooltip-static " + self.data.featureIDSet;
-    //       self.data.measuremaptooltip.setOffset([0, -7]);
-    //     }
-    //     self.data.sketch = null;
-    //     self.data.measuremaptooltipElement = null;
-    //     unByKey(listener);
+    draw.on(
+      "drawend",
+      function(e) {
+        let measuremaptooltipElement = getters.getMeasureMapTooltipElement();
+        let measuremaptooltip = getters.getMeasureMapTooltip();
 
-    //     e.feature.setProperties({
-    //       id: self.data.featureIDSet,
-    //       name: ""
-    //     });
-    //     let newStyle = new Style({
-    //       fill: new Fill({ color: "#00000000" }),
-    //       stroke: new Stroke({ color: "#C672F5", width: 2 }),
-    //       image: new CircleStyle({
-    //         radius: 7,
-    //         fill: new Fill({ color: "#00000000" })
-    //       })
-    //     });
+        try {
+          measuremaptooltipElement.className =
+            "maptooltip maptooltip-static " + getters.getFeatureIdCounter();
+          measuremaptooltip.setOffset([0, -7]);
+          let bbox = e.feature.getGeometry().getExtent();
+          // store.dispatch("SAVE_DRAW_BBOX", bbox);
+        } catch (e) {
+          functions.createMeasuremaptooltip();
+          measuremaptooltipElement.className =
+            "maptooltip maptooltip-static " + getters.getFeatureIdCounter();
+          measuremaptooltip.setOffset([0, -7]);
+        }
+        sketch = null;
+        measuremaptooltipElement = null;
+        unByKey(listener);
 
-    //     if (self.data.typeSelect !== "Point") {
-    //       e.feature.setStyle(newStyle);
-    //     }
+        e.feature.setProperties({
+          id: getters.getFeatureIdCounter(),
+          name: "",
+        });
+        let newStyle = new Style({
+          fill: new Fill({ color: "#00000000" }),
+          stroke: new Stroke({ color: "#C672F5", width: 2 }),
+          image: new CircleStyle({
+            radius: 7,
+            fill: new Fill({ color: "#00000000" }),
+          }),
+        });
 
-    //     self.data.featureIDSet += 10;
-    //   },
-    //   this
-    // );
+        if (type !== "Point") {
+          e.feature.setStyle(newStyle);
+        }
+        setters.addFeatureIdCounter(10);
+      },
+      this
+    );
   },
 
-  createHelpOverlay() {
-    //eger varsa butun hamisini sil
-    // if (this.data.helpmaptooltipElement) {
-    //   this.data.helpmaptooltipElement.parentNode.removeChild(
-    //     this.data.helpmaptooltipElement
-    //   );
-    // }
-    let helpToolTip = document.createElement("div");
-    helpToolTip.className = "maptooltip hidden";
-    return new Overlay({
-      element: helpToolTip,
+  createHelpmaptooltip() {
+    let helpmaptooltipElement = document.createElement("div");
+    helpmaptooltipElement.className = "maptooltip hidden";
+    let helpmaptooltip = new Overlay({
+      element: helpmaptooltipElement,
       offset: [15, 0],
       positioning: "center-left",
     });
-    // let map = mapController.getMap();
-    // map.addOverlay(overlay);
-    // mapController.setMap(map);
+    setters.setHelpMapTooltipElement(helpmaptooltipElement);
+    setters.setHelpMapTooltip(helpmaptooltip);
+
+    let map = mapController.getMap();
+    map.addOverlay(helpmaptooltip);
+    mapController.setMap(map);
   },
-  createMeasureOverlay() {
-    // if (this.data.measuremaptooltipElement) {
-    //   this.data.measuremaptooltipElement.parentNode.removeChild(
-    //     this.data.measuremaptooltipElement
-    //   );
-    // }
-    let measureToolTip = document.createElement("div");
-    measureToolTip.className = "maptooltip maptooltip-measure";
-    return new Overlay({
-      element: measureToolTip,
+  createMeasuremaptooltip() {
+    let measuremaptooltipElement = document.createElement("div");
+    measuremaptooltipElement.className = "maptooltip maptooltip-measure";
+    let measuremaptooltip = new Overlay({
+      element: measuremaptooltipElement,
       offset: [0, -15],
       positioning: "bottom-center",
     });
-    // let map = mapController.getMap();
-    // map.addOverlay(overlay);
-    // mapController.setMap(map);
+    setters.setMeasureMapTooltipElement(measuremaptooltipElement);
+    setters.setMeasureMapTooltip(measuremaptooltip);
+
+    let map = mapController.getMap();
+    map.addOverlay(measuremaptooltip);
+    mapController.setMap(map);
   },
-  // createMeasuremaptooltip() {
-  //   if (this.data.measuremaptooltipElement) {
-  //     this.data.measuremaptooltipElement.parentNode.removeChild(
-  //       this.data.measuremaptooltipElement
-  //     );
-  //   }
-  //   this.data.measuremaptooltipElement = document.createElement("div");
-  //   this.data.measuremaptooltipElement.className =
-  //     "maptooltip maptooltip-measure";
-  //   this.data.measuremaptooltip = new Overlay({
-  //     element: this.data.measuremaptooltipElement,
-  //     offset: [0, -15],
-  //     positioning: "bottom-center",
-  //   });
-  //   this.data.mapLayer.addOverlay(this.data.measuremaptooltip);
-  // }
 
   pngExport() {
     let map = mapController.getMap();
@@ -352,6 +316,40 @@ const functions = {
     functions.setDrawType(drawTypeEnum.BOX);
     setters.setDrawForChangeDetectionStatus(true);
   },
+
+  formatArea(polygon) {
+    let area = getArea(polygon);
+    let output;
+    if (area > 10000) {
+      output =
+        Math.round((area / 1000000) * 100) / 100 + " " + "km<sup>2</sup>";
+    } else {
+      output = Math.round(area * 100) / 100 + " " + "m<sup>2</sup>";
+    }
+    return output;
+  },
+
+  formatLength(line) {
+    let length = getLength(line);
+    let output;
+    if (length > 100) {
+      output = Math.round((length / 1000) * 100) / 100 + " " + "km";
+    } else {
+      output = Math.round(length * 100) / 100 + " " + "m";
+    }
+    return output;
+  },
+
+  formatCircleRadius(line) {
+    let length = line.getRadius() * METERS_PER_UNIT["m"];
+    let output;
+    if (length > 100) {
+      output = Math.round((length / 1000) * 100) / 100 + " " + "km";
+    } else {
+      output = Math.round(length * 100) / 100 + " " + "m";
+    }
+    return output;
+  },
 };
 const getters = {
   getGraticuleVisibility() {
@@ -379,9 +377,24 @@ const getters = {
     return $store.getters.featureIdCounter;
   },
   getDrawForChangeDetectionStatus() {
-    return$store.getters.isDrawForChangeDetection;
+    return $store.getters.isDrawForChangeDetection;
+  },
+
+  getMeasureMapTooltipElement() {
+    return $store.getters.measuremaptooltipElement;
+  },
+
+  getMeasureMapTooltip() {
+    return $store.getters.measuremaptooltip;
+  },
+  getHelpMapTooltipElement() {
+    return $store.getters.helpmaptooltipElement;
+  },
+  getHelpMapTooltip() {
+    return $store.getters.helpmaptooltip;
   },
 };
+
 const setters = {
   setGraticuleVisibility(val) {
     $store.dispatch("saveGraticuleVisibility", val);
@@ -416,6 +429,20 @@ const setters = {
   addFeatureIdCounter(val) {
     val += getters.getFeatureIdCounter();
     setters.setFeatureIdCounter(val);
+  },
+
+  setMeasureMapTooltipElement(val) {
+    $store.dispatch("saveMeasuremapTooltipElement", val);
+  },
+
+  setMeasureMapTooltip(val) {
+    $store.dispatch("saveMeasuremapTooltip", val);
+  },
+  setHelpMapTooltipElement(val) {
+    $store.dispatch("saveHelpmapTooltipElement", val);
+  },
+  setHelpMapTooltip(val) {
+    $store.dispatch("saveHelpmapTooltip", val);
   },
 };
 
