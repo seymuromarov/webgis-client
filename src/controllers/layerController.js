@@ -28,7 +28,18 @@ const getters = {
   },
   getDynamicLayerAsTreeSelect() {
     var arr = getters.getDynamicLayerList();
-    var options = layerHelper.recursiveTreeMapping(arr);
+
+    var options = layerHelper.recursiveTreeMapping(arr, (item) => {
+      if (serviceHelper.isCategory(item)) {
+        item.layers = item.layers.filter((c) =>
+          serviceHelper.isLocalService(c)
+        );
+      } else {
+        if (!serviceHelper.isLocalService(item)) item = null;
+      }
+
+      return item;
+    });
     return options;
   },
   getBasemapLayerAsTreeSelect() {

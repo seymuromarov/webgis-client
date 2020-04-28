@@ -35,7 +35,7 @@ const checker = {
     return service.type === serviceTypeEnum.BUNCH;
   },
   isEqual(s1, s2) {
-    return s1.id == s2.id && s1.type == s2.type;
+    return s1 && s2 && s1.id == s2.id && s1.type == s2.type;
   },
   isQueryExist(service) {
     if (checker.isLayer(service))

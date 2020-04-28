@@ -232,7 +232,6 @@ export default {
     // },
     async getTableData(data) {
       var service = serviceHelper.isSublayer(data) ? data.parent : data;
-      tableController.setTableActiveService(service);
       await tableController.getTable(service);
     },
     getLayerId() {

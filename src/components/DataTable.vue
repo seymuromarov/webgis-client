@@ -150,7 +150,7 @@
           <tbody class="popupTableBody">
             <tr v-for="(value, key) in selectedData" :key="key">
               <td class="paddingLeft">
-                {{ selectedData[key] }}
+                {{ key }}
               </td>
               <td class="paddingRight">{{ value }}</td>
             </tr>

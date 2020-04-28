@@ -115,7 +115,10 @@ const functions = {
     });
     setters.setSelectionLayer(selectionLayer);
   },
-
+  resetSelectionLayer() {
+    setters.setSelectionLayer(null);
+    setters.setSelectedFeatureId(0);
+  },
   deleteService(service) {
     var layer = getters.getLayer(service.id);
     functions.removeLayer(layer);
@@ -240,7 +243,6 @@ const functions = {
               hex8: "#FFFFFF00",
             },
           };
-
           return colorHelper.buildVectorStyle(colorObj);
         },
       });

@@ -28,10 +28,14 @@ const functions = {
           url = `${URL}/${MAP_URLS.MVT}/${service.id}/{z}/{x}/{y}/?${queryString}`;
         } else {
           var params = service.layers.map((item, index) => {
-            return {
-              layerId: item.id,
-              query: item.query,
-            };
+            let obj = { layerId: item.id };
+            if (
+              item.query &&
+              item.query.where != "" &&
+              item.query.where != "1=1"
+            )
+              obj.query = item.query;
+            return obj;
           });
 
           let queryString = qs.stringify(

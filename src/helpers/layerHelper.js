@@ -129,16 +129,20 @@ const mapper = {
     }
   },
 
-  recursiveTreeMapping: (arr) => {
+  recursiveTreeMapping: (arr, callback) => {
     var list = [];
     for (let i = 0; i < arr.length; i++) {
       var item = arr[i];
-      var item = mapper.recursiveTreeSelectMapping(item);
-      list.push(item);
+      var item = mapper.recursiveTreeSelectMapping(item, callback);
+      if (item) list.push(item);
     }
     return list;
   },
-  recursiveTreeSelectMapping: (item) => {
+  recursiveTreeSelectMapping: (item, callback) => {
+    if (callback && typeof callback === "function") {
+      item = callback(item);
+    }
+    if (!item) return item;
     var isCategory = serviceHelper.isCategory(item);
     if (isCategory) {
       var category = {
@@ -149,7 +153,8 @@ const mapper = {
 
       for (var i = 0; i < category.children.length; i++) {
         category.children[i] = mapper.recursiveTreeSelectMapping(
-          category.children[i]
+          category.children[i],
+          callback
         );
       }
       return category;

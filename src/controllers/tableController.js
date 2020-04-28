@@ -11,7 +11,7 @@ const tableData = {
   },
 };
 const functions = {
-  buildTableData(dataArr) {
+  buildTableData(dataArr, selectedService) {
     var dataTableArr = [];
     for (let i = 0; i < dataArr.length; i++) {
       const item = dataArr[i];
@@ -66,7 +66,10 @@ const functions = {
 
     let tableData = getters.getTableData();
     let activeService = getters.getTableActiveService();
-    if (serviceHelper.isBunch(activeService)) {
+    if (
+      serviceHelper.isBunch(selectedService) &&
+      serviceHelper.isEqual(selectedService, activeService)
+    ) {
       for (let i = 0; i < dataTableArr.length; i++) {
         const item = dataTableArr[i];
         let isExist = tableData.some((c) => c.service.id === item.service.id);
@@ -104,9 +107,10 @@ const functions = {
 
     let response = await functions.getTableResponse(service);
     let isSumFilter = getters.getIsSumFilter();
-    let activeService = getters.getTableActiveService();
-    let isLayer = serviceHelper.isLayer(activeService);
-    let isLocalService = serviceHelper.isLocalService(activeService);
+    // let activeService = getters.getTableActiveService();
+
+    let isLayer = serviceHelper.isLayer(service);
+    let isLocalService = serviceHelper.isLocalService(service);
 
     if (isLocalService) {
       if (isSumFilter && isLayer) {
@@ -115,7 +119,7 @@ const functions = {
       }
 
       if (serviceHelper.isQueryExist(service))
-        mapController.refreshService(activeService);
+        mapController.refreshService(service);
     }
 
     let data = [];
@@ -134,10 +138,11 @@ const functions = {
     if (!isSumFilter) {
       setters.setUnvisible();
 
-      functions.buildTableData(data);
+      functions.buildTableData(data, service);
 
       setters.setTableVisible();
     }
+    setters.setTableActiveService(service);
     setters.setIsSumFilter(false);
     setters.setTableLoading(false);
   },
@@ -158,12 +163,12 @@ const functions = {
       };
       response = await layerService.getTableData(params);
     } else {
-      var isBunch = serviceHelper.isBunch(activeService);
+      var isBunch = serviceHelper.isBunch(service);
       if (isBunch) {
-        var isSameService = activeService.type === service.type;
+        var isSameService = serviceHelper.isEqual(service, activeService);
 
         var queryParams;
-        if (isSameService) {
+        if (!isSameService) {
           queryParams = service.layers.map((item, index) => {
             return {
               layerId: item.id,
@@ -181,7 +186,7 @@ const functions = {
 
         params = { layerQueries: queryParams };
         response = await layerService.getIntersectLocalTableData(
-          this.tableActiveService.id,
+          service.id,
           params
         );
 
