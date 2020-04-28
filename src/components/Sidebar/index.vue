@@ -66,7 +66,7 @@
           }"
           @click="setDynamicActiveTab('dynamicTab')"
         >
-          Standart
+          Standard
         </div>
         <div
           class="tab"
