@@ -18,12 +18,8 @@
     <DataTable ref="dataTable" @mapSetCenter="mapSetCenter" />
 
     <!-- Report -->
-    <CustomModal
-      name="sumResultModal"
-      :maxWidth="600"
-      @onClose="sumFilterVisibility = false"
-    >
-      <Report :arithmeticDataResult="ArithmeticDataResult" />
+    <CustomModal name="sumResultModal" :maxWidth="600">
+      <Report />
     </CustomModal>
 
     <!-- Filter -->
@@ -40,12 +36,9 @@
 
     <!-- Change Detection -->
     <detector-modal
-      :visible="lastBBOXOfShape.length > 0 && isDrawnShapeForDetection"
-      v-bind="{ lastBBOXOfShape, token }"
-      @close="
-        ($store.state.dataTable.lastBBOXOfShape = []) &
-          (isDrawnShapeForDetection = false)
-      "
+      :visible="bbox.length > 0 && isDrawnShapeForDetection"
+      v-bind="{ bbox, token }"
+      @close="(bbox = []) & (isDrawnShapeForDetection = false)"
     ></detector-modal>
     <!-- Information Modal -->
     <InfoModal
@@ -108,6 +101,7 @@ import {
   register,
   applyTransform,
   format,
+  Icon,
 } from "@/wrappers/openLayerImports";
 
 // Other dependencies
@@ -139,6 +133,7 @@ import {
   layerController,
   bunchController,
   tableController,
+  toolController,
   mapController,
   serviceController,
   modalController,
@@ -167,37 +162,19 @@ export default {
   },
   data() {
     return {
-      isDrawnShapeForDetection: false,
       mapHelper: null,
       toggler: null,
       latChange: null,
       longChange: null,
-      ArithmeticDataResult: {},
       // filterValues: [],
-      value: [],
-      checkedColumns: [],
-      checkedColumnsData: [],
-      options: [],
       layers: [],
-      isMarker: false,
-      isRemove: false,
-      isColorPick: false,
       token: null,
       kmlInfo: null,
-      source: null,
       vector: null,
       vectorSource: null,
       vectorLayer: null,
-      featureIDSet: 0,
-      typeSelect: null,
-      draw: null,
-      sketch: null,
       hashResolveResult: {},
 
-      tableFeaturesData: [],
-      stackedTableFeaturesHeader: [],
-      tableFeaturesHeader: [],
-      tableNextRequest: [],
       citySearchOptions: [],
       citySearchInputShow: false,
       historyUpdate: true,
@@ -205,27 +182,8 @@ export default {
       previousHistoryEvent: false,
       historyEvents: [],
       historyEventsIndex: 0,
-      graticule: false,
       isMetricCoordinateSystem: false,
-
-      modalIsVisible: true,
-
       isHashLoaded: false,
-      dataTable: {
-        activeTab: null,
-      },
-
-      selectionId: 0,
-
-      selectedLayerStyle: new Style({
-        stroke: new Stroke({
-          color: "rgba(200,20,20,0.8)",
-          width: 2,
-        }),
-        fill: new Fill({
-          color: "rgba(200,20,20,0.4)",
-        }),
-      }),
     };
   },
   created() {},
@@ -298,6 +256,7 @@ export default {
       let self = this;
 
       dragAndDropInteraction.on("addfeatures", function(event) {
+        console.log(this.drawSource);
         this.drawSource.addFeatures(event.features);
         self.mapLayer.getView().fit(this.drawSource.getExtent());
       });
@@ -342,16 +301,9 @@ export default {
             coord[0].toString().substring(0, 7),
           ];
         }
-        // document.getElementById("mouse-position").innerHTML =
-        //     "Lat: " +
-        //     coord[1].toString() +
-        //     " , " +
-        //     "Long: " +
-        //     coord[0].toString();
       });
 
-      this.mapLayer.on("click", function(evt) {
-        //displayFeatureInfo(evt.pixel);
+      this.mapLayer.on("click", (evt) => {
         let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
         if (self.isMarker) {
           let iconFeature = new Feature({
@@ -386,6 +338,7 @@ export default {
               elem[0].className = "hidden";
             } catch (e) {}
           });
+          alert();
         }
         if (self.isColorPick) {
           self.mapLayer.forEachFeatureAtPixel(evt.pixel, function(
@@ -416,20 +369,20 @@ export default {
         if (self.dataTableVisibility) {
           self.getGeometryData(coord);
           mapController.focusToServicePolygon(evt.pixel);
-          // self.mapSetFocusedPolygon(evt.pixel);
         }
       });
+
       this.$store.dispatch("getLayers").then(() => {
         this.setHashSelectedServices();
         self.mapLayer.on("moveend", this.updateHistoryMap);
       });
-      window.addEventListener("popstate", function(event) {
+      window.addEventListener("popstate", (event) => {
         if (event.state === null) {
           return;
         }
-        self.mapLayer.getView().setCenter(event.state.center);
-        self.mapLayer.getView().setZoom(event.state.zoom);
-        self.mapLayer.getView().setRotation(event.state.rotation);
+        this.mapLayer.getView().setCenter(event.state.center);
+        this.mapLayer.getView().setZoom(event.state.zoom);
+        this.mapLayer.getView().setRotation(event.state.rotation);
       });
     });
   },
@@ -509,76 +462,7 @@ export default {
       document.body.style.cursor = "crosshair";
       this.$moodal.colorPickerModal.hide();
     },
-    // cityInputToggle() {
-    //   this.toggler.cityInputToggle(this);
-    // },
-    // onCitySelect(city) {
-    //   this.mapLayer
-    //     .getView()
-    //     .setCenter(fromLonLat([parseFloat(city.lng), parseFloat(city.lat)]));
-    //   this.mapLayer.getView().setZoom(11);
-    //   this.citySearchInputShow = false;
-    // },
-    // nameWithCountry({ city, country }) {
-    //   return `${city} , ${country}`;
-    // },
-    // exportData() {
-    //   this.mapHelper.exportData(this);
-    // },
-    // async filterSelectedColumn(id, column) {
-    //   const service = this.$store.getters.tableData.find(
-    //     (x) => x.service.id === id
-    //   ).service;
 
-    //   const params = { id };
-    //   this.filterValues = [];
-
-    //   if (serviceHelper.isLocalService(service)) {
-    //     const getLayerColumnsDistinctData = await layerService.getLayerColumnsDistinctData(
-    //       params
-    //     );
-    //     const result = getLayerColumnsDistinctData.data.result;
-
-    //     this.filterValues =
-    //       result[
-    //         Object.keys(result).find(
-    //           (key) => key.toLowerCase() === column.toLowerCase()
-    //         )
-    //       ];
-    //   } else {
-    //     const keys = Object.keys(this.tableHeadersWithAlias);
-    //     for (let i = 0; i < keys.length; i++) {
-    //       if (this.tableHeadersWithAlias[keys[i]] === column) {
-    //         column = keys[i];
-    //         break;
-    //       }
-    //     }
-    //     for (let i = 0; i < this.tableFeaturesData.length; i++) {
-    //       if (
-    //         !this.filterValues.includes(
-    //           this.tableFeaturesData[i].attributes[column]
-    //         )
-    //       ) {
-    //         this.filterValues.push(
-    //           this.tableFeaturesData[i].attributes[column]
-    //         );
-    //       }
-    //     }
-    //   }
-    // },
-    // filterData(service, query) {
-    //   // this.tableNextRequest["service"],
-    //   this.getTableData(
-    //     service,
-    //     this.tableNextRequest["layerId"],
-    //     this.tableNextRequest["layerName"],
-    //     query == "" ? {} : { where: query }
-    //   );
-    // },
-    // addValueToQuery(value) {
-    //   if (typeof value == "string") value = "'" + value + "'";
-    //   this.filterQuery += value + " ";
-    // },
     dragAndDropToast() {
       let toast = this.$toasted.show(
         "Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map",
@@ -589,45 +473,7 @@ export default {
         }
       );
     },
-    // addGraticule() {
-    //   this.mapHelper.addGraticule();
-    // },
-    // pngExport() {
-    //   this.mapHelper.pngExport();
-    // },
-    // setMarkerTrue() {
-    //   this.setDrawType("None");
-    //   this.isMarker = true;
-    // },
-    // eyeDropper() {
-    //   this.setDrawType("None");
-    //   this.$moodal.colorPickerModal.show();
-    //   this.isColorPick = true;
-    // },
-    // changeDetector() {
-    //   this.$store.state.dataTable.lastBBOXOfShape = [];
-    //   this.setDrawType("Box");
-    //   this.isDrawnShapeForDetection = true;
-    // },
-    // deleteFeatureOn() {
-    //   this.setDrawType("None");
-    //   this.isRemove = true;
-    // },
-    // resetFeatures() {
-    //   this.mapHelper.resetFeatures();
-    // },
-    // selectColumns(alias, key, e) {
-    //   if (e.target.checked) {
-    //     this.checkedColumnsData.push(this.stackedTableFeaturesHeader[key]);
-    //   } else {
-    //     this.checkedColumnsData = this.checkedColumnsData.filter(
-    //       (data) => data != alias
-    //     );
-    //   }
-    // },
-    // showColumnsChange() {
-    //   this.toggler.showColumnsChange();
-    // },
+
     resolveHash(hash) {
       var result = null;
       if (hash !== "") {
@@ -661,255 +507,6 @@ export default {
       }
     },
 
-    // mapSetFocusedPolygon(pixel) {
-    //   let activeService = this.tableActiveService;
-    //   let layer = mapController.getLayer(activeService.id);
-    //   let source = layer.getSource();
-
-    //   layer.getFeatures(pixel).then((features) => {
-    //     if (!features.length) {
-    //       this.selection = 0;
-    //       this.selectionLayer.changed();
-    //       return;
-    //     }
-    //     var feature = features[0];
-    //     if (!feature) {
-    //       return;
-    //     }
-    //     var fid = feature.getId();
-    //     this.selectionId = fid;
-    //     this.selectionLayer.changed();
-    //   });
-    //   // //if last vector exist
-    //   // if (this.focusedPolygonVector != null)
-    //   //   //reset
-    //   //   this.mapLayer.removeLayer(this.focusedPolygonVector);
-    //   // //set new vector
-    //   // this.focusedPolygonVector = vectorLayer;
-    //   // this.mapLayer.addLayer(vectorLayer);
-    // },
-    // showFilterModal() {
-    //   this.$moodal.filterModal.show();
-    // },
-    // addInteraction() {
-    //   this.mapHelper.addInteraction();
-    // },
-
-    // onMoveCallbackDynamicLayerList(evt, originalEvent) {
-    //   this.dynamicLayerList.map((item, index) => {
-    //     this.setZIndex(item);
-    //   });
-    // },
-    // onMoveCallbackBaseLayerList(evt, originalEvent) {
-    //   this.baseLayerList.map((item, index) => {
-    //     this.setZIndex(item);
-    //   });
-    // },
-
-    // setTableData(dataArr) {
-    //   var dataTableArr = [];
-    //   for (let i = 0; i < dataArr.length; i++) {
-    //     const item = dataArr[i];
-    //     let target = item.fieldAliases;
-    //     let tableHeadersWithAlias = item.fieldAliases;
-    //     let tableHeaders = Object.keys(tableHeadersWithAlias);
-    //     let checkedColumnsData = [];
-    //     let checkedColumns = [];
-
-    //     let defaultUnCheckedColumns = [
-    //       "OBJECTID",
-    //       "Shape_Length",
-    //       "Shape_Area",
-    //     ];
-
-    //     for (let alias in tableHeaders) {
-    //       if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
-    //         checkedColumnsData.push(tableHeaders[alias]);
-    //         checkedColumns.push(tableHeaders[alias]);
-    //       }
-    //     }
-
-    //     tableHeaders = tableHeaders.map((item, index) => {
-    //       let name = item;
-    //       for (let k in target) {
-    //         if (typeof target[k] !== "function") {
-    //           if (item === k) {
-    //             name = target[k];
-    //           }
-    //         }
-    //       }
-    //       return name;
-    //     });
-
-    //     checkedColumns = checkedColumns.map((item, index) => {
-    //       return tableHeadersWithAlias[item];
-    //     });
-
-    //     dataTableArr.push({
-    //       service: item.service,
-    //       data: {
-    //         totalCount: item.totalCount,
-    //         tableName: item.service.name,
-    //         tableHeaders: tableHeaders,
-    //         tableStackedHeaders: Object.keys(tableHeadersWithAlias),
-    //         tableHeadersWithAlias,
-    //         tableData: item.features,
-    //         filterValues: [],
-    //         target,
-    //         checkedColumnsData,
-    //         checkedColumns,
-    //       },
-    //       paging: {
-    //         isBusy: false,
-    //         page: 1,
-    //         limit: 25,
-    //       },
-    //     });
-    //   }
-    //   let tableData = this.$store.getters.tableData;
-    //   if (serviceHelper.isBunch(this.tableActiveService)) {
-    //     for (let i = 0; i < dataTableArr.length; i++) {
-    //       const item = dataTableArr[i];
-    //       let isExist = tableData.some((c) => c.service.id === item.service.id);
-
-    //       if (isExist) {
-    //         tableData = tableData.map((val) => {
-    //           const { service, data } = item;
-
-    //           if (val.service.id === item.service.id) {
-    //             val.service = service;
-    //             val.data = data;
-    //           }
-    //           return val;
-    //         });
-    //       } else {
-    //         tableData.push(item);
-    //       }
-    //     }
-    //   } else {
-    //     tableData = dataTableArr;
-    //   }
-    //   let tabs = tableData.map((item, index) => {
-    //     return {
-    //       id: item.service.id,
-    //       name: item.service.name,
-    //     };
-    //   });
-    //   this.$store.dispatch("SAVE_DATATABLE", tableData);
-    //   this.$store.dispatch("SAVE_DATATABLE_TABS", tabs);
-    // },
-
-    // async getTableData(service, layerId, layerName, query) {
-    //   // var layer = this.getLayer(service.id);
-    //   let response;
-
-    //   tableController.setVisible();
-    //   tableController.setLoading();
-    //   // this.dataTableVisibility = true;
-    //   // this.$store.dispatch("SAVE_DATATABLE_LOADING", true);
-
-    //   if (serviceHelper.isArcgisService(service)) {
-    //     let params = {
-    //       token: this.token,
-    //       name: service.name,
-    //       layer: service.id,
-    //       ...service.query,
-    //     };
-    //     response = await layerService.getTableData(params);
-    //   } else {
-    //     let paging = tableController.getDefaultPagingOptions();
-    //     // this.tablePaging = {
-    //     //   page: 1,
-    //     //   limit: 25,
-    //     // };
-
-    //     var isBunch = serviceHelper.isBunch(this.tableActiveService);
-    //     if (isBunch) {
-    //       var isSameService = this.tableActiveService.type === service.type;
-    //       var queryParams;
-    //       if (isSameService) {
-    //         queryParams = service.layers.map((item, index) => {
-    //           return {
-    //             layerId: item.id,
-    //             query: { ...item.query, paging: paging },
-    //           };
-    //         });
-    //       } else {
-    //         queryParams = [
-    //           {
-    //             layerId: service.id,
-    //             query: { ...service.query, paging: paging },
-    //           },
-    //         ];
-    //       }
-
-    //       var params = { layerQueries: queryParams };
-    //       response = await layerService.getIntersectLocalTableData(
-    //         this.tableActiveService.id,
-    //         params
-    //       );
-
-    //       response.data = response.data.map((item) => {
-    //         item.service = layerHelper.dynamicMapping(item.service);
-    //         return item;
-    //       });
-    //     } else {
-    //       let params = {
-    //         layerId: service.id,
-    //         ...query,
-    //         paging: this.tablePaging,
-    //       };
-    //       if (this.filterQueryIsSum && service.resourceType === "local") {
-    //         params.isSum = this.filterQueryIsSum;
-    //         params.ArithmeticColumnName = this.filterQueryArithmeticColumn;
-    //         response = await layerService.getLocalArithmeticData(params);
-    //         this.ArithmeticDataResult = response.data.result;
-    //         this.$moodal.arithmeticResultModal.show();
-    //       } else {
-    //         response = await layerService.getLocalTableData(params);
-    //       }
-    //     }
-
-    //     // if (!serviceHelper.isBunch(service)) {
-    //     //     if (query.where !== service.query.where) {
-    //     if (serviceHelper.isQueryExist(service))
-    //       this.refreshService(this.tableActiveService);
-    //   }
-
-    //   let data = [];
-
-    //   if (!Array.isArray(response.data)) {
-    //     response.data["service"] = service;
-    //     data = [response.data];
-    //   } else {
-    //     data = response.data;
-    //   }
-
-    //   this.$store.dispatch("SAVE_DATATABLE_LOADING", false);
-    //   if (response.data.error !== undefined) {
-    //     return;
-    //   }
-
-    //   if (!this.filterQueryIsSum) {
-    //     let self = this;
-    //     this.tableNextRequest["service"] = service;
-    //     this.tableNextRequest["layerId"] = layerId;
-    //     this.tableNextRequest["layerName"] = layerName;
-
-    //     this.dataTableVisibility = false;
-
-    //     this.setTableData(data);
-
-    //     this.dataTableVisibility = true;
-    //     this.tableFeaturesData = response.data.features;
-    //     this.tableFeaturesHeader = response.data.tableHeaders;
-    //     this.stackedTableFeaturesHeader = response.data.tableHeaders;
-    //   }
-    //   this.filterQuery = "";
-    //   this.filterValues = [];
-    //   this.filterQueryIsSum = false;
-    //   // this.dynamicLayersReset(service, true);
-    // },
     async getGeometryData(coords) {
       let response = null;
       let geometry = null;
@@ -941,370 +538,32 @@ export default {
         }
       }
     },
-
-    // getVectorStyle(color) {
-    //   if (color === null) {
-    //     color = this.defaultColorObject;
-    //   }
-
-    //   var style = new Style({
-    //     fill: new Fill({
-    //       color: color.fill.hex8,
-    //     }),
-    //     stroke: new Stroke({
-    //       color: color.border.hex8,
-    //       width: 0.5,
-    //     }),
-    //     image: new CircleStyle({
-    //       radius: 7,
-    //       fill: new Fill({
-    //         color: color.fill.hex8,
-    //       }),
-    //       stroke: new Stroke({
-    //         color: color.border.hex8,
-    //         width: 0.5,
-    //       }),
-    //     }),
-    //   });
-    //   return style;
-    // },
-
-    // async selectService(service, isChecked) {
-    //   if (!isChecked) {
-    //     this.mapLayer.getLayers().forEach(function(layer) {
-    //       if (layer.get("type") === "draw") {
-    //         mapController.removeLayer(layer);
-    //       }
-    //     });
-    //   }
-    //   var tableActiveService = this.tableActiveService;
-    //   if (!isChecked && tableActiveService) {
-    //     if (serviceHelper.isEqual(service, tableActiveService))
-    //       this.dataTableVisibility = false;
-    //   }
-
-    //   if (serviceHelper.isLayer(service)) {
-    //     if (serviceHelper.isDynamic(service)) {
-    //       if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
-    //         let subLayerResponse = await this.getResponseDynamic(service);
-    //         service.layers = subLayerResponse.data.layers;
-    //       }
-    //     }
-    //     layerController.setSelected(service, isChecked);
-    //   } else {
-    //     bunchController.setSelected(service, isChecked);
-    //   }
-
-    //   if (isChecked) this.addService(service);
-    //   else mapController.deleteService(service);
-    // },
-    // addService(service) {
-    //   if (service.extent != null) {
-    //     this.mapLayer
-    //       .getView()
-    //       .fit([
-    //         service.extent.minX,
-    //         service.extent.minY,
-    //         service.extent.maxX,
-    //         service.extent.maxY
-    //       ]);
-    //   }
-
-    //   var newService = this.renderNewService(service);
-    //   this.getOrderNumber(this.dynamicLayerList, service);
-
-    //   newService.set("name", service.name);
-    //   var zIndex = this.getZIndex(service);
-    //   newService.setZIndex(zIndex);
-
-    //   this.mapLayer.addLayer(newService);
-    // },
-
-    // setZIndex(service) {
-    //   this.mapLayer.getLayers().forEach(layer => {
-    //     if (
-    //       layer.get("name") != undefined &&
-    //       layer.get("name") === service.name
-    //     ) {
-    //       layer.setZIndex(this.getZIndex(service));
-    //     }
-    //   });
-    // },
-    // getZIndex(service) {
-    //   let zIndex = 0;
-    //   let orderNo = 0;
-    //   if (serviceHelper.isLayer(service)) {
-    //     if (serviceHelper.isDynamic(service)) {
-    //       zIndex = layerSettings.dynamicZIndex;
-    //       orderNo = this.getOrderNumber(this.dynamicLayerList, service);
-    //     } else {
-    //       zIndex = layerSettings.basemapZIndex;
-    //       orderNo = this.getOrderNumber(this.baseLayerList, service);
-    //     }
-    //   } else {
-    //     zIndex = layerSettings.bunchZIndex;
-    //     orderNo = this.getOrderNumber(this.bunchLayerList, service);
-    //   }
-
-    //   return zIndex - orderNo;
-    // },
-
-    // getOrderNumber(array, service) {
-    //   var index = 0;
-    //   var result = 0;
-    //   layerHelper.recursiveLayerMapping(array, function(layer) {
-    //     index++;
-    //     if (layer.name == service.name) {
-    //       result = index;
-    //     }
-    //   });
-    //   return result;
-    // },
-    // getLayerZoomLevelOptions(service) {
-    //   return {
-    //     maxResolution: createXYZ().getResolution(service.minZoomLevel) * 1.01,
-    //     minResolution: createXYZ().getResolution(service.maxZoomLevel)
-    //   };
-    // },
-
-    // renderNewService(service) {
-    //   var isLayer = serviceHelper.isLayer(service);
-    //   let zoomLevelProperties = this.getLayerZoomLevelOptions(service);
-    //   let new_layer;
-
-    //   let defaultParams = {
-    //     id: service.id,
-    //     type: "layer"
-    //   };
-    //   let url = URL + "/api/map/service/" + service.name + "/MapServer/";
-    //   if (isLayer) {
-    //     var isDynamic = serviceHelper.isDynamic(service);
-    //     if (isDynamic) {
-    //       if (serviceHelper.isLocalService(service)) {
-    //         new_layer = new VectorTileLayer({
-    //           ...defaultParams,
-    //           ...zoomLevelProperties,
-    //           source: new VectorTileSource({
-    //             format: new MVT({
-    //               geometryName: "geom"
-    //             }),
-    //             url:
-    //               URL +
-    //               "/" +
-    //               MAP_URLS.MVT +
-    //               `/${service.id}/{z}/{x}/{y}/` +
-    //               (service.query.where != ""
-    //                 ? this.objectToQueryString(service.query)
-    //                 : "")
-    //           }),
-    //           style: this.getVectorStyle(service.color)
-    //         });
-    //       } else {
-    //         new_layer = new ImageLayer({
-    //           ...defaultParams,
-    //           ...zoomLevelProperties,
-    //           source: new ImageArcGISRest({
-    //             url: url,
-    //             crossOrigin: "Anonymous",
-    //             params: {
-    //               token: this.token,
-    //               layers: layerHelper.renderArcgisSublayerConfig(service),
-    //               dynamicLayers: layerHelper.renderSubLayersColorString(service)
-    //             }
-    //           })
-    //         });
-    //       }
-    //     } else {
-    //       if (service.spatial === 3857) {
-    //         url = url + "/tile/{z}/{y}/{x}?token=" + this.token;
-    //         new_layer = new TileLayer({
-    //           ...defaultParams,
-    //           ...zoomLevelProperties,
-    //           source: new XYZ({
-    //             url: url,
-    //             projection: "EPSG:3857",
-    //             crossOrigin: "Anonymous"
-    //           })
-    //         });
-    //       } else {
-    //         new_layer = new TileLayer({
-    //           ...defaultParams,
-    //           ...zoomLevelProperties,
-    //           source: new TileArcGISRest({
-    //             url: url,
-    //             crossOrigin: "Anonymous",
-    //             params: {
-    //               token: this.token,
-    //               FORMAT: "png8"
-    //             }
-    //           })
-    //         });
-    //       }
-    //     }
-    //   } else {
-    //     var queryParams = service.layers.map((item, index) => {
-    //       return {
-    //         layerId: item.id,
-    //         query: item.query
-    //       };
-    //     });
-    //     var params = { queries: queryParams };
-    //     new_layer = new VectorTileLayer({
-    //       ...defaultParams,
-    //       source: new VectorTileSource({
-    //         format: new MVT({
-    //           geometryName: "geom"
-    //         }),
-    //         url:
-    //           URL +
-    //           "/api/Tile/Intersect/VectorAsMvt" +
-    //           `/${service.id}/{z}/{x}/{y}/?` +
-    //           qs.stringify(params, {
-    //             arrayFormat: "indices",
-    //             allowDots: true
-    //           })
-    //       }),
-    //       style: feature => {
-    //         var featureLayerId = feature.get("layerId");
-    //         var layerIds = service.layers.map(item => {
-    //           return item.id;
-    //         });
-    //         var index = layerIds.indexOf(featureLayerId);
-
-    //         var color = materialColors[index];
-    //         var colorObj = {
-    //           border: {
-    //             hex8: color
-    //           },
-    //           fill: {
-    //             hex8: "#FFFFFF00"
-    //           }
-    //         };
-
-    //         return this.getVectorStyle(colorObj);
-    //       }
-    //     });
-    //   }
-
-    //   return new_layer;
-    // },
-
-    // refreshService(service) {
-    //   mapController.deleteService(service, false);
-    //   this.addService(service);
-    // },
-    // getLayer(id) {
-    //   let layer = null;
-    //   this.mapLayer.getLayers().forEach(function(lyr) {
-    //     var layerId = lyr.values_.id;
-    //     if (layerId !== undefined && layerId === id) {
-    //       layer = lyr;
-    //     }
-    //   });
-    //   return layer;
-    // },
-    // setBaseLayout(index) {
-    //   let layers = this.mapLayer.getLayers().getArray();
-    //   layers[0].setSource(this.baseMaps[index]);
-    // },
-    // async isLayerColorEnabled(service) {
-    //   let isColorEnabled = false;
-    //   let response = await layerService.getLayerDynamic({
-    //     token: this.token,
-    //     name: service.name,
-    //   });
-    //   if (response.data.layers[0].drawingInfo !== undefined) {
-    //     if (response.data.layers[0].drawingInfo.renderer.symbol !== undefined) {
-    //       if (
-    //         response.data.layers[0].drawingInfo.renderer.symbol.color !==
-    //         undefined
-    //       ) {
-    //         isColorEnabled = true;
-    //       }
-    //     }
-    //   }
-    //   return isColorEnabled;
-    // },
-    // async dynamicLayersReset(service, status) {
-    //   if (serviceHelper.isDynamicFromArcgis(service)) {
-    //     var isColorEnabled = await this.isLayerColorEnabled(service);
-
-    //     this.dynamicLayerList = layerHelper.recursiveLayerMapping(
-    //       this.dynamicLayerList,
-    //       async (layer) => {
-    //         if (layer != null && layer.id == service.id) {
-    //           if (layer.layers !== undefined && layer.layers !== null) {
-    //             layer.layers = layer.layers.map((item, index) => {
-    //               return {
-    //                 ...item,
-    //                 isColorEnabled,
-    //               };
-    //             });
-    //           }
-    //         }
-    //       }
-    //     );
-    //   }
-    // },
-    // async getResponseDynamic(service) {
-    //   let responseDynamic = null;
-    //   if (serviceHelper.isDynamicFromArcgis(service)) {
-    //     responseDynamic = await layerService.getDynamicLayers({
-    //       token: this.token,
-    //       name: service.name
-    //     });
-    //   }
-    //   return responseDynamic;
-    // },
-
-    // async selectSubService(service, index, id, e) {
-    //   let isChecked = e.target.checked;
-
-    //   this.dynamicLayerList = layerHelper.recursiveLayerMapping(
-    //     this.dynamicLayerList,
-    //     async (layer) => {
-    //       if (layer != null && layer.id == service.id) {
-    //         var subLayer = layer.layers.find((c) => c.id == id);
-    //         subLayer.isSelected = isChecked;
-    //       }
-    //     }
-    //   );
-
-    //   this.dynamicLayersReset(service, isChecked);
-    //   this.refreshService(service);
-    // },
-    // setDrawType(name) {
-    //   this.typeSelect = name;
-    //   this.mapLayer.removeInteraction(this.draw);
-    //   this.isColorPick = false;
-    //   this.isMarker = false;
-    //   this.isRemove = false;
-    //   if (name !== "None") {
-    //     this.addInteraction();
-    //   }
-    //   this.featureIDSet += 10;
-    //   document.body.style.cursor = "default";
-    // },
-    //   saveColor(service, colorObj) {
-    //     const { fillColor, borderColor } = colorObj;
-    //     var isLayer = serviceHelper.isLayer(service);
-    //     var isSubLayer = serviceHelper.isSublayer(service);
-    //     var isBunch = serviceHelper.isBunch(service);
-
-    //     var color = { fill: fillColor, border: borderColor };
-
-    //     if (isLayer || isSubLayer) {
-    //       var service = isSubLayer ? service.parent : service;
-
-    //       layerController.setColor(service, color, isSubLayer);
-    //     } else if (isBunch) {
-    //       bunchController.setColor(service.id, color);
-    //     }
-    //     this.refreshService(service);
-    //   },
-    // },
   },
   computed: {
+    isMarker: {
+      get() {
+        return toolController.getMarkerStatus();
+      },
+      set(value) {
+        toolController.setMarkerStatus(value);
+      },
+    },
+    isRemove: {
+      get() {
+        return toolController.getRemoveStatus();
+      },
+      set(value) {
+        toolController.setRemoveStatus(value);
+      },
+    },
+    isColorpick: {
+      get() {
+        return toolController.getColorPickStatus();
+      },
+      set(value) {
+        toolController.setColorPickStatus(value);
+      },
+    },
     moodal: {
       get() {
         return this.$store.getters.moodal;
@@ -1313,11 +572,7 @@ export default {
         this.$store.dispatch("saveMoodal", value);
       },
     },
-    defaultColorObject() {
-      var fill = this.$store.state.colorPicker.fill;
-      var border = this.$store.state.colorPicker.border;
-      return { fill, border };
-    },
+
     isInformationModalVisible: {
       get() {
         return this.$store.getters.isInformationModalVisible;
@@ -1332,6 +587,15 @@ export default {
     },
     selectedLayers() {
       return layerController.getSelectedLayers();
+    },
+    isDrawnShapeForDetection: {
+      get() {
+        return toolController.getDrawForChangeDetectionStatus();
+      },
+      set(value) {
+        // this.filterQueryIsSum = false;
+        toolController.setDrawForChangeDetectionStatus(value);
+      },
     },
     drawSource: {
       get() {
@@ -1360,143 +624,33 @@ export default {
         this.$store.dispatch("saveSelectionLayer", value);
       },
     },
-    sumFilterVisibility: {
-      get() {
-        var status = this.$store.getters.sumResultModalVisibility;
-        console.log("get -> status", status);
 
-        if (status) this.$moodal.sumResultModal.show();
-        else this.$moodal.sumResultModal.hide();
-        return status;
-      },
-      set(value) {
-        modalController.setSumResultVisibility(value);
-      },
-    },
     dataTableVisibility: {
       get() {
-        return this.$store.state.dataTable.isVisible;
+        return tableController.getTableVisibility();
       },
       set(value) {
-        this.$store.dispatch("SAVE_DATATABLE_VISIBLE", value);
+        if (value) {
+          tableController.setTableVisible();
+        } else {
+          tableController.setUnvisible();
+        }
       },
     },
 
-    focusedPolygonVector: {
-      get() {
-        return this.$store.state.layers.focusedPolygonVector;
-      },
-      set(value) {
-        this.$store.dispatch("saveFocusePolygonVector", value);
-      },
-    },
-
-    // This should not work
-    // tablePaging: {
-    //   get() {
-    //     return this.$store.state.dataTable.paging;
-    //   },
-    //   set(value) {
-    //     this.$store.dispatch("SAVE_DATATABLE_PAGING", value);
-    //   },
-    // },
-    // selectedServiceInfo() {
-    //   return this.$store.state.dataTable.serviceInfo;
-    // },
-    // filterQueryIsSum: {
-    //   get() {
-    //     return this.$store.state.filter.filterQueryIsSum;
-    //   },
-    //   set(value) {
-    //     this.$store.dispatch("SAVE_FILTER_QUERY_IS_SUM", value);
-    //   },
-    // },
-
-    // filterQueryArithmeticColumn() {
-    //   return this.$store.state.filter.filterQueryArithmeticColumn;
-    // },
-    // dynamicLayerList: {
-    //   get() {
-    //     return this.$store.getters.dynamicLayerList;
-    //   },
-    //   set(val) {
-    //     this.$store.dispatch("saveDynamicLayerList", val);
-    //   },
-    // },
-
-    // bunchLayerList: {
-    //   get() {
-    //     return this.$store.getters.bunchLayerList;
-    //   },
-    //   set(val) {
-    //     this.$store.dispatch("saveBunchLayerList", val);
-    //   },
-    // },
-    // baseLayerList: {
-    //   get() {
-    //     return this.$store.getters.baseLayerList;
-    //   },
-    //   set(val) {
-    //     this.$store.dispatch("saveBaseLayerList", val);
-    //   },
-    // },
-
-    tableData(id) {
-      return this.$store.dataTable.filter((x) => x.service.id === id);
-    },
-
-    tableHeadersWithAlias() {
-      return this.$store.state.dataTable.tableHeadersWithAlias;
-    },
-    selectedFillColor() {
-      return this.$store.state.colorPicker.fillColor;
-    },
-    selectedBorderColor() {
-      return this.$store.state.colorPicker.borderColor;
-    },
     shapeBorderColor() {
       return this.$store.state.shapeBorderColor;
     },
     shapeFillColor() {
       return this.$store.state.shapeFillColor;
     },
-    colorPicker() {
-      return this.$store.state.colorPicker;
-    },
-    lastBBOXOfShape() {
-      return this.$store.getters.bbox;
-    },
-    featuresToExcel() {
-      let features = [];
-      for (let i = 0; i < this.tableFeaturesData.length; i++) {
-        features[i] = this.tableFeaturesData[i].attributes;
-      }
-      return features;
-    },
-    checkedColumnsToExcel() {
-      let columns = {};
-      for (let column in this.tableFeaturesHeader) {
-        if (this.checkedColumns.includes(this.tableFeaturesHeader[column])) {
-          columns[
-            this.tableFeaturesHeader[column]
-          ] = this.stackedTableFeaturesHeader[column];
-        }
-      }
-      return columns;
-    },
-    activeTabId() {
-      return this.$store.state.dataTable.activeTabId;
-    },
-    filterValues: {
+
+    bbox: {
       get() {
-        const data = this.$store.getters.activeTableData;
-        return data ? data.filterValues : [];
+        return toolController.getBbox();
       },
       set(value) {
-        this.$store.dispatch("SAVE_DATATABLE_FILTER_VALUES", {
-          id: this.activeTabId,
-          value,
-        });
+        toolController.setBbox(value);
       },
     },
   },

@@ -267,6 +267,9 @@ const setters = {
   setDrawSource(val) {
     $store.dispatch("saveDrawSource", val);
   },
+  setSketch(val) {
+    $store.dispatch("saveSketch", val);
+  },
   setZIndex(service) {
     let map = mapLayer.get();
     map.getLayers().forEach((layer) => {
@@ -295,6 +298,9 @@ const getters = {
   },
   getDrawSource() {
     return $store.getters.drawSource;
+  },
+  getSketch() {
+    return $store.getters.sketch;
   },
   getLayer(id) {
     let map = mapLayer.get();

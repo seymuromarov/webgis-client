@@ -1,5 +1,5 @@
 import $store from "@/store/store.js";
-import { mapController } from "@/controllers";
+import { mapController, modalController } from "@/controllers";
 import { drawTypeEnum } from "@/enums";
 import {
   Graticule,
@@ -26,8 +26,8 @@ import {
 import { get } from "ol/proj";
 
 const functions = {
-  buildEventListener() {},
-  setDrawType(type) {
+  pickDrawType(type) {
+    console.log("pickDrawType -> type", type);
     let map = mapController.getMap();
     setters.setDrawType(type);
     map.removeInteraction(getters.getDraw());
@@ -58,16 +58,16 @@ const functions = {
     return geometryFunction;
   },
   deleteFeature() {
-    functions.setDrawType(drawTypeEnum.NONE);
+    functions.pickDrawType(drawTypeEnum.NONE);
     setters.setRemoveStatus(true);
   },
   eyeDropper() {
-    functions.setDrawType(drawTypeEnum.NONE);
-    this.$moodal.colorPickerModal.show();
+    functions.pickDrawType(drawTypeEnum.NONE);
+    modalController.showColorPickerModal();
     setters.setColorPickStatus(true);
   },
   resetFeatures() {
-    functions.setDrawType(drawTypeEnum.NONE);
+    functions.pickDrawType(drawTypeEnum.NONE);
 
     let elements = document.getElementsByClassName("maptooltip");
     for (let i = 0; i < elements.length; i++) {
@@ -129,7 +129,6 @@ const functions = {
         break;
     }
 
-    console.log(type);
     var options = {
       source: mapController.getDrawSource(),
       type: type,
@@ -139,7 +138,7 @@ const functions = {
     if (geometryFunction) options.geometryFunction = geometryFunction;
 
     let draw = new Draw(options);
-
+    setters.setDraw(draw);
     let map = mapController.getMap();
     map.addInteraction(draw);
     mapController.setMap(map);
@@ -150,13 +149,20 @@ const functions = {
     functions.createHelpmaptooltip();
 
     let listener;
-    let sketch = null;
+    mapController.setSketch("adsadasdasdsads");
     draw.on(
       "drawstart",
       function(evt) {
-        sketch = evt.feature;
+        mapController.setSketch(evt.feature);
+        console.log("addInteraction -> evt.feature", evt.feature);
         /** @type {module:ol/coordinate~Coordinate|undefined} */
         let maptooltipCoord = evt.coordinate;
+        let sketch = mapController.getSketch();
+        console.log(
+          "addInteraction ->  mapController.getSketch()",
+          mapController.getSketch()
+        );
+        console.log("addInteraction -> sketch", sketch);
         listener = sketch.getGeometry().on("change", function(evt) {
           let geom = evt.target;
           let output;
@@ -194,17 +200,17 @@ const functions = {
 
         try {
           measuremaptooltipElement.className =
-            "maptooltip maptooltip-static " + getters.getFeatureIdCounter();
+            "maptooltip maptooltip-static" + getters.getFeatureIdCounter();
           measuremaptooltip.setOffset([0, -7]);
           let bbox = e.feature.getGeometry().getExtent();
-          // store.dispatch("SAVE_DRAW_BBOX", bbox);
+          setters.setBbox(bbox);
         } catch (e) {
           functions.createMeasuremaptooltip();
           measuremaptooltipElement.className =
-            "maptooltip maptooltip-static " + getters.getFeatureIdCounter();
+            "maptooltip maptooltip-static" + getters.getFeatureIdCounter();
           measuremaptooltip.setOffset([0, -7]);
         }
-        sketch = null;
+        mapController.setSketch(null);
         measuremaptooltipElement = null;
         unByKey(listener);
 
@@ -231,6 +237,12 @@ const functions = {
   },
 
   createHelpmaptooltip() {
+    let element = getters.getHelpMapTooltipElement();
+    if (element) {
+      element.parentNode.removeChild(element);
+      setters.setHelpMapTooltipElement(element);
+    }
+
     let helpmaptooltipElement = document.createElement("div");
     helpmaptooltipElement.className = "maptooltip hidden";
     let helpmaptooltip = new Overlay({
@@ -246,6 +258,12 @@ const functions = {
     mapController.setMap(map);
   },
   createMeasuremaptooltip() {
+    let element = getters.getMeasureMapTooltipElement();
+    if (element) {
+      element.parentNode.removeChild(element);
+      setters.setMeasureMapTooltipElement(element);
+    }
+
     let measuremaptooltipElement = document.createElement("div");
     measuremaptooltipElement.className = "maptooltip maptooltip-measure";
     let measuremaptooltip = new Overlay({
@@ -298,7 +316,7 @@ const functions = {
     }
   },
   addPlace() {
-    functions.setDrawType(drawTypeEnum.NONE);
+    functions.pickDrawType(drawTypeEnum.NONE);
     setters.setMarkerStatus(true);
   },
   fullScreen() {
@@ -313,7 +331,7 @@ const functions = {
   },
   changeDetector() {
     setters.setBbox([]);
-    functions.setDrawType(drawTypeEnum.BOX);
+    functions.pickDrawType(drawTypeEnum.BOX);
     setters.setDrawForChangeDetectionStatus(true);
   },
 

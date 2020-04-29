@@ -5,6 +5,7 @@ const state = {
   selectedFeatureId: 0,
   draw: null,
   drawSource: null,
+  sketch: null,
 };
 
 const mutations = {
@@ -25,6 +26,9 @@ const mutations = {
   },
   SET_SELECTED_FEATURE_ID(state, payload) {
     state.selectedFeatureId = payload;
+  },
+  SET_SKETCH(state, payload) {
+    state.sketch = payload;
   },
 };
 
@@ -47,6 +51,9 @@ const actions = {
   saveSelectedFeatureId(context, payload) {
     context.commit("SET_SELECTED_FEATURE_ID", payload);
   },
+  saveSketch(context, payload) {
+    context.commit("SET_SKETCH", payload);
+  },
 };
 
 const getters = {
@@ -67,6 +74,9 @@ const getters = {
   },
   selectedFeatureId: (state) => {
     return state.selectedFeatureId;
+  },
+  sketch: (state) => {
+    return state.sketch;
   },
 };
 

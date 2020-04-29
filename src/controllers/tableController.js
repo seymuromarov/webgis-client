@@ -246,6 +246,9 @@ const getters = {
   getSumFilterColumn() {
     return $store.getters.sumFilterColumn;
   },
+  getTableVisibility() {
+    return $store.getters.sumFilterColumn;
+  },
 };
 
 const setters = {

@@ -28,7 +28,7 @@ const mutations = {
     state.isMarker = payload;
   },
   SET_DRAW_FOR_CHANGE_DETECTION_STATUS(state, payload) {
-    state.isChangeDetection = payload;
+    state.isDrawForChangeDetection = payload;
   },
   SET_REMOVE_STATUS(state, payload) {
     state.isRemove = payload;

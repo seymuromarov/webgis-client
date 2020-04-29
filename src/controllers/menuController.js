@@ -8,9 +8,7 @@ const getters = {
         key: "mouse",
         label: "Mouse",
         image: "mouse.svg",
-        click: () => {
-          toolController.setDrawType(drawTypeEnum.NONE);
-        },
+        click: () => toolController.pickDrawType(drawTypeEnum.NONE),
       },
       {
         key: "addPoint",
@@ -22,41 +20,31 @@ const getters = {
         key: "rectangle",
         label: "Rectangle",
         image: "rectangle.svg",
-        click: () => {
-          toolController.setDrawType(drawTypeEnum.BOX);
-        },
+        click: () => toolController.pickDrawType(drawTypeEnum.BOX),
       },
       {
         key: "square",
         label: "Square",
         image: "square.svg",
-        click: () => {
-          toolController.setDrawType(drawTypeEnum.SQUARE);
-        },
+        click: () => toolController.pickDrawType(drawTypeEnum.SQUARE),
       },
       {
         key: "circle",
         label: "Circle",
         image: "circle.svg",
-        click: () => {
-          toolController.setDrawType(drawTypeEnum.CIRCLE);
-        },
+        click: () => toolController.pickDrawType(drawTypeEnum.CIRCLE),
       },
       {
         key: "polygon",
         label: "Polygon",
         image: "polygon.svg",
-        click: () => {
-          toolController.setDrawType(drawTypeEnum.POLYGON);
-        },
+        click: () => toolController.pickDrawType(drawTypeEnum.POLYGON),
       },
       {
         key: "line",
         label: "Line",
         image: "line.svg",
-        click: () => {
-          toolController.setDrawType(drawTypeEnum.LINESTRING);
-        },
+        click: () => toolController.pickDrawType(drawTypeEnum.LINESTRING),
       },
       {
         key: "addPlace",

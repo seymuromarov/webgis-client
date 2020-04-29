@@ -4,9 +4,13 @@ const functions = {
     let moodal = getters.getMoodal();
     moodal.sumResultModal.show();
   },
-  showFilterModalModal() {
+  showFilterModal() {
     let moodal = getters.getMoodal();
     moodal.filterModal.show();
+  },
+  showColorPickerModal() {
+    let moodal = getters.getMoodal();
+    moodal.colorPickerModal.show();
   },
 };
 

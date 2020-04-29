@@ -55,7 +55,7 @@ export default {
     Treeselect,
   },
   props: {
-    lastBBOXOfShape: {
+    bbox: {
       required: true,
       type: Array,
     },
@@ -83,7 +83,7 @@ export default {
           `format=png8&` +
           `transparent=true&` +
           `size=1024,1024&` +
-          `bbox=${this.lastBBOXOfShape.toString()}&` +
+          `bbox=${this.bbox.toString()}&` +
           `bboxsr=3857&` +
           `imagesr=3857&` +
           `dpi=90`;
