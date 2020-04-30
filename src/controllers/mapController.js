@@ -72,6 +72,7 @@ const functions = {
 
     let map = mapLayer.get();
     map.addLayer(layer);
+    console.log("addService -> layer", layer);
     mapLayer.set(map);
   },
   focusToServicePolygon(pixel) {
@@ -203,7 +204,7 @@ const functions = {
           });
         } else {
           layer = new TileLayer({
-            ...defaultProps,
+            // ...defaultProps,
             source: new TileArcGISRest({
               url: tileHelper.buildTileUrl(
                 service,
@@ -217,6 +218,7 @@ const functions = {
             }),
           });
         }
+        console.log(layer);
       }
     } else {
       layer = new VectorTileLayer({

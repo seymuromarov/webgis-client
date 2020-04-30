@@ -1,12 +1,13 @@
 import { tileTypeEnum } from "@/enums";
 import { serviceHelper } from "@/helpers";
+import { tokenService } from "@/services";
 import $store from "@/store/store.js";
 import { URL, MAP_URLS } from "@/config/urls";
 import qs from "qs";
 const functions = {
   buildTileUrl(service, type) {
     let url = "";
-    const token = $store.getters.token;
+    const token = tokenService.getToken();
 
     const {
       LOCAL_MVT,

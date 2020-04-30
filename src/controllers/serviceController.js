@@ -29,10 +29,12 @@ const functions = {
     } else {
       bunchController.setSelected(service, isChecked);
     }
+
     mapController.resetSelectionLayer();
     if (isChecked) {
       mapController.addService(service);
-      mapController.buildSelectionLayer(service);
+      if (serviceHelper.isDynamicFromLocal(service))
+        mapController.buildSelectionLayer(service);
     } else mapController.deleteService(service);
   },
   async getResponseDynamic(service) {

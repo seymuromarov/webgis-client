@@ -19,15 +19,11 @@
 
     <!-- Report -->
     <CustomModal name="sumResultModal" :maxWidth="600">
-      <Report />
+      <Report :result="sumData" />
     </CustomModal>
 
     <!-- Filter -->
     <FilterModal />
-    <!-- <FilterModal
-      @filterSelectedColumn="filterSelectedColumn"
-      @filterData="filterData"
-    /> -->
 
     <!-- Shape Color Picker -->
     <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
@@ -638,6 +634,9 @@ export default {
       },
     },
 
+    sumData() {
+      return this.$store.getters.sumData;
+    },
     shapeBorderColor() {
       return this.$store.state.shapeBorderColor;
     },

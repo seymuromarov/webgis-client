@@ -1,5 +1,5 @@
 const state = {
-  sumData: null,
+  sumData: {},
   data: [],
   tabs: [],
   activeTabId: null,
@@ -47,6 +47,7 @@ const mutations = {
 const getters = {
   dataTableLoading: (state) => state.loading,
   tableData: (state) => state.data,
+  sumData: (state) => state.sumData,
   tableActiveService: (state) => state.activeService,
   activeTableData: (state) => {
     const item = state.data.find((x) => x.service.id === state.activeTabId);
