@@ -289,7 +289,7 @@ export default {
       this.isColumnPopupShowing = !this.isColumnPopupShowing;
     },
     showFilterModal() {
-      modalController.showFilterModalModal();
+      modalController.showFilterModal();
     },
     showSimpleFilterModal() {
       this.$moodal.dataModal.show();

@@ -10,7 +10,7 @@
             :title="item.label"
           >
             <img
-              :src="require(`../../assets/images/icons/${item.image}`)"
+              :src="item.image"
               alt=""
               :class="{ active: activeMenu === item.key }"
             />
@@ -25,7 +25,7 @@
             :title="item.label"
           >
             <img
-              :src="require(`../../assets/images/icons/${item.image}`)"
+              :src="item.image"
               alt=""
               :class="{ active: activeMenu === item.key }"
             />
@@ -174,15 +174,11 @@
       <div class="list__header">Tools</div>
 
       <ul class="list__content list__content--parent custom-scrollbar">
-        <li class="list__item" v-for="tool in toolList" :key="tool.key">
-          <div class="item__header" @click="tool.click">
+        <li class="list__item" v-for="item in toolList" :key="item.key">
+          <div class="item__header" @click="item.click">
             <span class="title">
-              <img
-                :src="require(`../../assets/images/icons/${tool.image}`)"
-                alt=""
-                class="pre"
-              />
-              {{ tool.label }}
+              <img :src="item.image" alt="" class="pre" />
+              {{ item.label }}
             </span>
           </div>
         </li>

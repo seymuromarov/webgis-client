@@ -2,7 +2,7 @@ import $store from "@/store/store.js";
 import { tileTypeEnum, layerTypeEnum } from "@/enums";
 import { serviceController, tableController } from "@/controllers";
 import { defaultZoomLevelSettings } from "@/config/settings";
-import { materialColors } from "@/config/colors";
+import { materialColors } from "@/constants/colors";
 import { tokenService } from "@/services";
 import { serviceHelper, layerHelper, tileHelper, colorHelper } from "@/helpers";
 import {
@@ -72,7 +72,6 @@ const functions = {
 
     let map = mapLayer.get();
     map.addLayer(layer);
-    console.log("addService -> layer", layer);
     mapLayer.set(map);
   },
   focusToServicePolygon(pixel) {
@@ -218,7 +217,6 @@ const functions = {
             }),
           });
         }
-        console.log(layer);
       }
     } else {
       layer = new VectorTileLayer({

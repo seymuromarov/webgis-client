@@ -224,7 +224,7 @@ export default {
     }
 
     .modal__body {
-      padding: 8px 16px;
+      // padding: 8px 16px;
       max-height: calc(100vh - 40px - 40px);
       overflow: auto;
       flex: 1;

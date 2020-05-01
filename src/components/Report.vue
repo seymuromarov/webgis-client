@@ -17,7 +17,7 @@
             {{ key }}
           </td>
           <td class="paddingRight">
-            {{ arithmeticDataResult[key] }}
+            {{ result[key] }}
           </td>
         </tr>
       </tbody>

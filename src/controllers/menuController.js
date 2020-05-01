@@ -1,5 +1,6 @@
 import $store from "@/store/store.js";
 import { toolController } from "@/controllers";
+import { icons } from "@/constants/assets";
 import { menuTabEnum, drawTypeEnum } from "@/enums";
 const getters = {
   getToolList() {
@@ -7,79 +8,79 @@ const getters = {
       {
         key: "mouse",
         label: "Mouse",
-        image: "mouse.svg",
+        image: icons.mouse,
         click: () => toolController.pickDrawType(drawTypeEnum.NONE),
       },
       {
         key: "addPoint",
         label: "Add point",
-        image: "point.svg",
+        image: icons.point,
         click: toolController.addPlace,
       },
       {
         key: "rectangle",
         label: "Rectangle",
-        image: "rectangle.svg",
+        image: icons.rectangle,
         click: () => toolController.pickDrawType(drawTypeEnum.BOX),
       },
       {
         key: "square",
         label: "Square",
-        image: "square.svg",
+        image: icons.square,
         click: () => toolController.pickDrawType(drawTypeEnum.SQUARE),
       },
       {
         key: "circle",
         label: "Circle",
-        image: "circle.svg",
+        image: icons.circle,
         click: () => toolController.pickDrawType(drawTypeEnum.CIRCLE),
       },
       {
         key: "polygon",
         label: "Polygon",
-        image: "polygon.svg",
+        image: icons.polygon,
         click: () => toolController.pickDrawType(drawTypeEnum.POLYGON),
       },
       {
         key: "line",
         label: "Line",
-        image: "line.svg",
+        image: icons.line,
         click: () => toolController.pickDrawType(drawTypeEnum.LINESTRING),
       },
       {
         key: "addPlace",
         label: "Add place",
-        image: "place.svg",
+        image: icons.place,
         click: () => {},
       },
       {
         key: "reset",
         label: "Reset",
-        image: "reset.svg",
+        image: icons.reset,
         click: toolController.resetFeatures,
       },
       {
         key: "delete",
         label: "Delete",
-        image: "delete.svg",
+        image: icons.delete,
         click: toolController.deleteFeature,
       },
       {
         key: "pickColor",
         label: "Pick color",
-        image: "color_picker.svg",
+        image: icons.color_picker,
         click: toolController.eyeDropper,
       },
       {
         key: "changeDetection",
         label: "Change detection",
-        image: "world.svg",
+        image: icons.world,
         click: toolController.changeDetector,
       },
       {
         key: "graticule",
         label: "Graticule",
-        image: "grid.svg",
+        image: icons.grid,
         click: toolController.addGraticule,
       },
     ];
@@ -89,13 +90,13 @@ const getters = {
       {
         key: "information",
         label: "Information",
-        image: "information.svg",
+        image: icons.information,
         click: setters.setInformationModalVisible,
       },
       {
         key: menuTabEnum.BASE_MAP_TYPE,
         label: "Layer Types",
-        image: "hamburger.svg",
+        image: icons.hamburger,
         click: () => {
           setters.setActiveMenuTab(menuTabEnum.BASE_MAP_TYPE);
         },
@@ -103,19 +104,19 @@ const getters = {
       {
         key: "exportPNG",
         label: "Export PNG",
-        image: "picture.svg",
+        image: icons.picture,
         click: toolController.pngExport,
       },
       {
         key: "exportGeojson",
         label: "Export GeoJSON",
-        image: "file_download.svg",
+        image: icons.file_download,
         click: toolController.exportData,
       },
       {
         key: "fullscreen",
         label: "Full screen",
-        image: "fullscreen.svg",
+        image: icons.fullscreen,
         click: toolController.fullScreen,
       },
     ];
@@ -125,7 +126,7 @@ const getters = {
       {
         key: menuTabEnum.PROFILE,
         label: "Profile",
-        image: "user.svg",
+        image: icons.user,
         click: () => {
           setters.setActiveMenuTab(menuTabEnum.PROFILE);
         },
@@ -133,7 +134,7 @@ const getters = {
       {
         key: menuTabEnum.TOOL,
         label: "Tools",
-        image: "pencil.svg",
+        image: icons.pencil,
         click: () => {
           setters.setActiveMenuTab(menuTabEnum.TOOL);
         },
@@ -141,7 +142,7 @@ const getters = {
       {
         key: menuTabEnum.DYNAMIC_LAYER,
         label: "Dynamic Layers",
-        image: "layer.svg",
+        image: icons.layer,
         click: () => {
           setters.setActiveMenuTab(menuTabEnum.DYNAMIC_LAYER);
         },
@@ -149,7 +150,7 @@ const getters = {
       {
         key: menuTabEnum.BASE_LAYER,
         label: "Basemaps",
-        image: "map.svg",
+        image: icons.map,
         click: () => {
           setters.setActiveMenuTab(menuTabEnum.BASE_LAYER);
         },

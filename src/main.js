@@ -7,6 +7,7 @@ import VueSweetalert2 from "vue-sweetalert2";
 import Snotify, { SnotifyPosition } from "vue-snotify";
 import VueQuillEditor from "vue-quill-editor";
 import * as ol from "ol";
+import underscore from "vue-underscore";
 import "ol-geocoder/dist/ol-geocoder.js";
 
 import router from "./router";
@@ -21,7 +22,8 @@ import "bootstrap/dist/css/bootstrap.css";
 import "./assets/style/globalStyle.scss";
 import "./assets/style/font-awesome/css/all.css";
 import "ol-geocoder/dist/ol-geocoder.min.css";
-
+// Styles
+import "ol/ol.css";
 // Quill Text editor
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
@@ -35,10 +37,10 @@ import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 
 Vue.use(Snotify, {
-    toast: {
-        position: SnotifyPosition.leftBottom,
-        timeout: 3000,
-    },
+  toast: {
+    position: SnotifyPosition.leftBottom,
+    timeout: 3000,
+  },
 });
 
 Vue.use(Loading);
@@ -46,6 +48,7 @@ Vue.use(Toasted); // TODO Remove Toasted
 Vue.use(VModal); // TODO Remove VModal
 Vue.component("downloadExcel", JsonExcel);
 Vue.use(VueCookie);
+Vue.use(underscore);
 
 Vue.config.productionTip = false;
 Vue.use(ol);
@@ -53,7 +56,7 @@ Vue.use(VueSweetalert2); // TODO Remove SweetAlert
 Vue.use(VueQuillEditor);
 
 new Vue({
-    router,
-    store,
-    render: h => h(App),
+  router,
+  store,
+  render: (h) => h(App),
 }).$mount("#app");

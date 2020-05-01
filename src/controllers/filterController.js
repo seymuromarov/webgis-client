@@ -7,10 +7,7 @@ const functions = {};
 
 const getters = {
   async getFilterColumnValues(id, column) {
-    console.log("getFilterColumnValues -> id, column", column);
-
     const serviceData = tableController.getServiceData(id);
-    console.log("getFilterColumnValues -> serviceData", serviceData);
     const service = serviceData.service;
     let filterColumnValues = [];
     const params = { id };

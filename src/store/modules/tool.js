@@ -6,6 +6,7 @@ const state = {
   isMarker: false,
   isRemove: false,
   isDrawForChangeDetection: false,
+  isDrawForFilter: false,
   isDrawForTable: false,
   drawType: drawTypeEnum.NONE,
   featureIdCounter: 0,
@@ -29,6 +30,9 @@ const mutations = {
   },
   SET_DRAW_FOR_CHANGE_DETECTION_STATUS(state, payload) {
     state.isDrawForChangeDetection = payload;
+  },
+  SET_DRAW_FOR_FILTER_STATUS(state, payload) {
+    state.isDrawForFilter = payload;
   },
   SET_REMOVE_STATUS(state, payload) {
     state.isRemove = payload;
@@ -69,6 +73,9 @@ const actions = {
   },
   saveDrawForChangeDetectionStatus(context, payload) {
     context.commit("SET_DRAW_FOR_CHANGE_DETECTION_STATUS", payload);
+  },
+  saveDrawForFilterStatus(context, payload) {
+    context.commit("SET_DRAW_FOR_FILTER_STATUS", payload);
   },
   saveRemoveStatus(context, payload) {
     context.commit("SET_REMOVE_STATUS", payload);
@@ -112,6 +119,9 @@ const getters = {
   },
   isDrawForChangeDetection: (state) => {
     return state.isDrawForChangeDetection;
+  },
+  isDrawForFilter: (state) => {
+    return state.isDrawForFilter;
   },
   drawType: (state) => {
     return state.drawType;

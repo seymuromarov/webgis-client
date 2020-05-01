@@ -114,7 +114,6 @@ export default {
         borderColor: border,
         fillColor: fill,
       };
-      console.log("onSave -> colorObj", colorObj);
       this.$emit("onSave", colorObj);
     },
 

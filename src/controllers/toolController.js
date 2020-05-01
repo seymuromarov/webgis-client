@@ -1,6 +1,8 @@
 import $store from "@/store/store.js";
 import { mapController, modalController } from "@/controllers";
 import { drawTypeEnum } from "@/enums";
+import { _ } from "vue-underscore";
+
 import {
   Graticule,
   Stroke,
@@ -26,8 +28,7 @@ import {
 import { get } from "ol/proj";
 
 const functions = {
-  pickDrawType(type) {
-    console.log("pickDrawType -> type", type);
+  pickDrawType(type, callback) {
     let map = mapController.getMap();
     setters.setDrawType(type);
     map.removeInteraction(getters.getDraw());
@@ -35,8 +36,9 @@ const functions = {
     setters.setMarkerStatus(false);
     setters.setRemoveStatus(false);
     if (type !== drawTypeEnum.NONE) {
-      functions.addInteraction(type);
+      functions.addInteraction(type, callback);
     }
+
     setters.addFeatureIdCounter(10);
     document.body.style.cursor = "default";
   },
@@ -112,8 +114,7 @@ const functions = {
     );
     a.dispatchEvent(e);
   },
-  addInteraction(type) {
-    console.log("addInteraction -> type", type);
+  addInteraction(type, callback) {
     setters.setColorPickStatus(false);
     setters.setMarkerStatus(false);
     setters.setRemoveStatus(false);
@@ -154,15 +155,10 @@ const functions = {
       "drawstart",
       function(evt) {
         mapController.setSketch(evt.feature);
-        console.log("addInteraction -> evt.feature", evt.feature);
         /** @type {module:ol/coordinate~Coordinate|undefined} */
         let maptooltipCoord = evt.coordinate;
         let sketch = mapController.getSketch();
-        console.log(
-          "addInteraction ->  mapController.getSketch()",
-          mapController.getSketch()
-        );
-        console.log("addInteraction -> sketch", sketch);
+
         listener = sketch.getGeometry().on("change", function(evt) {
           let geom = evt.target;
           let output;
@@ -202,7 +198,8 @@ const functions = {
           measuremaptooltipElement.className =
             "maptooltip maptooltip-static" + getters.getFeatureIdCounter();
           measuremaptooltip.setOffset([0, -7]);
-          let bbox = e.feature.getGeometry().getExtent();
+          // let bbox = e.feature.getGeometry().getExtent();
+          let bbox = e.feature.getGeometry().getCoordinates();
           setters.setBbox(bbox);
         } catch (e) {
           functions.createMeasuremaptooltip();
@@ -231,6 +228,10 @@ const functions = {
           e.feature.setStyle(newStyle);
         }
         setters.addFeatureIdCounter(10);
+
+        if (!_.isUndefined(callback) && _.isFunction(callback)) {
+          callback();
+        }
       },
       this
     );

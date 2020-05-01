@@ -48,7 +48,7 @@ const mapper = {
       layersVisibility: false,
       collapseVisibility: false,
 
-      query: { where: "" },
+      query: { where: "", extentCoordinates: [] },
       layers: null,
       apiFrom: "internal",
     };

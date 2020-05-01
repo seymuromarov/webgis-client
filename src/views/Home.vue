@@ -101,7 +101,7 @@ import {
 } from "@/wrappers/openLayerImports";
 
 // Other dependencies
-import proj4 from "proj4";
+// import proj4 from "proj4";
 import Multiselect from "vue-multiselect";
 
 // Custom components
@@ -119,27 +119,19 @@ import {
 } from "@/components/";
 
 // Utils
-import { URL, MAP_URLS } from "@/config/urls";
-import { layerSettings } from "@/config/settings";
-import { materialColors } from "@/config/colors";
 import cities from "@/data/cities.json";
 
-import { toggler, mapHelper, layerHelper, serviceHelper } from "@/helpers";
+import { toggler, mapHelper, serviceHelper } from "@/helpers";
 import {
   layerController,
-  bunchController,
   tableController,
   toolController,
   mapController,
   serviceController,
-  modalController,
 } from "@/controllers";
 
 // Services
 import { layerService, tileService } from "@/services";
-import qs from "qs";
-// Styles
-import "ol/ol.css";
 
 export default {
   name: "Home",
@@ -252,7 +244,6 @@ export default {
       let self = this;
 
       dragAndDropInteraction.on("addfeatures", function(event) {
-        console.log(this.drawSource);
         this.drawSource.addFeatures(event.features);
         self.mapLayer.getView().fit(this.drawSource.getExtent());
       });
@@ -334,7 +325,6 @@ export default {
               elem[0].className = "hidden";
             } catch (e) {}
           });
-          alert();
         }
         if (self.isColorPick) {
           self.mapLayer.forEachFeatureAtPixel(evt.pixel, function(

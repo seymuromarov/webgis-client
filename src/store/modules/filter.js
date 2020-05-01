@@ -7,17 +7,17 @@ const mutations = {
   SET_IS_SUM_FILTER(state, payload) {
     state.isSumFilter = payload;
   },
-  SET_SUM_FILTER_COLUMN(state, filterQueryArithmeticColumn) {
-    state.filterQueryArithmeticColumn = filterQueryArithmeticColumn;
+  SET_SUM_FILTER_COLUMN(state, payload) {
+    state.sumFilterColumn = payload;
   },
 };
 
 const actions = {
-  saveIsSumFilter(context, filterQueryIsSum) {
-    context.commit("SET_IS_SUM_FILTER", filterQueryIsSum);
+  saveIsSumFilter(context, payload) {
+    context.commit("SET_IS_SUM_FILTER", payload);
   },
-  saveSumFilterColumn(context, filterQueryArithmeticColumn) {
-    context.commit("SET_SUM_FILTER_COLUMN", filterQueryArithmeticColumn);
+  saveSumFilterColumn(context, payload) {
+    context.commit("SET_SUM_FILTER_COLUMN", payload);
   },
 };
 const getters = {
@@ -33,4 +33,5 @@ export default {
   state,
   mutations,
   actions,
+  getters,
 };
