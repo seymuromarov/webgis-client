@@ -2,7 +2,7 @@ import { serviceHelper, layerHelper } from "@/helpers";
 import { serviceTypeEnum } from "@/enums";
 import { serviceZIndexSettings } from "@/config/settings";
 import { layerService, tokenService } from "@/services";
-
+import { _ } from "vue-underscore";
 import {
   layerController,
   mapController,
@@ -134,6 +134,26 @@ const events = {
 };
 const setters = {};
 const getters = {
+  getDynamicService(service, layerId) {
+    var isBunch = serviceHelper.isBunch(service);
+    var isDynamicLayer =
+      serviceHelper.isDynamic(service) && serviceHelper.isLayer(service);
+
+    var isLayerIdNotUndefined = !_.isUndefined(layerId);
+    let layer = null;
+    if (isBunch && isLayerIdNotUndefined) {
+      //bunch service
+      layer = bunchController.getBunchLayer(
+        service.id, //bunch
+        layerId //layer
+      );
+    } else if (isDynamicLayer) {
+      layer = layerController.getDynamicLayer(service.id);
+    }
+
+    return layer;
+  },
+
   getZIndex(service) {
     let zIndex = 0;
     let orderNo = 0;

@@ -1,6 +1,9 @@
 import request from "../utils/request";
 import qs from "qs";
+import { queryStringHelper } from "@/helpers";
+import { serviceHelper, layerHelper } from "@/helpers";
 import { emlakUrl, URL, LAYER_URLS } from "../config/urls";
+
 // qs.stringify(params, {
 //     arrayFormat: "indices",
 //     allowDots: true,
@@ -91,12 +94,9 @@ export default {
         return request.get(
             URL + "/api/datatable/GetDatas/" + params.layerId + "/",
             {
-                params: params,
+                params,
                 paramsSerializer: params => {
-                    return qs.stringify(params, {
-                        arrayFormat: "indices",
-                        allowDots: true,
-                    });
+                    return queryStringHelper.formatQueryString(params);
                 },
             }
         );
@@ -105,12 +105,9 @@ export default {
         return request.get(
             URL + "/api/datatable/Intersect/GetDatas/" + bunchId + "/",
             {
-                params: params,
+                params,
                 paramsSerializer: params => {
-                    return qs.stringify(params, {
-                        arrayFormat: "indices",
-                        allowDots: true,
-                    });
+                    return queryStringHelper.formatQueryString(params);
                 },
             }
         );

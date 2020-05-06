@@ -49,6 +49,7 @@ import MousePosition from "ol/control/MousePosition.js";
 import { createStringXY } from "ol/coordinate.js";
 import { GPX, GeoJSON, IGC, KML, TopoJSON } from "ol/format.js";
 import { register } from "ol/proj/proj4.js";
+import Projection from "ol/proj/Projection";
 import { applyTransform } from "ol/extent";
 import * as format from "ol/format";
 import Graticule from "ol/layer/Graticule";
@@ -142,4 +143,5 @@ export {
   getLength,
   //""ol/Observable.js""
   unByKey,
+  Projection,
 };

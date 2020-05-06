@@ -7,4 +7,5 @@ const defaultZoomLevelSettings = {
   minZoomLevel: 0,
   maxZoomLevel: 20,
 };
+
 export { serviceZIndexSettings, defaultZoomLevelSettings };

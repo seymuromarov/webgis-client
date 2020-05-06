@@ -2,8 +2,7 @@
     <div class="map-controls" id="map-controls">
         <div class="search">
             <div class="search__logo">
-                <img src="../assets/images/ac_logo.svg"
-                     alt="Azercosmos logo" />
+                <img src="../assets/images/ac_logo.svg" alt="Azercosmos logo" />
             </div>
             <div class="search__select">
                 <input type="text"
@@ -80,11 +79,10 @@
         },
         methods: {
             onCitySelect(city) {
-                this.map
-                    .getView()
-                    .setCenter(
-                        fromLonLat([parseFloat(city.lng), parseFloat(city.lat)])
-                    );
+                this.map.getView().setCenter(
+                    //[city.lng, city.lat]
+                    fromLonLat([parseFloat(city.lng), parseFloat(city.lat)])
+                );
                 this.map.getView().setZoom(11);
                 this.searchInputValue = city.city;
             },
@@ -109,10 +107,8 @@
         computed: {
             citiesToShow() {
                 return this.cities
-                    .filter(x =>
-                        x.city
-                            .toLowerCase()
-                            .includes(this.searchInputValue.toLowerCase())
+                    .filter((x) =>
+                        x.city.toLowerCase().includes(this.searchInputValue.toLowerCase())
                     )
                     .sort((a, b) => {
                         if (a.city > b.city) {
