@@ -229,7 +229,8 @@ export default {
           table.scrollTop + table.clientHeight >= table.scrollHeight &&
           !this.paging.isBusy &&
           !this.isEndOfData() &&
-          serviceHelper.isLocalService(this.activeService)
+          (serviceHelper.isLocalService(this.activeService) ||
+            serviceHelper.isBunch(this.activeService))
         ) {
           var page = this.paging.page;
           page += 1;
@@ -253,12 +254,31 @@ export default {
       };
     },
     async getDatas() {
-      var params = {
-        layerId: this.activeService.id,
-        ...this.activeService.query,
-        paging: this.paging,
-      };
-      var response = await layerService.getLocalTableData(params);
+      let service = this.activeService;
+      var isBunch = serviceHelper.isBunch(service);
+      let params = {};
+      let paging = this.paging;
+      let response = null;
+      if (isBunch) {
+        params = service.layers.map((item, index) => {
+          return {
+            layerId: item.id,
+            query: { ...item.query },
+          };
+        });
+        response = await layerService.getIntersectLocalTableData(service.id, {
+          layerQueries: params,
+          paging: paging,
+        });
+      } else {
+        params = {
+          layerId: service.id,
+          ...service.query,
+          paging: paging,
+        };
+        response = await layerService.getLocalTableData(params);
+      }
+
       var data = response.data.features;
       this.tableData.features = [...this.tableData.features, ...data];
     },
@@ -437,7 +457,6 @@ export default {
     tableData: {
       get() {
         let data = tableController.getTableData();
-        console.log("get -> data", data);
         return data;
       },
       set(val) {

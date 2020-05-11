@@ -16,7 +16,6 @@ const tableData = {
 };
 const functions = {
   buildTableData(data, selectedService) {
-    console.log("buildTableData -> data", data);
     const item = data;
     let target = item.fieldAliases;
     let tableHeadersWithAlias = item.fieldAliases;
@@ -167,33 +166,16 @@ const functions = {
     } else {
       var isBunch = serviceHelper.isBunch(service);
       if (isBunch) {
-        var isSameService = serviceHelper.isEqual(service, activeService);
-
-        if (!isSameService) {
-          params = service.layers.map((item, index) => {
-            return {
-              layerId: item.id,
-              query: { ...item.query },
-            };
-          });
-        } else {
-          params = [
-            {
-              layerId: service.id,
-              query: { ...service.query },
-            },
-          ];
-        }
-
+        params = service.layers.map((item, index) => {
+          return {
+            layerId: item.id,
+            query: { ...item.query },
+          };
+        });
         response = await layerService.getIntersectLocalTableData(service.id, {
           layerQueries: params,
           paging: paging,
         });
-        // console.log(response);
-        // response.data = response.data.map((item) => {
-        //   item.service = layerHelper.dynamicMapping(item.service);
-        //   return item;
-        // });
       } else {
         params = {
           layerId: service.id,

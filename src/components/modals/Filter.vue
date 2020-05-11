@@ -200,6 +200,7 @@ import {
 } from "@/controllers";
 import { icons } from "@/constants/assets";
 import { layerHelper, serviceHelper } from "@/helpers";
+import { layerService } from "@/services";
 import { drawTypeEnum } from "@/enums";
 import { Modal } from "@/components";
 export default {
@@ -225,6 +226,7 @@ export default {
       currentTabId: null,
       selectedColumn: "gid",
       icons: {},
+      tableHeaders: [],
       extentType: null,
       drawTypeEnum: null,
     };
@@ -393,14 +395,6 @@ export default {
         }
       },
     },
-    tableHeaders() {
-      //   if (this.activeTabData) {
-      //     return Object.values(this.activeTabData.tableHeadersWithAlias);
-      //   } else {
-      //     return [];
-      //   }
-      return [];
-    },
 
     isSumFilter: {
       get() {
@@ -432,8 +426,11 @@ export default {
     },
   },
   watch: {
-    activeTabId(val) {
-      this.currentTabId = val;
+    async activeTabId(val) {
+      let layerId = 0;
+
+      let response = await layerService.getTableHeaders(val);
+      this.tableHeaders = response.data.headers;
     },
   },
 };

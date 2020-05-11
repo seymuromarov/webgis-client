@@ -1,3 +1,4 @@
+import { serviceHelper } from "@/helpers";
 const state = {
   sumData: {},
   data: {},
@@ -66,18 +67,17 @@ const actions = {
   SAVE_DATATABLE(context, payload) {
     context.commit("SET_DATATABLE", payload);
   },
-  // SAVE_DATATABLE_TABS(context, payload) {
-  //   context.commit("SET_DATATABLE_TABS", payload);
-  //   context.commit(
-  //     "SET_DATATABLE_ACTIVE_TAB_ID",
-  //     payload.length ? payload[0].id : null
-  //   );
-  // },
   SAVE_DATATABLE_ACTIVE_TAB_ID(context, id) {
     context.commit("SET_DATATABLE_ACTIVE_TAB_ID", id);
   },
   saveTableActiveService(context, payload) {
+    let activeTabId = null;
+    let isBunch = serviceHelper.isBunch(payload);
+    if (isBunch) activeTabId = payload.layers[0].id;
+    else activeTabId = payload.id;
+
     context.commit("SET_DATATABLE_ACTIVE_SERVICE", payload);
+    context.commit("SET_DATATABLE_ACTIVE_TAB_ID", activeTabId);
   },
   SAVE_DATATABLE_CHECKED_COLUMNS(context, { id, value }) {
     context.commit("SET_DATATABLE_CHECKED_COLUMNS", { id, value });
