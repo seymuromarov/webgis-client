@@ -24,18 +24,11 @@
       <div class="tableDiv howMuchWidthHaveMap">
         <div class="tableHeader">
           <div class="table__tabs">
-            <div
-              class="table__tab"
-              v-for="tab in tabs"
-              :key="tab.id"
-              :class="{
-                'table__tab--active': tab.id == currentTabId,
-              }"
-              @click="setActiveTab(tab.id)"
-            >
-              {{ tab.name }}
+            <div class="table__tab table__tab--active">
+              {{ tableName }}
             </div>
           </div>
+
           <div class="table__operations">
             <download-excel
               v-if="tableHeaders"
@@ -117,10 +110,7 @@
               </tr>
             </thead>
             <tbody class="tableBody custom-scrollbar">
-              <tr
-                v-for="(data, index) in activeTableData.tableData"
-                :key="index"
-              >
+              <tr v-for="(data, index) in tableData.features" :key="index">
                 <td
                   class="makeMePoint"
                   @click="fitToPolygon(data)"
@@ -215,13 +205,13 @@ export default {
       deep: true,
       immediate: false,
     },
-    activeTabId: {
-      handler(val) {
-        this.currentTabId = Number(val);
-      },
-      deep: true,
-      immediate: false,
-    },
+    // activeTabId: {
+    //   handler(val) {
+    //     this.currentTabId = Number(val);
+    //   },
+    //   deep: true,
+    //   immediate: false,
+    // },
   },
   methods: {
     resetScroll() {
@@ -239,7 +229,7 @@ export default {
           table.scrollTop + table.clientHeight >= table.scrollHeight &&
           !this.paging.isBusy &&
           !this.isEndOfData() &&
-          serviceHelper.isLocalService(this.activeTableService)
+          serviceHelper.isLocalService(this.activeService)
         ) {
           var page = this.paging.page;
           page += 1;
@@ -264,16 +254,13 @@ export default {
     },
     async getDatas() {
       var params = {
-        layerId: this.activeTableService.id,
-        ...this.activeTableService.query,
+        layerId: this.activeService.id,
+        ...this.activeService.query,
         paging: this.paging,
       };
       var response = await layerService.getLocalTableData(params);
       var data = response.data.features;
-      this.activeTableData.tableData = [
-        ...this.activeTableData.tableData,
-        ...data,
-      ];
+      this.tableData.features = [...this.tableData.features, ...data];
     },
     resetPaging() {
       this.paging = {
@@ -377,107 +364,99 @@ export default {
 
       this.$forceUpdate();
     },
-    setActiveTab(tab) {
-      this.activeTabId = tab;
-    },
+    // setActiveTab(tab) {
+    //   this.activeTabId = tab;
+    // },
   },
   computed: {
     isVisible() {
-      return this.$store.state.dataTable.isVisible;
+      return tableController.getTableVisibility();
     },
     loading() {
-      return this.$store.getters.dataTableLoading;
+      return tableController.getTableLoadingStatus();
     },
     totalCount() {
-      return this.$store.state.dataTable.totalCount;
+      return this.tableData.totalCount;
     },
     paging: {
       get() {
-        var data = tableController.getServiceData(this.currentTabId);
-        var paging = data.paging;
-        return paging;
+        return tableController.getTablePaging();
       },
       set(value) {
-        tableController.setPaging(this.currentTabId, value);
+        tableController.setTablePaging(value);
       },
     },
-    serviceInfo() {
-      return this.activeTableData.serviceInfo;
-    },
+
     tableName() {
-      return this.activeTableData.tableName;
+      return this.tableData.tableName;
     },
     tableHeaders() {
-      return this.activeTableData.tableHeaders;
+      return this.tableData.tableHeaders;
     },
     tableStackedHeaders: {
       get() {
-        return this.activeTableData.tableStackedHeaders;
+        return this.tableData.tableStackedHeaders;
       },
       set(value) {
         this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
       },
     },
     tableHeadersWithAlias() {
-      return this.activeTableData.tableHeadersWithAlias;
+      return this.tableData.tableHeadersWithAlias;
     },
-    tableData: {
-      get() {
-        return this.$store.getters.tableData;
-      },
-    },
+
     target() {
       return this.activeTableData.target;
     },
     checkedColumnsData: {
       get() {
-        return this.activeTableData.checkedColumnsData;
+        return this.tableData.checkedColumnsData;
       },
       set(value) {
-        this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", {
-          id: this.currentTabId,
-          value,
-        });
+        this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", value);
       },
     },
-    tabs() {
-      return this.$store.state.dataTable.tabs;
-    },
+
     checkedColumns: {
       get() {
-        return this.activeTableData.checkedColumns;
+        return this.tableData.checkedColumns;
       },
       set(value) {
-        this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", {
-          id: this.currentTabId,
-          value,
-        });
+        this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
       },
     },
-    lastBBOXOfShape() {
-      return this.activeTableData.lastBBOXOfShape;
-    },
-    activeTabId: {
-      get() {
-        return this.$store.state.dataTable.activeTabId;
-      },
-      set(id) {
-        this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
-      },
-    },
-    activeTableData() {
-      return this.$store.getters.activeTableData;
-    },
-    activeTableService() {
-      const item = this.tableData.find(
-        (x) => x.service.id === this.currentTabId
-      );
 
-      if (item) {
-        return item.service;
-      } else {
-        return [];
-      }
+    // activeTabId: {
+    //   get() {
+    //     return this.$store.state.dataTable.activeTabId;
+    //   },
+    //   set(id) {
+    //     this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
+    //   },
+    // },
+    tableData: {
+      get() {
+        let data = tableController.getTableData();
+        console.log("get -> data", data);
+        return data;
+      },
+      set(val) {
+        tableController.setTableData(val);
+      },
+    },
+    // activeTableService() {
+    //   const item = this.tableData.find(
+    //     (x) => x.service.id === this.currentTabId
+    //   );
+
+    //   if (item) {
+    //     return item.service;
+    //   } else {
+    //     return [];
+    //   }
+    // },
+    activeService() {
+      return this.$store.getters.tableActiveService;
     },
   },
   filters: {

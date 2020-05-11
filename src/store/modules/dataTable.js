@@ -1,7 +1,8 @@
 const state = {
   sumData: {},
-  data: [],
-  tabs: [],
+  data: {},
+  paging: {},
+  // tabs: [],
   activeTabId: null,
   activeService: null,
   isVisible: false,
@@ -22,13 +23,13 @@ const mutations = {
     state.activeService = payload;
   },
   SET_DATATABLE_CHECKED_COLUMNS(state, { id, value }) {
-    state.data.find((x) => x.service.id === id).data.checkedColumnsData = value;
+    state.data.checkedColumnsData = value;
   },
   SET_DATATABLE_CHECKED_COLUMNS_DATA(state, { id, value }) {
-    state.data.find((x) => x.service.id === id).data.checkedColumns = value;
+    state.data.checkedColumns = value;
   },
   SET_DATATABLE_FILTER_VALUES(state, { id, value }) {
-    state.data.find((x) => x.service.id === id).data.filterValues = value;
+    state.data.filterValues = value;
   },
   SET_DATATABLE_VISIBLE(state, payload) {
     state.isVisible = payload;
@@ -46,13 +47,15 @@ const mutations = {
 
 const getters = {
   dataTableLoading: (state) => state.loading,
+  dataTableVisibleStatus: (state) => state.isVisible,
   tableData: (state) => state.data,
+  tablePaging: (state) => state.paging,
   sumData: (state) => state.sumData,
   tableActiveService: (state) => state.activeService,
-  activeTableData: (state) => {
-    const item = state.data.find((x) => x.service.id === state.activeTabId);
-    return item ? item.data : {};
-  },
+  // activeTableData: (state) => {
+  //   const item = state.data.find((x) => x.service.id === state.activeTabId);
+  //   return item ? item.data : {};
+  // },
   activeTableService: (state) => {
     const item = state.data.find((x) => x.service.id === state.activeTabId);
     return item ? item.data : {};
@@ -63,13 +66,13 @@ const actions = {
   SAVE_DATATABLE(context, payload) {
     context.commit("SET_DATATABLE", payload);
   },
-  SAVE_DATATABLE_TABS(context, payload) {
-    context.commit("SET_DATATABLE_TABS", payload);
-    context.commit(
-      "SET_DATATABLE_ACTIVE_TAB_ID",
-      payload.length ? payload[0].id : null
-    );
-  },
+  // SAVE_DATATABLE_TABS(context, payload) {
+  //   context.commit("SET_DATATABLE_TABS", payload);
+  //   context.commit(
+  //     "SET_DATATABLE_ACTIVE_TAB_ID",
+  //     payload.length ? payload[0].id : null
+  //   );
+  // },
   SAVE_DATATABLE_ACTIVE_TAB_ID(context, id) {
     context.commit("SET_DATATABLE_ACTIVE_TAB_ID", id);
   },
@@ -91,7 +94,7 @@ const actions = {
   SAVE_DATATABLE_LOADING(context, payload) {
     context.commit("SET_DATATABLE_LOADING", payload);
   },
-  SAVE_DATATABLE_PAGING(context, payload) {
+  saveDataTablePaging(context, payload) {
     context.commit("SET_DATATABLE_PAGING", payload);
   },
 
