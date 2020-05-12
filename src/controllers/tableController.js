@@ -19,18 +19,32 @@ const functions = {
     const item = data;
     let target = item.fieldAliases;
     let tableHeadersWithAlias = item.fieldAliases;
-    let tableHeaders = Object.keys(tableHeadersWithAlias);
+    let tableHeaders = item.fieldAliases;
     let checkedColumnsData = [];
-    let checkedColumns = [];
+    let checkedColumns = tableHeaders.map((val, key) => {
+      return key;
+    });
 
-    let defaultUnCheckedColumns = ["OBJECTID", "Shape_Length", "Shape_Area"];
+    // let defaultUnCheckedColumns = ["OBJECTID", "Shape_Length", "Shape_Area"];
 
-    for (let alias in tableHeaders) {
-      if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
-        checkedColumnsData.push(tableHeaders[alias]);
-        checkedColumns.push(tableHeaders[alias]);
-      }
-    }
+    // for (let alias in tableHeaders) {
+    //   console.log("buildTableData -> alias", alias);
+    //   // if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
+    //   // checkedColumnsData.push(tableHeaders[alias]);
+
+    //   checkedColumns.push(tableHeaders[alias]);
+    //   // }
+    // }
+
+    // for (var i = 0; i < tableHeaders.length; i++) {
+    //   let key = parseInt(i);
+    //   let val = parseInt(tableHeaders[i]);
+    //   // if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
+    //   // checkedColumnsData.push(tableHeaders[alias]);
+
+    //   checkedColumns.push(key);
+    //   // }
+    // }
 
     tableHeaders = tableHeaders.map((item, index) => {
       let name = item;
@@ -44,9 +58,9 @@ const functions = {
       return name;
     });
 
-    checkedColumns = checkedColumns.map((item, index) => {
-      return tableHeadersWithAlias[item];
-    });
+    // checkedColumns = checkedColumns.map((item, index) => {
+    //   return tableHeadersWithAlias[item];
+    // });
     var dataObj = {
       totalCount: item.totalCount,
       tableName: selectedService.name,

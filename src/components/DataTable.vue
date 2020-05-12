@@ -33,10 +33,11 @@
             <download-excel
               v-if="tableHeaders"
               :fetch="fetchFullData"
-              :fields="checkedColumnsToExcel()"
               type="xls"
               :name="'test' + '_report.xls'"
             >
+              <!-- :fields="checkedColumnsToExcel()" -->
+
               <i
                 title="Export As Excel"
                 class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
@@ -73,7 +74,7 @@
                     @click="selectColumns(alias, index, $event)"
                     type="checkbox"
                     :id="alias"
-                    :value="alias"
+                    :value="index"
                     v-model="checkedColumns"
                     checked="checked"
                     class="column__checkbox"
@@ -101,7 +102,7 @@
             <thead>
               <tr>
                 <th
-                  v-show="checkedColumns.includes(alias)"
+                  v-show="checkedColumns.includes(index)"
                   v-for="(alias, index) in tableHeaders"
                   :key="index"
                 >
@@ -114,7 +115,11 @@
                 <td
                   class="makeMePoint"
                   @click="fitToPolygon(data)"
-                  v-show="checkedColumnsData.includes(key)"
+                  v-show="
+                    checkedColumns.includes(
+                      Object.keys(data.attributes).indexOf(key)
+                    )
+                  "
                   v-for="(attr, key) in data.attributes"
                   :key="key"
                 >
@@ -314,13 +319,14 @@ export default {
     },
     async fetchFullData() {
       var response = await layerService.getLocalTableData({
-        layerId: this.activeTableService.id,
-        ...this.activeTableService.query,
+        layerId: this.activeService.id,
+        ...this.activeService.query,
         isGeometryDataExist: false,
       });
       var attributes = response.data.features.map((item, index) => {
         return item.attributes;
       });
+
       return attributes;
     },
     featuresToExcel() {
@@ -330,39 +336,35 @@ export default {
       }
       return features;
     },
-    checkedColumnsToExcel() {
-      let columns = {};
+    // checkedColumnsToExcel() {
+    //   let columns = {};
+    //   for (let i = 0; i < this.tableHeaders.length; i++) {
+    //     let key = i;
+    //     let val = this.tableHeaders[i];
+    //     console.log("checkedColumnsToExcel -> val", val);
 
-      for (let column in this.tableHeaders) {
-        if (this.checkedColumns.includes(this.tableHeaders[column])) {
-          columns[this.tableHeaders[column]] = this.tableStackedHeaders[column];
-        }
-      }
-      return columns;
-    },
+    //     if (this.checkedColumns.includes(key)) {
+    //       columns[val] = val;
+    //     }
+    //   }
+    //   console.log("checkedColumnsToExcel -> columns", columns);
+
+    //   // for (let column in this.tableHeaders) {
+    //   //   if (this.checkedColumns.includes(this.tableHeaders[column])) {
+    //   //     columns[this.tableHeaders[column]] = this.tableStackedHeaders[column];
+    //   //   }
+    //   // }
+    //   return columns;
+    // },
     selectColumns(alias, index, e) {
-      if (e.target.checked) {
-        this.checkedColumns.push(alias);
-
-        var keys = Object.keys(this.tableHeadersWithAlias);
-        var tempAlias = alias;
-
-        for (let i = 0; i < keys.length; i++) {
-          if (this.tableHeadersWithAlias[keys[i]] === alias) {
-            tempAlias = keys[i];
-            break;
-          }
-        }
-        this.checkedColumnsData.push(tempAlias);
+      var isChecked = e.target.checked;
+      if (isChecked) {
+        this.checkedColumns.push(index);
       } else {
-        const checkedColumnsDataIndex = this.checkedColumnsData.findIndex(
-          (x) => x.toLowerCase() === alias.toLowerCase()
-        );
         const checkedColumnsIndex = this.checkedColumns.findIndex(
-          (x) => x.toLowerCase() === alias.toLowerCase()
+          (x) => x === index
         );
 
-        this.checkedColumnsData.splice(checkedColumnsDataIndex, 1);
         this.checkedColumns.splice(checkedColumnsIndex, 1);
       }
     },
