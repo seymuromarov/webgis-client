@@ -162,7 +162,11 @@ import Multiselect from "vue-multiselect";
 import { layerService } from "@/services";
 import Resizable from "vue-resizable";
 import CustomModal from "./common/Modal";
-import { tableController, modalController } from "@/controllers";
+import {
+  tableController,
+  toolController,
+  modalController,
+} from "@/controllers";
 import { serviceHelper } from "@/helpers";
 export default {
   name: "DataTable",
@@ -210,13 +214,6 @@ export default {
       deep: true,
       immediate: false,
     },
-    // activeTabId: {
-    //   handler(val) {
-    //     this.currentTabId = Number(val);
-    //   },
-    //   deep: true,
-    //   immediate: false,
-    // },
   },
   methods: {
     resetScroll() {
@@ -295,7 +292,9 @@ export default {
       };
     },
     toggleIsVisible() {
-      this.$store.dispatch("SAVE_DATATABLE_VISIBLE", !this.isVisible);
+      toolController.deleteActiveServiceFeatures();
+      tableController.setTableUnvisible();
+      // this.$store.dispatch("SAVE_DATATABLE_VISIBLE", !this.isVisible);
     },
     togglePopup(e) {
       this.isColumnPopupShowing = !this.isColumnPopupShowing;
@@ -336,26 +335,7 @@ export default {
       }
       return features;
     },
-    // checkedColumnsToExcel() {
-    //   let columns = {};
-    //   for (let i = 0; i < this.tableHeaders.length; i++) {
-    //     let key = i;
-    //     let val = this.tableHeaders[i];
-    //     console.log("checkedColumnsToExcel -> val", val);
 
-    //     if (this.checkedColumns.includes(key)) {
-    //       columns[val] = val;
-    //     }
-    //   }
-    //   console.log("checkedColumnsToExcel -> columns", columns);
-
-    //   // for (let column in this.tableHeaders) {
-    //   //   if (this.checkedColumns.includes(this.tableHeaders[column])) {
-    //   //     columns[this.tableHeaders[column]] = this.tableStackedHeaders[column];
-    //   //   }
-    //   // }
-    //   return columns;
-    // },
     selectColumns(alias, index, e) {
       var isChecked = e.target.checked;
       if (isChecked) {
@@ -448,14 +428,6 @@ export default {
       },
     },
 
-    // activeTabId: {
-    //   get() {
-    //     return this.$store.state.dataTable.activeTabId;
-    //   },
-    //   set(id) {
-    //     this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
-    //   },
-    // },
     tableData: {
       get() {
         let data = tableController.getTableData();
@@ -465,17 +437,7 @@ export default {
         tableController.setTableData(val);
       },
     },
-    // activeTableService() {
-    //   const item = this.tableData.find(
-    //     (x) => x.service.id === this.currentTabId
-    //   );
 
-    //   if (item) {
-    //     return item.service;
-    //   } else {
-    //     return [];
-    //   }
-    // },
     activeService() {
       return this.$store.getters.tableActiveService;
     },

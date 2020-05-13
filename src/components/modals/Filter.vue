@@ -197,12 +197,14 @@ import {
   toolController,
   tableController,
   filterController,
+  modalController,
 } from "@/controllers";
 import { icons } from "@/constants/assets";
 import { layerHelper, serviceHelper } from "@/helpers";
 import { layerService } from "@/services";
 import { drawTypeEnum } from "@/enums";
 import { Modal } from "@/components";
+import { _ } from "vue-underscore";
 export default {
   name: "FilterBox",
   components: {
@@ -241,25 +243,43 @@ export default {
   methods: {
     drawTypeOnChange(e) {
       let value = e.target.value;
+
+      var serviceInfo = {
+        id: this.activeService.id,
+        type: this.activeService.type,
+      };
+      toolController.deleteActiveServiceFeatures();
       if (this.extentType == value) {
         this.extentType = drawTypeEnum.NONE;
+        serviceController.setExtentCoordinates(this.activeService, "");
 
-        layerController.setExtentCoordinates(this.activeService, "");
+        // layerController.setExtentCoordinates(this.activeService, "");
       } else {
-        this.$moodal.filterModal.hide();
-        toolController.pickDrawType(value, () => {
-          this.$moodal.filterModal.show();
-          this.extentType = value;
+        modalController.hideFilterModal();
+        tableController.setTableUnvisible();
 
-          let extentCoordinates = this.bbox;
-          layerController.setExtentCoordinates(
-            this.activeService,
-            JSON.stringify(extentCoordinates)
-          );
+        let featureOptions = {
+          forService: serviceInfo,
+        };
+        toolController.pickDrawType(
+          value,
+          () => {
+            modalController.showFilterModal();
+            this.extentType = value;
 
-          toolController.pickDrawType(this.drawTypeEnum.NONE);
-          filterController.setIsRequiredServiceRefresh(true);
-        });
+            let extentCoordinates = this.bbox;
+
+            serviceController.setExtentCoordinates(
+              this.activeService,
+              JSON.stringify(extentCoordinates)
+            );
+
+            toolController.pickDrawType(this.drawTypeEnum.NONE);
+            tableController.setTableVisible();
+            filterController.setIsRequiredServiceRefresh(true);
+          },
+          featureOptions
+        );
       }
     },
     handleQueryChange(e) {
@@ -305,7 +325,11 @@ export default {
       return this.activeService && serviceHelper.isLayer(this.activeService);
     },
     extentOptionsVisibility() {
-      return this.activeService && serviceHelper.isLayer(this.activeService);
+      return (
+        this.activeService &&
+        (serviceHelper.isLayer(this.activeService) ||
+          serviceHelper.isBunch(this.activeService))
+      );
     },
 
     tabs() {
@@ -388,8 +412,8 @@ export default {
           let activeService = this.$store.getters.tableActiveService;
           let isBunch = serviceHelper.isBunch(activeService);
           if (isBunch) {
-            bunchController.setQuery(activeService, this.activeTabId, query);
-          } else layerController.setQuery(activeService, query);
+            serviceController.setQuery(activeService, query, this.activeTabId);
+          } else serviceController.setQuery(activeService, query);
 
           filterController.setIsRequiredServiceRefresh(true);
         }

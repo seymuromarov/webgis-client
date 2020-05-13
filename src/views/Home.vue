@@ -614,7 +614,7 @@ export default {
         if (value) {
           tableController.setTableVisible();
         } else {
-          tableController.setUnvisible();
+          tableController.setTableUnvisible();
         }
       },
     },

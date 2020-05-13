@@ -68,19 +68,33 @@ const setters = {
     // return bunchLayerList;
     bunchLayerList.set(list);
   },
-  setQuery(bunch, serviceId, where) {
+  setQuery(bunch, bunchLayerId, query) {
     let list = bunchLayerList.get();
     list = list.map((item, index) => {
       if (item.id === bunch.id) {
         const services = bunch.layers;
         services.map((s) => {
-          if (s.id === serviceId) s.query.where = where;
+          if (s.id === bunchLayerId) s.query.where = query;
           return s;
         });
       }
       return item;
     });
     // return bunchLayerList;
+    bunchLayerList.set(list);
+  },
+  setExtentCoordinates(bunch, coordinates) {
+    let list = bunchLayerList.get();
+    list = list.map((item, index) => {
+      if (item.id === bunch.id) {
+        const layers = bunch.layers;
+
+        layers.forEach(function(layer) {
+          layer.query.extentCoordinates = coordinates;
+        });
+      }
+      return item;
+    });
     bunchLayerList.set(list);
   },
 };

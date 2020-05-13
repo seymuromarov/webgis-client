@@ -25,27 +25,6 @@ const functions = {
       return key;
     });
 
-    // let defaultUnCheckedColumns = ["OBJECTID", "Shape_Length", "Shape_Area"];
-
-    // for (let alias in tableHeaders) {
-    //   console.log("buildTableData -> alias", alias);
-    //   // if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
-    //   // checkedColumnsData.push(tableHeaders[alias]);
-
-    //   checkedColumns.push(tableHeaders[alias]);
-    //   // }
-    // }
-
-    // for (var i = 0; i < tableHeaders.length; i++) {
-    //   let key = parseInt(i);
-    //   let val = parseInt(tableHeaders[i]);
-    //   // if (!defaultUnCheckedColumns.includes(tableHeaders[alias])) {
-    //   // checkedColumnsData.push(tableHeaders[alias]);
-
-    //   checkedColumns.push(key);
-    //   // }
-    // }
-
     tableHeaders = tableHeaders.map((item, index) => {
       let name = item;
       for (let k in target) {
@@ -58,9 +37,6 @@ const functions = {
       return name;
     });
 
-    // checkedColumns = checkedColumns.map((item, index) => {
-    //   return tableHeadersWithAlias[item];
-    // });
     var dataObj = {
       totalCount: item.totalCount,
       tableName: selectedService.name,
@@ -76,43 +52,8 @@ const functions = {
 
     let paging = getters.getDefaultPagingOptions();
 
-    // let tableData = getters.getTableData();
-
-    // let activeService = getters.getTableActiveService();
-    // if (
-    //   serviceHelper.isBunch(selectedService) &&
-    //   serviceHelper.isEqual(selectedService, activeService)
-    // ) {
-    //   for (let i = 0; i < dataTableArr.length; i++) {
-    //     const item = dataTableArr[i];
-    //     let isExist = tableData.some((c) => c.service.id === item.service.id);
-
-    //     if (isExist) {
-    //       tableData = tableData.map((val) => {
-    //         const { service, data } = item;
-
-    //         if (val.service.id === item.service.id) {
-    //           val.service = service;
-    //           val.data = data;
-    //         }
-    //         return val;
-    //       });
-    //     } else {
-    //       tableData.push(item);
-    //     }
-    //   }
-    // } else {
-    //   tableData = dataTableArr;
-    // }
-    // let tabs = tableData.map((item, index) => {
-    //   return {
-    //     id: item.service.id,
-    //     name: item.service.name,
-    //   };
-    // });
     setters.setTableData(dataObj);
     setters.setTablePaging(paging);
-    // setters.setTableTabs(tabs);
   },
 
   getTable: async (service) => {
@@ -125,33 +66,24 @@ const functions = {
 
     let isLayer = serviceHelper.isLayer(service);
     let isLocalService = serviceHelper.isLocalService(service);
+    let isBunch = serviceHelper.isBunch(service);
 
-    if (isLocalService) {
-      if (isSumFilter && isLayer) {
+    if (isLocalService || isBunch) {
+      if (isSumFilter && isLayer && !isBunch) {
         setters.setSumData(response.data.result);
         modalController.showSumResultModal();
       }
 
-      //if (serviceHelper.isQueryExist(service))
       if (filterController.getIsRequiredServiceRefresh())
         mapController.refreshService(service);
     }
-
-    // let data = [];
-
-    // if (!Array.isArray(response.data)) {
-    //   response.data["service"] = service;
-    //   data = [response.data];
-    // } else {
-    //   data = response.data;
-    // }
 
     if (response.data.error !== undefined) {
       return;
     }
 
     if (!isSumFilter) {
-      setters.setUnvisible();
+      setters.setTableUnvisible();
 
       functions.buildTableData(response.data, service);
 
@@ -266,7 +198,7 @@ const setters = {
     $store.dispatch("SAVE_DATATABLE_VISIBLE", true);
   },
 
-  setUnvisible() {
+  setTableUnvisible() {
     $store.dispatch("SAVE_DATATABLE_VISIBLE", false);
   },
   setTableLoading(val) {
@@ -285,13 +217,5 @@ const setters = {
   setTablePaging(val) {
     $store.dispatch("saveDataTablePaging", val);
   },
-  //   setPaging(serviceId, val) {
-  //     let data = tableData.get();
-  //     data = data.map((item) => {
-  //       if (item.service.id === serviceId) item.paging = val;
-  //       return item;
-  //     });
-  //     tableData.set(data);
-  //   },
 };
 export default { ...functions, ...getters, ...setters };

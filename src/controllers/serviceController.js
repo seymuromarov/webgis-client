@@ -9,6 +9,7 @@ import {
   bunchController,
   tableController,
 } from "@/controllers";
+import toolController from "./toolController";
 const functions = {
   async selectService(service, isChecked) {
     if (!isChecked) {
@@ -17,7 +18,7 @@ const functions = {
     var tableActiveService = tableController.getTableActiveService();
     if (!isChecked && tableActiveService) {
       if (serviceHelper.isEqual(service, tableActiveService))
-        tableController.setUnvisible();
+        tableController.setTableUnvisible();
     }
 
     if (serviceHelper.isLayer(service)) {
@@ -31,11 +32,15 @@ const functions = {
     }
 
     mapController.resetSelectionLayer();
+    toolController.deleteActiveServiceFeatures();
     if (isChecked) {
       mapController.addService(service);
       if (serviceHelper.isDynamicFromLocal(service))
         mapController.buildSelectionLayer(service);
-    } else mapController.deleteService(service);
+    } else {
+      mapController.deleteService(service);
+      functions.resetQuery(service);
+    }
   },
   async getResponseDynamic(service) {
     let responseDynamic = null;
@@ -103,6 +108,24 @@ const functions = {
     }
     mapController.refreshService(service);
   },
+  resetQuery(service) {
+    var isBunch = serviceHelper.isBunch(service);
+    var isDynamicLayer =
+      serviceHelper.isDynamic(service) && serviceHelper.isLayer(service);
+    if (isBunch) {
+      const layers = service.layers;
+      layers.forEach(function(layer) {
+        var isLayerIdNotUndefined = !_.isUndefined(layer.id);
+        if (isLayerIdNotUndefined) {
+          setters.setQuery(service, "", layer.id);
+          setters.setExtentCoordinates(service, "");
+        }
+      });
+    } else if (isDynamicLayer) {
+      setters.setQuery(service, "");
+      setters.setExtentCoordinates(service, "");
+    }
+  },
 };
 
 const events = {
@@ -132,7 +155,29 @@ const events = {
     }
   },
 };
-const setters = {};
+const setters = {
+  setQuery(service, query, bunchLayerId) {
+    var isBunch = serviceHelper.isBunch(service);
+    var isDynamicLayer =
+      serviceHelper.isDynamic(service) && serviceHelper.isLayer(service);
+    var isLayerIdNotUndefined = !_.isUndefined(bunchLayerId);
+    if (isBunch && isLayerIdNotUndefined) {
+      bunchController.setQuery(service, bunchLayerId, query);
+    } else if (isDynamicLayer) {
+      layerController.setQuery(service, query);
+    }
+  },
+  setExtentCoordinates(service, coordinates) {
+    var isBunch = serviceHelper.isBunch(service);
+    var isDynamicLayer =
+      serviceHelper.isDynamic(service) && serviceHelper.isLayer(service);
+    if (isBunch) {
+      bunchController.setExtentCoordinates(service, coordinates);
+    } else if (isDynamicLayer) {
+      layerController.setExtentCoordinates(service, coordinates);
+    }
+  },
+};
 const getters = {
   getDynamicService(service, layerId) {
     var isBunch = serviceHelper.isBunch(service);

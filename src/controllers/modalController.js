@@ -8,6 +8,10 @@ const functions = {
     let moodal = getters.getMoodal();
     moodal.filterModal.show();
   },
+  hideFilterModal() {
+    let moodal = getters.getMoodal();
+    moodal.filterModal.hide();
+  },
   showColorPickerModal() {
     let moodal = getters.getMoodal();
     moodal.colorPickerModal.show();
