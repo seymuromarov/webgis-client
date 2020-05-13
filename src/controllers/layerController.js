@@ -102,6 +102,10 @@ const getters = {
     });
     return selectedLayers;
   },
+  getExtentCoordinates(layerId) {
+    let layer = getters.getDynamicLayer(layerId);
+    return layer.query.extentCoordinates;
+  },
 };
 const setters = {
   setSelected(service, isChecked) {

@@ -107,7 +107,9 @@
           >
             <label
               class="btn  btn-info "
-              v-bind:class="{ active: extentType == drawTypeEnum.SQUARE }"
+              v-bind:class="{
+                active: isExtentAreaExist && extentType == drawTypeEnum.SQUARE,
+              }"
             >
               <input
                 type="radio"
@@ -119,7 +121,9 @@
             </label>
             <label
               class="btn  btn-info "
-              v-bind:class="{ active: extentType == drawTypeEnum.BOX }"
+              v-bind:class="{
+                active: isExtentAreaExist && extentType == drawTypeEnum.BOX,
+              }"
             >
               <input
                 type="radio"
@@ -131,7 +135,9 @@
             </label>
             <label
               class="btn  btn-info "
-              v-bind:class="{ active: extentType == drawTypeEnum.POLYGON }"
+              v-bind:class="{
+                active: isExtentAreaExist && extentType == drawTypeEnum.POLYGON,
+              }"
             >
               <input
                 type="radio"
@@ -142,8 +148,11 @@
               <img :src="icons.polygon" />
             </label>
             <label
+              v-if="circleButtonVisibility"
               class="btn  btn-info "
-              v-bind:class="{ active: extentType == drawTypeEnum.CIRCLE }"
+              v-bind:class="{
+                active: isExtentAreaExist && extentType == drawTypeEnum.CIRCLE,
+              }"
             >
               <input
                 type="radio"
@@ -314,13 +323,27 @@ export default {
   },
   computed: {
     isExtentAreaExist() {
-      return (
-        this.extentType !== drawTypeEnum.NONE &&
-        this.bbox &&
-        this.bbox.length > 0
-      );
-    },
+      var activeService = this.activeService;
+      let isBunch = serviceHelper.isBunch(activeService);
+      let extentExist = false;
+      if (activeService) {
+        if (isBunch) {
+          var extent = bunchController.getExtentCoordinates(activeService.id);
+          extentExist = extent.some(function(item) {
+            return item !== null && item !== "";
+          });
+          console.log("isExtentAreaExist -> extentExist", extentExist);
+        } else {
+          var extent = layerController.getExtentCoordinates(activeService.id);
+          extentExist = extent !== null && extent !== "";
+        }
+      }
 
+      return this.extentType !== drawTypeEnum.NONE && extentExist;
+    },
+    circleButtonVisibility() {
+      return !serviceHelper.isBunch(this.activeService);
+    },
     reportCheckboxVisibility() {
       return this.activeService && serviceHelper.isLayer(this.activeService);
     },

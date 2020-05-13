@@ -32,7 +32,7 @@ const functions = {
     }
 
     mapController.resetSelectionLayer();
-    toolController.deleteActiveServiceFeatures();
+
     if (isChecked) {
       mapController.addService(service);
       if (serviceHelper.isDynamicFromLocal(service))
@@ -40,6 +40,7 @@ const functions = {
     } else {
       mapController.deleteService(service);
       functions.resetQuery(service);
+      toolController.deleteActiveServiceFeatures();
     }
   },
   async getResponseDynamic(service) {

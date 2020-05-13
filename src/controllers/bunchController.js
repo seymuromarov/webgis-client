@@ -43,6 +43,14 @@ const getters = {
     const layer = bunch.layers.find((c) => c.id === layerId);
     return layer;
   },
+  getExtentCoordinates(bunchId) {
+    var arr = [];
+    let bunch = getters.getBunch(bunchId);
+    bunch.layers.forEach(function(layer) {
+      arr.push(layer.query.extentCoordinates);
+    });
+    return arr;
+  },
 };
 
 const setters = {
