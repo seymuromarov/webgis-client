@@ -13,6 +13,9 @@ import {
   ImageLayer,
   ImageArcGISRest,
   TileLayer,
+  VectorLayer,
+  VectorSource,
+  GeoJSON,
   XYZ,
   TileArcGISRest,
   Style,
@@ -203,7 +206,7 @@ const functions = {
           });
         } else {
           layer = new TileLayer({
-            // ...defaultProps,
+            ...defaultProps,
             source: new TileArcGISRest({
               url: tileHelper.buildTileUrl(
                 service,
@@ -306,10 +309,10 @@ const getters = {
     let map = mapLayer.get();
     let layer = null;
 
-    map.getLayers().forEach(function(lyr) {
-      var layerId = lyr.values_.id;
+    map.getLayers().forEach(function(item) {
+      var layerId = item.get("id");
       if (layerId !== undefined && layerId === id) {
-        layer = lyr;
+        layer = item;
       }
     });
     return layer;
