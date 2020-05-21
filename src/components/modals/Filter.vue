@@ -332,7 +332,6 @@ export default {
           extentExist = extent.some(function(item) {
             return item !== null && item !== "";
           });
-          console.log("isExtentAreaExist -> extentExist", extentExist);
         } else {
           var extent = layerController.getExtentCoordinates(activeService.id);
           extentExist = extent !== null && extent !== "";
