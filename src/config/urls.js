@@ -21,6 +21,9 @@ const BUNCH_URL = {
   GET: URL + "/api/bunch/get",
   GET_ALL: URL + "/api/bunch/getall",
 };
+const NDVI_URL = {
+  GET_ALL: URL + "/api/ndviassessment/getall",
+};
 const LAYER_URLS = {
   GET_ALL: URL + "/api/Map/GetLayers",
 };
@@ -42,4 +45,5 @@ export {
   LAYER_URLS,
   DATATABLE_URLS,
   MAP_URLS,
+  NDVI_URL,
 };

@@ -9,7 +9,6 @@ import VueQuillEditor from "vue-quill-editor";
 import * as ol from "ol";
 import underscore from "vue-underscore";
 import "ol-geocoder/dist/ol-geocoder.js";
-
 import router from "./router";
 import store from "./store/store";
 
@@ -36,6 +35,10 @@ import "sweetalert2/dist/sweetalert2.min.css";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 
+//Vue MultiSelect
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
+
 Vue.use(Snotify, {
   toast: {
     position: SnotifyPosition.leftBottom,
@@ -44,6 +47,7 @@ Vue.use(Snotify, {
 });
 
 Vue.use(Loading);
+Vue.use(Multiselect);
 Vue.use(Toasted); // TODO Remove Toasted
 Vue.use(VModal); // TODO Remove VModal
 Vue.component("downloadExcel", JsonExcel);

@@ -1,5 +1,5 @@
 import $store from "@/store/store.js";
-import { toolController } from "@/controllers";
+import { toolController, modalController } from "@/controllers";
 import { icons } from "@/constants/assets";
 import { menuTabEnum, drawTypeEnum } from "@/enums";
 const getters = {
@@ -76,6 +76,18 @@ const getters = {
         label: "Change detection",
         image: icons.world,
         click: toolController.changeDetector,
+      },
+      {
+        key: "ndviAssessment",
+        label: "NDVI Assessment",
+        image: icons.world,
+        click: () => {
+          let callback = () => {
+            modalController.showNdviAssessmentModal();
+          };
+
+          toolController.ndviAssessment(callback);
+        },
       },
       {
         key: "graticule",

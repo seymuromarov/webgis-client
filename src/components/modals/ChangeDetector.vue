@@ -6,36 +6,35 @@
     :minHeight="400"
     @afterHide="$emit('close')"
   >
-    <div class="row form-group"></div>
-    <div class="col-md-12">
-      <div class="detector">
-        <!-- <p class="detector-title"></p> -->
-        <!-- <button @click="$emit('close')">&#x2715;</button> -->
-
-        <treeselect
-          v-model="selectedLayers"
-          :multiple="true"
-          :show-count="true"
-          :options="baseOptions"
-          :limit="4"
-          valueFormat="object"
-          :disable-branch-nodes="true"
-          search-nested
-        />
-        <div class="detector-list row">
-          <div
-            :key="index"
-            v-for="(exported, index) in exportedImages"
-            class="detector-list-item col-md-4"
-          >
-            <p>{{ exported.label }}</p>
-            <div class="image-wrapper">
-              <img :src="exported.image" />
+    <div class="row form-group">
+      <div class="col-md-12">
+        <div class="detector">
+          <treeselect
+            v-model="selectedLayers"
+            :multiple="true"
+            :show-count="true"
+            :options="baseOptions"
+            :limit="4"
+            valueFormat="object"
+            :disable-branch-nodes="true"
+            search-nested
+          />
+          <div class="detector-list row">
+            <div
+              :key="index"
+              v-for="(exported, index) in exportedImages"
+              class="detector-list-item col-md-4"
+            >
+              <p>{{ exported.label }}</p>
+              <div class="image-wrapper">
+                <img :src="exported.image" />
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <!-- <div class="detector-wrapper"> -->
 
     <!-- </div> -->

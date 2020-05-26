@@ -379,6 +379,10 @@ const functions = {
     functions.pickDrawType(drawTypeEnum.BOX);
     setters.setDrawForChangeDetectionStatus(true);
   },
+  ndviAssessment(callback) {
+    setters.setBbox([]);
+    functions.pickDrawType(drawTypeEnum.BOX, callback);
+  },
 
   formatArea(polygon) {
     let area = getArea(polygon);

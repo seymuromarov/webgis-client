@@ -12,6 +12,16 @@ const functions = {
     let moodal = getters.getMoodal();
     moodal.filterModal.hide();
   },
+
+  showNdviAssessmentModal() {
+    let moodal = getters.getMoodal();
+    moodal.ndviAssessmentModal.show();
+  },
+  hideNdviAssessmentModal() {
+    let moodal = getters.getMoodal();
+    moodal.ndviAssessmentModal.hide();
+  },
+
   showColorPickerModal() {
     let moodal = getters.getMoodal();
     moodal.colorPickerModal.show();

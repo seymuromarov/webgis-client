@@ -36,6 +36,8 @@
       v-bind="{ bbox, token }"
       @close="(bbox = []) & (isDrawnShapeForDetection = false)"
     ></detector-modal>
+
+    <NdviAssessment />
     <!-- Information Modal -->
     <InfoModal
       :isOpen="isInformationModalVisible"
@@ -101,10 +103,6 @@ import {
   Projection,
 } from "@/wrappers/openLayerImports";
 
-// Other dependencies
-// import proj4 from "proj4";
-import Multiselect from "vue-multiselect";
-
 // Custom components
 import {
   ShapeColorPicker,
@@ -117,6 +115,7 @@ import {
   Modal as CustomModal,
   ComputedLayersModal,
   ChangeDetector as DetectorModal,
+  NdviAssessment,
 } from "@/components/";
 
 import { toggler, mapHelper, serviceHelper } from "@/helpers";
@@ -135,7 +134,6 @@ export default {
   name: "Home",
   components: {
     ShapeColorPicker,
-    Multiselect,
     DataTable,
     DetectorModal,
     InfoModal,
@@ -145,6 +143,7 @@ export default {
     MapControls,
     CustomModal,
     ComputedLayersModal,
+    NdviAssessment,
   },
   data() {
     return {
@@ -184,6 +183,7 @@ export default {
     });
 
     this.moodal = this.$moodal;
+    console.log("mounted -> this.moodal", this.moodal);
 
     this.hashResolveResult = this.resolveHash(window.location.hash);
 
@@ -640,5 +640,3 @@ export default {
   },
 };
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
