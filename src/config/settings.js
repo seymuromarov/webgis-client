@@ -7,5 +7,19 @@ const defaultZoomLevelSettings = {
   minZoomLevel: 0,
   maxZoomLevel: 20,
 };
+const arcgisImgExportSettings = {
+  f: "image",
+  format: "png",
+  transparent: "true",
+  size: "1024,1024",
+  bbox: null,
+  bboxsr: "4326",
+  imagesr: "4326",
+  dpi: "90",
+};
 
-export { serviceZIndexSettings, defaultZoomLevelSettings };
+export {
+  serviceZIndexSettings,
+  defaultZoomLevelSettings,
+  arcgisImgExportSettings,
+};

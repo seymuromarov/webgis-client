@@ -4,6 +4,7 @@ const drawTypeEnum = {
   BOX: "Box",
   CIRCLE: "Circle",
   LINESTRING: "LineString",
-  POLYGON: "Polygon"
+  POLYGON: "Polygon",
+  POINT: "Point",
 };
 export default drawTypeEnum;

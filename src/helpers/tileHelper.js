@@ -1,5 +1,5 @@
 import { tileTypeEnum } from "@/enums";
-import { serviceHelper, queryStringHelper } from "@/helpers";
+import { serviceHelper, urlHelper } from "@/helpers";
 import { tokenService } from "@/services";
 import $store from "@/store/store.js";
 import { URL, MAP_URLS } from "@/config/urls";
@@ -21,7 +21,7 @@ const functions = {
         if (serviceHelper.isLayer(service)) {
           let params = service.query;
 
-          let queryString = queryStringHelper.formatQueryString(params);
+          let queryString = urlHelper.formatQueryString(params);
 
           url = `${URL}/${MAP_URLS.MVT}/${service.id}/{z}/{x}/{y}/?${queryString}`;
         } else {
@@ -31,7 +31,7 @@ const functions = {
             return obj;
           });
 
-          let queryString = queryStringHelper.formatQueryString({
+          let queryString = urlHelper.formatQueryString({
             queries: params,
           });
 

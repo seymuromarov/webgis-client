@@ -9,6 +9,7 @@ import map from "./map";
 import tool from "./tool";
 import menu from "./menu";
 import modal from "./modal";
+import history from "./history";
 
 export default {
   auth,
@@ -22,4 +23,5 @@ export default {
   tool,
   menu,
   modal,
+  history,
 };

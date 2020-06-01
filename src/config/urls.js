@@ -1,11 +1,10 @@
+import { urlHelper } from "@/helpers";
+
 const getUrl = window.location;
 let server_url = getUrl.protocol + "//webgis.azercosmos.az";
 
 const baseUrl = server_url;
-const emlakUrl = getUrl.protocol + "//webgis.azercosmos.az/emlak";
 
-// const SERVER_URL = "http://webgis1.azercosmos.az";
-// const LOCAL_URL = "https://localhost:5001";
 const URL =
   process.env.NODE_ENV === "development"
     ? process.env.VUE_APP_BASE_API
@@ -36,14 +35,26 @@ const MAP_URLS = {
   GEOJSON: "api/Tile/VectorAsGeoJson",
 };
 
+const ARCGIS_URLS = {
+  EXPORT_IMAGE_URL: (name, params) => {
+    let url =
+      URL +
+      "/api/map/service/" +
+      name +
+      "/MapServer/export?" +
+      urlHelper.formatQueryString(params);
+    return url;
+  },
+};
+
 export {
   baseUrl,
   URL,
-  emlakUrl,
   BUNCH_URL,
   ACCOUNT_URL,
   LAYER_URLS,
   DATATABLE_URLS,
   MAP_URLS,
   NDVI_URL,
+  ARCGIS_URLS,
 };

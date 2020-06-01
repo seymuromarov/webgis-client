@@ -18,8 +18,10 @@ import App from "./App.vue";
  * Styles
  */
 import "bootstrap/dist/css/bootstrap.css";
-import "./assets/style/globalStyle.scss";
-import "./assets/style/font-awesome/css/all.css";
+import "@/assets/style/globalStyle.scss";
+import "@/assets/style/multiSelect.scss";
+import "@/assets/style/modal.scss";
+import "@/assets/style/font-awesome/css/all.css";
 import "ol-geocoder/dist/ol-geocoder.min.css";
 // Styles
 import "ol/ol.css";

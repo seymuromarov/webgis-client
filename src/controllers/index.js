@@ -7,6 +7,7 @@ import toolController from "./toolController";
 import menuController from "./menuController";
 import modalController from "./modalController";
 import filterController from "./filterController";
+import historyController from "./historyController";
 export {
   mapController,
   layerController,
@@ -17,4 +18,5 @@ export {
   menuController,
   modalController,
   filterController,
+  historyController,
 };

@@ -13,9 +13,6 @@ import {
   ImageLayer,
   ImageArcGISRest,
   TileLayer,
-  VectorLayer,
-  VectorSource,
-  GeoJSON,
   XYZ,
   TileArcGISRest,
   Style,
@@ -277,7 +274,7 @@ const setters = {
     let map = mapLayer.get();
     map.getLayers().forEach((layer) => {
       if (layer.get("id") != undefined && layer.get("id") === service.id) {
-        layer.setZIndex(serviceController.calculateZIndex(service));
+        layer.setZIndex(serviceController.getZIndex(service));
       }
     });
   },

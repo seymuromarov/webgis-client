@@ -1,13 +1,7 @@
 import request from "../utils/request";
-import qs from "qs";
-import { queryStringHelper } from "@/helpers";
-import { serviceHelper, layerHelper } from "@/helpers";
-import { emlakUrl, URL, LAYER_URLS, DATATABLE_URLS } from "../config/urls";
+import { urlHelper } from "@/helpers";
+import { URL, LAYER_URLS, DATATABLE_URLS } from "../config/urls";
 
-// qs.stringify(params, {
-//     arrayFormat: "indices",
-//     allowDots: true,
-// }),
 export default {
   getUserRelatedLayers() {
     return request.get(URL + "/api/userlayer/getuserlayers");
@@ -93,7 +87,7 @@ export default {
       {
         params,
         paramsSerializer: (params) => {
-          return queryStringHelper.formatQueryString(params);
+          return urlHelper.formatQueryString(params);
         },
       }
     );
@@ -104,7 +98,7 @@ export default {
       {
         params,
         paramsSerializer: (params) => {
-          return queryStringHelper.formatQueryString(params);
+          return urlHelper.formatQueryString(params);
         },
       }
     );

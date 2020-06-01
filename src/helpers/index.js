@@ -7,17 +7,17 @@ import hashHelper from "./hashHelper";
 import bunchHelper from "./bunchHelper";
 import serviceHelper from "./serviceHelper";
 import tileHelper from "./tileHelper";
-import queryStringHelper from "./queryStringHelper";
+import urlHelper from "./urlHelper";
 
 export {
-    toggler,
-    mapHelper,
-    colorHelper,
-    layerHelper,
-    dateFormatter,
-    hashHelper,
-    bunchHelper,
-    serviceHelper,
-    tileHelper,
-    queryStringHelper,
+  toggler,
+  mapHelper,
+  colorHelper,
+  layerHelper,
+  dateFormatter,
+  hashHelper,
+  bunchHelper,
+  serviceHelper,
+  tileHelper,
+  urlHelper,
 };
