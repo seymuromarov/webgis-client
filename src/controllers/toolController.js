@@ -1,6 +1,12 @@
 import $store from "@/store/store.js";
-import { mapController, modalController, tableController } from "@/controllers";
+import {
+  mapController,
+  modalController,
+  tableController,
+  ndviController,
+} from "@/controllers";
 import { drawTypeEnum } from "@/enums";
+import { mapHelper } from "@/helpers";
 import { _ } from "vue-underscore";
 
 import {
@@ -202,13 +208,13 @@ const functions = {
           let output;
 
           if (geom instanceof Polygon) {
-            output = functions.formatArea(geom);
+            output = mapHelper.formatArea(geom);
             maptooltipCoord = geom.getInteriorPoint().getCoordinates();
           } else if (geom instanceof LineString) {
-            output = functions.formatLength(geom);
+            output = mapHelper.formatLength(geom);
             maptooltipCoord = geom.getLastCoordinate();
           } else if (geom instanceof Circle) {
-            output = functions.formatCircleRadius(geom);
+            output = mapHelper.formatCircleRadius(geom);
             maptooltipCoord = geom.getLastCoordinate();
           }
           let measuremaptooltipElement = getters.getMeasureMapTooltipElement();
@@ -236,12 +242,22 @@ const functions = {
           measuremaptooltipElement.className = `maptooltip maptooltip-static feature-${getters.getFeatureIdCounter()}`;
           measuremaptooltip.setOffset([0, -7]);
 
-          let bbox = e.feature.getGeometry().getCoordinates()[0];
-          for (var i = 0; i < bbox.length; i++) {
-            bbox[i] = transform(bbox[i], "EPSG:3857", "EPSG:4326");
+          let coordinates = [];
+          if (type == drawTypeEnum.POINT) {
+            coordinates = e.feature.getGeometry().getCoordinates();
+            coordinates = transform(coordinates, "EPSG:3857", "EPSG:4326");
+          } else {
+            coordinates = e.feature.getGeometry().getCoordinates()[0];
+            for (var i = 0; i < coordinates.length; i++) {
+              coordinates[i] = transform(
+                coordinates[i],
+                "EPSG:3857",
+                "EPSG:4326"
+              );
+            }
           }
 
-          setters.setBbox(bbox);
+          setters.setBbox(coordinates);
         } catch (e) {
           functions.createMeasuremaptooltip();
           measuremaptooltipElement.className = `maptooltip maptooltip-static feature-${getters.getFeatureIdCounter()}`;
@@ -382,40 +398,6 @@ const functions = {
   ndviAssessment(callback) {
     setters.setBbox([]);
     functions.pickDrawType(drawTypeEnum.BOX, callback);
-  },
-
-  formatArea(polygon) {
-    let area = getArea(polygon);
-    let output;
-    if (area > 10000) {
-      output =
-        Math.round((area / 1000000) * 100) / 100 + " " + "km<sup>2</sup>";
-    } else {
-      output = Math.round(area * 100) / 100 + " " + "m<sup>2</sup>";
-    }
-    return output;
-  },
-
-  formatLength(line) {
-    let length = getLength(line);
-    let output;
-    if (length > 100) {
-      output = Math.round((length / 1000) * 100) / 100 + " " + "km";
-    } else {
-      output = Math.round(length * 100) / 100 + " " + "m";
-    }
-    return output;
-  },
-
-  formatCircleRadius(line) {
-    let length = line.getRadius() * METERS_PER_UNIT["m"];
-    let output;
-    if (length > 100) {
-      output = Math.round((length / 1000) * 100) / 100 + " " + "km";
-    } else {
-      output = Math.round(length * 100) / 100 + " " + "m";
-    }
-    return output;
   },
 };
 const getters = {

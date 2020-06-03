@@ -6,7 +6,7 @@ const materialColors = [
   "#4caf50", //green
   "#E91E63", //pink
   "#9c27b0", //purple
-  "#673ab7" //deep blue
+  "#673ab7", //deep blue
 ];
 
 export { materialColors };

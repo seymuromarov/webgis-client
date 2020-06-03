@@ -1,4 +1,4 @@
-import { serviceHelper, layerHelper } from "@/helpers";
+import { serviceHelper, layerHelper, colorHelper } from "@/helpers";
 import { serviceTypeEnum } from "@/enums";
 import { serviceZIndexSettings } from "@/config/settings";
 import { layerService, tokenService } from "@/services";
@@ -10,11 +10,30 @@ import {
   tableController,
 } from "@/controllers";
 import toolController from "./toolController";
+
+let layerColorOrder = layerController.getDynamicLayerList().map((x) => {
+  return 0;
+});
+
 const functions = {
+  addLayerColorIndex(number) {
+    let i = layerColorOrder.findIndex((c) => c === 0);
+
+    layerColorOrder[i] = number;
+  },
+  getLayerColorIndex(number) {
+    let i = layerColorOrder.findIndex((c) => c === number);
+    return i;
+  },
+  removeLayerColorIndex(number) {
+    let i = layerColorOrder.findIndex((c) => c === number);
+    layerColorOrder[i] = 0;
+  },
   async selectService(service, isChecked) {
     if (!isChecked) {
       mapController.removeDrawPolygons();
     }
+
     var tableActiveService = tableController.getTableActiveService();
     if (!isChecked && tableActiveService) {
       if (serviceHelper.isEqual(service, tableActiveService))
@@ -34,11 +53,18 @@ const functions = {
     mapController.resetSelectionLayer();
 
     if (isChecked) {
-      console.log(layerController.getSelectedDynamicLayers())
+      functions.addLayerColorIndex(service.id);
+
+      let colorIndex = functions.getLayerColorIndex(service.id);
+      let color = colorHelper.getColorByIndex(colorIndex);
+      let colorObj = colorHelper.buildColorObject(color);
+      functions.saveColor(service, colorObj);
+
       mapController.addService(service);
       if (serviceHelper.isDynamicFromLocal(service))
         mapController.buildSelectionLayer(service);
     } else {
+      functions.removeLayerColorIndex(service.id);
       mapController.deleteService(service);
       functions.resetQuery(service);
       toolController.deleteActiveServiceFeatures();
@@ -93,13 +119,10 @@ const functions = {
     functions.dynamicLayersReset(service, isChecked);
     mapController.refreshService(service);
   },
-  saveColor(service, colorObj) {
-    const { fillColor, borderColor } = colorObj;
+  saveColor(service, color) {
     var isLayer = serviceHelper.isLayer(service);
     var isSubLayer = serviceHelper.isSublayer(service);
     var isBunch = serviceHelper.isBunch(service);
-
-    var color = { fill: fillColor, border: borderColor };
 
     if (isLayer || isSubLayer) {
       var service = isSubLayer ? service.parent : service;
@@ -108,7 +131,6 @@ const functions = {
     } else if (isBunch) {
       bunchController.setColor(service.id, color);
     }
-    mapController.refreshService(service);
   },
   resetQuery(service) {
     var isBunch = serviceHelper.isBunch(service);

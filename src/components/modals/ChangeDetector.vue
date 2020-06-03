@@ -74,9 +74,7 @@ export default {
   watch: {
     selectedLayers: async function(arr) {
       this.exportedImages = [];
-      // let bbox = this.bbox.map((x) => {
-      //   return fromLonLat(x);
-      // });
+
       var extent = new Polygon([this.bbox]).getExtent();
       for (let item of arr) {
         let url =

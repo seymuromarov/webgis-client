@@ -11,8 +11,7 @@ const functions = {};
 
 const getters = {
   async getFilterColumnValues(id, column) {
-    const tableData = tableController.getTableData();
-    const service = layerController.getDynamicLayerById(id);
+    const service = layerController.getDynamicLayer(id);
     let filterColumnValues = [];
     const params = { id };
 
@@ -29,6 +28,8 @@ const getters = {
           )
         ];
     } else {
+      const tableData = tableController.getTableData();
+
       const keys = Object.keys(tableData.tableHeadersWithAlias);
       for (let i = 0; i < keys.length; i++) {
         if (tableData.tableHeadersWithAlias[keys[i]] === column) {

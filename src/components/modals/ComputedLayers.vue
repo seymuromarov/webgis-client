@@ -134,57 +134,6 @@ export default {
 
 <style lang="scss">
 // TODO Make this (.multiselect) styles global (without '!important')
-.multiselect {
-  font-size: 14px !important;
-}
-
-.multiselect__option:after {
-  line-height: 30px !important;
-}
-
-.multiselect__option--highlight {
-  &,
-  &:after {
-    background: var(--primary-color-opacity-85) !important;
-  }
-
-  &.multiselect__option--selected {
-    &,
-    &:after {
-      background: #e32222 !important;
-    }
-  }
-}
-
-.multiselect__placeholder {
-  margin: 0 !important;
-}
-
-.multiselect__select {
-  height: 30px !important;
-}
-
-.multiselect__option {
-  padding: 6px 12px !important;
-  min-height: 30px !important;
-}
-
-.multiselect__tags {
-  min-height: 30px !important;
-  padding: 2px 40px 0 8px !important;
-}
-
-.multiselect__tag {
-  background: var(--primary-color-opacity-85) !important;
-}
-
-.multiselect__tag-icon:after {
-  color: var(--white) !important;
-}
-
-.multiselect--active .multiselect__tags {
-  padding: 8px 40px 0 8px !important;
-}
 
 .submit-btn {
   width: 20%;

@@ -235,6 +235,7 @@ export default {
             serviceHelper.isBunch(this.activeService))
         ) {
           var page = this.paging.page;
+          var page = this.paging.page;
           page += 1;
           this.isPagingBusy(true);
           tableController.setTableLoading(true);
@@ -317,11 +318,42 @@ export default {
       this.toggler.showColumnsChange();
     },
     async fetchFullData() {
-      var response = await layerService.getLocalTableData({
-        layerId: this.activeService.id,
-        ...this.activeService.query,
-        isGeometryDataExist: false,
-      });
+      let activeService = this.activeService;
+      let isBunch = serviceHelper.isBunch(activeService);
+
+      let params = null;
+      let response = null;
+
+      let paginForFullData = {
+        page: 1,
+        limit: this.totalCount,
+      };
+      console.log("fetchFullData -> paginForFullData", paginForFullData);
+      if (isBunch) {
+        params = activeService.layers.map((item, index) => {
+          return {
+            layerId: item.id,
+            query: { ...item.query },
+          };
+        });
+
+        response = await layerService.getIntersectLocalTableData(
+          activeService.id,
+          {
+            layerQueries: params,
+            paging: paginForFullData,
+          }
+        );
+      } else {
+        params = {
+          layerId: activeService.id,
+          ...activeService.query,
+          paging: paginForFullData,
+          isGeometryDataExist: false,
+        };
+        response = await layerService.getLocalTableData(params);
+      }
+      console.log(response);
       var attributes = response.data.features.map((item, index) => {
         return item.attributes;
       });

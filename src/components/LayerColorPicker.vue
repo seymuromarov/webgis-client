@@ -111,8 +111,8 @@ export default {
       hex8 = this.fillColor.hex8;
       const fill = { hex8 };
       const colorObj = {
-        borderColor: border,
-        fillColor: fill,
+        border,
+        fill,
       };
       this.$emit("onSave", colorObj);
     },

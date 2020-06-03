@@ -3,12 +3,7 @@
     <!-- Main content -->
     <div class="padding-0 map-layout">
       <div id="map">
-        <MapControls
-          :map="mapLayer"
-          :mapHelpers="mapHelper"
-          :nextHistoryEvent="nextHistoryEvent"
-          :previousHistoryEvent="previousHistoryEvent"
-        />
+        <MapControls />
         <!-- <Sidebar @setBaseLayout="setBaseLayout" /> -->
         <Sidebar />
       </div>
@@ -118,17 +113,18 @@ import {
   NdviAssessment,
 } from "@/components/";
 
-import { toggler, mapHelper, serviceHelper } from "@/helpers";
+import { toggler, serviceHelper } from "@/helpers";
 import {
   layerController,
   tableController,
   toolController,
   mapController,
   serviceController,
+  historyController,
 } from "@/controllers";
 
 // Services
-import { layerService, tileService } from "@/services";
+import { layerService, tileService, tokenService } from "@/services";
 
 export default {
   name: "Home",
@@ -147,11 +143,10 @@ export default {
   },
   data() {
     return {
-      mapHelper: null,
       toggler: null,
       latChange: null,
       longChange: null,
-      // filterValues: [],
+
       layers: [],
       token: null,
       kmlInfo: null,
@@ -160,14 +155,7 @@ export default {
       vectorLayer: null,
       hashResolveResult: {},
 
-      citySearchInputShow: false,
-      historyUpdate: true,
-      nextHistoryEvent: false,
-      previousHistoryEvent: false,
-      historyEvents: [],
-      historyEventsIndex: 0,
       isMetricCoordinateSystem: false,
-      isHashLoaded: false,
     };
   },
   created() {},
@@ -183,15 +171,11 @@ export default {
     });
 
     this.moodal = this.$moodal;
-    console.log("mounted -> this.moodal", this.moodal);
 
     this.hashResolveResult = this.resolveHash(window.location.hash);
 
-    this.token = localStorage.getItem("token");
+    if (tokenService.getToken() === null) this.$router.push("/login");
 
-    if (this.token === null) this.$router.push("/login");
-
-    this.mapHelper = new mapHelper(this);
     this.toggler = new toggler(this);
 
     this.drawSource = new VectorSource({
@@ -240,34 +224,13 @@ export default {
         source: this.drawSource,
       });
       this.mapLayer.addInteraction(modify);
+
       let self = this;
 
       dragAndDropInteraction.on("addfeatures", function(event) {
         this.drawSource.addFeatures(event.features);
         self.mapLayer.getView().fit(this.drawSource.getExtent());
       });
-
-      //let displayFeatureInfo = function (pixel) {
-      //    let features = [];
-      //    self.mapLayer.forEachFeatureAtPixel(pixel, function (feature) {
-      //        features.push(feature);
-      //    });
-      //    if (features.length > 0) {
-      //        let info = [];
-      //        let i, ii;
-      //        for (i = 0, ii = features.length; i < ii; ++i) {
-      //            if (features[i].get("name") !== undefined) {
-      //                info.push(features[i].get("name"));
-      //            }
-      //        }
-      //        document.getElementById("info").innerHTML =
-      //            info.join(", ") || "&nbsp";
-      //        self.kmlInfo = info.join(", ") || null;
-      //    } else {
-      //        document.getElementById("info").innerHTML = "&nbsp;";
-      //        self.kmlInfo = null;
-      //    }
-      //};
 
       this.mapLayer.on("pointermove", function(evt) {
         if (evt.dragging) {
@@ -316,12 +279,10 @@ export default {
           self.mapLayer.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
             try {
               this.drawSource.removeFeature(feature);
-              //let elem = document.getElementsByClassName(feature.get("id"));
               let elem = document.getElementsByClassName(
                 `feature-${feature.get("id")}`
               );
               elem[0].remove();
-              //elem[0].className = "hidden";
             } catch (e) {}
           });
         }
@@ -356,7 +317,7 @@ export default {
 
       this.$store.dispatch("getLayers").then(() => {
         this.setHashSelectedServices();
-        self.mapLayer.on("moveend", this.updateHistoryMap);
+        self.mapLayer.on("moveend", historyController.updateHistoryMap);
       });
       window.addEventListener("popstate", (event) => {
         if (event.state === null) {
@@ -369,27 +330,6 @@ export default {
     });
   },
   methods: {
-    updateHistoryMap() {
-      if (this.historyUpdate) {
-        let view = this.mapLayer.getView();
-
-        let state = {
-          zoom: view.getZoom(),
-          center: view.getCenter(),
-          rotation: view.getRotation(),
-        };
-        this.updateHash();
-        this.historyEvents.push(state);
-        this.historyEventsIndex = this.historyEvents.length;
-        this.nextHistoryEvent = false;
-        if (this.historyEventsIndex !== 1) {
-          this.previousHistoryEvent = true;
-        }
-      } else {
-        this.historyUpdate = true;
-      }
-    },
-
     setHashSelectedServices() {
       if (this.hashResolveResult !== null) {
         var serviceIds = this.hashResolveResult.selectedLayers;
@@ -401,45 +341,7 @@ export default {
           }
       }
     },
-    updateHash() {
-      let view = this.mapLayer.getView();
-      let state = {
-        zoom: view.getZoom(),
-        center: view.getCenter(),
-        rotation: view.getRotation(),
-      };
-      var selectedLayers = layerController.getSelectedLayers();
-      var selectedLayerIds = selectedLayers.map((item) => {
-        return item.id;
-      });
-      let hash =
-        "#shareMap=" +
-        view.getZoom() +
-        "&" +
-        Math.round(view.getCenter()[0] * 100) / 100 +
-        "&" +
-        Math.round(view.getCenter()[1] * 100) / 100 +
-        "&" +
-        selectedLayerIds;
-      window.history.pushState(state, "map", hash);
-    },
-    // changeLocation() {
-    //   this.mapLayer
-    //     .getView()
-    //     .setCenter(
-    //       fromLonLat([parseFloat(this.longChange), parseFloat(this.latChange)])
-    //     );
-    // },
-    // LatLongFormToggle() {
-    //   let loc = document.getElementById("mouse-position").innerHTML;
-    //   loc = loc.split(":").map((item) => item.trim());
-    //   let long = loc[2];
-    //   let lat = loc[1].split(",").map((item) => item.trim());
-    //   lat = lat[0];
-    //   this.longChange = long;
-    //   this.latChange = lat;
-    //   this.toggler.setLatLongShowForm();
-    // },
+
     setShapeColor() {
       document.body.style.cursor = "crosshair";
       this.$moodal.colorPickerModal.hide();
@@ -497,7 +399,7 @@ export default {
         if (serviceHelper.isDynamicFromArcgis(service)) {
           geometry = coords[0] + "," + coords[1];
           var params = {
-            token: this.token,
+            token: tokenService.getToken(),
             name: service.name,
             layer: service.name,
             where: service.query.where,
