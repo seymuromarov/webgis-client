@@ -34,6 +34,7 @@ const functions = {
     mapController.resetSelectionLayer();
 
     if (isChecked) {
+      console.log(layerController.getSelectedDynamicLayers())
       mapController.addService(service);
       if (serviceHelper.isDynamicFromLocal(service))
         mapController.buildSelectionLayer(service);
