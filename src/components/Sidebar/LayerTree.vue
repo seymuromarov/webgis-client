@@ -192,6 +192,7 @@ export default {
     },
     onColorPickerSave(color) {
       serviceController.saveColor(this.data, color);
+      mapController.refreshService(this.data);
     },
     colorPickerOnClose() {
       this.activeColorPickerId = null;

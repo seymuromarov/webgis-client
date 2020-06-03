@@ -8,6 +8,7 @@ import menuController from "./menuController";
 import modalController from "./modalController";
 import filterController from "./filterController";
 import historyController from "./historyController";
+import ndviController from "./ndviController";
 export {
   mapController,
   layerController,
@@ -19,4 +20,5 @@ export {
   modalController,
   filterController,
   historyController,
+  ndviController,
 };

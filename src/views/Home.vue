@@ -124,7 +124,7 @@ import {
 } from "@/controllers";
 
 // Services
-import { layerService, tileService } from "@/services";
+import { layerService, tileService, tokenService } from "@/services";
 
 export default {
   name: "Home",
@@ -171,13 +171,10 @@ export default {
     });
 
     this.moodal = this.$moodal;
-    console.log("mounted -> this.moodal", this.moodal);
 
     this.hashResolveResult = this.resolveHash(window.location.hash);
 
-    this.token = localStorage.getItem("token");
-
-    if (this.token === null) this.$router.push("/login");
+    if (tokenService.getToken() === null) this.$router.push("/login");
 
     this.toggler = new toggler(this);
 
@@ -227,6 +224,7 @@ export default {
         source: this.drawSource,
       });
       this.mapLayer.addInteraction(modify);
+
       let self = this;
 
       dragAndDropInteraction.on("addfeatures", function(event) {
@@ -281,12 +279,10 @@ export default {
           self.mapLayer.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
             try {
               this.drawSource.removeFeature(feature);
-              //let elem = document.getElementsByClassName(feature.get("id"));
               let elem = document.getElementsByClassName(
                 `feature-${feature.get("id")}`
               );
               elem[0].remove();
-              //elem[0].className = "hidden";
             } catch (e) {}
           });
         }
@@ -403,7 +399,7 @@ export default {
         if (serviceHelper.isDynamicFromArcgis(service)) {
           geometry = coords[0] + "," + coords[1];
           var params = {
-            token: this.token,
+            token: tokenService.getToken(),
             name: service.name,
             layer: service.name,
             where: service.query.where,

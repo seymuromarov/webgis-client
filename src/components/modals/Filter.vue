@@ -376,15 +376,7 @@ export default {
         this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
       },
     },
-    // activeTab: {
-    //     get(){
 
-    //     },
-    //     set(val){
-
-    //     }
-    //   //   return tableController.getServiceData(this.activeTabId);
-    // },
     activeService() {
       return this.$store.getters.tableActiveService;
     },
@@ -409,18 +401,6 @@ export default {
         let where = "";
         let activeService = this.activeService;
         if (!activeService || !this.activeTabId) return where;
-
-        // let isBunch = serviceHelper.isBunch(activeService);
-        // if (isBunch) {
-        //   let bunchLayer = bunchController.getBunchLayer(
-        //     activeService.id, //bunch
-        //     this.activeTabId //layer
-        //   );
-
-        // } else {
-        //   let layer = layerController.getDynamicLayer(this.activeTabId);
-        //   where = layer.query.where;
-        // }
 
         let layer = serviceController.getDynamicService(
           activeService,

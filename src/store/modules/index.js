@@ -10,6 +10,7 @@ import tool from "./tool";
 import menu from "./menu";
 import modal from "./modal";
 import history from "./history";
+import ndvi from "./ndvi";
 
 export default {
   auth,
@@ -24,4 +25,5 @@ export default {
   menu,
   modal,
   history,
+  ndvi,
 };

@@ -1,5 +1,10 @@
 import $store from "@/store/store.js";
-import { mapController, modalController, tableController } from "@/controllers";
+import {
+  mapController,
+  modalController,
+  tableController,
+  ndviController,
+} from "@/controllers";
 import { drawTypeEnum } from "@/enums";
 import { mapHelper } from "@/helpers";
 import { _ } from "vue-underscore";
@@ -178,7 +183,6 @@ const functions = {
     if (geometryFunction) options.geometryFunction = geometryFunction;
 
     let draw = new Draw(options);
-    console.log("addInteraction -> options", options);
     setters.setDraw(draw);
     let map = mapController.getMap();
     map.addInteraction(draw);
@@ -253,9 +257,6 @@ const functions = {
             }
           }
 
-          console.log("addInteraction -> coordinates", coordinates);
-
-          console.log("addInteraction ->  e.feature", e.feature);
           setters.setBbox(coordinates);
         } catch (e) {
           functions.createMeasuremaptooltip();

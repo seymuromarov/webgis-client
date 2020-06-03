@@ -8,6 +8,7 @@ const baseLayerList = {
     $store.dispatch("saveBaseLayerList", val);
   },
 };
+
 const dynamicLayerList = {
   get() {
     return $store.getters.dynamicLayerList;
@@ -22,11 +23,7 @@ const getters = {
     let data = baseLayerList.get();
     return data;
   },
-  getDynamicLayerById(layerId) {
-    let data = dynamicLayerList.get();
-    let layer = data.find((c) => c.id == layerId);
-    return layer;
-  },
+
   getDynamicLayerList() {
     let data = dynamicLayerList.get();
     return data;
@@ -88,6 +85,13 @@ const getters = {
   getSelectedBasemaps() {
     let list = [];
     layerHelper.recursiveLayerMapping(baseLayerList.get(), (layer) => {
+      if (layer.isSelected) list.push(layer);
+    });
+    return list;
+  },
+  getSelectedDyanmics() {
+    let list = [];
+    layerHelper.recursiveLayerMapping(dynamicLayerList.get(), (layer) => {
       if (layer.isSelected) list.push(layer);
     });
     return list;

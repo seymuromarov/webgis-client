@@ -4,6 +4,7 @@
     title="NDVI Assessment"
     :width="1200"
     :minHeight="400"
+    @beforeShow="onModalOpen"
     @afterHide="onModalClose"
   >
     <form>
@@ -34,7 +35,7 @@
                       <label
                         class="btn btn-info"
                         v-bind:class="{
-                          active: isPointValueExist,
+                          active: isPointExist,
                         }"
                       >
                         <input
@@ -49,18 +50,23 @@
                   </div>
                 </div>
               </div>
+              <small v-if="isPointExist" class="form-text text-muted">
+                Point Location | x : {{ pointCoordinates[0] }} , y :
+                {{ pointCoordinates[1] }}
+              </small>
             </div>
           </div>
         </div>
 
-        <div
+        <!-- <div
           class="col-md-12"
           v-for="(item, index) in selectedNdvis"
           :key="index"
         >
           <div class="row">
-            <div class="col-md-12 center-block text-center my-2">
+            <div class="offset-md-3 col-md-6 center-block text-center my-2">
               <h3>{{ item.ndvi.name }}</h3>
+              <img class="img-responsive mw-100" :src="getImgUrl(item.ndvi)" />
             </div>
           </div>
           <div class="row">
@@ -75,8 +81,58 @@
           </div>
 
           <br />
+        </div> -->
+        <!-- <div class="col-md-12" v-if="isChartVisible">
+          <line-chart
+            :chart-data="chartData"
+            :options="chartOptions"
+            :height="100"
+          ></line-chart>
+        </div> -->
+      </div>
+
+      <div
+        style="
+        display:flex;
+        flex-direction:row;
+        justify-content: space-around;
+        align-items:baseline"
+      >
+        <div
+          v-for="(item, index) in selectedNdvis"
+          :key="index"
+          style="margin:0px 10px;padding:10px;background-color:#cccccc33"
+        >
+          <div style="margin:5px 0px">
+            <h3 class="text-center">{{ item.ndvi.name }}</h3>
+            <img
+              alt="image rasen"
+              class="img-responsive mw-100"
+              :src="getImgUrl(item.ndvi)"
+            />
+          </div>
+
+          <div
+            style="
+        display:flex;
+        flex-direction:column; "
+          >
+            <div v-for="(basemap, index) in item.basemaps" :key="index">
+              <div style="margin:5px 0px">
+                <h6 class="text-center">{{ basemap.name }}</h6>
+                <img
+                  alt="image rasen"
+                  class="img-responsive mw-100"
+                  :src="getImgUrl(basemap)"
+                />
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="col-md-12" v-if="chartData && chartData.labels.length > 0">
+      </div>
+
+      <div class="row">
+        <div class="col-md-12" v-if="isChartVisible">
           <line-chart
             :chart-data="chartData"
             :options="chartOptions"
@@ -93,7 +149,7 @@ import { Modal as CustomModal } from "@/components";
 import { ndviService, tokenService, layerService } from "@/services";
 import { layerHelper, mapHelper, urlHelper } from "@/helpers";
 import { arcgisImgExportSettings } from "@/config/settings";
-import { toolController, modalController } from "@/controllers";
+import { toolController, modalController, ndviController } from "@/controllers";
 import { ARCGIS_URLS } from "@/config/urls";
 import { icons } from "@/constants/assets";
 import { drawTypeEnum } from "@/enums";
@@ -123,18 +179,24 @@ export default {
       chartOptions: {
         title: {
           display: true,
-          text: "My Data",
+          text: "Ndvi Data",
         },
       },
+      pointCoordinates: null,
+      isModalHidingForPoint: false,
+      isCalculating: false,
     };
   },
   mounted() {
     this.getNdvis();
   },
+
   methods: {
     resetData() {
       this.selectedNdvis = [];
       this.chartData = null;
+      this.pointCoordinates = null;
+      this.isModalHidingForPoint = false;
     },
     async getNdvis() {
       let { data } = await ndviService.getNdvis();
@@ -148,87 +210,96 @@ export default {
     },
     onPointSelection(e) {
       let value = e.target.value;
-      console.log("onPointSelection -> value", value);
-      let isChecked = e.target.checked;
-      this.isPointValueExist = isChecked;
+
+      this.isModalHidingForPoint = true;
       modalController.hideNdviAssessmentModal();
       toolController.pickDrawType(value, () => {
         modalController.showNdviAssessmentModal();
-        // this.extentType = value;
+        this.isModalHidingForPoint = false;
 
-        let pointCoordinates = this.bbox;
-        console.log("onPointSelection -> extentCoordinates", pointCoordinates);
-        this.buildPointDataUrl(pointCoordinates);
-        // serviceController.setExtentCoordinates(
-        //   this.activeService,
-        //   JSON.stringify(extentCoordinates)
-        // );
-
-        // toolController.pickDrawType(this.drawTypeEnum.NONE);
-        // tableController.setTableVisible();
-        // filterController.setIsRequiredServiceRefresh(true);
+        this.pointCoordinates = this.bbox;
+        this.buildGraph();
+        toolController.pickDrawType(drawTypeEnum.NONE);
       });
-
-      // modalController.hideFilterModal();
     },
-    onChange(selecteds) {
-      let labels = [];
+    async onChange() {
+      if (this.isPointExist) await this.buildGraph();
+    },
+
+    calculateGraphData(selecteds) {
       let values = [];
+      let labels = [];
+      let count = 0;
+      return new Promise((resolve, reject) => {
+        selecteds.forEach(async (element) => {
+          let x = this.pointCoordinates[0];
+          let y = this.pointCoordinates[1];
+          let value = await ndviService.getNdviValue(element.ndvi.name, x, y);
 
-      selecteds.forEach((element) => {
-        values.push(this.getRandomInt());
-        labels.push(element.ndvi.name);
+          values.push(value);
+          labels.push(element.ndvi.name);
+          count++;
+          if (count === selecteds.length) {
+            resolve({ values, labels });
+          }
+        });
       });
+    },
 
-      let dataset = {
-        label: "NDVI Index Data",
-        backgroundColor: "rgba(244,67,54 , 0.7)",
-        borderColor: "rgb(244,67,54)",
-        pointBackgroundColor: "rgb(229,115,115)",
-        data: values,
-      };
-      this.chartData = { labels: labels, datasets: [dataset] };
+    async buildGraph() {
+      this.isCalculating = true;
+      let selecteds = this.selectedNdvis;
+
+      this.calculateGraphData(selecteds).then((res) => {
+        let { values, labels } = res;
+        let dataset = {
+          label: "NDVI Index Value",
+          borderColor: "rgba(50, 115, 220, 0.5)",
+          backgroundColor: "rgba(50, 115, 220, 0.1)",
+          data: values,
+        };
+
+        this.chartData = {
+          labels: labels,
+          datasets: [dataset],
+        };
+
+        this.isCalculating = false;
+      });
+    },
+    calculateBandValue(value) {
+      let red = parseInt(value.Red);
+      let green = parseInt(value.Green);
+      return (red - green) / (red + green);
     },
     ndviCustomLabel(item) {
       return item.ndvi.name;
     },
     getImgUrl(basemap) {
       var params = arcgisImgExportSettings;
-      var extent = mapHelper.bboxToExtent(this.bbox);
+      var extent = mapHelper.bboxToExtent(ndviController.getNdviExtent());
       params["token"] = tokenService.getToken();
       params["bbox"] = extent.toString();
       var queryString = urlHelper.formatQueryString(params);
 
       let arcgisImgUrl = ARCGIS_URLS.EXPORT_IMAGE_URL(basemap.name, params);
-      console.log("getImgUrl -> arcgisImgUrl", arcgisImgUrl);
-      let defaultImgUrl = "https://i.picsum.photos/id/608/256/256.jpg";
-      // let url = "";
-
-      // var isImageExist = urlHelper.checkImageExists(arcgisImgUrl);
-      // console.log("getImgUrl -> isImageExist", isImageExist);
-
-      // return "https://i.picsum.photos/id/608/256/256.jpg";
+      // let defaultImgUrl = "https://i.picsum.photos/id/608/256/256.jpg";
       return arcgisImgUrl;
     },
     getRandomInt() {
-      return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
+      let min = -1;
+      let max = 1;
+      return (Math.random() * (max - min) + min).toFixed(5);
+      // return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
     },
-
-    async buildPointDataUrl(coords) {
-      let geometry = coords.toString();
-      var params = {
-        token: tokenService.getToken(),
-        name: "ndvi0426",
-        layer: "ndvi0426",
-        where: "",
-        geometry: geometry,
-      };
-      let response = await layerService.getGeometryData(params);
-      console.log("buildPointDataUrl -> response", response);
+    onModalOpen() {
+      if (!this.isModalHidingForPoint) {
+        let bbox = toolController.getBbox();
+        ndviController.setNdviExtent(toolController.getBbox());
+      }
     },
-
     onModalClose() {
-      this.resetData();
+      if (!this.isModalHidingForPoint) this.resetData();
       this.$emit("close");
     },
   },
@@ -236,6 +307,17 @@ export default {
   computed: {
     bbox() {
       return toolController.getBbox();
+    },
+    isChartVisible() {
+      return (
+        !this.isCalculating &&
+        this.chartData &&
+        this.chartData.labels.length > 0 &&
+        this.isPointExist
+      );
+    },
+    isPointExist() {
+      return this.pointCoordinates && this.pointCoordinates.length > 0;
     },
   },
 };

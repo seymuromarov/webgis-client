@@ -8,6 +8,7 @@ import bunchHelper from "./bunchHelper";
 import serviceHelper from "./serviceHelper";
 import tileHelper from "./tileHelper";
 import urlHelper from "./urlHelper";
+import coreHelper from "./coreHelper";
 
 export {
   toggler,
@@ -20,4 +21,5 @@ export {
   serviceHelper,
   tileHelper,
   urlHelper,
+  coreHelper,
 };

@@ -20,7 +20,7 @@ const BUNCH_URL = {
   GET: URL + "/api/bunch/get",
   GET_ALL: URL + "/api/bunch/getall",
 };
-const NDVI_URL = {
+const NDVI_URLS = {
   GET_ALL: URL + "/api/ndviassessment/getall",
 };
 const LAYER_URLS = {
@@ -45,6 +45,7 @@ const ARCGIS_URLS = {
       urlHelper.formatQueryString(params);
     return url;
   },
+  SERVICE_URl: URL + "/api/map/service",
 };
 
 export {
@@ -55,6 +56,6 @@ export {
   LAYER_URLS,
   DATATABLE_URLS,
   MAP_URLS,
-  NDVI_URL,
+  NDVI_URLS,
   ARCGIS_URLS,
 };

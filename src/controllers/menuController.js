@@ -80,7 +80,7 @@ const getters = {
       {
         key: "ndviAssessment",
         label: "NDVI Assessment",
-        image: icons.world,
+        image: icons.ndvi,
         click: () => {
           let callback = () => {
             modalController.showNdviAssessmentModal();

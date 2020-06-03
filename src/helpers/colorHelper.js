@@ -1,5 +1,7 @@
 import $store from "@/store/store.js";
 import { Style, Fill, Stroke, CircleStyle } from "@/wrappers/openLayerImports";
+import { materialColors } from "@/constants/colors";
+import { _ } from "vue-underscore";
 
 const functions = {
   renderColor: (id, fillColor, borderColor) => {
@@ -73,12 +75,31 @@ const functions = {
     });
     return style;
   },
+  buildColorObject(borderHex8, fillHex8) {
+    let border = { hex8: borderHex8 };
+    let fill = {};
+    let isUndefined = _.isUndefined(fillHex8);
+    if (isUndefined) {
+      let defaultColor = getters.getDefaultColorObject();
+      fill = defaultColor.fill;
+    } else {
+      fill = { hex8: fillHex8 };
+    }
+
+    return { fill, border };
+  },
 };
 const getters = {
   getDefaultColorObject() {
     var fill = $store.state.colorPicker.fill;
     var border = $store.state.colorPicker.border;
     return { fill, border };
+  },
+  getColorByIndex(index) {
+    let size = materialColors.length;
+    if (size - 1 < index) return materialColors[0];
+
+    return materialColors[index];
   },
 };
 export default { ...functions, ...getters };

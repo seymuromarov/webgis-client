@@ -59,6 +59,7 @@ const mapLayer = {
 };
 
 const functions = {
+  initMap() {},
   addService(service) {
     if (service.extent != null) {
       const { minX, minY, maxX, maxY } = service.extent;
