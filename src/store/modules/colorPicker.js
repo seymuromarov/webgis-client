@@ -47,7 +47,8 @@ const state = {
         layer: null,
         borderTab: true
     },
-    activeColorPickerId: null
+    activeColorPickerId: null,
+    activeDynamicLayersColors: [0, 0, 0, 0, 0, 0, 0, 0, 0]
 };
 const getters = {
     colorPicker: state => {
@@ -55,7 +56,11 @@ const getters = {
     },
     activeColorPickerId: state => {
         return state.activeColorPickerId;
-    }
+    },
+    activeDynamicLayersColors: state => {
+        return state.activeDynamicLayersColors;
+    },
+
 };
 const mutations = {
     SET_COLORPICKER(state, payload) {
@@ -82,6 +87,9 @@ const mutations = {
     },
     SET_COLORPICKER_SHAPEFILLCOLOR(state, payload) {
         state.shapeFillColor = payload;
+    },
+    SET_COLORPICKER_DYNAMICCOLORS(state, payload) {
+        state.activeDynamicLayersColorsGetter = payload;
     },
     SET_ACTIVE_COLOR_PICKER_ID(state, payload) {
         state.activeColorPickerId = payload;
@@ -114,6 +122,9 @@ const actions = {
     },
     SAVE_ACTIVE_COLOR_PICKER_ID(context, payload) {
         context.commit("SET_ACTIVE_COLOR_PICKER_ID", payload);
+    },
+    SAVE_COLOR_PICKER_DYNAMIC_COLORS(context, payload) {
+        context.commit("SET_COLORPICKER_DYNAMICCOLORS", payload);
     }
 };
-export default { state, mutations, actions, getters };
+export default {state, mutations, actions, getters};
