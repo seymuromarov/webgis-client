@@ -10,27 +10,19 @@ import {
   tableController,
 } from "@/controllers";
 import toolController from "./toolController";
-let layerColorOrder = [];
 const functions = {
-  initLayerOrderArray() {
-    let list = layerController.getDynamicLayerList();
-    let defaultVal = 0;
-    layerColorOrder = list.map((x) => {
-      return defaultVal;
-    });
-  },
   addLayerColorIndex(number) {
+    let layerColorOrder = layerController.getLayerColorOrderList();
     let i = layerColorOrder.findIndex((c) => c === 0);
-    if (i == -1) i = 0;
     layerColorOrder[i] = number;
-
-    console.log("initLayerOrderArray -> layerColorOrder", layerColorOrder);
   },
   getLayerColorIndex(number) {
+    let layerColorOrder = layerController.getLayerColorOrderList();
     let i = layerColorOrder.findIndex((c) => c === number);
     return i;
   },
   removeLayerColorIndex(number) {
+    let layerColorOrder = layerController.getLayerColorOrderList();
     let i = layerColorOrder.findIndex((c) => c === number);
     layerColorOrder[i] = 0;
   },
@@ -61,7 +53,6 @@ const functions = {
       functions.addLayerColorIndex(service.id);
 
       let colorIndex = functions.getLayerColorIndex(service.id);
-      console.log("selectService -> colorIndex", colorIndex);
       let color = colorHelper.getColorByIndex(colorIndex);
       let colorObj = colorHelper.buildColorObject(color);
       functions.saveColor(service, colorObj);
@@ -157,7 +148,6 @@ const functions = {
     }
   },
 };
-functions.initLayerOrderArray();
 const events = {
   onDraggableMoveCallback(type) {
     switch (type) {

@@ -23,6 +23,11 @@ export default new Vuex.Store({
       dispatch("saveDynamicLayerList", dynamicLayerList);
       dispatch("saveBaseLayerList", baseLayerList);
 
+      let layerColorOderList = dynamicLayerList.map((x) => {
+        return 0;
+      });
+      dispatch("SAVE_LAYER_COLOR_ORDER_LIST", layerColorOderList);
+
       let bunchResponse = await bunchService.getAll();
       let bunchMapResult = bunchHelper.mapBunchs(bunchResponse.data);
       dispatch("saveBunchLayerList", bunchMapResult);
