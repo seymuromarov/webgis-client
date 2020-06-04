@@ -10,16 +10,21 @@ import {
   tableController,
 } from "@/controllers";
 import toolController from "./toolController";
-
-let layerColorOrder = layerController.getDynamicLayerList().map((x) => {
-  return 0;
-});
-
+let layerColorOrder = [];
 const functions = {
+  initLayerOrderArray() {
+    let list = layerController.getDynamicLayerList();
+    let defaultVal = 0;
+    layerColorOrder = list.map((x) => {
+      return defaultVal;
+    });
+  },
   addLayerColorIndex(number) {
     let i = layerColorOrder.findIndex((c) => c === 0);
-
+    if (i == -1) i = 0;
     layerColorOrder[i] = number;
+
+    console.log("initLayerOrderArray -> layerColorOrder", layerColorOrder);
   },
   getLayerColorIndex(number) {
     let i = layerColorOrder.findIndex((c) => c === number);
@@ -56,6 +61,7 @@ const functions = {
       functions.addLayerColorIndex(service.id);
 
       let colorIndex = functions.getLayerColorIndex(service.id);
+      console.log("selectService -> colorIndex", colorIndex);
       let color = colorHelper.getColorByIndex(colorIndex);
       let colorObj = colorHelper.buildColorObject(color);
       functions.saveColor(service, colorObj);
@@ -151,7 +157,7 @@ const functions = {
     }
   },
 };
-
+functions.initLayerOrderArray();
 const events = {
   onDraggableMoveCallback(type) {
     switch (type) {
