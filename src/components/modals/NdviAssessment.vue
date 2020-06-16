@@ -2,7 +2,7 @@
   <CustomModal
     name="ndviAssessmentModal"
     title="NDVI Assessment"
-    :width="1200"
+    width="95%"
     :minHeight="400"
     @beforeShow="onModalOpen"
     @afterHide="onModalClose"
@@ -14,7 +14,7 @@
             <label for="ndvis">Layers</label>
             <div class="d-block">
               <div class="row">
-                <div class="col-md-11 p-0">
+                <div class="col-md-9 p-0">
                   <Multiselect
                     id="ndvis"
                     style="display:inline-block;"
@@ -29,15 +29,15 @@
                     @input="onChange"
                   />
                 </div>
-                <div class="col-md-1 p-0 ">
+                <div
+                  class="col-md-3 p-0 "
+                  v-bind:class="{
+                    active: isPointExist,
+                  }"
+                >
                   <div class="text-center">
                     <div class="btn-group-toggle" data-toggle="buttons">
-                      <label
-                        class="btn btn-info"
-                        v-bind:class="{
-                          active: isPointExist,
-                        }"
-                      >
+                      <label class="btn btn-info  mr-2">
                         <input
                           type="checkbox"
                           name="pointSelectionBtn"
@@ -45,6 +45,19 @@
                           @click="onPointSelection"
                         />
                         <img :src="icons.point" />
+                      </label>
+                      <label
+                        class="btn   mr-2"
+                        v-bind:class="{
+                          active: isPointExist,
+                          'btn-success': !isBasemapsShowing,
+                          'btn-danger': isBasemapsShowing,
+                        }"
+                      >
+                        <input type="checkbox" v-model="isBasemapsShowing" />
+                        {{
+                          isBasemapsShowing ? "Hide Basemaps" : "Show Basemaps"
+                        }}
                       </label>
                     </div>
                   </div>
@@ -57,38 +70,6 @@
             </div>
           </div>
         </div>
-
-        <!-- <div
-          class="col-md-12"
-          v-for="(item, index) in selectedNdvis"
-          :key="index"
-        >
-          <div class="row">
-            <div class="offset-md-3 col-md-6 center-block text-center my-2">
-              <h3>{{ item.ndvi.name }}</h3>
-              <img class="img-responsive mw-100" :src="getImgUrl(item.ndvi)" />
-            </div>
-          </div>
-          <div class="row">
-            <div
-              class="col-md-3 center-block text-center my-2"
-              v-for="(basemap, index) in item.basemaps"
-              :key="index"
-            >
-              <h6>{{ basemap.name }}</h6>
-              <img class="img-responsive mw-100" :src="getImgUrl(basemap)" />
-            </div>
-          </div>
-
-          <br />
-        </div> -->
-        <!-- <div class="col-md-12" v-if="isChartVisible">
-          <line-chart
-            :chart-data="chartData"
-            :options="chartOptions"
-            :height="100"
-          ></line-chart>
-        </div> -->
       </div>
 
       <div
@@ -112,6 +93,9 @@
             style="
         display:flex;
         flex-direction:column; "
+            :class="{
+              'd-none': !isBasemapsShowing,
+            }"
           >
             <div v-for="(basemap, index) in item.basemaps" :key="index">
               <div style="margin:5px 0px">
@@ -177,6 +161,7 @@ export default {
       pointCoordinates: null,
       isModalHidingForPoint: false,
       isCalculating: false,
+      isBasemapsShowing: true,
     };
   },
   mounted() {
@@ -219,31 +204,54 @@ export default {
     },
 
     calculateGraphData(selecteds) {
-      let values = [];
-      let labels = [];
+      let obj = [];
       let count = 0;
       return new Promise((resolve, reject) => {
         selecteds.forEach(async (element) => {
           let x = this.pointCoordinates[0];
           let y = this.pointCoordinates[1];
           let value = await ndviService.getNdviValue(element.ndvi.name, x, y);
+          obj.push({ value, label: element.ndvi.name, service: element });
 
-          values.push(value);
-          labels.push(element.ndvi.name);
           count++;
           if (count === selecteds.length) {
-            resolve({ values, labels });
+            resolve(obj);
           }
         });
       });
     },
-
+    calculateNdviValue(R, G, B, IR) {
+      console.log("calculateNdviValue -> R, G, B, IR", R, G, B, IR);
+      return (IR - R) / (IR + R);
+    },
+    orderGraphDataBySelecteds(selecteds, graphData) {
+      let orderedList = [];
+      selecteds.forEach((service) => {
+        var item = graphData.find(
+          (c) => c.service.ndvi.name == service.ndvi.name
+        );
+        if (item) orderedList.push(item);
+      });
+      return orderedList;
+    },
     async buildGraph() {
       this.isCalculating = true;
       let selecteds = this.selectedNdvis;
 
       this.calculateGraphData(selecteds).then((res) => {
-        let { values, labels } = res;
+        let orderedList = this.orderGraphDataBySelecteds(selecteds, res);
+
+        let values = [];
+        let labels = [];
+
+        orderedList.forEach((c) => {
+          const { red, green, blue, alpha } = c.value;
+          let ndviVal = this.calculateNdviValue(red, green, blue, alpha);
+          console.log("buildGraph -> ndviVal", ndviVal);
+          values.push(ndviVal);
+          labels.push(c.label);
+        });
+
         let dataset = {
           label: "NDVI Index Value",
           borderColor: "rgba(50, 115, 220, 0.5)",
@@ -258,11 +266,6 @@ export default {
 
         this.isCalculating = false;
       });
-    },
-    calculateBandValue(value) {
-      let red = parseInt(value.Red);
-      let green = parseInt(value.Green);
-      return (red - green) / (red + green);
     },
     ndviCustomLabel(item) {
       return item.ndvi.name;

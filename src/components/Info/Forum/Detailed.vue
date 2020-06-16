@@ -67,17 +67,17 @@ export default {
   name: "IssueDetailed",
   components: {
     Comments,
-    Loader
+    Loader,
   },
   props: {
     openIssueId: {
-      type: Number
-    }
+      type: Number,
+    },
   },
   data() {
     return {
       loading: false,
-      issue: null
+      issue: null,
     };
   },
   methods: {
@@ -85,7 +85,7 @@ export default {
       this.loading = true;
 
       API.getIssueById(id)
-        .then(response => {
+        .then((response) => {
           if (response.data) {
             this.issue = response.data;
           }
@@ -95,7 +95,7 @@ export default {
     },
     closeIssue() {
       API.closeIssue(this.issue.id)
-        .then(response => {
+        .then((response) => {
           if (response.data) {
             this.issue = response.data;
             this.$store.commit("SET_OPEN_ISSUES", []);
@@ -109,7 +109,8 @@ export default {
       this.$emit("back");
     },
     showCloseBtn(issue) {
-      return this.$cookie.get("isAdmin") && issue.status === 1;
+      // return this.$cookie.get("isAdmin") && issue.status === 1;
+      return false;
     },
     deletePost(id) {
       this.$swal({
@@ -119,13 +120,13 @@ export default {
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-      }).then(result => {
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
         if (result.value) {
           this.loading = true;
 
           API.deleteIssue(id)
-            .then(response => {
+            .then((response) => {
               if (response.status === 200) {
                 if (this.issue.status === 1) {
                   this.$store.commit("SET_OPEN_ISSUES", []);
@@ -142,19 +143,19 @@ export default {
       });
     },
     formatDate: dateFormatter.formatDate,
-    formatDateTime: dateFormatter.formatDateTime
+    formatDateTime: dateFormatter.formatDateTime,
   },
   computed: {
     showDeleteBtn() {
       // return this.$cookie.get("isAdmin");
       return localStorage.getItem("isAdmin");
-    }
+    },
   },
   mounted() {
     if (this.openIssueId) {
       this.getIssueById(this.openIssueId);
     }
-  }
+  },
 };
 </script>
 

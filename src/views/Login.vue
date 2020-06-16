@@ -48,11 +48,11 @@ export default {
         localStorage.setItem("username", username);
 
         // Check admin privilege
-        const isAdmin = response.data.user.distinctPermissions.find(
-          (x) => x.label.toLowerCase() === "admin"
-        );
+        // const isAdmin = response.data.user.distinctPermissions.find(
+        //   (x) => x.label.toLowerCase() === "admin"
+        // );
 
-        localStorage.setItem("isAdmin", Boolean(isAdmin));
+        // localStorage.setItem("isAdmin", Boolean(isAdmin));
         tokenService.setToken(token);
         this.$store.dispatch("SAVE_AUTH_TOKEN", token);
         // setToken(response.data.token);

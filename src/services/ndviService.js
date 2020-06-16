@@ -3,6 +3,7 @@ import request from "../utils/request";
 import { NDVI_URLS, ARCGIS_URLS } from "@/config/urls";
 import { urlHelper } from "@/helpers";
 import { tokenService } from "@/services";
+import { _ } from "vue-underscore";
 
 export default {
   getNdvis() {
@@ -18,12 +19,14 @@ export default {
       ymax: fullExtent.ymax,
     };
     let params = {
-      geometry: `{ x: ${pointX}, y: ${pointY} }`,
+      geometry: ` ${pointX}, ${pointY}`,
       geometryType: "esriGeometryPoint",
       mapExtent: JSON.stringify(extent),
-      tolerance: 1,
+      tolerance: 0,
+      time: 4,
+      geometryPrecision: 4,
       imageDisplay: 50,
-      returnGeometry: true,
+      returnGeometry: false,
       returnCatalogItems: false,
       f: "pjson",
     };
@@ -31,8 +34,16 @@ export default {
       ARCGIS_URLS.SERVICE_URl
     }/${name}/MapServer/Identify?${urlHelper.formatQueryString(params)}`;
     let response = await request.get(url);
-    console.log("getNdviValue -> response", response);
-    let value = response.data.results[0].attributes["Pixel Value"];
+    let results = response.data.results;
+    let attributes = results[0].attributes;
+    let value = {
+      red: _.isUndefined(attributes["Red"]) ? 0 : attributes["Red"],
+      green: _.isUndefined(attributes["Green"]) ? 0 : attributes["Green"],
+      blue: _.isUndefined(attributes["Blue"]) ? 0 : attributes["Blue"],
+      alpha: _.isUndefined(attributes["Alpha"]) ? 0 : attributes["Alpha"],
+    };
+    // let value =
+    //   results && results.length > 0 ? results[0].attributes["Pixel Value"] : 0;
     return value;
   },
   getNdviInfo(name) {
@@ -43,7 +54,6 @@ export default {
     let url = `${
       ARCGIS_URLS.SERVICE_URl
     }/${name}/MapServer?${urlHelper.formatQueryString(params)}`;
-    console.log("getNdviInfo -> url", url);
     return request.get(url);
   },
 };

@@ -328,7 +328,6 @@ export default {
         page: 1,
         limit: this.totalCount,
       };
-      console.log("fetchFullData -> paginForFullData", paginForFullData);
       if (isBunch) {
         params = activeService.layers.map((item, index) => {
           return {
@@ -353,7 +352,6 @@ export default {
         };
         response = await layerService.getLocalTableData(params);
       }
-      console.log(response);
       var attributes = response.data.features.map((item, index) => {
         return item.attributes;
       });

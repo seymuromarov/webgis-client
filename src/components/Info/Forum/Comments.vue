@@ -177,21 +177,21 @@ export default {
   name: "Comments",
   components: {
     NewComment,
-    Loader
+    Loader,
   },
   props: {
     rawComments: {
-      type: Array
+      type: Array,
     },
     postId: {
-      type: Number
-    }
+      type: Number,
+    },
   },
   data() {
     return {
       comments: [],
       activeReplyId: null,
-      loading: false
+      loading: false,
     };
   },
   methods: {
@@ -205,15 +205,15 @@ export default {
     rearrangeCommentList() {
       let comments = [];
 
-      this.rawComments.forEach(item => {
+      this.rawComments.forEach((item) => {
         if (!item.parentId) {
           comments.push({
             ...item,
-            replies: this.rawComments.filter(comment => {
+            replies: this.rawComments.filter((comment) => {
               if (comment.parentId) {
                 return comment.parentId === item.id;
               }
-            })
+            }),
           });
         }
       });
@@ -226,11 +226,11 @@ export default {
       const body = {
         parentId: null,
         postId: this.postId,
-        ...data
+        ...data,
       };
 
       API.insertComment(body)
-        .then(response => {
+        .then((response) => {
           if (response.data) {
             this.rawComments.push(response.data);
             this.activeReplyId = null;
@@ -247,16 +247,16 @@ export default {
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-      }).then(result => {
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
         if (result.value) {
           this.loading = true;
 
           API.deleteComment(id)
-            .then(response => {
+            .then((response) => {
               if (response.status === 200) {
                 this.rawComments.splice(
-                  this.rawComments.findIndex(x => x.id === id),
+                  this.rawComments.findIndex((x) => x.id === id),
                   1
                 );
               }
@@ -267,12 +267,13 @@ export default {
       });
     },
     formatDate: dateFormatter.formatDate,
-    formatDateTime: dateFormatter.formatDateTime
+    formatDateTime: dateFormatter.formatDateTime,
   },
   computed: {
     showDeleteBtn() {
-      return this.$cookie.get("isAdmin");
-    }
+      // return this.$cookie.get("isAdmin");
+      return false;
+    },
   },
   mounted() {
     this.rearrangeCommentList();
@@ -280,8 +281,8 @@ export default {
   watch: {
     rawComments() {
       this.rearrangeCommentList();
-    }
-  }
+    },
+  },
 };
 </script>
 
