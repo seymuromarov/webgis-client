@@ -159,7 +159,7 @@
 <script>
 import { toggler } from "../helpers";
 import Multiselect from "vue-multiselect";
-import { layerService } from "@/services";
+import layer from "@/api/layer";
 import Resizable from "vue-resizable";
 import CustomModal from "./common/Modal";
 import {
@@ -269,7 +269,7 @@ export default {
             query: { ...item.query },
           };
         });
-        response = await layerService.getIntersectLocalTableData(service.id, {
+        response = await layer.getIntersectLocalTableData(service.id, {
           layerQueries: params,
           paging: paging,
         });
@@ -279,7 +279,7 @@ export default {
           ...service.query,
           paging: paging,
         };
-        response = await layerService.getLocalTableData(params);
+        response = await layer.getLocalTableData(params);
       }
 
       var data = response.data.features;
@@ -336,13 +336,10 @@ export default {
           };
         });
 
-        response = await layerService.getIntersectLocalTableData(
-          activeService.id,
-          {
-            layerQueries: params,
-            paging: paginForFullData,
-          }
-        );
+        response = await layer.getIntersectLocalTableData(activeService.id, {
+          layerQueries: params,
+          paging: paginForFullData,
+        });
       } else {
         params = {
           layerId: activeService.id,
@@ -350,7 +347,7 @@ export default {
           paging: paginForFullData,
           isGeometryDataExist: false,
         };
-        response = await layerService.getLocalTableData(params);
+        response = await layer.getLocalTableData(params);
       }
       var attributes = response.data.features.map((item, index) => {
         return item.attributes;

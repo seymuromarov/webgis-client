@@ -54,21 +54,44 @@
     />
 
     <ul v-if="data.layers && subListVisibility" class="list__content">
-      <LayerTree
-        v-for="(children, index) in data.children"
-        :key="children.name + index"
-        :data="children"
-        :parent="data"
-        :loop="loop + 1"
-      />
-
-      <LayerTree
-        v-for="(layer, index) in data.layers"
-        :key="layer.name + index"
-        :data="layer"
-        :parent="data"
-        :loop="loop + 1"
-      />
+      <Draggable
+        :key="guid()"
+        v-model="data.children"
+        @start="isDragging = true"
+        @end="
+          () => {
+            onDraggableMoveCallback(layerType);
+          }
+        "
+      >
+        <LayerTree
+          v-for="(children, index) in data.children"
+          :key="children.name + index"
+          :data="children"
+          :parent="data"
+          :layerType="layerType"
+          :loop="loop + 1"
+        />
+      </Draggable>
+      <Draggable
+        :key="guid()"
+        v-model="data.layers"
+        @start="isDragging = true"
+        @end="
+          () => {
+            onDraggableMoveCallback(layerType);
+          }
+        "
+      >
+        <LayerTree
+          v-for="(layer, index) in data.layers"
+          :key="layer.name + index"
+          :data="layer"
+          :parent="data"
+          :layerType="layerType"
+          :loop="loop + 1"
+        />
+      </Draggable>
     </ul>
   </li>
 </template>
@@ -76,20 +99,22 @@
 <script>
 import ToggleSwitch from "../common/ToggleSwitch";
 import LayerColorPicker from "../LayerColorPicker";
+import Draggable from "vuedraggable";
 import { layerHelper, serviceHelper } from "@/helpers";
+import { guid } from "@/utils";
 import {
   bunchController,
   mapController,
   serviceController,
   tableController,
 } from "@/controllers";
-import { bunchService } from "@/services";
-
+import bunch from "@/api/bunch";
 export default {
   name: "LayerTree",
   components: {
     ToggleSwitch,
     LayerColorPicker,
+    Draggable,
   },
   props: {
     data: {
@@ -101,6 +126,10 @@ export default {
     loop: {
       type: Number,
       default: 1,
+    },
+    layerType: {
+      type: String,
+      default: "",
     },
   },
   data() {
@@ -132,6 +161,7 @@ export default {
     isCategory() {
       return serviceHelper.isCategory(this.data);
     },
+
     caretIconsVisibility() {
       return (
         this.isCategory ||
@@ -184,6 +214,10 @@ export default {
     },
   },
   methods: {
+    guid,
+    onDraggableMoveCallback(type) {
+      serviceController.onDraggableMoveCallback(type);
+    },
     toggleSubList() {
       this.subListVisibility = !this.subListVisibility;
       if (this.subListVisibility)
@@ -255,7 +289,7 @@ export default {
       }
     },
     deleteBunch() {
-      bunchService.remove(this.data.id).then((response) => {
+      bunch.remove(this.data.id).then((response) => {
         bunchController.remove(this.data.id);
         mapController.deleteService(this.data);
       });

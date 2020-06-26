@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import API from "../../../services/ForumService";
+import forum from "@/api/forum";
 import { dateFormatter } from "@/helpers";
 import Loader from "../parts/Loader";
 
@@ -94,7 +94,7 @@ export default {
   methods: {
     getOpenIssues() {
       this.loading = true;
-      API.getIssues(1)
+      forum.getIssues(1)
         .then(response => {
           if (response.data) {
             this.$store.commit("SET_OPEN_ISSUES", response.data);
@@ -106,7 +106,7 @@ export default {
     },
     getClosedIssues() {
       this.loading = true;
-      API.getIssues(2)
+      forum.getIssues(2)
         .then(response => {
           if (response.data) {
             this.$store.commit("SET_CLOSED_ISSUES", response.data);
@@ -117,7 +117,7 @@ export default {
         .catch();
     },
     getIssueCount() {
-      API.getIssueCount()
+      forum.getIssueCount()
         .then(response => {
           if (response.data) {
             this.$store.state.forum.issueCount = response.data;

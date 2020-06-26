@@ -1,6 +1,7 @@
 import $store from "@/store/store.js";
 import { serviceHelper, layerHelper } from "@/helpers";
-import { layerService, tokenService } from "@/services";
+import { tokenService } from "@/services";
+import layer from "@/api/layer";
 import {
   mapController,
   modalController,
@@ -108,7 +109,7 @@ const functions = {
         layer: service.id,
         ...service.query,
       };
-      response = await layerService.getTableData(params);
+      response = await layer.getTableData(params);
     } else {
       var isBunch = serviceHelper.isBunch(service);
       if (isBunch) {
@@ -118,7 +119,7 @@ const functions = {
             query: { ...item.query },
           };
         });
-        response = await layerService.getIntersectLocalTableData(service.id, {
+        response = await layer.getIntersectLocalTableData(service.id, {
           layerQueries: params,
           paging: paging,
         });
@@ -134,12 +135,12 @@ const functions = {
           params.isSum = isSumFilter;
           params.ArithmeticColumnName = getters.getSumFilterColumn();
 
-          response = await layerService.getLocalArithmeticData(params);
+          response = await layer.getLocalArithmeticData(params);
           // this.ArithmeticDataResult = response.data.result;
           // setters.setSumData(response.data.result);
           // this.$moodal.arithmeticResultModal.show();
         } else {
-          response = await layerService.getLocalTableData(params);
+          response = await layer.getLocalTableData(params);
         }
       }
     }

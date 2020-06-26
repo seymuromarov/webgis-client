@@ -81,54 +81,46 @@
         v-if="dynamicActiveTab === 'dynamicTab'"
         class="list__content list__content--parent custom-scrollbar"
       >
-        <transition name="slide-fade">
-          <Draggable
-            key="dynamicLayer"
-            :v-bind="() => dragOptions('dynamicDragger')"
-            v-model="dynamicLayersList"
-            @start="isDragging = true"
-            @end="
-              () => {
-                onDraggableMoveCallback(serviceTypeEnum.DYNAMIC_LAYER);
-              }
-            "
-          >
-            <transition-group type="transition" name="flip-list">
-              <LayerTree
-                v-for="(layer, index) in dynamicLayersList"
-                :key="layer.name + index"
-                :data="layer"
-              />
-            </transition-group>
-          </Draggable>
-        </transition>
+        <Draggable
+          :key="guid()"
+          v-model="dynamicLayersList"
+          @start="isDragging = true"
+          @end="
+            () => {
+              onDraggableMoveCallback(serviceTypeEnum.DYNAMIC_LAYER);
+            }
+          "
+        >
+          <LayerTree
+            v-for="(layer, index) in dynamicLayersList"
+            :key="layer.name + index"
+            :data="layer"
+            :layerType="serviceTypeEnum.DYNAMIC_LAYER"
+          />
+        </Draggable>
       </ul>
 
       <ul
         v-show="dynamicActiveTab === 'bunchTab'"
         class="list__content list__content--parent custom-scrollbar"
       >
-        <transition name="slide-fade">
-          <Draggable
-            key="dynamicLayer"
-            :v-bind="() => dragOptions('bunchDragger')"
-            v-model="bunchLayerList"
-            @start="isDragging = true"
-            @end="
-              () => {
-                onDraggableMoveCallback(serviceTypeEnum.BUNCH);
-              }
-            "
-          >
-            <transition-group type="transition" name="flip-list">
-              <LayerTree
-                v-for="(bunch, index) in bunchLayerList"
-                :key="bunch.name + index"
-                :data="bunch"
-              />
-            </transition-group>
-          </Draggable>
-        </transition>
+        <Draggable
+          :key="guid()"
+          v-model="bunchLayerList"
+          @start="isDragging = true"
+          @end="
+            () => {
+              onDraggableMoveCallback(serviceTypeEnum.BUNCH);
+            }
+          "
+        >
+          <LayerTree
+            v-for="(bunch, index) in bunchLayerList"
+            :key="bunch.name + index"
+            :data="bunch"
+            :layerType="serviceTypeEnum.BUNCH"
+          />
+        </Draggable>
       </ul>
 
       <button
@@ -145,27 +137,23 @@
       <div class="list__header">Basemaps</div>
 
       <ul class="list__content list__content--parent custom-scrollbar">
-        <transition name="slide-fade">
-          <Draggable
-            key="baseLayers"
-            v-model="baselayerList"
-            :v-bind="() => dragOptions('baseDragger')"
-            @start="isDragging = true"
-            @end="
-              () => {
-                onDraggableMoveCallback(serviceTypeEnum.BASE_LAYER);
-              }
-            "
-          >
-            <transition-group type="transition" name="flip-list">
-              <LayerTree
-                v-for="(layer, index) in baselayerList"
-                :key="layer.name + index"
-                :data="layer"
-              />
-            </transition-group>
-          </Draggable>
-        </transition>
+        <Draggable
+          :key="guid()"
+          v-model="baselayerList"
+          @start="isDragging = true"
+          @end="
+            () => {
+              onDraggableMoveCallback(serviceTypeEnum.BASE_LAYER);
+            }
+          "
+        >
+          <LayerTree
+            v-for="(layer, index) in baselayerList"
+            :key="layer.name + index"
+            :data="layer"
+            :layerType="serviceTypeEnum.BASE_LAYER"
+          />
+        </Draggable>
       </ul>
     </div>
 
@@ -190,6 +178,7 @@
 <script>
 import LayerTree from "./LayerTree";
 import Draggable from "vuedraggable";
+import { guid, capitalize } from "@/utils";
 import {
   toolController,
   menuController,
@@ -212,12 +201,10 @@ export default {
       layerTypesVisible: false,
       isDragging: false,
       dynamicActiveTab: "dynamicTab",
-      baseMaps: [],
+      baseMaps: mapController.getBaseMaps(),
     };
   },
-  mounted() {
-    this.baseMaps = mapController.getBaseMaps();
-  },
+
   computed: {
     userName() {
       return localStorage.getItem("username");
@@ -253,15 +240,6 @@ export default {
       return menuController.getToolList();
     },
 
-    dragOptions(group) {
-      return {
-        animation: 0,
-        group: "baseDragger",
-        disabled: false,
-        ghostClass: "ghost",
-      };
-    },
-
     bunchLayerList: {
       get() {
         return this.$store.getters.bunchLayerList;
@@ -289,6 +267,8 @@ export default {
     },
   },
   methods: {
+    guid,
+    capitalize,
     logout() {
       localStorage.removeItem("token");
       localStorage.removeItem("username");
@@ -303,9 +283,6 @@ export default {
       mapController.setBaseLayout(key);
     },
 
-    capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    },
     setDynamicActiveTab(tabLabel) {
       this.dynamicActiveTab = tabLabel;
     },

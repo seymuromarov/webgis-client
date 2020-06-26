@@ -1,8 +1,9 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import modules from "./modules";
-import { bunchService, layerService } from "@/services";
 import { layerHelper, bunchHelper } from "@/helpers";
+import layer from "@/api/layer";
+import bunch from "@/api/bunch";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -15,7 +16,7 @@ export default new Vuex.Store({
   },
   actions: {
     async getLayers({ dispatch }) {
-      let layerResponse = await layerService.getLayers();
+      let layerResponse = await layer.getLayers();
 
       let layers = layerHelper.mapLayers(layerResponse.data);
       let baseLayerList = layers.baseLayers;
@@ -28,7 +29,7 @@ export default new Vuex.Store({
       });
       dispatch("SAVE_LAYER_COLOR_ORDER_LIST", layerColorOderList);
 
-      let bunchResponse = await bunchService.getAll();
+      let bunchResponse = await bunch.getAll();
       let bunchMapResult = bunchHelper.mapBunchs(bunchResponse.data);
       dispatch("saveBunchLayerList", bunchMapResult);
     },

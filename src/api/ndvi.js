@@ -1,4 +1,4 @@
-import request from "../utils/request";
+import request from "@/utils/request";
 
 import { NDVI_URLS, ARCGIS_URLS } from "@/config/urls";
 import { urlHelper } from "@/helpers";

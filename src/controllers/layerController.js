@@ -1,5 +1,6 @@
 import $store from "@/store/store.js";
 import { layerHelper, serviceHelper } from "@/helpers";
+import { deepClone } from "@/utils";
 
 const baseLayerList = {
   get() {
@@ -30,7 +31,7 @@ const getters = {
     return data;
   },
   getDynamicLayerAsTreeSelect() {
-    var arr = getters.getDynamicLayerList();
+    var arr = deepClone(getters.getDynamicLayerList());
 
     var options = layerHelper.recursiveTreeMapping(arr, (item) => {
       if (serviceHelper.isCategory(item)) {
@@ -46,7 +47,7 @@ const getters = {
     return options;
   },
   getBasemapLayerAsTreeSelect() {
-    var arr = getters.getBaseLayerList();
+    var arr = deepClone(getters.getBaseLayerList());
     var options = layerHelper.recursiveTreeMapping(arr);
     return options;
   },

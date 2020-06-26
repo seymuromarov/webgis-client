@@ -1,6 +1,6 @@
-import request from "../utils/request";
+import request from "@/utils/request";
 import { urlHelper } from "@/helpers";
-import { URL, LAYER_URLS, DATATABLE_URLS } from "../config/urls";
+import { URL, LAYER_URLS, DATATABLE_URLS } from "@/config/urls";
 
 export default {
   getUserRelatedLayers() {

@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { authService, tokenService } from "@/services";
+import { authService } from "@/services";
 
 export default {
   mounted() {
@@ -41,22 +41,6 @@ export default {
       });
       if (response.status === 400) {
         this.error = response.data;
-      }
-      // response.data.username = username
-      else {
-        let token = response.data.token;
-        localStorage.setItem("username", username);
-
-        // Check admin privilege
-        // const isAdmin = response.data.user.distinctPermissions.find(
-        //   (x) => x.label.toLowerCase() === "admin"
-        // );
-
-        // localStorage.setItem("isAdmin", Boolean(isAdmin));
-        tokenService.setToken(token);
-        this.$store.dispatch("SAVE_AUTH_TOKEN", token);
-        // setToken(response.data.token);
-        this.$router.push("/");
       }
     },
   },

@@ -1,7 +1,8 @@
 import { serviceHelper, layerHelper, colorHelper } from "@/helpers";
 import { serviceTypeEnum } from "@/enums";
 import { serviceZIndexSettings } from "@/config/settings";
-import { layerService, tokenService } from "@/services";
+import { tokenService } from "@/services";
+import layer from "@/api/layer";
 import { _ } from "vue-underscore";
 import {
   layerController,
@@ -70,7 +71,7 @@ const functions = {
   async getResponseDynamic(service) {
     let responseDynamic = null;
     if (serviceHelper.isDynamicFromArcgis(service)) {
-      responseDynamic = await layerService.getDynamicLayers({
+      responseDynamic = await layer.getDynamicLayers({
         token: tokenService.getToken(),
         name: service.name,
       });

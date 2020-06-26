@@ -16,18 +16,12 @@ const mapper = {
       type: serviceTypeEnum.LAYER,
       isDisabled: val.isDisabled,
       isSelected: false,
-
-      unitedDynamicLayerName:
-        val.unitedDynamicLayer != null
-          ? mapper.basemapMapping(val.unitedDynamicLayer)
-          : null,
-
       layers: null,
     };
   },
   dynamicMapping: (val) => {
     return {
-      id: val.resourceTypeId === "local" ? val.id : val.id,
+      id: val.id,
       name: val.label,
       showingLabel: val.showingLabel,
       minZoomLevel: val.minZoomLevel,
@@ -44,25 +38,26 @@ const mapper = {
 
       query: { where: "", extentCoordinates: "" },
       layers: null,
-      apiFrom: "internal",
     };
   },
   recursiveMap: (val) => {
     if (val.layers !== undefined) {
-      return {
+      var obj = {
         id: val.id,
         name: val.label,
         mapTypeId: val.mapTypeId,
         children: val.children.map((val, i) => mapper.recursiveMap(val)),
         type: serviceTypeEnum.CATEGORY,
-        layers: val.layers.map((val, i) =>
-          val.mapTypeId == "basemap"
-            ? mapper.basemapMapping(val)
-            : mapper.dynamicMapping(val)
+        layers: val.layers,
+        layers: val.layers.map((item, i) =>
+          serviceHelper.isBasemap(val.mapTypeId)
+            ? mapper.basemapMapping(item)
+            : mapper.dynamicMapping(item)
         ),
       };
+      return obj;
     } else
-      return val.mapTypeId == "basemap"
+      return serviceHelper.isBasemap(val.mapTypeId)
         ? mapper.basemapMapping(val)
         : mapper.dynamicMapping(val);
   },
@@ -100,8 +95,6 @@ const mapper = {
   recursiveMapping: (item, callback) => {
     var isCategory = serviceHelper.isCategory(item);
     if (isCategory) {
-      //group
-
       if (item.children && item.children.length > 0) {
         for (var i = 0; i < item.children.length; i++) {
           var child = item.children[i];

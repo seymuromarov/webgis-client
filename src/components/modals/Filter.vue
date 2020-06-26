@@ -210,7 +210,8 @@ import {
 } from "@/controllers";
 import { icons } from "@/constants/assets";
 import { layerHelper, serviceHelper } from "@/helpers";
-import { layerService } from "@/services";
+import layer from "@/api/layer";
+
 import { drawTypeEnum } from "@/enums";
 import { Modal } from "@/components";
 import { _ } from "vue-underscore";
@@ -454,10 +455,10 @@ export default {
   watch: {
     async activeTabId(val) {
       let layerId = 0;
-
-      let response = await layerService.getTableHeaders(val);
+      let response = await layer.getTableHeaders(val);
       this.tableHeaders = response.data.headers;
     },
   },
 };
 </script>
+m

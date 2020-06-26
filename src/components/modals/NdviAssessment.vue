@@ -122,7 +122,8 @@
 
 <script>
 import { Modal as CustomModal } from "@/components";
-import { ndviService, tokenService, layerService } from "@/services";
+import layer from "@/api/layer";
+import ndvi from "@/api/ndvi";
 import { layerHelper, mapHelper, urlHelper } from "@/helpers";
 import { arcgisImgExportSettings } from "@/config/settings";
 import { toolController, modalController, ndviController } from "@/controllers";
@@ -176,7 +177,7 @@ export default {
       this.isModalHidingForPoint = false;
     },
     async getNdvis() {
-      let { data } = await ndviService.getNdvis();
+      let { data } = await ndvi.getNdvis();
       data = data.map((item) => {
         item.basemaps = item.basemaps.map((x) => layerHelper.basemapMapping(x));
         item.ndvi = layerHelper.basemapMapping(item.ndvi);
@@ -210,7 +211,7 @@ export default {
         selecteds.forEach(async (element) => {
           let x = this.pointCoordinates[0];
           let y = this.pointCoordinates[1];
-          let value = await ndviService.getNdviValue(element.ndvi.name, x, y);
+          let value = await ndvi.getNdviValue(element.ndvi.name, x, y);
           obj.push({ value, label: element.ndvi.name, service: element });
 
           count++;

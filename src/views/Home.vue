@@ -124,8 +124,8 @@ import {
 } from "@/controllers";
 
 // Services
-import { layerService, tileService, tokenService } from "@/services";
-
+import { tokenService } from "@/services";
+import layer from "@/api/layer";
 export default {
   name: "Home",
   components: {
@@ -405,14 +405,14 @@ export default {
             where: service.query.where,
             geometry: geometry,
           };
-          response = await layerService.getGeometryData(params);
+          response = await layer.getGeometryData(params);
         } else {
           var params = {
             layerId: service.id,
             where: service.query.where,
             geometry: coords[0] + "," + coords[1],
           };
-          response = await layerService.getLocalTableData(params);
+          response = await layer.getLocalTableData(params);
         }
         if (response.data.totalCount > 0) {
           let features = response.data.features[0];

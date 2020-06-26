@@ -5,7 +5,7 @@ import {
   layerController,
 } from "@/controllers";
 import { serviceHelper } from "@/helpers";
-import { layerService } from "@/services";
+import layer from "@/api/layer";
 
 const functions = {};
 
@@ -16,7 +16,7 @@ const getters = {
     const params = { id };
 
     if (serviceHelper.isLocalService(service)) {
-      const getLayerColumnsDistinctData = await layerService.getLayerColumnsDistinctData(
+      const getLayerColumnsDistinctData = await layer.getLayerColumnsDistinctData(
         params
       );
       const result = getLayerColumnsDistinctData.data.result;

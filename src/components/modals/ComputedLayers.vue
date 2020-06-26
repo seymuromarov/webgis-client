@@ -65,7 +65,7 @@
 <script>
 import Modal from "../common/Modal";
 import Multiselect from "vue-multiselect";
-import { bunchService } from "@/services";
+import bunch from "@/api/bunch";
 import { layerController, bunchController } from "@/controllers";
 import { layerHelper } from "@/helpers";
 // import the component
@@ -107,7 +107,7 @@ export default {
       });
       const { label, layers } = this.data;
       if (label != "" && layers.length > 0) {
-        bunchService.add(this.data).then((response) => {
+        bunch.add(this.data).then((response) => {
           bunchController.add(response.data);
           this.resetData();
           this.$moodal.computedLayerModal.hide();

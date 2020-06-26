@@ -25,7 +25,7 @@
 </template>
 
 <script>
-    import API from "../../services/InfoService";
+ import info from "@/api/info";
     import Loader from "./parts/Loader";
 
     export default {
@@ -43,7 +43,7 @@
             getFAQ() {
                 this.loading = true;
 
-                API.getFAQ()
+                info.getFAQ()
                     .then(response => {
                         if (response.data) {
                             this.$store.commit("SET_FAQ_DATA", response.data);

@@ -169,7 +169,7 @@
 
 <script>
 import { dateFormatter } from "@/helpers";
-import API from "../../../services/ForumService";
+import forum from "@/api/forum";
 import NewComment from "./NewComment";
 import Loader from "../parts/Loader";
 
@@ -229,7 +229,7 @@ export default {
         ...data,
       };
 
-      API.insertComment(body)
+      forum.insertComment(body)
         .then((response) => {
           if (response.data) {
             this.rawComments.push(response.data);
@@ -252,7 +252,7 @@ export default {
         if (result.value) {
           this.loading = true;
 
-          API.deleteComment(id)
+          forum.deleteComment(id)
             .then((response) => {
               if (response.status === 200) {
                 this.rawComments.splice(

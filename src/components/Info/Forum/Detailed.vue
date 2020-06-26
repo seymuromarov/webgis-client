@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import API from "../../../services/ForumService";
+import forum from "@/api/forum";
 import { dateFormatter } from "@/helpers";
 import Comments from "./Comments";
 import Loader from "../parts/Loader";
@@ -84,7 +84,7 @@ export default {
     getIssueById(id) {
       this.loading = true;
 
-      API.getIssueById(id)
+      forum.getIssueById(id)
         .then((response) => {
           if (response.data) {
             this.issue = response.data;
@@ -94,7 +94,7 @@ export default {
         .catch();
     },
     closeIssue() {
-      API.closeIssue(this.issue.id)
+      forum.closeIssue(this.issue.id)
         .then((response) => {
           if (response.data) {
             this.issue = response.data;
@@ -125,7 +125,7 @@ export default {
         if (result.value) {
           this.loading = true;
 
-          API.deleteIssue(id)
+          forum.deleteIssue(id)
             .then((response) => {
               if (response.status === 200) {
                 if (this.issue.status === 1) {

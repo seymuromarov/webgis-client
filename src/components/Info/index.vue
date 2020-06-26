@@ -53,7 +53,7 @@
     import ReleaseNotes from "./ReleaseNotes";
     import Contact from "./Contact";
     import Forum from "./Forum/index";
-    import API from "../../services/InfoService";
+import info from "@/api/info";
 
     export default {
         name: "InfoModal",
