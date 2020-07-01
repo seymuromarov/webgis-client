@@ -1,5 +1,5 @@
 <template>
-  <Modal name="filterModal" title="Filter" :maxWidth="600">
+  <CustomModal name="filterModal" title="Filter" :maxWidth="600">
     <div class="data-table__filter">
       <div class="row form-group">
         <div class="col-md-12">
@@ -195,7 +195,7 @@
         </div>
       </div>
     </div>
-  </Modal>
+  </CustomModal>
 </template>
 
 <script>
@@ -213,12 +213,12 @@ import { layerHelper, serviceHelper } from "@/helpers";
 import layer from "@/api/layer";
 
 import { drawTypeEnum } from "@/enums";
-import { Modal } from "@/components";
+import { Modal as CustomModal } from "@/components";
 import { _ } from "vue-underscore";
 export default {
   name: "FilterBox",
   components: {
-    Modal,
+    CustomModal,
   },
   data() {
     return {

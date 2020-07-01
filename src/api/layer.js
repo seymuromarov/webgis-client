@@ -37,14 +37,7 @@ export default {
   getLayersWithFullDataFromServer(params) {
     return request.get(URL + "/api/Map/GetLayers");
   },
-  // getLocalLayerDynamic(params) {
-  //     return request.get(URL + "/api/data/", {
-  //         params: {
-  //             f: "json",
-  //             token: params.token
-  //         }
-  //     });
-  // },
+
   getLayerDynamic(params) {
     return request.get(
       URL + "/api/map/service/" + params.name + "/MapServer/layers",
@@ -158,4 +151,5 @@ export default {
       params: params,
     });
   },
+
 };

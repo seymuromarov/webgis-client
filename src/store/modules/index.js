@@ -11,6 +11,7 @@ import menu from "./menu";
 import modal from "./modal";
 import history from "./history";
 import ndvi from "./ndvi";
+import user from "./user";
 
 export default {
   auth,
@@ -26,4 +27,5 @@ export default {
   modal,
   history,
   ndvi,
+  user,
 };

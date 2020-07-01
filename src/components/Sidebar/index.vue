@@ -1,6 +1,7 @@
 <template>
   <div class="Sidebar">
     <!-- Menu -->
+
     <div class="menu">
       <div class="menu--top">
         <div class="menu__item" v-for="item in topMenu" :key="item.key">
@@ -184,10 +185,16 @@ import {
   menuController,
   mapController,
   serviceController,
+  userController,
 } from "@/controllers";
+import { tokenService, authService } from "@/services";
 import { drawTypeEnum, menuTabEnum, serviceTypeEnum } from "@/enums";
+import permission from "@/directive/permission/index.js";
+import checkPermission from "@/utils/permission";
+import role from "@/directive/role/index.js";
 export default {
   name: "Sidebar",
+  directives: { permission, role },
   components: {
     LayerTree,
     Draggable,
@@ -267,11 +274,11 @@ export default {
     },
   },
   methods: {
+    checkPermission,
     guid,
     capitalize,
     logout() {
-      localStorage.removeItem("token");
-      localStorage.removeItem("username");
+      authService.logout();
       this.$router.push("/login");
     },
     onDraggableMoveCallback(type) {

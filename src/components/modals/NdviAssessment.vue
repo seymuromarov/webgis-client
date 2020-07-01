@@ -222,7 +222,6 @@ export default {
       });
     },
     calculateNdviValue(R, G, B, IR) {
-      console.log("calculateNdviValue -> R, G, B, IR", R, G, B, IR);
       return (IR - R) / (IR + R);
     },
     orderGraphDataBySelecteds(selecteds, graphData) {
@@ -248,7 +247,6 @@ export default {
         orderedList.forEach((c) => {
           const { red, green, blue, alpha } = c.value;
           let ndviVal = this.calculateNdviValue(red, green, blue, alpha);
-          console.log("buildGraph -> ndviVal", ndviVal);
           values.push(ndviVal);
           labels.push(c.label);
         });
@@ -282,12 +280,7 @@ export default {
       // let defaultImgUrl = "https://i.picsum.photos/id/608/256/256.jpg";
       return arcgisImgUrl;
     },
-    getRandomInt() {
-      let min = -1;
-      let max = 1;
-      return (Math.random() * (max - min) + min).toFixed(5);
-      // return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
-    },
+
     onModalOpen() {
       if (!this.isModalHidingForPoint) {
         let bbox = toolController.getBbox();

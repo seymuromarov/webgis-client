@@ -1,4 +1,5 @@
 import tokenService from "./tokenService";
 import authService from "./authService";
+import userService from "./userService";
 
-export { tokenService, authService };
+export { authService, tokenService, userService };

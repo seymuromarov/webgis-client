@@ -241,11 +241,19 @@ const functions = {
         try {
           measuremaptooltipElement.className = `maptooltip maptooltip-static feature-${getters.getFeatureIdCounter()}`;
           measuremaptooltip.setOffset([0, -7]);
-
           let coordinates = [];
           if (type == drawTypeEnum.POINT) {
             coordinates = e.feature.getGeometry().getCoordinates();
             coordinates = transform(coordinates, "EPSG:3857", "EPSG:4326");
+          } else if (type == drawTypeEnum.LINESTRING) {
+            coordinates = e.feature.getGeometry().getCoordinates();
+            for (var i = 0; i < coordinates.length; i++) {
+              coordinates[i] = transform(
+                coordinates[i],
+                "EPSG:3857",
+                "EPSG:4326"
+              );
+            }
           } else {
             coordinates = e.feature.getGeometry().getCoordinates()[0];
             for (var i = 0; i < coordinates.length; i++) {
@@ -256,6 +264,10 @@ const functions = {
               );
             }
           }
+          console.log(
+            "addInteraction -> coordinates",
+            JSON.stringify(coordinates)
+          );
 
           setters.setBbox(coordinates);
         } catch (e) {

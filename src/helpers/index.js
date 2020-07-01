@@ -9,6 +9,8 @@ import serviceHelper from "./serviceHelper";
 import tileHelper from "./tileHelper";
 import urlHelper from "./urlHelper";
 import coreHelper from "./coreHelper";
+import userHelper from "./userHelper";
+import permissionHelper from "./permissionHelper";
 
 export {
   toggler,
@@ -22,4 +24,6 @@ export {
   tileHelper,
   urlHelper,
   coreHelper,
+  userHelper,
+  permissionHelper,
 };

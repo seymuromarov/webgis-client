@@ -33,6 +33,7 @@
     ></detector-modal>
 
     <NdviAssessment />
+    <DataModal />
     <!-- Information Modal -->
     <InfoModal
       :isOpen="isInformationModalVisible"
@@ -111,6 +112,7 @@ import {
   ComputedLayersModal,
   ChangeDetector as DetectorModal,
   NdviAssessment,
+  DataModal,
 } from "@/components/";
 
 import { toggler, serviceHelper } from "@/helpers";
@@ -140,6 +142,7 @@ export default {
     CustomModal,
     ComputedLayersModal,
     NdviAssessment,
+    DataModal,
   },
   data() {
     return {
@@ -174,7 +177,7 @@ export default {
 
     this.hashResolveResult = this.resolveHash(window.location.hash);
 
-    if (tokenService.getToken() === null) this.$router.push("/login");
+    // if (tokenService.getToken() === null) this.$router.push("/login");
 
     this.toggler = new toggler(this);
 

@@ -19,8 +19,9 @@
 </template>
 
 <script>
-import { authService } from "@/services";
-
+import auth from "@/api/auth";
+import { authService, tokenService } from "@/services";
+import { userController } from "@/controllers";
 export default {
   mounted() {
     this.error = this.$store.getters.authError;
@@ -35,12 +36,22 @@ export default {
   methods: {
     async login() {
       const { username, password } = this;
-      const response = await authService.login({
+
+      const response = await auth.login({
         emailOrUsername: username,
         password: password,
       });
       if (response.status === 400) {
         this.error = response.data;
+      } else {
+        let data = response.data;
+        let token = data.token;
+        let username = data.user.userName;
+        tokenService.setToken(token);
+
+        this.$store.dispatch("SAVE_AUTH_TOKEN", token);
+        localStorage.setItem("username", username);
+        this.$router.push("/");
       }
     },
   },

@@ -1,5 +1,5 @@
 <template>
-  <Modal
+  <CustomModal
     name="computedLayerModal"
     title="Customized layers"
     :width="400"
@@ -59,11 +59,11 @@
               />
             </div> -->
     </form>
-  </Modal>
+  </CustomModal>
 </template>
 
 <script>
-import Modal from "../common/Modal";
+import { Modal as CustomModal } from "@/components";
 import Multiselect from "vue-multiselect";
 import bunch from "@/api/bunch";
 import { layerController, bunchController } from "@/controllers";
@@ -75,7 +75,7 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
   name: "ComputedLayersModal",
   components: {
-    Modal,
+    CustomModal,
     Multiselect,
     Treeselect,
   },

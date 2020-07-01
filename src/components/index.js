@@ -16,3 +16,4 @@ export { default as Filter } from "./modals/Filter";
 export { default as ComputedLayersModal } from "./modals/ComputedLayers";
 export { default as ChangeDetector } from "./modals/ChangeDetector";
 export { default as NdviAssessment } from "./modals/NdviAssessment";
+export { default as DataModal } from "./modals/DataModal";

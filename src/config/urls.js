@@ -4,12 +4,14 @@ const getUrl = window.location;
 let server_url = getUrl.protocol + "//webgis.azercosmos.az";
 
 const baseUrl = server_url;
-
 const URL =
   process.env.NODE_ENV === "development"
     ? process.env.VUE_APP_BASE_API
     : getUrl.protocol + "//" + process.env.VUE_APP_BASE_API;
 
+const USER_URLS = {
+  GET_INFO_URL: URL + "/api/user/GetInfo",
+};
 const ACCOUNT_URL = {
   LOGIN_URL: URL + "/api/account/login",
 };
@@ -28,6 +30,7 @@ const LAYER_URLS = {
 };
 const DATATABLE_URLS = {
   GET_TABLE_INFO: URL + "/api/datatable/GetTableInfo",
+  ADD: URL + "/api/datatable/add",
 };
 
 const MAP_URLS = {
@@ -51,6 +54,7 @@ const ARCGIS_URLS = {
 export {
   baseUrl,
   URL,
+  USER_URLS,
   BUNCH_URL,
   ACCOUNT_URL,
   LAYER_URLS,

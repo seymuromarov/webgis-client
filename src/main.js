@@ -41,6 +41,8 @@ import "vue-loading-overlay/dist/vue-loading.css";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
+import "./permission"; // permission control
+
 Vue.use(Snotify, {
   toast: {
     position: SnotifyPosition.leftBottom,

@@ -30,6 +30,11 @@
           </div>
 
           <div class="table__operations">
+            <i
+              title="Add Data"
+              class="fas fa-plus tableFilter makeMePoint icon"
+              @click="showDataModal"
+            />
             <download-excel
               v-if="tableHeaders"
               :fetch="fetchFullData"
@@ -43,6 +48,7 @@
                 class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
               ></i>
             </download-excel>
+
             <i
               title="Filter"
               class="fas fa-filter tableFilter makeMePoint icon"
@@ -108,6 +114,7 @@
                 >
                   {{ alias }}
                 </th>
+                <th class="sticky-col">Options</th>
               </tr>
             </thead>
             <tbody class="tableBody custom-scrollbar">
@@ -125,6 +132,7 @@
                 >
                   {{ attr }}
                 </td>
+                <td class="makeMePoint sticky-col">sticky</td>
               </tr>
             </tbody>
           </table>
@@ -303,6 +311,9 @@ export default {
     showFilterModal() {
       modalController.showFilterModal();
     },
+    showDataModal() {
+      modalController.showDataModal();
+    },
     showSimpleFilterModal() {
       this.$moodal.dataModal.show();
     },
@@ -466,7 +477,7 @@ export default {
     },
 
     activeService() {
-      return this.$store.getters.tableActiveService;
+      return tableController.getTableActiveService();
     },
   },
   filters: {

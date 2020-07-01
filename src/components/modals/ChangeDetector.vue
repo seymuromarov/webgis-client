@@ -44,7 +44,7 @@
 <script>
 import Multiselect from "vue-multiselect";
 import { URL } from "@/config/urls";
-import { Modal as CustomModal } from "../";
+import { Modal as CustomModal } from "@/components";
 import { layerController } from "@/controllers";
 import { fromLonLat, Polygon } from "@/wrappers/openLayerImports";
 // import the component
