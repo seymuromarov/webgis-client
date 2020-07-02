@@ -183,11 +183,17 @@ const getters = {
   getTableLoadingStatus() {
     return $store.getters.dataTableLoading;
   },
+  getIsEditData() {
+    return $store.getters.isEditData;
+  },
 };
 
 const setters = {
   setTableData(val) {
     $store.dispatch("SAVE_DATATABLE", val);
+  },
+  setIsEditData(val) {
+    $store.dispatch("saveIsEditData", val);
   },
   setTableActiveService(val) {
     $store.dispatch("saveTableActiveService", val);

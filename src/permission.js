@@ -20,7 +20,6 @@ router.beforeEach(async (to, from, next) => {
       } else {
         try {
           let response = await userService.getInfo();
-          console.log("response", response);
           if (response.status !== 200) {
             authService.logout();
             next(`/login`);

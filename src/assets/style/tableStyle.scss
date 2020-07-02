@@ -83,11 +83,23 @@
   top: 8px;
   right: 40px;
 }
-.sticky-col {
-  border-left: solid 1px #ddefef;
-  border-right: solid 1px #ddefef;
+.sticky-header {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
   right: 0;
+  top: auto;
+  width: 120px;
+}
+.fix {
   position: absolute;
+  *position: relative; /*ie7*/
+  margin-left: -100px;
+
+  width: 100px;
+}
+.sticky-col {
+  position: sticky;
+  right: 0;
   top: auto;
   width: 120px;
 }

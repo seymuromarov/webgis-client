@@ -8,6 +8,7 @@ const state = {
   activeService: null,
   isVisible: false,
   loading: false,
+  isEditData: false,
 };
 
 const mutations = {
@@ -22,6 +23,9 @@ const mutations = {
   },
   SET_DATATABLE_ACTIVE_SERVICE(state, payload) {
     state.activeService = payload;
+  },
+  SET_IS_EDIT_DATA(state, payload) {
+    state.isEditData = payload;
   },
   SET_DATATABLE_CHECKED_COLUMNS(state, { id, value }) {
     state.data.checkedColumnsData = value;
@@ -48,6 +52,7 @@ const mutations = {
 
 const getters = {
   dataTableLoading: (state) => state.loading,
+  isEditData: (state) => state.isEditData,
   dataTableVisibleStatus: (state) => state.isVisible,
   tableData: (state) => state.data,
   tablePaging: (state) => state.paging,
@@ -66,6 +71,9 @@ const getters = {
 const actions = {
   SAVE_DATATABLE(context, payload) {
     context.commit("SET_DATATABLE", payload);
+  },
+  saveIsEditData(context, payload) {
+    context.commit("SET_IS_EDIT_DATA", payload);
   },
   SAVE_DATATABLE_ACTIVE_TAB_ID(context, id) {
     context.commit("SET_DATATABLE_ACTIVE_TAB_ID", id);

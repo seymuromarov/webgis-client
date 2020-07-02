@@ -1,6 +1,6 @@
 <template>
   <CustomModal
-    name="dataModal"
+    name="dataAddEditModal"
     title="Data Modal"
     width="50%"
     :minHeight="400"
@@ -146,6 +146,7 @@
             <DynamicFormInput
               :type="item.valueType"
               :name="item.columnName"
+              :value="isEdit ? item.value : null"
               class="form-control"
               @onChange="onInputChange"
             />
@@ -179,7 +180,6 @@ import {
 import { icons } from "@/constants/assets";
 import { drawTypeEnum } from "@/enums";
 import datatable from "@/api/datatable";
-console.log("datatable", datatable);
 import DynamicFormInput from "@/components/renders/DynamicFormInput";
 export default {
   components: { CustomModal, DynamicFormInput },
@@ -214,6 +214,9 @@ export default {
     bbox() {
       return toolController.getBbox();
     },
+    isEdit() {
+      return tableController.getIsEditData();
+    },
     activeTableService() {
       return tableController.getTableActiveService();
     },
@@ -237,7 +240,7 @@ export default {
   },
   methods: {
     resetData() {
-      this.isGeometryExist = false;
+      // this.isGeometryExist = false;
       this.isModalHidingForGeometrySelection = false;
       this.columns = [];
       this.geometryType = "";
@@ -251,6 +254,7 @@ export default {
         type: this.activeTableService.type,
       };
       toolController.deleteActiveServiceFeatures();
+      console.log({ geometryBtnSelect: this.geometryBtnSelect, value });
       if (this.geometryBtnSelect == value) {
         this.geometryBtnSelect = drawTypeEnum.NONE;
         this.geometry == null;
@@ -261,12 +265,12 @@ export default {
           forService: serviceInfo,
         };
         this.isModalHidingForGeometrySelection = true;
-        modalController.hideDataModal();
+        modalController.hideDataAddEditModal();
         tableController.setTableUnvisible();
         toolController.pickDrawType(
           value,
           () => {
-            modalController.showDataModal();
+            modalController.showDataAddEditModal();
             this.geometryBtnSelect = value;
             this.isModalHidingForGeometrySelection = false;
             // let extentCoordinates = this.bbox;
@@ -286,16 +290,36 @@ export default {
         geometryType: this.geometryType,
         geometry: this.geometry ? JSON.stringify(this.geometry) : null,
       };
-      datatable.addData(params).then((response) => {
-        console.log("onSubmit -> response", response);
-        modalController.hideDataModal();
+      datatable.addOrEditData(params).then((response) => {
+        modalController.hideDataAddEditModal();
       });
     },
     async onModalOpen() {
+      var activeService = this.activeTableService;
+      let data = null;
+      const isEdit = this.isEdit;
+      if (isEdit) {
+        let response = await datatable.getData(activeService.id, 1);
+        data = response.data;
+      }
       if (!this.isModalHidingForGeometrySelection) {
-        var activeService = this.activeTableService;
         var tableInfo = await datatable.getTableInfo(activeService.id);
         const { columns, geometryType } = tableInfo.data;
+        if (isEdit) {
+          columns.forEach((element) => {
+            var value = data[element.columnName];
+            var valueType = element.valueType;
+            if (value) {
+              value = value.toString();
+            }
+            element["value"] = value;
+          });
+          if (data.geometries) {
+            this.geometry = JSON.parse(data.geometries);
+            this.geometryBtnSelect = geometryType;
+          }
+        }
+
         this.columns = columns;
         this.geometryType = geometryType;
       }

@@ -33,7 +33,12 @@
             <i
               title="Add Data"
               class="fas fa-plus tableFilter makeMePoint icon"
-              @click="showDataModal"
+              @click="showDataAddEditModal(false)"
+            />
+            <i
+              title="Edit Data"
+              class="far fa-edit tableFilter makeMePoint icon"
+              @click="showDataAddEditModal(true)"
             />
             <download-excel
               v-if="tableHeaders"
@@ -114,7 +119,6 @@
                 >
                   {{ alias }}
                 </th>
-                <th class="sticky-col">Options</th>
               </tr>
             </thead>
             <tbody class="tableBody custom-scrollbar">
@@ -132,7 +136,6 @@
                 >
                   {{ attr }}
                 </td>
-                <td class="makeMePoint sticky-col">sticky</td>
               </tr>
             </tbody>
           </table>
@@ -311,8 +314,9 @@ export default {
     showFilterModal() {
       modalController.showFilterModal();
     },
-    showDataModal() {
-      modalController.showDataModal();
+    showDataAddEditModal(isEdit) {
+      this.isEditData = isEdit;
+      modalController.showDataAddEditModal();
     },
     showSimpleFilterModal() {
       this.$moodal.dataModal.show();
@@ -473,6 +477,15 @@ export default {
       },
       set(val) {
         tableController.setTableData(val);
+      },
+    },
+    isEditData: {
+      get() {
+        let data = tableController.getIsEditData();
+        return data;
+      },
+      set(val) {
+        tableController.setIsEditData(val);
       },
     },
 

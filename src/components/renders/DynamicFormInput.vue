@@ -24,17 +24,18 @@ export default {
         break;
       case "double":
         inputType = "number";
-        step = "0.01";
+        step = ".01";
         break;
     }
-    let element = createElement("input", {
+    let options = {
       domProps: {
         value: this.value,
         name: this.name,
       },
+
       attrs: {
         type: inputType,
-        ...(inputType === "double" && { step }),
+        ...(this.type === "double" && { step }),
       },
 
       on: {
@@ -46,7 +47,10 @@ export default {
           this.$emit("onChange", name, val);
         },
       },
-    });
+    };
+    if (inputType === "double") options.attrs["step"];
+    console.log("render -> options", options);
+    let element = createElement("input", options);
 
     return element;
   },

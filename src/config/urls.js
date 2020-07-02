@@ -30,7 +30,8 @@ const LAYER_URLS = {
 };
 const DATATABLE_URLS = {
   GET_TABLE_INFO: URL + "/api/datatable/GetTableInfo",
-  ADD: URL + "/api/datatable/add",
+  ADD_OR_EDIT: URL + "/api/datatable/AddOrEdit",
+  GET_ITEM: URL + "/api/datatable/GetItem",
 };
 
 const MAP_URLS = {
