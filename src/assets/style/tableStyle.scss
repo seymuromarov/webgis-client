@@ -1,6 +1,8 @@
 .selfTable {
   width: 100%;
   margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
 
   th {
     width: 200px;
@@ -17,11 +19,25 @@
   thead {
     position: sticky;
     top: 0;
+    z-index: 1;
+
+    .table__column--sticky {
+      background-color: var(--primary-color-lighten-200);
+    }
   }
   tbody {
-    display: block;
     height: 100%;
     overflow-y: scroll;
+    
+    .table__column--sticky {
+      background-color: var(--primary-color-lighten-100);
+    }
+  }
+
+  .table__column--sticky {
+    position: sticky;
+    right: 0;
+    border-left: 1px solid #ddefef !important;
   }
 }
 
@@ -30,6 +46,7 @@
   overflow-y: auto;
   width: 100%;
   height: calc(100% - 40px);
+  position: relative;
 }
 
 .tableDiv {
@@ -82,14 +99,6 @@
   // position: absolute;
   top: 8px;
   right: 40px;
-}
-.sticky-col {
-  border-left: solid 1px #ddefef;
-  border-right: solid 1px #ddefef;
-  right: 0;
-  position: absolute;
-  top: auto;
-  width: 120px;
 }
 .tableClose {
   // position: absolute;

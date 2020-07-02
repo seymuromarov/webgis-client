@@ -24,9 +24,7 @@
       <div class="tableDiv howMuchWidthHaveMap">
         <div class="tableHeader">
           <div class="table__tabs">
-            <div class="table__tab table__tab--active">
-              {{ tableName }}
-            </div>
+            <div class="table__tab table__tab--active">{{ tableName }}</div>
           </div>
 
           <div class="table__operations">
@@ -58,8 +56,7 @@
               title="Show/Hide Table Columns"
               class="fas fa-columns tableColumns makeMePoint icon"
               @click="togglePopup"
-            >
-            </i>
+            ></i>
             <i
               title="Close"
               class="fas fa-times tableClose makeMePoint icon"
@@ -71,11 +68,7 @@
               v-show="isColumnPopupShowing"
             >
               <div class="columnsDiv">
-                <div
-                  v-for="(alias, index) in tableHeaders"
-                  :key="index"
-                  class="table__column"
-                >
+                <div v-for="(alias, index) in tableHeaders" :key="index" class="table__column">
                   <input
                     @click="selectColumns(alias, index, $event)"
                     type="checkbox"
@@ -85,19 +78,13 @@
                     checked="checked"
                     class="column__checkbox"
                   />
-                  <label class="column__name">
-                    {{ alias }}
-                  </label>
+                  <label class="column__name">{{ alias }}</label>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div
-          class="tableContent custom-scrollbar"
-          id="dataTable"
-          ref="dataTableContent"
-        >
+        <div class="tableContent custom-scrollbar" id="dataTable" ref="dataTableContent">
           <!-- Loader -->
           <div class="loader" v-if="loading">
             <img src="@/assets/loading.svg" alt />
@@ -111,10 +98,8 @@
                   v-show="checkedColumns.includes(index)"
                   v-for="(alias, index) in tableHeaders"
                   :key="index"
-                >
-                  {{ alias }}
-                </th>
-                <th class="sticky-col">Options</th>
+                >{{ alias }}</th>
+                <th class="table__column--sticky">Options</th>
               </tr>
             </thead>
             <tbody class="tableBody custom-scrollbar">
@@ -129,10 +114,8 @@
                   "
                   v-for="(attr, key) in data.attributes"
                   :key="key"
-                >
-                  {{ attr }}
-                </td>
-                <td class="makeMePoint sticky-col">sticky</td>
+                >{{ attr }}</td>
+                <td class="table__column--sticky">sticky</td>
               </tr>
             </tbody>
           </table>
@@ -152,9 +135,7 @@
           </thead>
           <tbody class="popupTableBody">
             <tr v-for="(value, key) in selectedData" :key="key">
-              <td class="paddingLeft">
-                {{ key }}
-              </td>
+              <td class="paddingLeft">{{ key }}</td>
               <td class="paddingRight">{{ value }}</td>
             </tr>
           </tbody>
@@ -173,7 +154,7 @@ import CustomModal from "./common/Modal";
 import {
   tableController,
   toolController,
-  modalController,
+  modalController
 } from "@/controllers";
 import { serviceHelper } from "@/helpers";
 export default {
@@ -181,7 +162,7 @@ export default {
   components: {
     Multiselect,
     Resizable,
-    CustomModal,
+    CustomModal
   },
   data() {
     return {
@@ -200,8 +181,8 @@ export default {
         minW: 150,
         minH: 200,
         fit: true,
-        event: "",
-      },
+        event: ""
+      }
     };
   },
   mounted() {
@@ -220,8 +201,8 @@ export default {
         this.resetPaging();
       },
       deep: true,
-      immediate: false,
-    },
+      immediate: false
+    }
   },
   methods: {
     resetScroll() {
@@ -234,7 +215,7 @@ export default {
     },
     scrollHandler() {
       const table = document.getElementById("dataTable");
-      table.addEventListener("scroll", (e) => {
+      table.addEventListener("scroll", e => {
         if (
           table.scrollTop + table.clientHeight >= table.scrollHeight &&
           !this.paging.isBusy &&
@@ -249,7 +230,7 @@ export default {
           tableController.setTableLoading(true);
           this.paging = {
             ...this.paging,
-            page: page++,
+            page: page++
           };
 
           this.getDatas();
@@ -261,7 +242,7 @@ export default {
     isPagingBusy(isBusy) {
       this.paging = {
         ...this.paging,
-        isBusy,
+        isBusy
       };
     },
     async getDatas() {
@@ -274,18 +255,18 @@ export default {
         params = service.layers.map((item, index) => {
           return {
             layerId: item.id,
-            query: { ...item.query },
+            query: { ...item.query }
           };
         });
         response = await layer.getIntersectLocalTableData(service.id, {
           layerQueries: params,
-          paging: paging,
+          paging: paging
         });
       } else {
         params = {
           layerId: service.id,
           ...service.query,
-          paging: paging,
+          paging: paging
         };
         response = await layer.getLocalTableData(params);
       }
@@ -297,7 +278,7 @@ export default {
       this.paging = {
         isBusy: false,
         page: 1,
-        limit: 25,
+        limit: 25
       };
     },
     toggleIsVisible() {
@@ -337,26 +318,26 @@ export default {
 
       let paginForFullData = {
         page: 1,
-        limit: this.totalCount,
+        limit: this.totalCount
       };
       if (isBunch) {
         params = activeService.layers.map((item, index) => {
           return {
             layerId: item.id,
-            query: { ...item.query },
+            query: { ...item.query }
           };
         });
 
         response = await layer.getIntersectLocalTableData(activeService.id, {
           layerQueries: params,
-          paging: paginForFullData,
+          paging: paginForFullData
         });
       } else {
         params = {
           layerId: activeService.id,
           ...activeService.query,
           paging: paginForFullData,
-          isGeometryDataExist: false,
+          isGeometryDataExist: false
         };
         response = await layer.getLocalTableData(params);
       }
@@ -380,7 +361,7 @@ export default {
         this.checkedColumns.push(index);
       } else {
         const checkedColumnsIndex = this.checkedColumns.findIndex(
-          (x) => x === index
+          x => x === index
         );
 
         this.checkedColumns.splice(checkedColumnsIndex, 1);
@@ -403,7 +384,7 @@ export default {
       this.resize.maxH = window.innerHeight;
 
       this.$forceUpdate();
-    },
+    }
     // setActiveTab(tab) {
     //   this.activeTabId = tab;
     // },
@@ -424,7 +405,7 @@ export default {
       },
       set(value) {
         tableController.setTablePaging(value);
-      },
+      }
     },
 
     tableName() {
@@ -439,7 +420,7 @@ export default {
       },
       set(value) {
         this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-      },
+      }
     },
     tableHeadersWithAlias() {
       return this.tableData.tableHeadersWithAlias;
@@ -454,7 +435,7 @@ export default {
       },
       set(value) {
         this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", value);
-      },
+      }
     },
 
     checkedColumns: {
@@ -463,7 +444,7 @@ export default {
       },
       set(value) {
         this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
-      },
+      }
     },
 
     tableData: {
@@ -473,18 +454,18 @@ export default {
       },
       set(val) {
         tableController.setTableData(val);
-      },
+      }
     },
 
     activeService() {
       return tableController.getTableActiveService();
-    },
+    }
   },
   filters: {
     checkEmpty(value) {
       return typeof value !== "number" ? 0 : value;
-    },
-  },
+    }
+  }
 };
 </script>
 
