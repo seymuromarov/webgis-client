@@ -24,9 +24,7 @@
       <div class="tableDiv howMuchWidthHaveMap">
         <div class="tableHeader">
           <div class="table__tabs">
-            <div class="table__tab table__tab--active">
-              {{ tableName }}
-            </div>
+            <div class="table__tab table__tab--active">{{ tableName }}</div>
           </div>
 
           <div class="table__operations">
@@ -63,8 +61,7 @@
               title="Show/Hide Table Columns"
               class="fas fa-columns tableColumns makeMePoint icon"
               @click="togglePopup"
-            >
-            </i>
+            ></i>
             <i
               title="Close"
               class="fas fa-times tableClose makeMePoint icon"
@@ -90,9 +87,7 @@
                     checked="checked"
                     class="column__checkbox"
                   />
-                  <label class="column__name">
-                    {{ alias }}
-                  </label>
+                  <label class="column__name">{{ alias }}</label>
                 </div>
               </div>
             </div>
@@ -119,6 +114,7 @@
                 >
                   {{ alias }}
                 </th>
+                <th class="table__column--sticky">Options</th>
               </tr>
             </thead>
             <tbody class="tableBody custom-scrollbar">
@@ -136,6 +132,7 @@
                 >
                   {{ attr }}
                 </td>
+                <td class="table__column--sticky">sticky</td>
               </tr>
             </tbody>
           </table>
@@ -155,9 +152,7 @@
           </thead>
           <tbody class="popupTableBody">
             <tr v-for="(value, key) in selectedData" :key="key">
-              <td class="paddingLeft">
-                {{ key }}
-              </td>
+              <td class="paddingLeft">{{ key }}</td>
               <td class="paddingRight">{{ value }}</td>
             </tr>
           </tbody>
