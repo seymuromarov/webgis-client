@@ -49,7 +49,6 @@ export default {
       },
     };
     if (inputType === "double") options.attrs["step"];
-    console.log("render -> options", options);
     let element = createElement("input", options);
 
     return element;

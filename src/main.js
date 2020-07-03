@@ -41,6 +41,10 @@ import "vue-loading-overlay/dist/vue-loading.css";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
+//Vue VueSelect
+import vSelect from "vue-select";
+import "vue-select/dist/vue-select.css";
+
 import "./permission"; // permission control
 
 Vue.use(Snotify, {
@@ -49,6 +53,8 @@ Vue.use(Snotify, {
     timeout: 3000,
   },
 });
+
+Vue.component("v-select", vSelect);
 
 Vue.use(Loading);
 Vue.use(Multiselect);

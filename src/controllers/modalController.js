@@ -24,10 +24,19 @@ const functions = {
   showDataAddEditModal() {
     let moodal = getters.getMoodal();
     moodal.dataAddEditModal.show();
+    console.log("HIDE GEOMTRY MODAL");
   },
   hideDataAddEditModal() {
     let moodal = getters.getMoodal();
     moodal.dataAddEditModal.hide();
+  },
+  showGeometryModal() {
+    let moodal = getters.getMoodal();
+    moodal.geometryModal.show();
+  },
+  hideGeometryModal() {
+    let moodal = getters.getMoodal();
+    moodal.geometryModal.hide();
   },
   showColorPickerModal() {
     let moodal = getters.getMoodal();

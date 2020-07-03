@@ -186,6 +186,9 @@ const getters = {
   getIsEditData() {
     return $store.getters.isEditData;
   },
+  getEditDataGid() {
+    return $store.getters.editDataGid;
+  },
 };
 
 const setters = {
@@ -194,6 +197,9 @@ const setters = {
   },
   setIsEditData(val) {
     $store.dispatch("saveIsEditData", val);
+  },
+  setEditDataGid(val) {
+    $store.dispatch("saveEditDataGid", val);
   },
   setTableActiveService(val) {
     $store.dispatch("saveTableActiveService", val);

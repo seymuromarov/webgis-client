@@ -9,6 +9,7 @@ const state = {
   isVisible: false,
   loading: false,
   isEditData: false,
+  editDataGid: 0,
 };
 
 const mutations = {
@@ -26,6 +27,9 @@ const mutations = {
   },
   SET_IS_EDIT_DATA(state, payload) {
     state.isEditData = payload;
+  },
+  SET_EDIT_DATA_GID(state, payload) {
+    state.editDataGid = payload;
   },
   SET_DATATABLE_CHECKED_COLUMNS(state, { id, value }) {
     state.data.checkedColumnsData = value;
@@ -57,6 +61,7 @@ const getters = {
   tableData: (state) => state.data,
   tablePaging: (state) => state.paging,
   sumData: (state) => state.sumData,
+  editDataGid: (state) => state.editDataGid,
   tableActiveService: (state) => state.activeService,
   // activeTableData: (state) => {
   //   const item = state.data.find((x) => x.service.id === state.activeTabId);
@@ -74,6 +79,9 @@ const actions = {
   },
   saveIsEditData(context, payload) {
     context.commit("SET_IS_EDIT_DATA", payload);
+  },
+  saveEditDataGid(context, payload) {
+    context.commit("SET_EDIT_DATA_GID", payload);
   },
   SAVE_DATATABLE_ACTIVE_TAB_ID(context, id) {
     context.commit("SET_DATATABLE_ACTIVE_TAB_ID", id);

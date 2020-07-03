@@ -1,158 +1,299 @@
 <template>
-  <CustomModal
-    name="dataAddEditModal"
-    title="Data Modal"
-    width="50%"
-    :minHeight="400"
-    @beforeShow="onModalOpen"
-    @afterHide="onModalClose"
-  >
-    <form>
-      <div class="row form-group">
-        <div class="col-md-6">
-          <div class="row">
-            <div class="col-md-12">
-              <label>
-                Is Geometry Exist :
-                <span v-if="isGeometryExist" class="badge badge-success">
-                  true
-                </span>
-                <span v-else class="badge badge-danger">
-                  false
-                </span>
-              </label>
+  <div>
+    <CustomModal
+      name="dataAddEditModal"
+      title="Data Modal"
+      width="50%"
+      :minHeight="400"
+      @beforeShow="onModalOpen"
+      @afterHide="onModalClose"
+    >
+      <form>
+        <div class="row form-group">
+          <div class="col-md-6">
+            <div class="row">
+              <div class="col-md-12">
+                <label>
+                  Is Geometry Exist :
+                  <span v-if="isGeometryExist" class="badge badge-success">
+                    true
+                  </span>
+                  <span v-else class="badge badge-danger">
+                    false
+                  </span>
+                </label>
+              </div>
             </div>
-            <!-- <div v-if="isGeometryExist" class="col-md-12">
-              <label>
-                Geometry (Stringfy):
-                <span>
-                  {{ stringfyedGeemtry }}
-                </span>
-              </label>
-            </div> -->
+          </div>
+          <div class="col-md-6">
+            <div class="row">
+              <div class="col-md-12">
+                <div
+                  class="btn-group btn-group-toggle btn-group-sm float-right"
+                  role="group"
+                  aria-label="Basic example"
+                >
+                  <label
+                    v-if="pointGeometryVisibility"
+                    class="btn  btn-info "
+                    v-bind:class="{
+                      active:
+                        isGeometryExist &&
+                        geometryBtnSelect == drawTypeEnum.POINT,
+                    }"
+                  >
+                    <input
+                      type="radio"
+                      name="options"
+                      :value="drawTypeEnum.POINT"
+                      @click="drawTypeOnChange"
+                    />
+                    <img :src="icons.point" />
+                  </label>
+                  <label
+                    v-if="lineGeometryVisibility"
+                    class="btn  btn-info "
+                    v-bind:class="{
+                      active:
+                        isGeometryExist &&
+                        geometryBtnSelect == drawTypeEnum.LINESTRING,
+                    }"
+                  >
+                    <input
+                      type="radio"
+                      name="options"
+                      :value="drawTypeEnum.LINESTRING"
+                      @click="drawTypeOnChange"
+                    />
+                    <img :src="icons.line" />
+                  </label>
+                  <label
+                    v-if="polygonGeometryVisibility"
+                    class="btn  btn-info "
+                    v-bind:class="{
+                      active:
+                        isGeometryExist &&
+                        geometryBtnSelect == drawTypeEnum.SQUARE,
+                    }"
+                  >
+                    <input
+                      type="radio"
+                      name="options"
+                      :value="drawTypeEnum.SQUARE"
+                      @click="drawTypeOnChange"
+                    />
+                    <img :src="icons.square" />
+                  </label>
+                  <label
+                    v-if="polygonGeometryVisibility"
+                    class="btn  btn-info "
+                    v-bind:class="{
+                      active:
+                        isGeometryExist &&
+                        geometryBtnSelect == drawTypeEnum.BOX,
+                    }"
+                  >
+                    <input
+                      type="radio"
+                      name="options"
+                      :value="drawTypeEnum.BOX"
+                      @click="drawTypeOnChange"
+                    />
+                    <img :src="icons.rectangle" />
+                  </label>
+                  <label
+                    v-if="polygonGeometryVisibility"
+                    class="btn  btn-info "
+                    v-bind:class="{
+                      active:
+                        isGeometryExist &&
+                        geometryBtnSelect == drawTypeEnum.POLYGON,
+                    }"
+                  >
+                    <input
+                      type="radio"
+                      name="options"
+                      :value="drawTypeEnum.POLYGON"
+                      @click="drawTypeOnChange"
+                    />
+                    <img :src="icons.polygon" />
+                  </label>
+                  <label
+                    v-if="polygonGeometryVisibility"
+                    class="btn  btn-info "
+                    v-bind:class="{
+                      active:
+                        isGeometryExist &&
+                        geometryBtnSelect == drawTypeEnum.CIRCLE,
+                    }"
+                  >
+                    <input
+                      type="radio"
+                      name="options"
+                      :value="drawTypeEnum.CIRCLE"
+                      @click="drawTypeOnChange"
+                    />
+                    <img :src="icons.circle" />
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-12 mt-1">
+                <button
+                  type="button"
+                  class="btn btn-primary float-right"
+                  @click="showGeometryModal"
+                >
+                  Geometry
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+
+        <div class="row">
+          <div class="col-md-12" v-for="(item, index) in columns" :key="index">
+            <div class="form-group">
+              <label :for="item.columnName"> {{ item.columnName }}</label>
+              <DynamicFormInput
+                :type="item.valueType"
+                :name="item.columnName"
+                :value="isEdit ? item.value : null"
+                class="form-control"
+                @onChange="onInputChange"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="row ">
+          <div class="col-md-12 form-group">
+            <!-- Apply button -->
+
+            <button
+              type="button"
+              class="btn btn-primary float-right"
+              @click="onSubmit"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+      </form>
+    </CustomModal>
+    <CustomModal
+      name="geometryModal"
+      title="Geometry Modal"
+      width="70%"
+      :minHeight="400"
+      @afterHide="onGeometryModalClose"
+    >
+      <div class="row">
         <div class="col-md-6">
+          <label>
+            Geometry Type :
+
+            <span class="badge badge-info">
+              {{ geometryType }}
+            </span>
+          </label>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="label"></label>
+            <button
+              v-show="geometry && geometry.length > 0"
+              type="button"
+              class="btn btn-danger float-right"
+              @click="resetCoordinates"
+            >
+              Reset Coordinates
+            </button>
+          </div>
+        </div>
+        <div v-if="isGeometryExist" class="col-md-12">
+          <div v-if="this.geometryType == 'point'" class="row">
+            <div class="col-md-5">
+              <div class="form-group">
+                <label for="label">X</label>
+                <input
+                  type="number"
+                  step=".00000000001"
+                  class="form-control"
+                  id="label"
+                  v-model.number="geometry[0]"
+                />
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="form-group">
+                <label for="label">Y</label>
+                <input
+                  type="number"
+                  step=".00000000001"
+                  class="form-control"
+                  id="label"
+                  v-model.number="geometry[1]"
+                />
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="label"></label>
+                <button
+                  type="button"
+                  class="btn btn-danger d-block mt-2"
+                  @click="deleteCoordinate"
+                >
+                  <i title="Edit Data" class="fas fa-trash-alt" />
+                </button>
+              </div>
+            </div>
+          </div>
           <div
-            class="btn-group btn-group-toggle btn-group-sm float-right"
-            role="group"
-            aria-label="Basic example"
+            v-else
+            v-for="(item, index) in geometry"
+            class="row"
+            :key="index"
           >
-            <label
-              v-if="pointGeometryVisibility"
-              class="btn  btn-info "
-              v-bind:class="{
-                active:
-                  isGeometryExist && geometryBtnSelect == drawTypeEnum.POINT,
-              }"
-            >
-              <input
-                type="radio"
-                name="options"
-                :value="drawTypeEnum.POINT"
-                @click="drawTypeOnChange"
-              />
-              <img :src="icons.point" />
-            </label>
-            <label
-              v-if="lineGeometryVisibility"
-              class="btn  btn-info "
-              v-bind:class="{
-                active:
-                  isGeometryExist &&
-                  geometryBtnSelect == drawTypeEnum.LINESTRING,
-              }"
-            >
-              <input
-                type="radio"
-                name="options"
-                :value="drawTypeEnum.LINESTRING"
-                @click="drawTypeOnChange"
-              />
-              <img :src="icons.line" />
-            </label>
-            <label
-              v-if="polygonGeometryVisibility"
-              class="btn  btn-info "
-              v-bind:class="{
-                active:
-                  isGeometryExist && geometryBtnSelect == drawTypeEnum.SQUARE,
-              }"
-            >
-              <input
-                type="radio"
-                name="options"
-                :value="drawTypeEnum.SQUARE"
-                @click="drawTypeOnChange"
-              />
-              <img :src="icons.square" />
-            </label>
-            <label
-              v-if="polygonGeometryVisibility"
-              class="btn  btn-info "
-              v-bind:class="{
-                active:
-                  isGeometryExist && geometryBtnSelect == drawTypeEnum.BOX,
-              }"
-            >
-              <input
-                type="radio"
-                name="options"
-                :value="drawTypeEnum.BOX"
-                @click="drawTypeOnChange"
-              />
-              <img :src="icons.rectangle" />
-            </label>
-            <label
-              v-if="polygonGeometryVisibility"
-              class="btn  btn-info "
-              v-bind:class="{
-                active:
-                  isGeometryExist && geometryBtnSelect == drawTypeEnum.POLYGON,
-              }"
-            >
-              <input
-                type="radio"
-                name="options"
-                :value="drawTypeEnum.POLYGON"
-                @click="drawTypeOnChange"
-              />
-              <img :src="icons.polygon" />
-            </label>
-            <label
-              v-if="polygonGeometryVisibility"
-              class="btn  btn-info "
-              v-bind:class="{
-                active:
-                  isGeometryExist && geometryBtnSelect == drawTypeEnum.CIRCLE,
-              }"
-            >
-              <input
-                type="radio"
-                name="options"
-                :value="drawTypeEnum.CIRCLE"
-                @click="drawTypeOnChange"
-              />
-              <img :src="icons.circle" />
-            </label>
+            <div class="col-md-5">
+              <div class="form-group">
+                <label for="label">X</label>
+                <input
+                  type="number"
+                  step=".00000000001"
+                  class="form-control"
+                  id="label"
+                  v-model.number="item[0]"
+                />
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="form-group">
+                <label for="label">Y</label>
+                <input
+                  type="number"
+                  step=".00000000001"
+                  class="form-control"
+                  id="label"
+                  v-model.number="item[1]"
+                />
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="label"></label>
+                <button
+                  type="button"
+                  class="btn btn-danger d-block mt-2"
+                  @click="deleteCoordinate(index)"
+                >
+                  <i title="Edit Data" class="fas fa-trash-alt" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-md-12" v-for="(item, index) in columns" :key="index">
-          <div class="form-group">
-            <label :for="item.columnName"> {{ item.columnName }}</label>
-            <DynamicFormInput
-              :type="item.valueType"
-              :name="item.columnName"
-              :value="isEdit ? item.value : null"
-              class="form-control"
-              @onChange="onInputChange"
-            />
-          </div>
-        </div>
-      </div>
       <div class="row ">
         <div class="col-md-12 form-group">
           <!-- Apply button -->
@@ -160,14 +301,15 @@
           <button
             type="button"
             class="btn btn-primary float-right"
-            @click="onSubmit"
+            :disabled="!canAddCoordinate"
+            @click="addCoordinate"
           >
-            Apply
+            Add Coordinate
           </button>
         </div>
       </div>
-    </form>
-  </CustomModal>
+    </CustomModal>
+  </div>
 </template>
 
 <script>
@@ -184,6 +326,7 @@ import DynamicFormInput from "@/components/renders/DynamicFormInput";
 export default {
   components: { CustomModal, DynamicFormInput },
   props: {},
+
   data() {
     return {
       isModalHidingForGeometrySelection: false,
@@ -198,17 +341,26 @@ export default {
   },
   mounted() {},
   computed: {
-    isGeometryExist() {
-      return (
-        this.geometry &&
-        this.geometryBtnSelect &&
-        this.geometry.length > 0 &&
-        this.geometryBtnSelect !== "" &&
-        this.geometryBtnSelect !== drawTypeEnum.NONE
-      );
+    canAddCoordinate() {
+      var result =
+        this.geometryType &&
+        (this.geometryType !== "point" ||
+          (this.geometryType === "point" && this.geometry == null) ||
+          this.geometry.length == 0);
+      return result;
     },
-    stringfyedGeemtry() {
-      return this.isGeometryExist ? JSON.stringify(this.geometry) : "";
+    isGeometryExist() {
+      let result =
+        this.geometry &&
+        // this.geometryBtnSelect &&
+        this.geometry.length > 0;
+      //  &&
+      // this.geometryBtnSelect !== "" &&
+      // this.geometryBtnSelect !== drawTypeEnum.NONE
+
+      console.log("isGeometryExist -> result", result);
+
+      return result;
     },
 
     bbox() {
@@ -216,6 +368,9 @@ export default {
     },
     isEdit() {
       return tableController.getIsEditData();
+    },
+    editDataGid() {
+      return tableController.getEditDataGid();
     },
     activeTableService() {
       return tableController.getTableActiveService();
@@ -247,6 +402,35 @@ export default {
       this.geometry = null;
       this.columnData = [];
     },
+    resetCoordinates() {
+      this.geometry = null;
+    },
+    deleteCoordinate(index) {
+      this.geometryBtnSelect = drawTypeEnum.NONE;
+      if (this.geometryType === "point") {
+        this.geometry = null;
+      } else {
+        this.geometry.splice(index, 1);
+      }
+      console.log("deleteCoordinate ->  this.geometry", this.geometry);
+    },
+    addCoordinate() {
+      this.geometryBtnSelect = drawTypeEnum.NONE;
+      let type = this.geometryType;
+      if (type === "point") {
+        if (!this.geometry) {
+          this.geometry = [];
+        }
+        if (this.geometry.length == 0) this.geometry = [1, 1];
+      } else {
+        if (!this.geometry) {
+          this.geometry = [];
+        }
+        var length = this.geometry.length;
+        this.geometry.push([1, 1]);
+      }
+    },
+
     drawTypeOnChange(e) {
       let value = e.target.value;
       var serviceInfo = {
@@ -255,10 +439,10 @@ export default {
       };
       toolController.deleteActiveServiceFeatures();
       console.log({ geometryBtnSelect: this.geometryBtnSelect, value });
-      if (this.geometryBtnSelect == value) {
+      if (this.geometryBtnSelect === value) {
         this.geometryBtnSelect = drawTypeEnum.NONE;
         this.geometry == null;
-
+        alert();
         // layerController.setExtntCoordinates(this.activeService, "");
       } else {
         let featureOptions = {
@@ -272,9 +456,10 @@ export default {
           () => {
             modalController.showDataAddEditModal();
             this.geometryBtnSelect = value;
-            this.isModalHidingForGeometrySelection = false;
+            // this.isModalHidingForGeometrySelection = false;
             // let extentCoordinates = this.bbox;
             this.geometry = this.bbox;
+            console.log("drawTypeOnChange ->  this.geometry", this.geometry);
 
             toolController.pickDrawType(this.drawTypeEnum.NONE);
             tableController.setTableVisible();
@@ -283,6 +468,16 @@ export default {
         );
       }
     },
+    showGeometryModal() {
+      modalController.showGeometryModal();
+      this.isModalHidingForGeometrySelection = true;
+      modalController.hideDataAddEditModal();
+    },
+    onGeometryModalClose() {
+      console.log(this.geometry);
+      modalController.showDataAddEditModal();
+    },
+
     async onSubmit() {
       let params = {
         columns: this.columnData,
@@ -299,9 +494,13 @@ export default {
       let data = null;
       const isEdit = this.isEdit;
       if (isEdit) {
-        let response = await datatable.getData(activeService.id, 1);
+        let response = await datatable.getData(
+          activeService.id,
+          this.editDataGid
+        );
         data = response.data;
       }
+
       if (!this.isModalHidingForGeometrySelection) {
         var tableInfo = await datatable.getTableInfo(activeService.id);
         const { columns, geometryType } = tableInfo.data;
@@ -314,8 +513,12 @@ export default {
             }
             element["value"] = value;
           });
+          console.log("AFTER :", this.geometry);
           if (data.geometries) {
-            this.geometry = JSON.parse(data.geometries);
+            let geom = JSON.parse(data.geometries);
+
+            this.geometry = geometryType === "point" ? geom[0] : geom;
+
             this.geometryBtnSelect = geometryType;
           }
         }
@@ -323,10 +526,11 @@ export default {
         this.columns = columns;
         this.geometryType = geometryType;
       }
+
+      this.isModalHidingForGeometrySelection = false;
     },
     onModalClose() {
       if (!this.isModalHidingForGeometrySelection) this.resetData();
-      this.$emit("close");
     },
     onInputChange(name, val) {
       var isExist = this.columnData.some(

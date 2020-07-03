@@ -33,11 +33,7 @@
               class="fas fa-plus tableFilter makeMePoint icon"
               @click="showDataAddEditModal(false)"
             />
-            <i
-              title="Edit Data"
-              class="far fa-edit tableFilter makeMePoint icon"
-              @click="showDataAddEditModal(true)"
-            />
+
             <download-excel
               v-if="tableHeaders"
               :fetch="fetchFullData"
@@ -114,7 +110,13 @@
                 >
                   {{ alias }}
                 </th>
-                <th class="table__column--sticky">Options</th>
+                <th
+                  v-if="isActiveServiceIsLocal"
+                  class="table__column--sticky"
+                  style=" width: 50px;"
+                >
+                  #
+                </th>
               </tr>
             </thead>
             <tbody class="tableBody custom-scrollbar">
@@ -132,7 +134,18 @@
                 >
                   {{ attr }}
                 </td>
-                <td class="table__column--sticky">sticky</td>
+                <td
+                  v-if="isActiveServiceIsLocal"
+                  class="table__column--sticky"
+                  style=" width: 50px;"
+                >
+                  <i
+                    title="Edit Data"
+                    class="far fa-edit tableFilter
+                  makeMePoint icon"
+                    @click="editData(data.attributes['gid'])"
+                  />
+                </td>
               </tr>
             </tbody>
           </table>
@@ -227,6 +240,9 @@ export default {
         this.$refs.dataTableContent.scrollTo(0, 0);
       }
     },
+    isActiveServiceIsLocal() {
+      return serviceHelper.isLocalService(this.activeService);
+    },
     isEndOfData() {
       return this.paging.page * this.paging.limit > this.totalCount;
     },
@@ -308,6 +324,10 @@ export default {
     },
     showFilterModal() {
       modalController.showFilterModal();
+    },
+    editData(gid) {
+      this.editDataGid = gid;
+      this.showDataAddEditModal(true);
     },
     showDataAddEditModal(isEdit) {
       this.isEditData = isEdit;
@@ -481,6 +501,15 @@ export default {
       },
       set(val) {
         tableController.setIsEditData(val);
+      },
+    },
+    editDataGid: {
+      get() {
+        let data = tableController.getEditDataGid();
+        return data;
+      },
+      set(val) {
+        tableController.setEditDataGid(val);
       },
     },
 
