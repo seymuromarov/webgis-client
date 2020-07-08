@@ -29,6 +29,7 @@
 
           <div class="table__operations">
             <i
+              v-if="isActiveServiceIsLocal && checkPermission(['data_add'])"
               title="Add Data"
               class="fas fa-plus tableFilter makeMePoint icon"
               @click="showDataAddEditModal(false)"
@@ -113,7 +114,7 @@
                 <th
                   v-if="isActiveServiceIsLocal"
                   class="table__column--sticky"
-                  style=" width: 50px;"
+                  style=" width: 80px;"
                 >
                   #
                 </th>
@@ -135,15 +136,23 @@
                   {{ attr }}
                 </td>
                 <td
-                  v-if="isActiveServiceIsLocal"
+                  v-if="
+                    isActiveServiceIsLocal && checkPermission(['data_edit'])
+                  "
                   class="table__column--sticky"
-                  style=" width: 50px;"
+                  style=" width: 80px;"
                 >
                   <i
                     title="Edit Data"
-                    class="far fa-edit tableFilter
-                  makeMePoint icon"
+                    class="far fa-edit 
+                  makeMePoint mr-2"
                     @click="editData(data.attributes['gid'])"
+                  />
+                  <i
+                    title="Edit Data"
+                    class="fas fa-file-upload 
+                  makeMePoint "
+                    @click="uploadImage(data.attributes['gid'])"
                   />
                 </td>
               </tr>
@@ -180,13 +189,15 @@ import { toggler } from "../helpers";
 import Multiselect from "vue-multiselect";
 import layer from "@/api/layer";
 import Resizable from "vue-resizable";
-import CustomModal from "./common/Modal";
+import CustomModal from "@/components/common/Modal";
 import {
   tableController,
   toolController,
   modalController,
 } from "@/controllers";
 import { serviceHelper } from "@/helpers";
+import checkPermission from "@/utils/permission";
+
 export default {
   name: "DataTable",
   components: {
@@ -235,6 +246,8 @@ export default {
     },
   },
   methods: {
+    checkPermission,
+
     resetScroll() {
       if (this.$refs.dataTableContent) {
         this.$refs.dataTableContent.scrollTo(0, 0);
@@ -328,6 +341,10 @@ export default {
     editData(gid) {
       this.editDataGid = gid;
       this.showDataAddEditModal(true);
+    },
+    uploadImage(gid) {
+      this.editDataGid = gid;
+      modalController.showImageUploadModal();
     },
     showDataAddEditModal(isEdit) {
       this.isEditData = isEdit;

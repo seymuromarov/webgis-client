@@ -34,6 +34,14 @@ const DATATABLE_URLS = {
   GET_ITEM: URL + "/api/datatable/GetItem",
 };
 
+const LAYER_DATA_IMAGE_URLS = {
+  GET: URL + "/api/layerdataimage/Get",
+  GET_ALL: URL + "/api/layerdataimage/GetAll",
+  ADD: URL + "/api/layerdataimage/Add",
+  GET_BASE64_FILE: URL + "/api/layerdataimage/GetBase64File",
+  DELETE: URL + "/api/layerdataimage/Delete",
+};
+
 const MAP_URLS = {
   MVT: "api/Tile/VectorAsMvt",
   GEOJSON: "api/Tile/VectorAsGeoJson",
@@ -55,6 +63,7 @@ const ARCGIS_URLS = {
 export {
   baseUrl,
   URL,
+  LAYER_DATA_IMAGE_URLS,
   USER_URLS,
   BUNCH_URL,
   ACCOUNT_URL,

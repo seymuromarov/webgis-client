@@ -352,13 +352,7 @@ export default {
     isGeometryExist() {
       let result =
         this.geometry &&
-        // this.geometryBtnSelect &&
         this.geometry.length > 0;
-      //  &&
-      // this.geometryBtnSelect !== "" &&
-      // this.geometryBtnSelect !== drawTypeEnum.NONE
-
-      console.log("isGeometryExist -> result", result);
 
       return result;
     },
@@ -395,7 +389,6 @@ export default {
   },
   methods: {
     resetData() {
-      // this.isGeometryExist = false;
       this.isModalHidingForGeometrySelection = false;
       this.columns = [];
       this.geometryType = "";
@@ -412,7 +405,6 @@ export default {
       } else {
         this.geometry.splice(index, 1);
       }
-      console.log("deleteCoordinate ->  this.geometry", this.geometry);
     },
     addCoordinate() {
       this.geometryBtnSelect = drawTypeEnum.NONE;
@@ -438,12 +430,9 @@ export default {
         type: this.activeTableService.type,
       };
       toolController.deleteActiveServiceFeatures();
-      console.log({ geometryBtnSelect: this.geometryBtnSelect, value });
       if (this.geometryBtnSelect === value) {
         this.geometryBtnSelect = drawTypeEnum.NONE;
         this.geometry == null;
-        alert();
-        // layerController.setExtntCoordinates(this.activeService, "");
       } else {
         let featureOptions = {
           forService: serviceInfo,
@@ -459,7 +448,6 @@ export default {
             // this.isModalHidingForGeometrySelection = false;
             // let extentCoordinates = this.bbox;
             this.geometry = this.bbox;
-            console.log("drawTypeOnChange ->  this.geometry", this.geometry);
 
             toolController.pickDrawType(this.drawTypeEnum.NONE);
             tableController.setTableVisible();
@@ -474,7 +462,6 @@ export default {
       modalController.hideDataAddEditModal();
     },
     onGeometryModalClose() {
-      console.log(this.geometry);
       modalController.showDataAddEditModal();
     },
 
@@ -485,6 +472,8 @@ export default {
         geometryType: this.geometryType,
         geometry: this.geometry ? JSON.stringify(this.geometry) : null,
       };
+      const isEdit = this.isEdit;
+      if (isEdit) params.gid = this.editDataGid;
       datatable.addOrEditData(params).then((response) => {
         modalController.hideDataAddEditModal();
       });
@@ -513,7 +502,6 @@ export default {
             }
             element["value"] = value;
           });
-          console.log("AFTER :", this.geometry);
           if (data.geometries) {
             let geom = JSON.parse(data.geometries);
 
@@ -530,7 +518,10 @@ export default {
       this.isModalHidingForGeometrySelection = false;
     },
     onModalClose() {
-      if (!this.isModalHidingForGeometrySelection) this.resetData();
+      if (!this.isModalHidingForGeometrySelection) {
+        this.resetData();
+        toolController.deleteActiveServiceFeatures();
+      }
     },
     onInputChange(name, val) {
       var isExist = this.columnData.some(

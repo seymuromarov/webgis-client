@@ -33,7 +33,11 @@
     ></detector-modal>
 
     <NdviAssessment />
-    <DataModal />
+    <DataAddEditModal />
+    <ImageUploadModal
+      v-if="tableActiveService && tableActiveService.id"
+     
+    />
     <!-- Information Modal -->
     <InfoModal
       :isOpen="isInformationModalVisible"
@@ -112,7 +116,8 @@ import {
   ComputedLayersModal,
   ChangeDetector as DetectorModal,
   NdviAssessment,
-  DataModal,
+  DataAddEditModal,
+  ImageUploadModal,
 } from "@/components/";
 
 import { toggler, serviceHelper } from "@/helpers";
@@ -142,7 +147,8 @@ export default {
     CustomModal,
     ComputedLayersModal,
     NdviAssessment,
-    DataModal,
+    DataAddEditModal,
+    ImageUploadModal,
   },
   data() {
     return {
@@ -534,6 +540,10 @@ export default {
       return this.$store.state.shapeFillColor;
     },
 
+    editDataGid() {
+      let data = tableController.getEditDataGid();
+      return data;
+    },
     bbox: {
       get() {
         return toolController.getBbox();

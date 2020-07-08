@@ -45,6 +45,13 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 
+//Vue DropZone
+import vue2Dropzone from "vue2-dropzone";
+import "vue2-dropzone/dist/vue2Dropzone.min.css";
+
+//Vue Viewer
+import "viewerjs/dist/viewer.css";
+import Viewer from "v-viewer";
 import "./permission"; // permission control
 
 Vue.use(Snotify, {
@@ -63,6 +70,8 @@ Vue.use(VModal); // TODO Remove VModal
 Vue.component("downloadExcel", JsonExcel);
 Vue.use(VueCookie);
 Vue.use(underscore);
+Vue.use(vue2Dropzone);
+Vue.use(Viewer);
 
 Vue.config.productionTip = false;
 Vue.use(ol);

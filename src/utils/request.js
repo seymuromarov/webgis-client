@@ -1,10 +1,11 @@
 import axios from "axios";
-import { baseUrl } from "../config/urls";
+import { baseUrl } from "@/config/urls";
 import { tokenService } from "@/services";
-
+import { urlHelper } from "@/helpers";
 const service = axios.create({
   baseURL: `${baseUrl}/arcgis/rest/services`,
   withCredentials: false,
+  paramsSerializer: (params) => urlHelper.formatQueryString(params),
 });
 
 service.interceptors.request.use(

@@ -24,7 +24,6 @@ const functions = {
   showDataAddEditModal() {
     let moodal = getters.getMoodal();
     moodal.dataAddEditModal.show();
-    console.log("HIDE GEOMTRY MODAL");
   },
   hideDataAddEditModal() {
     let moodal = getters.getMoodal();
@@ -41,6 +40,14 @@ const functions = {
   showColorPickerModal() {
     let moodal = getters.getMoodal();
     moodal.colorPickerModal.show();
+  },
+  hideImageUploadModal() {
+    let moodal = getters.getMoodal();
+    moodal.imageUploadModal.hide();
+  },
+  showImageUploadModal() {
+    let moodal = getters.getMoodal();
+    moodal.imageUploadModal.show();
   },
 };
 

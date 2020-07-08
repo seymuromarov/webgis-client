@@ -264,10 +264,7 @@ const functions = {
               );
             }
           }
-          console.log(
-            "addInteraction -> coordinates",
-            JSON.stringify(coordinates)
-          );
+      
 
           setters.setBbox(coordinates);
         } catch (e) {
