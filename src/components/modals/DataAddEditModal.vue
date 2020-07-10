@@ -350,9 +350,7 @@ export default {
       return result;
     },
     isGeometryExist() {
-      let result =
-        this.geometry &&
-        this.geometry.length > 0;
+      let result = this.geometry && this.geometry.length > 0;
 
       return result;
     },
@@ -495,7 +493,8 @@ export default {
         const { columns, geometryType } = tableInfo.data;
         if (isEdit) {
           columns.forEach((element) => {
-            var value = data[element.columnName];
+            var item = data.find((c) => c.columnName == element.columnName);
+            var value = item.value;
             var valueType = element.valueType;
             if (value) {
               value = value.toString();
