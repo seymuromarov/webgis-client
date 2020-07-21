@@ -1,5 +1,5 @@
 <template>
-  <div class="Sidebar">
+  <div class="sidebar">
     <!-- Menu -->
 
     <div class="menu">
@@ -36,11 +36,23 @@
     </div>
 
     <!-- User Profile -->
-    <div class="user-profile" v-show="isProfileTabActive">
-      <div class="user__name">{{ userName }}</div>
-      <div class="logout" @click="logout">
-        <i title="Log out" class="fas fa-power-off"></i>
+    <div class="profile-popup" v-show="isProfileTabActive">
+      <!-- <div class="user__name">{{ userName }}</div> -->
+      <div
+        class="profile-popup-item"
+        style="cursor: pointer;"
+        @click="showProfileModal"
+      >
+        <span>Profile</span>
       </div>
+      <div class="profile-popup-item" style="cursor: pointer;" @click="logout">
+        <span>Log Out</span>
+        <i title="Log out" class="fas fa-power-off ml-1"></i>
+      </div>
+      <!-- <div class="logout" @click="logout">
+        <span> Log Out</span>
+        <i title="Log out" class="fas fa-power-off"></i>
+      </div> -->
     </div>
 
     <!-- Layer Types -->
@@ -186,6 +198,7 @@ import {
   mapController,
   serviceController,
   userController,
+  modalController,
 } from "@/controllers";
 import { tokenService, authService } from "@/services";
 import { drawTypeEnum, menuTabEnum, serviceTypeEnum } from "@/enums";
@@ -280,6 +293,9 @@ export default {
     logout() {
       authService.logout();
       this.$router.push("/login");
+    },
+    showProfileModal() {
+      modalController.showProfileModalModal();
     },
     onDraggableMoveCallback(type) {
       serviceController.onDraggableMoveCallback(type);

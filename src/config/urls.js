@@ -15,12 +15,26 @@ const USER_URLS = {
 const ACCOUNT_URL = {
   LOGIN_URL: URL + "/api/account/login",
 };
-const BUNCH_URL = {
+const BUNCH_URLS = {
   ADD: URL + "/api/bunch/add",
   EDIT: URL + "/api/bunch/edit",
   DELETE: URL + "/api/bunch/delete",
   GET: URL + "/api/bunch/get",
   GET_ALL: URL + "/api/bunch/getall",
+};
+const FAVORITEQUERY_URLS = {
+  ADD: URL + "/api/favoritequery/add",
+  EDIT: URL + "/api/favoritequery/edit",
+  DELETE: URL + "/api/favoritequery/delete",
+  GET: URL + "/api/favoritequery/get",
+  GET_ALL: URL + "/api/favoritequery/getall",
+};
+const FAVORITELAYER_URLS = {
+  SET: URL + "/api/favoritelayer/set",
+  GET_ALL: URL + "/api/favoritelayer/getall",
+};
+const NOTIFICATION_URLS = {
+  GET_ALL: URL + "/api/notification/getall",
 };
 const NDVI_URLS = {
   GET_ALL: URL + "/api/ndviassessment/getall",
@@ -65,7 +79,10 @@ export {
   URL,
   LAYER_DATA_IMAGE_URLS,
   USER_URLS,
-  BUNCH_URL,
+  FAVORITEQUERY_URLS,
+  FAVORITELAYER_URLS,
+  NOTIFICATION_URLS,
+  BUNCH_URLS,
   ACCOUNT_URL,
   LAYER_URLS,
   DATATABLE_URLS,

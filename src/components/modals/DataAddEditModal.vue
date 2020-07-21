@@ -313,7 +313,6 @@
 </template>
 
 <script>
-import { Modal as CustomModal } from "@/components";
 import {
   tableController,
   toolController,
@@ -324,7 +323,7 @@ import { drawTypeEnum } from "@/enums";
 import datatable from "@/api/datatable";
 import DynamicFormInput from "@/components/renders/DynamicFormInput";
 export default {
-  components: { CustomModal, DynamicFormInput },
+  components: {DynamicFormInput },
   props: {},
 
   data() {

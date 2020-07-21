@@ -8,7 +8,8 @@
         <Sidebar />
       </div>
     </div>
-
+    <!-- Profile Modal -->
+    <ProfileModal />
     <!-- Data table -->
     <DataTable ref="dataTable" @mapSetCenter="mapSetCenter" />
 
@@ -34,10 +35,7 @@
 
     <NdviAssessment />
     <DataAddEditModal />
-    <ImageUploadModal
-      v-if="tableActiveService && tableActiveService.id"
-     
-    />
+    <ImageUploadModal v-if="tableActiveService && tableActiveService.id" />
     <!-- Information Modal -->
     <InfoModal
       :isOpen="isInformationModalVisible"
@@ -108,16 +106,16 @@ import {
   ShapeColorPicker,
   DataTable,
   Sidebar,
-  Filter,
+  FilterModal,
   Report,
   MapControls,
   InfoModal,
-  Modal as CustomModal,
   ComputedLayersModal,
   ChangeDetector as DetectorModal,
   NdviAssessment,
   DataAddEditModal,
   ImageUploadModal,
+  ProfileModal,
 } from "@/components/";
 
 import { toggler, serviceHelper } from "@/helpers";
@@ -141,14 +139,14 @@ export default {
     DetectorModal,
     InfoModal,
     Sidebar,
-    FilterModal: Filter,
+    FilterModal,
     Report,
     MapControls,
-    CustomModal,
     ComputedLayersModal,
     NdviAssessment,
     DataAddEditModal,
     ImageUploadModal,
+    ProfileModal,
   },
   data() {
     return {

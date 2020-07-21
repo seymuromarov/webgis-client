@@ -49,6 +49,22 @@ const functions = {
     let moodal = getters.getMoodal();
     moodal.imageUploadModal.show();
   },
+  hideProfileModalModal() {
+    let moodal = getters.getMoodal();
+    moodal.profileModal.hide();
+  },
+  showProfileModalModal() {
+    let moodal = getters.getMoodal();
+    moodal.profileModal.show();
+  },
+  hideFavoriteQueryModal() {
+    let moodal = getters.getMoodal();
+    moodal.favoriteQueryModal.hide();
+  },
+  showFavoriteQueryModal() {
+    let moodal = getters.getMoodal();
+    moodal.favoriteQueryModal.show();
+  },
 };
 
 const getters = {

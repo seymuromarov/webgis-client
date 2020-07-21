@@ -8,7 +8,7 @@
     @afterHide="onModalClose"
   >
     <div class="row ">
-      <div class="table-wrapper-scroll-y my-custom-scrollbar">
+      <div class="table-wrapper-scroll-y upload-content-scroll">
         <table class="table">
           <thead>
             <tr>
@@ -94,13 +94,12 @@
 import vue2Dropzone from "vue2-dropzone";
 import download from "downloadjs";
 import Viewer from "v-viewer";
-import { Modal as CustomModal } from "@/components";
 import { LAYER_DATA_IMAGE_URLS } from "@/config/urls";
 import { tokenService } from "@/services";
 import { tableController } from "@/controllers";
 import image from "@/api/layerDataImage";
 export default {
-  components: { CustomModal, vueDropzone: vue2Dropzone },
+  components: { vueDropzone: vue2Dropzone },
   // props: {
   //   layerId: {
   //     type: Number,
@@ -246,7 +245,7 @@ export default {
 };
 </script>
 <style scoped>
-.my-custom-scrollbar {
+.upload-content-scroll {
   position: relative;
   height: 400px;
   width: 100%;

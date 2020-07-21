@@ -1,0 +1,8 @@
+import request from "@/utils/request";
+import { NOTIFICATION_URLS } from "@/config/urls";
+
+export default {
+  getAll(params) {
+    return request.get(NOTIFICATION_URLS.GET_ALL, { params });
+  },
+};

@@ -126,7 +126,7 @@ const functions = {
     functions.removeLayer(layer);
   },
   refreshService(service) {
-    functions.deleteService(service, false);
+    functions.deleteService(service);
     functions.addService(service);
   },
   removeLayer(layer) {

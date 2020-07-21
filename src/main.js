@@ -2,14 +2,13 @@ import Vue from "vue";
 import VueCookie from "vue-cookie";
 import JsonExcel from "vue-json-excel";
 import VModal from "vue-js-modal";
-import Toasted from "vue-toasted";
-import VueSweetalert2 from "vue-sweetalert2";
-import Snotify, { SnotifyPosition } from "vue-snotify";
+
 import VueQuillEditor from "vue-quill-editor";
 import * as ol from "ol";
 import underscore from "vue-underscore";
 import "ol-geocoder/dist/ol-geocoder.js";
 import router from "./router";
+import { Modal as CustomModal } from "@/components";
 import store from "./store/store";
 
 import App from "./App.vue";
@@ -18,10 +17,13 @@ import App from "./App.vue";
  * Styles
  */
 import "bootstrap/dist/css/bootstrap.css";
+import "@/assets/style/bootstrapCustom.scss";
+
 import "@/assets/style/globalStyle.scss";
 import "@/assets/style/multiSelect.scss";
 import "@/assets/style/modal.scss";
 import "@/assets/style/font-awesome/css/all.css";
+import "@/assets/style/paginationStyle.scss";
 import "ol-geocoder/dist/ol-geocoder.min.css";
 // Styles
 import "ol/ol.css";
@@ -36,6 +38,15 @@ import "sweetalert2/dist/sweetalert2.min.css";
 // Vue Loading
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
+
+// Vue Vue Toasted
+import VueToasted from "vue-toasted";
+
+// Vue SweetAlert
+import VueSweetalert2 from "vue-sweetalert2";
+
+// Vue Snotify
+import Snotify, { SnotifyPosition } from "vue-snotify";
 
 //Vue MultiSelect
 import Multiselect from "vue-multiselect";
@@ -52,6 +63,12 @@ import "vue2-dropzone/dist/vue2Dropzone.min.css";
 //Vue Viewer
 import "viewerjs/dist/viewer.css";
 import Viewer from "v-viewer";
+
+//Vue Paginate
+import Paginate from "vuejs-paginate";
+//Vue Vuelidate
+import Vuelidate from "vuelidate";
+
 import "./permission"; // permission control
 
 Vue.use(Snotify, {
@@ -60,12 +77,18 @@ Vue.use(Snotify, {
     timeout: 3000,
   },
 });
-
+Vue.component("CustomModal", CustomModal);
+Vue.component("paginate", Paginate);
 Vue.component("v-select", vSelect);
 
+Vue.use(Vuelidate);
 Vue.use(Loading);
 Vue.use(Multiselect);
-Vue.use(Toasted); // TODO Remove Toasted
+Vue.use(VueToasted, {
+  position: "bottom-left",
+  duration: 3000,
+  iconPack: "custom-class", // set your iconPack, defaults to material. material|fontawesome|custom-class
+});
 Vue.use(VModal); // TODO Remove VModal
 Vue.component("downloadExcel", JsonExcel);
 Vue.use(VueCookie);

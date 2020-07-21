@@ -112,7 +112,9 @@
                   {{ alias }}
                 </th>
                 <th
-                  v-if="isActiveServiceIsLocal"
+                  v-if="
+                    isActiveServiceIsLocal && checkPermission(['data_edit'])
+                  "
                   class="table__column--sticky"
                   style=" width: 80px;"
                 >
@@ -189,7 +191,6 @@ import { toggler } from "../helpers";
 import Multiselect from "vue-multiselect";
 import layer from "@/api/layer";
 import Resizable from "vue-resizable";
-import CustomModal from "@/components/common/Modal";
 import {
   tableController,
   toolController,
@@ -203,7 +204,6 @@ export default {
   components: {
     Multiselect,
     Resizable,
-    CustomModal,
   },
   data() {
     return {

@@ -121,12 +121,12 @@
 </template>
 
 <script>
-import { Modal as CustomModal } from "@/components";
 import layer from "@/api/layer";
 import ndvi from "@/api/ndvi";
 import { layerHelper, mapHelper, urlHelper } from "@/helpers";
 import { arcgisImgExportSettings } from "@/config/settings";
 import { toolController, modalController, ndviController } from "@/controllers";
+import { tokenService } from "@/services";
 import { ARCGIS_URLS } from "@/config/urls";
 import { icons } from "@/constants/assets";
 import { drawTypeEnum } from "@/enums";
@@ -136,7 +136,6 @@ import { LineChart } from "@/charts";
 
 export default {
   components: {
-    CustomModal,
     Multiselect,
     LineChart,
   },
