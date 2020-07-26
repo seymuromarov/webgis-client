@@ -1,10 +1,10 @@
 import $store from "@/store/store.js";
-import { tileTypeEnum, layerTypeEnum } from "@/enums";
-import { serviceController, tableController } from "@/controllers";
-import { defaultZoomLevelSettings } from "@/config/settings";
-import { materialColors } from "@/constants/colors";
-import { tokenService } from "@/services";
-import { serviceHelper, layerHelper, tileHelper, colorHelper } from "@/helpers";
+import {tileTypeEnum, layerTypeEnum} from "@/enums";
+import {serviceController, tableController} from "@/controllers";
+import {defaultZoomLevelSettings} from "@/config/settings";
+import {materialColors} from "@/constants/colors";
+import {tokenService} from "@/services";
+import {serviceHelper, layerHelper, tileHelper, colorHelper} from "@/helpers";
 import {
   createXYZ,
   VectorTileLayer,
@@ -18,7 +18,9 @@ import {
   Style,
   Stroke,
   Fill,
+  TileWMS
 } from "@/wrappers/openLayerImports";
+
 
 const selectedLayerStyle = new Style({
   stroke: new Stroke({
@@ -60,10 +62,11 @@ const mapLayer = {
 };
 
 const functions = {
-  initMap() {},
+  initMap() {
+  },
   addService(service) {
     if (service.extent != null) {
-      const { minX, minY, maxX, maxY } = service.extent;
+      const {minX, minY, maxX, maxY} = service.extent;
       var extent = [minX, minY, maxX, maxY];
       functions.fitView(extent);
     }
@@ -136,7 +139,7 @@ const functions = {
   },
   removeDrawPolygons() {
     let map = mapLayer.get();
-    map.getLayers().forEach(function(layer) {
+    map.getLayers().forEach(function (layer) {
       if (layer.get("type") === "draw") {
         functions.removeLayer(layer);
       }
@@ -194,7 +197,29 @@ const functions = {
           });
         }
       } else {
-        if (service.spatial === 3857) {
+        if (service.name == "AzercosmosBasemap" ||
+          service.name == "Azersky2018"
+          || service.name == "Azersky2019"
+          || service.name == "Azersky2019_IVrub"
+          || service.name == "Azersky2020_2May"
+          || service.name == "Azersky2020_Irub"
+          || service.name == "CropMap2019"
+          || service.name == "CropMap2019DQ"
+        ) {
+          layer = new TileLayer({
+            ...defaultProps,
+            source: new TileWMS({
+              url: 'http://webgis.azercosmos.az/geowebcache/service/wms',
+              params: {
+                'LAYERS': service.name, 'TILED': true, transparent: true,
+                format: 'image/png',
+                srs: 'EPSG:3857',
+                WIDTH: 256,
+                HEIGHT: 256
+              },
+            })
+          });
+        } else if (service.spatial === 3857) {
           layer = new TileLayer({
             ...defaultProps,
             source: new XYZ({
@@ -311,7 +336,7 @@ const getters = {
     let map = mapLayer.get();
     let layer = null;
 
-    map.getLayers().forEach(function(item) {
+    map.getLayers().forEach(function (item) {
       var layerId = item.get("id");
       if (layerId !== undefined && layerId === id) {
         layer = item;
@@ -340,4 +365,4 @@ const getters = {
     };
   },
 };
-export default { ...functions, ...getters, ...setters };
+export default {...functions, ...getters, ...setters};
