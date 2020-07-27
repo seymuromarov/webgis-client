@@ -132,6 +132,21 @@
         }
       }
     }
+    .list__search {
+      input {
+        // background-color: var(--primary-color);
+        text-indent: 10px;
+        background-color: var(--primary-color-opacity-50);
+        border: none;
+        border-bottom: 2px solid var(--primary-color);
+        padding: 5px;
+        color: white;
+        width: 100%;
+      }
+      input:focus {
+        outline: none;
+      }
+    }
 
     .list__content {
       list-style-type: none;

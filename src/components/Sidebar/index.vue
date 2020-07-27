@@ -97,6 +97,9 @@
           Favorites
         </div>
       </div>
+      <!-- <div class="list__search">
+        <input type="text" placeholder="Search" v-model="searchInput" />
+      </div> -->
       <ul
         v-if="dynamicActiveTab === 'dynamicTab'"
         class="list__content list__content--parent custom-scrollbar"
@@ -118,7 +121,7 @@
         class="list__content list__content--parent custom-scrollbar"
       >
         <LayerTree
-          :list="bunchLayerList"
+          :list="filterList()"
           :dragOptions="{ disabled: false }"
           @updateList="
             (val) => {
@@ -228,11 +231,13 @@ import {
   layerController,
 } from "@/controllers";
 import { tokenService, authService } from "@/services";
+import { layerHelper } from "@/helpers";
 import { drawTypeEnum, menuTabEnum, serviceTypeEnum } from "@/enums";
 import permission from "@/directive/permission/index.js";
 import LayerTree from "@/components/LayerTree/Index";
 import checkPermission from "@/utils/permission";
 import role from "@/directive/role/index.js";
+import { deepClone } from "@/utils";
 export default {
   name: "Sidebar",
   directives: { permission, role },
@@ -242,6 +247,8 @@ export default {
 
   data() {
     return {
+      searchInput: "",
+
       serviceTypeEnum: serviceTypeEnum,
 
       activeLayerType: "gray",
@@ -254,6 +261,12 @@ export default {
   },
   mounted() {},
   computed: {
+    filteredList() {
+      var data = deepClone(this.dynamicLayersList);
+      data = [data[1]];
+      var list = layerHelper.treeFilter(data, this.searchInput);
+      return list;
+    },
     isProfileTabActive() {
       return this.activeMenuTab === menuTabEnum.PROFILE;
     },
@@ -297,7 +310,7 @@ export default {
 
     dynamicLayersList: {
       get() {
-        return this.$store.getters.dynamicLayerList;
+        return layerController.getDynamicLayerList();
       },
       set(val) {
         this.$store.dispatch("saveDynamicLayerList", val);
@@ -305,7 +318,7 @@ export default {
     },
     baselayerList: {
       get() {
-        return this.$store.getters.baseLayerList;
+        return layerController.getBaseLayerList();
       },
       set(val) {
         this.$store.dispatch("saveBaseLayerList", val);
@@ -346,6 +359,7 @@ export default {
     checkPermission,
     guid,
     capitalize,
+
     logout() {
       authService.logout();
       this.$router.push("/login");

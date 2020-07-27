@@ -194,6 +194,37 @@ const functions = {
 
     return result;
   },
+  // treeFilter(data, label) {
+  //   var r = data.filter(function(o) {
+  //     if (serviceHelper.isCategory(o)) {
+  //       let childrens = functions.treeFilter(o.children, label);
+
+  //       var isContains = o.layers.some((c) => c.name.includes(label));
+  //       if (o.layers) o.layers = o.layers.filter((c) => c.name.includes(label));
+
+  //       console.log({ o, isContains });
+  //       return isContains;
+  //     } else {
+  //       return o.name.includes(label);
+  //     }
+  //   });
+  //   return r;
+  // },
+  treeFilter(data, label) {
+    var r = data.filter(function(o) {
+      if (serviceHelper.isCategory(o)) {
+        o.children = functions.treeFilter(o.children, label);
+        var isContains = o.layers.some((c) => c.name.includes(label));
+        if (o.layers) o.layers = o.layers.filter((c) => c.name.includes(label));
+
+        return isContains || o.children.length > 0;
+      } else {
+        return o.name.includes(label);
+      }
+    });
+
+    return r;
+  },
 };
 
 export default {

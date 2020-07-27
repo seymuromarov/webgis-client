@@ -23,12 +23,12 @@ const dynamicLayerList = {
 const getters = {
   getBaseLayerList() {
     let data = baseLayerList.get();
-    return data;
+    return deepClone(data);
   },
 
   getDynamicLayerList() {
     let data = dynamicLayerList.get();
-    return data;
+    return deepClone(data);
   },
   getDynamicLayerAsTreeSelect() {
     var arr = deepClone(getters.getDynamicLayerList());
@@ -47,24 +47,24 @@ const getters = {
     return options;
   },
   getBasemapLayerAsTreeSelect() {
-    var arr = deepClone(getters.getBaseLayerList());
+    var arr = getters.getBaseLayerList();
     var options = layerHelper.recursiveTreeMapping(arr);
-    return options;
+    return deepClone(options);
   },
   getLayer(layerId) {
     var layer = getters.getDynamicLayer(layerId);
     if (!layer) layer = getters.getBaseLayer(layerId);
-    return layer;
+    return deepClone(layer);
   },
   getDynamicLayer(layerId) {
     let layers = getters.getDynamicLayersWithoutCategory();
     let layer = layers.find((c) => c.id === layerId);
-    return layer;
+    return deepClone(layer);
   },
   getBaseLayer(layerId) {
     let layers = getters.getBaseLayersWithoutCategory();
     let layer = layers.find((c) => c.id === layerId);
-    return layer;
+    return deepClone(layer);
   },
   getLayersWithoutCategory() {
     return [
@@ -78,7 +78,7 @@ const getters = {
     layerHelper.recursiveLayerMapping(baseLayerList.get(), (layer) => {
       list.push(layer);
     });
-    return list;
+    return deepClone(list);
   },
   getDynamicLayersWithoutCategory(isLocalOnly) {
     let list = [];
@@ -89,21 +89,21 @@ const getters = {
         : true;
       if (isLocal) list.push(layer);
     });
-    return list;
+    return deepClone(list);
   },
   getSelectedBasemaps() {
     let list = [];
     layerHelper.recursiveLayerMapping(baseLayerList.get(), (layer) => {
       if (layer.isSelected) list.push(layer);
     });
-    return list;
+    return deepClone(list);
   },
   getSelectedDyanmics() {
     let list = [];
     layerHelper.recursiveLayerMapping(dynamicLayerList.get(), (layer) => {
       if (layer.isSelected) list.push(layer);
     });
-    return list;
+    return deepClone(list);
   },
   getSelectedLayers() {
     var selectedLayers = [];
@@ -113,7 +113,7 @@ const getters = {
         selectedLayers.push(layer);
       }
     });
-    return selectedLayers;
+    return deepClone(selectedLayers);
   },
 
   getExtentCoordinates(layerId) {
