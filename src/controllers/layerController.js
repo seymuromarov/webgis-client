@@ -66,6 +66,13 @@ const getters = {
     let layer = layers.find((c) => c.id === layerId);
     return layer;
   },
+  getLayersWithoutCategory() {
+    return [
+      ...this.getDynamicLayersWithoutCategory(),
+      ...this.getBaseLayersWithoutCategory(),
+    ];
+  },
+
   getBaseLayersWithoutCategory() {
     let list = [];
     layerHelper.recursiveLayerMapping(baseLayerList.get(), (layer) => {
@@ -108,16 +115,6 @@ const getters = {
     });
     return selectedLayers;
   },
-  getSelectedDynamicLayers() {
-    var selectedLayers = [];
-    var layers = [...dynamicLayerList.get()];
-    layerHelper.recursiveLayerMapping(layers, (layer) => {
-      if (layer.isSelected) {
-        selectedLayers.push(layer);
-      }
-    });
-    return selectedLayers;
-  },
 
   getExtentCoordinates(layerId) {
     let layer = getters.getDynamicLayer(layerId);
@@ -125,6 +122,19 @@ const getters = {
   },
   getLayerColorOrderList() {
     return $store.getters.layerColorOrderList;
+  },
+
+  getFavoriteBaseLayerIds() {
+    return $store.getters.favoriteBaseLayerIds;
+  },
+  getFavoriteDynamicLayerIds() {
+    return $store.getters.favoriteDynamicLayerIds;
+  },
+  getDefaultDynamicLayerIds() {
+    return $store.getters.defaultDynamicLayerIds;
+  },
+  getDefaultBaseLayerIds() {
+    return $store.getters.defaultBaseLayerIds;
   },
 };
 const setters = {
@@ -155,6 +165,7 @@ const setters = {
       baseLayerList.set(list);
     }
   },
+
   setColor(service, color, isSubLayer) {
     var list = layerHelper.recursiveLayerMapping(
       dynamicLayerList.get(),
@@ -204,8 +215,21 @@ const setters = {
   setDynamicLayerList(data) {
     $store.dispatch("saveDynamicLayerList", data);
   },
-  setLayerColorOrderList() {
+  setLayerColorOrderList(data) {
     $store.dispatch("SAVE_LAYER_COLOR_ORDER_LIST", data);
+  },
+
+  setFavoriteDynamicLayerIds(data) {
+    $store.dispatch("saveFavoriteDyanmicLayerIds", data);
+  },
+  setFavoriteBaseLayerIds(data) {
+    $store.dispatch("saveFavoriteBaseLayerIds", data);
+  },
+  setDefaultDynamicLayerIds(data) {
+    $store.dispatch("saveDefaultDynamicLayerIds", data);
+  },
+  setDefaultBaseLayerIds(data) {
+    $store.dispatch("saveDefaultBaseLayerIds", data);
   },
 };
 const functions = {};

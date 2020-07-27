@@ -10,10 +10,16 @@
             @click="item.click"
             :title="item.label"
           >
+            <span
+              v-if="item.label == 'Profile' && notificationCount > 0"
+              class="badge badge-notify"
+              >{{ notificationCount }}</span
+            >
+
             <img
               :src="item.image"
               alt=""
-              :class="{ active: activeMenu === item.key }"
+              :class="{ active: activeMenuTab === item.key }"
             />
           </button>
         </div>
@@ -28,7 +34,7 @@
             <img
               :src="item.image"
               alt=""
-              :class="{ active: activeMenu === item.key }"
+              :class="{ active: activeMenuTab === item.key }"
             />
           </button>
         </div>
@@ -37,7 +43,6 @@
 
     <!-- User Profile -->
     <div class="profile-popup" v-show="isProfileTabActive">
-      <!-- <div class="user__name">{{ userName }}</div> -->
       <div
         class="profile-popup-item"
         style="cursor: pointer;"
@@ -49,10 +54,6 @@
         <span>Log Out</span>
         <i title="Log out" class="fas fa-power-off ml-1"></i>
       </div>
-      <!-- <div class="logout" @click="logout">
-        <span> Log Out</span>
-        <i title="Log out" class="fas fa-power-off"></i>
-      </div> -->
     </div>
 
     <!-- Layer Types -->
@@ -88,56 +89,58 @@
         >
           Customized
         </div>
+        <div
+          class="tab"
+          :class="{ 'tab--active': dynamicActiveTab === 'favoriteTab' }"
+          @click="setDynamicActiveTab('favoriteTab')"
+        >
+          Favorites
+        </div>
       </div>
-
       <ul
         v-if="dynamicActiveTab === 'dynamicTab'"
         class="list__content list__content--parent custom-scrollbar"
       >
-        <Draggable
-          :key="guid()"
-          v-model="dynamicLayersList"
-          @start="isDragging = true"
-          @end="
-            () => {
-              onDraggableMoveCallback(serviceTypeEnum.DYNAMIC_LAYER);
+        <LayerTree
+          :list="dynamicLayersList"
+          :dragOptions="{ disabled: false }"
+          @updateList="
+            (val) => {
+              dynamicLayersList = val;
             }
           "
-        >
-          <LayerTree
-            v-for="(layer, index) in dynamicLayersList"
-            :key="layer.name + index"
-            :data="layer"
-            :layerType="serviceTypeEnum.DYNAMIC_LAYER"
-          />
-        </Draggable>
+          :layerType="serviceTypeEnum.DYNAMIC_LAYER"
+        />
       </ul>
 
       <ul
-        v-show="dynamicActiveTab === 'bunchTab'"
+        v-if="dynamicActiveTab === 'bunchTab'"
         class="list__content list__content--parent custom-scrollbar"
       >
-        <Draggable
-          :key="guid()"
-          v-model="bunchLayerList"
-          @start="isDragging = true"
-          @end="
-            () => {
-              onDraggableMoveCallback(serviceTypeEnum.BUNCH);
+        <LayerTree
+          :list="bunchLayerList"
+          :dragOptions="{ disabled: false }"
+          @updateList="
+            (val) => {
+              bunchLayerList = val;
             }
           "
-        >
-          <LayerTree
-            v-for="(bunch, index) in bunchLayerList"
-            :key="bunch.name + index"
-            :data="bunch"
-            :layerType="serviceTypeEnum.BUNCH"
-          />
-        </Draggable>
+          :layerType="serviceTypeEnum.BUNCH"
+        />
+      </ul>
+      <ul
+        v-if="dynamicActiveTab === 'favoriteTab'"
+        class="list__content list__content--parent custom-scrollbar"
+      >
+        <LayerTree
+          :list="favoriteDynamicLayerList"
+          :dragOptions="{ disabled: true }"
+          :layerType="serviceTypeEnum.DYNAMIC_LAYER"
+        />
       </ul>
 
       <button
-        v-show="dynamicActiveTab === 'bunchTab'"
+        v-if="dynamicActiveTab === 'bunchTab'"
         class="btn btn--add-new"
         @click="openComputedLayerModal"
       >
@@ -148,25 +151,49 @@
     <!-- Basemaps -->
     <div class="list layers" v-show="isBaseLayerTabActive">
       <div class="list__header">Basemaps</div>
+      <div class="list__tabs">
+        <div
+          class="tab"
+          :class="{
+            'tab--active': basemapActiveTab === 'baseTab',
+          }"
+          @click="setBasemapActiveTab('baseTab')"
+        >
+          Standard
+        </div>
 
-      <ul class="list__content list__content--parent custom-scrollbar">
-        <Draggable
-          :key="guid()"
-          v-model="baselayerList"
-          @start="isDragging = true"
-          @end="
-            () => {
-              onDraggableMoveCallback(serviceTypeEnum.BASE_LAYER);
+        <div
+          class="tab"
+          :class="{ 'tab--active': dynamicActiveTab === 'favoriteTab' }"
+          @click="setBasemapActiveTab('favoriteTab')"
+        >
+          Favorites
+        </div>
+      </div>
+      <ul
+        v-if="basemapActiveTab === 'baseTab'"
+        class="list__content list__content--parent custom-scrollbar"
+      >
+        <LayerTree
+          :list="baselayerList"
+          :dragOptions="{ disabled: false }"
+          @updateList="
+            (val) => {
+              baselayerList = val;
             }
           "
-        >
-          <LayerTree
-            v-for="(layer, index) in baselayerList"
-            :key="layer.name + index"
-            :data="layer"
-            :layerType="serviceTypeEnum.BASE_LAYER"
-          />
-        </Draggable>
+          :layerType="serviceTypeEnum.BASE_LAYER"
+        />
+      </ul>
+      <ul
+        v-if="basemapActiveTab === 'favoriteTab'"
+        class="list__content list__content--parent custom-scrollbar"
+      >
+        <LayerTree
+          :list="favoriteBaseLayerList"
+          :dragOptions="{ disabled: true }"
+          :layerType="serviceTypeEnum.BASE_LAYER"
+        />
       </ul>
     </div>
 
@@ -189,8 +216,7 @@
 </template>
 
 <script>
-import LayerTree from "./LayerTree";
-import Draggable from "vuedraggable";
+// import Draggable from "vuedraggable";
 import { guid, capitalize } from "@/utils";
 import {
   toolController,
@@ -199,10 +225,12 @@ import {
   serviceController,
   userController,
   modalController,
+  layerController,
 } from "@/controllers";
 import { tokenService, authService } from "@/services";
 import { drawTypeEnum, menuTabEnum, serviceTypeEnum } from "@/enums";
 import permission from "@/directive/permission/index.js";
+import LayerTree from "@/components/LayerTree/Index";
 import checkPermission from "@/utils/permission";
 import role from "@/directive/role/index.js";
 export default {
@@ -210,28 +238,27 @@ export default {
   directives: { permission, role },
   components: {
     LayerTree,
-    Draggable,
   },
 
   data() {
     return {
       serviceTypeEnum: serviceTypeEnum,
-      activeMenu: "",
+
       activeLayerType: "gray",
       layerTypesVisible: false,
       isDragging: false,
       dynamicActiveTab: "dynamicTab",
+      basemapActiveTab: "baseTab",
       baseMaps: mapController.getBaseMaps(),
     };
   },
-
+  mounted() {},
   computed: {
-    userName() {
-      return localStorage.getItem("username");
-    },
-
     isProfileTabActive() {
       return this.activeMenuTab === menuTabEnum.PROFILE;
+    },
+    notificationCount() {
+      return menuController.getNotificationCount();
     },
     isToolTabActive() {
       return this.activeMenuTab === menuTabEnum.TOOL;
@@ -259,7 +286,6 @@ export default {
     toolList() {
       return menuController.getToolList();
     },
-
     bunchLayerList: {
       get() {
         return this.$store.getters.bunchLayerList;
@@ -285,6 +311,36 @@ export default {
         this.$store.dispatch("saveBaseLayerList", val);
       },
     },
+    favoriteBaseLayerList: {
+      get() {
+        var ids = layerController.getFavoriteBaseLayerIds();
+        let baselayers = layerController.getBaseLayersWithoutCategory();
+        var layers = baselayers.filter((c) => ids.includes(c.id));
+        return layers;
+      },
+      set(val) {
+        this.$store.dispatch("saveBaseLayerList", val);
+      },
+    },
+    favoriteDynamicLayerList: {
+      get() {
+        var ids = layerController.getFavoriteDynamicLayerIds();
+        let dynamicLayers = layerController.getDynamicLayersWithoutCategory(
+          false
+        );
+        var layers = dynamicLayers.filter((c) => ids.includes(c.id));
+        return layers;
+      },
+      set(val) {
+        this.$store.dispatch("saveDynamicLayerList", val);
+      },
+    },
+    // favoriteBaseLayerList() {
+    //   var ids = layerController.getFavoriteBaseLayerIds();
+    //   let baselayers = layerController.getBaseLayersWithoutCategory();
+    //   var layers = baselayers.filter((c) => ids.includes(c.id));
+    //   return layers;
+    // },
   },
   methods: {
     checkPermission,
@@ -297,9 +353,6 @@ export default {
     showProfileModal() {
       modalController.showProfileModalModal();
     },
-    onDraggableMoveCallback(type) {
-      serviceController.onDraggableMoveCallback(type);
-    },
 
     setBaseLayout(key) {
       this.activeLayerType = key;
@@ -308,6 +361,9 @@ export default {
 
     setDynamicActiveTab(tabLabel) {
       this.dynamicActiveTab = tabLabel;
+    },
+    setBasemapActiveTab(tabLabel) {
+      this.basemapActiveTab = tabLabel;
     },
     openComputedLayerModal() {
       this.$moodal.computedLayerModal.show();

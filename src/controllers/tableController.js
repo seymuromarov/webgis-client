@@ -50,7 +50,6 @@ const functions = {
       checkedColumnsData,
       checkedColumns,
     };
-    console.log("buildTableData -> dataObj", dataObj);
 
     let paging = getters.getDefaultPagingOptions();
 

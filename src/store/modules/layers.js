@@ -2,6 +2,10 @@ const state = {
   dynamicLayerList: [],
   baseLayerList: [],
   bunchLayerList: [],
+  favoriteBaseLayerIds: [],
+  favoriteDynamicLayerIds: [],
+  defaultBaseLayerIds: [],
+  defaultDynamicLayerIds: [],
   focusedPolygonVector: null,
 };
 
@@ -19,6 +23,19 @@ const mutations = {
   SET_BUNCH_LAYER_LIST(state, payload) {
     state.bunchLayerList = payload;
   },
+
+  SET_FAVORITE_BASE_LAYER_IDS(state, payload) {
+    state.favoriteBaseLayerIds = payload;
+  },
+  SET_FAVORITE_DYNAMIC_LAYER_IDS(state, payload) {
+    state.favoriteDynamicLayerIds = payload;
+  },
+  SET_DEFAULT_DYNAMIC_LAYER_IDS(state, payload) {
+    state.defaultDynamicLayerIds = payload;
+  },
+  SET_DEFAULT_BASE_LAYER_IDS(state, payload) {
+    state.defaultBaseLayerIds = payload;
+  },
 };
 
 const actions = {
@@ -35,6 +52,19 @@ const actions = {
   saveBunchLayerList(context, payload) {
     context.commit("SET_BUNCH_LAYER_LIST", payload);
   },
+
+  saveFavoriteDyanmicLayerIds(context, payload) {
+    context.commit("SET_FAVORITE_DYNAMIC_LAYER_IDS", payload);
+  },
+  saveFavoriteBaseLayerIds(context, payload) {
+    context.commit("SET_FAVORITE_BASE_LAYER_IDS", payload);
+  },
+  saveDefaultDynamicLayerIds(context, payload) {
+    context.commit("SET_DEFAULT_DYNAMIC_LAYER_IDS", payload);
+  },
+  saveDefaultBaseLayerIds(context, payload) {
+    context.commit("SET_DEFAULT_BASE_LAYER_IDS", payload);
+  },
 };
 
 const getters = {
@@ -46,6 +76,21 @@ const getters = {
   },
   bunchLayerList: (state) => {
     return state.bunchLayerList;
+  },
+  bunchLayerList: (state) => {
+    return state.bunchLayerList;
+  },
+  favoriteBaseLayerIds: (state) => {
+    return state.favoriteBaseLayerIds;
+  },
+  favoriteDynamicLayerIds: (state) => {
+    return state.favoriteDynamicLayerIds;
+  },
+  defaultDynamicLayerIds: (state) => {
+    return state.defaultDynamicLayerIds;
+  },
+  defaultBaseLayerIds: (state) => {
+    return state.defaultBaseLayerIds;
   },
 };
 

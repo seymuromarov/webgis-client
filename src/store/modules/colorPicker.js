@@ -90,6 +90,9 @@ const mutations = {
   SET_COLORPICKER_DYNAMICCOLORS(state, payload) {
     state.activeDynamicLayersColorsGetter = payload;
   },
+  SET_ACTIVE_COLOR_PICKER_ID(state, payload) {
+    state.activeColorPickerId = payload;
+  },
   SET_LAYER_COLOR_ORDER_LIST(state, payload) {
     state.layerColorOrderList = payload;
   },

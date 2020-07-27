@@ -5,7 +5,7 @@
         <!-- Switch -->
         <ToggleSwitch v-if="!isCategory" class="pre" v-model="switchModel" />
         <i class="far fa-folder pre" v-else></i>
-        {{ data.name }}
+        {{ item.name }}
       </span>
 
       <!-- Caret icons -->
@@ -35,7 +35,7 @@
           v-if="tableIconVisibility"
           src="@/assets/images/icons/list.svg"
           alt=""
-          @click="getTableData(data)"
+          @click="getTableData(item)"
         />
         <img
           v-if="deleteIconVisibility"
@@ -53,41 +53,31 @@
       @onClose="colorPickerOnClose"
     />
 
-    <ul v-if="data.layers && subListVisibility" class="list__content">
+    <ul v-if="item.layers && subListVisibility" class="list__content">
       <Draggable
-        :key="guid()"
-        v-model="data.children"
+        v-model="item.children"
         @start="isDragging = true"
-        @end="
-          () => {
-            onDraggableMoveCallback(layerType);
-          }
-        "
+        @end="onDraggableMoveCallback"
       >
-        <LayerTree
-          v-for="(children, index) in data.children"
+        <layer-tree-item
+          v-for="(children, index) in item.children"
           :key="children.name + index"
-          :data="children"
-          :parent="data"
+          :item="children"
+          :parent="item"
           :layerType="layerType"
           :loop="loop + 1"
         />
       </Draggable>
       <Draggable
-        :key="guid()"
-        v-model="data.layers"
+        v-model="item.layers"
         @start="isDragging = true"
-        @end="
-          () => {
-            onDraggableMoveCallback(layerType);
-          }
-        "
+        @end="onDraggableMoveCallback"
       >
-        <LayerTree
-          v-for="(layer, index) in data.layers"
+        <layer-tree-item
+          v-for="(layer, index) in item.layers"
           :key="layer.name + index"
-          :data="layer"
-          :parent="data"
+          :item="layer"
+          :parent="item"
           :layerType="layerType"
           :loop="loop + 1"
         />
@@ -97,11 +87,13 @@
 </template>
 
 <script>
-import ToggleSwitch from "../common/ToggleSwitch";
-import LayerColorPicker from "../LayerColorPicker";
+import ToggleSwitch from "@/components/common/ToggleSwitch";
+import LayerColorPicker from "@/components/LayerColorPicker";
+
 import Draggable from "vuedraggable";
 import { layerHelper, serviceHelper } from "@/helpers";
 import { guid } from "@/utils";
+
 import {
   bunchController,
   mapController,
@@ -110,16 +102,18 @@ import {
 } from "@/controllers";
 import bunch from "@/api/bunch";
 export default {
-  name: "LayerTreedasdsadasd",
+  name: "LayerTreeItem",
   components: {
     ToggleSwitch,
-    LayerColorPicker,
     Draggable,
+    LayerColorPicker,
   },
   props: {
-    data: {
+    item: {
       type: Object,
+      required: true,
     },
+
     parent: {
       type: Object,
     },
@@ -129,6 +123,7 @@ export default {
     },
     layerType: {
       type: String,
+      required: true,
       default: "",
     },
   },
@@ -136,16 +131,17 @@ export default {
     return {
       subListVisibility: false,
       layerIsSelected: false,
+      isDragging: false,
     };
   },
   mounted() {},
   computed: {
     switchModel: {
       get() {
-        if (serviceHelper.isLayer(this.data)) {
-          return this.data.isSelected;
+        if (serviceHelper.isLayer(this.item)) {
+          return this.item.isSelected;
         } else {
-          return this.data.defaultVisibility;
+          return this.item.defaultVisibility;
         }
       },
       set(e) {
@@ -160,38 +156,38 @@ export default {
       return this.loop * 16 + "px";
     },
     isCategory() {
-      return serviceHelper.isCategory(this.data);
+      return serviceHelper.isCategory(this.item);
     },
 
     caretIconsVisibility() {
       return (
         this.isCategory ||
-        (serviceHelper.isLayer(this.data) &&
-          serviceHelper.isDynamicFromArcgis(this.data) &&
-          this.data.isSelected)
+        (serviceHelper.isLayer(this.item) &&
+          serviceHelper.isDynamicFromArcgis(this.item) &&
+          this.item.isSelected)
       );
     },
     tableIconVisibility() {
       return (
-        this.data.isSelected &&
-        (serviceHelper.isSublayer(this.data) ||
-          serviceHelper.isBunch(this.data) ||
-          (serviceHelper.isLayer(this.data) &&
-            serviceHelper.isDynamicFromLocal(this.data)))
+        this.item.isSelected &&
+        (serviceHelper.isSublayer(this.item) ||
+          serviceHelper.isBunch(this.item) ||
+          (serviceHelper.isLayer(this.item) &&
+            serviceHelper.isDynamicFromLocal(this.item)))
       );
     },
     colorIconVisibility() {
       return (
-        this.data.isSelected &&
-        this.data.isColorEnabled &&
-        (serviceHelper.isSublayer(this.data) ||
-          serviceHelper.isBunch(this.data) ||
-          (serviceHelper.isLayer(this.data) &&
-            serviceHelper.isDynamicFromLocal(this.data)))
+        this.item.isSelected &&
+        this.item.isColorEnabled &&
+        (serviceHelper.isSublayer(this.item) ||
+          serviceHelper.isBunch(this.item) ||
+          (serviceHelper.isLayer(this.item) &&
+            serviceHelper.isDynamicFromLocal(this.item)))
       ); // && this.color;
     },
     deleteIconVisibility() {
-      return this.data.isColorEnabled && serviceHelper.isBunch(this.data); // && this.color;
+      return this.item.isColorEnabled && serviceHelper.isBunch(this.item); // && this.color;
     },
     operationsVisibility() {
       return (
@@ -202,7 +198,7 @@ export default {
     },
     colorPickerVisibility() {
       return (
-        this.data.isSelected && this.activeColorPickerId === this.getLayerId()
+        this.item.isSelected && this.activeColorPickerId === this.getLayerId()
       );
     },
     activeColorPickerId: {
@@ -215,19 +211,18 @@ export default {
     },
   },
   methods: {
-    guid,
-    onDraggableMoveCallback(type) {
-      serviceController.onDraggableMoveCallback(type);
+    onDraggableMoveCallback() {
+      serviceController.onDraggableMoveCallback(this.layerType);
     },
     toggleSubList() {
       this.subListVisibility = !this.subListVisibility;
       if (this.subListVisibility)
-        serviceController.dynamicLayersReset(this.data, this.subListVisibility);
-      // this.dynamicLayersReset(this.data, this.subListVisibility);
+        serviceController.dynamicLayersReset(this.item, this.subListVisibility);
+      // this.dynamicLayersReset(this.item, this.subListVisibility);
     },
     onColorPickerSave(color) {
-      serviceController.saveColor(this.data, color);
-      mapController.refreshService(this.data);
+      serviceController.saveColor(this.item, color);
+      mapController.refreshService(this.item);
     },
     colorPickerOnClose() {
       this.activeColorPickerId = null;
@@ -235,50 +230,33 @@ export default {
     layerPicker(event) {
       let isChecked = event.target.checked;
 
-      if (serviceHelper.isSublayer(this.data)) {
+      if (serviceHelper.isSublayer(this.item)) {
         serviceController.selectSubLayer(
           this.parent,
           this.parent.order,
-          this.data.id,
+          this.item.id,
           isChecked
         );
-        // this.$emit(
-        //   "selectSubLayer",
-        //   this.parent,
-        //   this.parent.order,
-        //   this.data.id,
-        //   isChecked
-        // );
       } else {
-        serviceController.selectService(this.data, isChecked);
-        // serviceController.selectService(this.data, isChecked);
-        // this.$emit("selectService", this.data, isChecked);
-        // this.$emit("dynamicLayersReset", this.data, isChecked);
-        serviceController.dynamicLayersReset(this.data, isChecked);
+        serviceController.selectService(this.item, isChecked);
+
+        serviceController.dynamicLayersReset(this.item, isChecked);
       }
     },
-    // selectService(data, isChecked) {
-    //   this.$emit("selectService", data, isChecked);
-    // },
-    // selectSubLayer(parent, order, itemId, event) {
-    //   this.$emit("selectSubLayer", parent, order, itemId, event);
-    // },
-    // dynamicLayersReset(data, status) {
-    //   this.$emit("dynamicLayersReset", data, status);
-    // },
-    async getTableData(data) {
-      var service = serviceHelper.isSublayer(data) ? data.parent : data;
+
+    async getTableData(item) {
+      var service = serviceHelper.isSublayer(item) ? item.parent : item;
       await tableController.getTable(service);
     },
     getLayerId() {
       var id = 0;
-      if (serviceHelper.isSublayer(this.data)) {
-        id = this.data.uid;
+      if (serviceHelper.isSublayer(this.item)) {
+        id = this.item.uid;
       } else if (
-        serviceHelper.isLayer(this.data) &&
-        serviceHelper.isDynamicFromLocal(this.data)
+        serviceHelper.isLayer(this.item) &&
+        serviceHelper.isDynamicFromLocal(this.item)
       ) {
-        id = this.data.id;
+        id = this.item.id;
       }
       return id;
     },
@@ -290,9 +268,9 @@ export default {
       }
     },
     deleteBunch() {
-      bunch.remove(this.data.id).then((response) => {
-        bunchController.remove(this.data.id);
-        mapController.deleteService(this.data);
+      bunch.remove(this.item.id).then((response) => {
+        bunchController.remove(this.item.id);
+        mapController.deleteService(this.item);
       });
     },
   },

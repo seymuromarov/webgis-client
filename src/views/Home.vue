@@ -129,7 +129,7 @@ import {
 } from "@/controllers";
 
 // Services
-import { tokenService } from "@/services";
+import { tokenService, hashService } from "@/services";
 import layer from "@/api/layer";
 export default {
   name: "Home",
@@ -179,9 +179,7 @@ export default {
 
     this.moodal = this.$moodal;
 
-    this.hashResolveResult = this.resolveHash(window.location.hash);
-
-    // if (tokenService.getToken() === null) this.$router.push("/login");
+    this.hashResolveResult = hashService.resolveHash();
 
     this.toggler = new toggler(this);
 
@@ -322,8 +320,16 @@ export default {
         }
       });
 
-      this.$store.dispatch("getLayers").then(() => {
-        this.setHashSelectedServices();
+      this.$store.dispatch("init").then(() => {
+        serviceController.setServicesStatusByIds(
+          this.hashResolveResult.selectedLayers,
+          true
+        );
+        const defaultLayers = [
+          ...this.$store.getters.defaultDynamicLayerIds,
+          ...this.$store.getters.defaultBaseLayerIds,
+        ];
+        serviceController.setServicesStatusByIds(defaultLayers, true);
         self.mapLayer.on("moveend", historyController.updateHistoryMap);
       });
       window.addEventListener("popstate", (event) => {
@@ -337,18 +343,6 @@ export default {
     });
   },
   methods: {
-    setHashSelectedServices() {
-      if (this.hashResolveResult !== null) {
-        var serviceIds = this.hashResolveResult.selectedLayers;
-        if (serviceIds)
-          for (let i = 0; i < serviceIds.length; i++) {
-            const item = serviceIds[i];
-            var service = layerController.getLayer(item);
-            if (service) serviceController.selectService(service, true);
-          }
-      }
-    },
-
     setShapeColor() {
       document.body.style.cursor = "crosshair";
       this.$moodal.colorPickerModal.hide();
@@ -365,21 +359,6 @@ export default {
       );
     },
 
-    resolveHash(hash) {
-      var result = null;
-      if (hash !== "") {
-        let hashString = window.location.hash.replace("#shareMap=", "");
-        let parts = hashString.split("&");
-        if (parts.length === 4) {
-          let zoom = parseInt(parts[0], 10);
-          let center = [parseFloat(parts[1]), parseFloat(parts[2])];
-          let selectedLayers = parts[3].split(",").map(Number);
-          return { zoom, center, selectedLayers };
-        }
-      }
-
-      return result;
-    },
     mapSetCenter(data) {
       let geometry = [];
       if (data.geometry.x !== undefined) {

@@ -20,6 +20,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "@/assets/style/bootstrapCustom.scss";
 
 import "@/assets/style/globalStyle.scss";
+import "@/assets/style/treeStyle.scss";
 import "@/assets/style/multiSelect.scss";
 import "@/assets/style/modal.scss";
 import "@/assets/style/font-awesome/css/all.css";

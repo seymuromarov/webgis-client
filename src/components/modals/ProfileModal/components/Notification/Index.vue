@@ -23,6 +23,7 @@
         >
           <NotificationCard
             :label="item.label"
+            :isReaded="item.isReaded"
             :description="item.description"
             :date="item.dateCreated"
             :type="item.type"
@@ -58,20 +59,27 @@ export default {
       totalCount: 0,
     };
   },
-  mounted() {
-    this.getNotifications();
+  async mounted() {
+    await this.getNotifications();
   },
   methods: {
-    getNotifications() {
-      notification.getAll(this.limitQuery).then((response) => {
+    async getNotifications() {
+      notification.getAll(this.limitQuery).then(async (response) => {
         this.totalCount = response.data.totalCount;
         this.notifications = response.data.items;
-        console.log("getNotifications -> response", response);
+        await new Promise(async (resolve, reject) => {
+          for (let i = 0; i < this.notifications.length; i++) {
+            const item = this.notifications[i];
+            if (!item.isReaded) await notification.setReaded(item.id);
+          }
+          resolve();
+        });
+        this.$store.dispatch("setNotificationCounts");
       });
     },
-    onPageChange(num) {
+    async onPageChange(num) {
       this.limitQuery.page = num;
-      this.getNotifications();
+      await this.getNotifications();
     },
   },
   computed: {

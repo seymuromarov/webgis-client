@@ -548,3 +548,22 @@ hr {
     background: #555;
   }
 }
+
+.badge-notify {
+  background: red;
+  position: relative;
+  top: 15px;
+  left: 10px;
+  z-index: 200;
+  border-radius: 50%;
+  color: white;
+}
+
+// .badge-notify {
+//   position: relative;
+//   top: 10px;
+//   right: 10px;
+//   border-radius: 50%;
+//   background: red;
+//   color: white;
+// }

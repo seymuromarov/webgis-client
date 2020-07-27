@@ -1,68 +1,66 @@
 <template>
-  <div>
-    <ul v-for="(item, index) in data" :key="index" class="tree-ul">
-      <li style="margin:10px 0px;">
-        <span
-          v-if="checkCategoryCondition(item)"
-          class="tree-item"
-          @click="
-            () => {
-              isOpen = !isOpen;
-            }
-          "
-        >
-          <strong>{{ item[getNameKey()] }}</strong>
+  <li style="margin:10px 0px;">
+    <span
+      v-if="checkCategoryCondition()"
+      class="tree-item"
+      @click="
+        () => {
+          isOpen = !isOpen;
+        }
+      "
+    >
+      <strong>{{ node[getNameKey()] }}</strong>
 
-          <i
-            class=" m-1 "
-            :class="{ 'fa fa-plus': !isOpen, 'fa fa-minus': isOpen }"
-          ></i>
-        </span>
+      <i
+        class=" m-1 "
+        :class="{ 'fa fa-plus': !isOpen, 'fa fa-minus': isOpen }"
+      ></i>
+    </span>
 
-        <span v-else class="tree-item"> {{ item[getNameKey()] }}</span>
+    <span v-else class="tree-item"> {{ node[getNameKey()] }}</span>
 
-        <input
-          v-if="isCheckboxExist && checkCheckboxCondition(item)"
-          type="checkbox"
-          :checked="
-            isCheckedsPropertyExist && checkeds.includes(item[getIdKey()])
-          "
-          class="form-check-input tree-checkbox"
-          @change="
-            (e) => {
-              var status = e.target.checked;
-              onChange(item, status);
-            }
-          "
+    <input
+      v-if="isCheckboxExist && checkCheckboxCondition()"
+      type="checkbox"
+      :checked="isCheckedsPropertyExist && checkeds.includes(node[getIdKey()])"
+      class="form-check-input tree-checkbox"
+      @change="
+        (e) => {
+          var status = e.target.checked;
+          onChange(node, status);
+        }
+      "
+    />
+
+    <div v-if="node[getChildrenKey()]" v-show="isOpen">
+      <ul v-for="(item, index) in node[getChildrenKey()]" :key="index">
+        <tree-item
+          :node="item"
+          :options="options"
+          :checkeds="checkeds"
+          @onChange="onChange"
         />
-
-        <div v-if="item[getChildrenKey()]" v-show="isOpen">
-          <tree-item
-            :data="item[getChildrenKey()]"
-            :options="options"
-            :checkeds="checkeds"
-            @onChange="onChange"
-          />
-        </div>
-        <div v-if="item[getItemKey()]" v-show="isOpen">
-          <tree-item
-            :data="item[getItemKey()]"
-            :options="options"
-            :checkeds="checkeds"
-            @onChange="onChange"
-          />
-        </div>
-      </li>
-    </ul>
-  </div>
+      </ul>
+    </div>
+    <div v-if="node[getItemKey()]" v-show="isOpen">
+      <ul v-for="(item, index) in node[getItemKey()]" :key="index">
+        <tree-item
+          :node="item"
+          :options="options"
+          :checkeds="checkeds"
+          @onChange="onChange"
+        />
+      </ul>
+    </div>
+  </li>
 </template>
 
 <script>
 export default {
   name: "TreeItem",
   props: {
-    data: {
-      type: Array,
+    node: {
+      type: Object,
       required: true,
     },
     options: {
@@ -90,6 +88,7 @@ export default {
     }
     */
   },
+  mounted() {},
   data() {
     return {
       isOpen: false,
@@ -118,6 +117,7 @@ export default {
   mounted() {
     this.isOpen = !this.isCollapsed;
   },
+
   computed: {
     isCheckboxExist() {
       return (
@@ -132,22 +132,24 @@ export default {
     },
   },
   methods: {
-    onChange(item, status) {
+    toggle() {
+      this.isOpen = !this.isOpen;
+    },
+    onChange(node, status) {
       if (this.isCheckedsPropertyExist) {
         if (status) {
-          if (!this.checkeds.includes(item.id)) {
-            this.checkeds.push(item.id);
+          if (!this.checkeds.includes(node.id)) {
+            this.checkeds.push(node.id);
           }
         } else {
-          if (this.checkeds.includes(item.id)) {
-            let i = this.checkeds.findIndex((c) => c == item.id);
+          if (this.checkeds.includes(node.id)) {
+            let i = this.checkeds.findIndex((c) => c == node.id);
             this.checkeds.splice(i, 1);
           }
         }
         this.$emit("setCheckeds", this.checkeds);
       }
-
-      this.$emit("onChange", item, status);
+      this.$emit("onChange", node, status);
     },
 
     getChildrenKey() {
@@ -175,15 +177,15 @@ export default {
       return null;
     },
 
-    checkCategoryCondition(item) {
+    checkCategoryCondition() {
       if (this.isOptionConditionsPropertyExist("isCategory")) {
-        return this.options.conditions.isCategory(item);
+        return this.options.conditions.isCategory(this.node);
       }
       return false;
     },
-    checkCheckboxCondition(item) {
+    checkCheckboxCondition() {
       if (this.isOptionCheckboxPropertyExist()) {
-        return this.options.conditions.isCheckboxExist(item);
+        return this.options.conditions.isCheckboxExist(this.node);
       }
       return false;
     },
@@ -204,39 +206,3 @@ export default {
   },
 };
 </script>
-<style lang="scss">
-.tree-ul {
-  list-style: none;
-
-  //  & .tree-li{
-  //     list-style: none;
-  //  }
-
-  .tree-checkbox {
-    /* Double-sized Checkboxes */
-    -ms-transform: scale(1.5); /* IE */
-    -moz-transform: scale(1.5); /* FF */
-    -webkit-transform: scale(1.5); /* Safari and Chrome */
-    -o-transform: scale(1.5); /* Opera */
-    transform: scale(1.5);
-    margin-left: 10px;
-  }
-}
-.tree-item {
-  border: 1px solid gray;
-  padding: 3px 5px;
-  border-radius: 5px;
-  cursor: pointer;
-
-  // .tree-open-btn :hover,
-  // .tree-open-btn :focus {
-  //   color: blue;
-  // }
-}
-.tree-item:hover,
-.tree-item:focus {
-  transition: all 0.3s ease;
-  color: white;
-  background-color: var(--primary-color);
-}
-</style>

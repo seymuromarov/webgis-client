@@ -33,8 +33,20 @@ const FAVORITELAYER_URLS = {
   SET: URL + "/api/favoritelayer/set",
   GET_ALL: URL + "/api/favoritelayer/getall",
 };
+const WORKSPACE_URLS = {
+  SET: URL + "/api/workspace/set",
+  GET: URL + "/api/workspace/get",
+  DELETE: URL + "/api/workspace/delete",
+};
+const DEFAULTLAYER_URLS = {
+  SET: URL + "/api/defaultlayer/set",
+  GET_ALL: URL + "/api/defaultlayer/getall",
+};
 const NOTIFICATION_URLS = {
   GET_ALL: URL + "/api/notification/getall",
+  SET_READED: URL + "/api/notification/setreaded",
+  GET_UNREAD_NOTIFICATION_COUNT:
+    URL + "/api/notification/GetUnreadNotificationCount",
 };
 const NDVI_URLS = {
   GET_ALL: URL + "/api/ndviassessment/getall",
@@ -80,8 +92,10 @@ export {
   LAYER_DATA_IMAGE_URLS,
   USER_URLS,
   FAVORITEQUERY_URLS,
+  DEFAULTLAYER_URLS,
   FAVORITELAYER_URLS,
   NOTIFICATION_URLS,
+  WORKSPACE_URLS,
   BUNCH_URLS,
   ACCOUNT_URL,
   LAYER_URLS,

@@ -1,12 +1,14 @@
 <template>
-  <div>
-    <tree-item
-      :data="data"
-      :options="options"
-      :checkeds="checkedIds"
-      @setCheckeds="setCheckeds"
-      @onChange="onChange"
-    />
+  <div class="tree">
+    <ul v-for="(item, index) in data" :key="index">
+      <tree-item
+        :node="item"
+        :options="options"
+        :checkeds="checkedIds"
+        @setCheckeds="setCheckeds"
+        @onChange="onChange"
+      />
+    </ul>
   </div>
 </template>
 

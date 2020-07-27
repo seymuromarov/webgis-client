@@ -20,7 +20,6 @@ export default {
   },
   mounted() {
     var user = userController.getUserInfo();
-    console.log("mounted -> user", user);
     this.username = user.userName;
     this.email = user.email;
   },

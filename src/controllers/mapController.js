@@ -18,6 +18,7 @@ import {
   Style,
   Stroke,
   Fill,
+  transform,
 } from "@/wrappers/openLayerImports";
 
 const selectedLayerStyle = new Style({
@@ -286,6 +287,17 @@ const setters = {
     layers[0].setSource(baseMaps[index]);
     setters.setMap(map);
   },
+  setZoomLevel(zoom) {
+    let map = mapLayer.get();
+    map.getView().setZoom(zoom);
+    setters.setMap(map);
+  },
+  setCenter(center) {
+    let map = mapLayer.get();
+    center = transform(center, "EPSG:4326", "EPSG:3857");
+    map.getView().setCenter(center);
+    setters.setMap(map);
+  },
   setColorsArray(val) {
     $store.dispatch("SAVE_COLOR_PICKER_DYNAMIC_COLORS", val);
   },
@@ -294,6 +306,25 @@ const setters = {
 const getters = {
   getMap() {
     return $store.getters.mapLayer;
+  },
+  getCurrentZoomLevel() {
+    let map = getters.getMap();
+    let view = map.getView();
+    let zoom = view.getZoom();
+    return zoom;
+  },
+  getCurrentCenter() {
+    let map = getters.getMap();
+    let view = map.getView();
+    let center = view.getCenter();
+
+    return transform(center, "EPSG:3857", "EPSG:4326");
+  },
+  getCurrentRotation() {
+    let map = getters.getMap();
+    let view = map.getView();
+    let rotation = view.getRotation();
+    return rotation;
   },
   getSelectionLayer() {
     return $store.getters.selectionLayer;
@@ -325,6 +356,7 @@ const getters = {
   getActiveDynamicLayersColorsGetter() {
     return $store.getters.activeDynamicLayersColors;
   },
+
   getZoomLevelOptions(service) {
     let min, max;
     if (serviceHelper.isLayer(service)) {

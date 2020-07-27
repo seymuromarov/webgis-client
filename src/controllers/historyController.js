@@ -1,5 +1,6 @@
 import $store from "@/store/store.js";
 import { mapController, layerController } from "@/controllers";
+import { hashService } from "@/services";
 const functions = {
   historyBack() {
     setters.setHistoryIsNeedUpdate(false);
@@ -54,7 +55,7 @@ const functions = {
         rotation: view.getRotation(),
       };
 
-      functions.updateHash();
+      hashService.updateHash();
 
       functions.addHistory(state);
       let history = getters.getHistory();
@@ -67,31 +68,6 @@ const functions = {
     } else {
       setters.setHistoryIsNeedUpdate(true);
     }
-  },
-
-  updateHash() {
-    let map = mapController.getMap();
-    let view = map.getView();
-
-    let state = {
-      zoom: view.getZoom(),
-      center: view.getCenter(),
-      rotation: view.getRotation(),
-    };
-    var selectedLayers = layerController.getSelectedLayers();
-    var selectedLayerIds = selectedLayers.map((item) => {
-      return item.id;
-    });
-    let hash =
-      "#shareMap=" +
-      view.getZoom() +
-      "&" +
-      Math.round(view.getCenter()[0] * 100) / 100 +
-      "&" +
-      Math.round(view.getCenter()[1] * 100) / 100 +
-      "&" +
-      selectedLayerIds;
-    window.history.pushState(state, "map", hash);
   },
 
   addHistory(data) {

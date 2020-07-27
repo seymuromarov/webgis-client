@@ -52,21 +52,21 @@
     </div>
     <div class="col-md-12 mt-5">
       <div class="row">
-        <!-- <div class="col-md-6">
+        <div class="col-md-6">
           <span>
             <strong class="text-muted">Note : </strong>
             <small class="text-muted"
               >Changes will be applied after refresh.</small
             ></span
           >
-        </div> -->
-        <div class="col-md-12">
+        </div>
+        <div class="col-md-6">
           <button
             type="button"
             class="btn btn-success  float-right btn-sm"
             @click="submit"
           >
-            Set Favorite Layers
+            Set Default Layers
           </button>
         </div>
       </div>
@@ -85,15 +85,15 @@
 <script>
 import { layerController } from "@/controllers";
 import { Tree } from "@/components";
-import favoriteLayer from "@/api/favoriteLayer";
+import defaultLayer from "@/api/defaultLayer";
 export default {
-  name: "FavoriteLayer",
+  name: "DefaultLayer",
   components: { Tree },
   data() {
     return {
       dynamics: [],
       basemaps: [],
-      favoriteLayers: [],
+      defaultLayers: [],
       checkedDynamics: [],
       checkedBasemaps: [],
       treeOptions: {
@@ -119,12 +119,12 @@ export default {
     };
   },
   mounted() {
-    this.getFavoriteLayers().then((favoriteLayers) => {
-      let checkedDynamics = favoriteLayers
+    this.getDefaultLayers().then((defaultLayers) => {
+      let checkedDynamics = defaultLayers
         .filter((c) => c.layer.mapTypeId == "dynamic")
         .map((c) => c.layer.id);
       this.checkedDynamics = checkedDynamics;
-      let checkedBasemaps = favoriteLayers
+      let checkedBasemaps = defaultLayers
         .filter((c) => c.layer.mapTypeId == "basemap")
         .map((c) => c.layer.id);
       this.checkedBasemaps = checkedBasemaps;
@@ -142,11 +142,11 @@ export default {
     resetBasemapTree() {
       this.$refs.basemapTree.setCheckeds([]);
     },
-    getFavoriteLayers() {
+    getDefaultLayers() {
       return new Promise((resolve, reject) => {
-        favoriteLayer.getAll().then((response) => {
+        defaultLayer.getAll().then((response) => {
           if (response.status == 200) {
-            this.favoriteLayers = response.data;
+            this.defaultLayers = response.data;
             resolve(response.data);
           } else {
             reject(new Error("Faild"));
@@ -165,12 +165,9 @@ export default {
       selectedBasemaps.forEach((c) => {
         data.push({ layerId: c });
       });
-
-      favoriteLayer.set(data).then((response) => {
+      defaultLayer.set(data).then((response) => {
         if (response.status == 200) {
-          layerController.setFavoriteDynamicLayerIds(selectedDynamics);
-          layerController.setFavoriteBaseLayerIds(selectedBasemaps);
-          this.$toasted.show("Favorite Queries Successfully Setted", {
+          this.$toasted.show("Default Layers Successfully Setted", {
             icon: {
               name: "fas fa-check",
             },

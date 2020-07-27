@@ -1,7 +1,7 @@
 import { serviceHelper, layerHelper, colorHelper } from "@/helpers";
 import { serviceTypeEnum } from "@/enums";
 import { serviceZIndexSettings } from "@/config/settings";
-import { tokenService } from "@/services";
+import { tokenService, hashService } from "@/services";
 import layer from "@/api/layer";
 import { _ } from "vue-underscore";
 import {
@@ -28,45 +28,60 @@ const functions = {
     layerColorOrder[i] = 0;
   },
   async selectService(service, isChecked) {
-    if (!isChecked) {
-      mapController.removeDrawPolygons();
-    }
-
-    var tableActiveService = tableController.getTableActiveService();
-    if (!isChecked && tableActiveService) {
-      if (serviceHelper.isEqual(service, tableActiveService))
-        tableController.setTableUnvisible();
-    }
-
-    if (serviceHelper.isLayer(service)) {
-      if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
-        let subLayerResponse = await functions.getResponseDynamic(service);
-        service.layers = subLayerResponse.data.layers;
+    if (service && service.isSelected != isChecked) {
+      if (!isChecked) {
+        mapController.removeDrawPolygons();
       }
-      layerController.setSelected(service, isChecked);
-    } else {
-      bunchController.setSelected(service, isChecked);
+
+      var tableActiveService = tableController.getTableActiveService();
+      if (!isChecked && tableActiveService) {
+        if (serviceHelper.isEqual(service, tableActiveService))
+          tableController.setTableUnvisible();
+      }
+
+      if (serviceHelper.isLayer(service)) {
+        if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
+          let subLayerResponse = await functions.getResponseDynamic(service);
+          service.layers = subLayerResponse.data.layers;
+        }
+        layerController.setSelected(service, isChecked);
+      } else {
+        bunchController.setSelected(service, isChecked);
+      }
+
+      mapController.resetSelectionLayer();
+
+      if (isChecked) {
+        functions.addLayerColorIndex(service.id);
+
+        let colorIndex = functions.getLayerColorIndex(service.id);
+        let color = colorHelper.getColorByIndex(colorIndex);
+        let colorObj = colorHelper.buildColorObject(color);
+        functions.saveColor(service, colorObj);
+
+        mapController.addService(service);
+        if (serviceHelper.isDynamicFromLocal(service))
+          mapController.buildSelectionLayer(service);
+      } else {
+        functions.removeLayerColorIndex(service.id);
+        mapController.deleteService(service);
+        functions.resetQuery(service);
+        toolController.deleteActiveServiceFeatures();
+      }
+
+      hashService.updateHash();
     }
-
-    mapController.resetSelectionLayer();
-
-    if (isChecked) {
-      functions.addLayerColorIndex(service.id);
-
-      let colorIndex = functions.getLayerColorIndex(service.id);
-      let color = colorHelper.getColorByIndex(colorIndex);
-      let colorObj = colorHelper.buildColorObject(color);
-      functions.saveColor(service, colorObj);
-
-      mapController.addService(service);
-      if (serviceHelper.isDynamicFromLocal(service))
-        mapController.buildSelectionLayer(service);
-    } else {
-      functions.removeLayerColorIndex(service.id);
-      mapController.deleteService(service);
-      functions.resetQuery(service);
-      toolController.deleteActiveServiceFeatures();
-    }
+  },
+  async setServicesStatusByIds(ids, isChecked) {
+    await new Promise((resolve, reject) => {
+      if (ids && ids.length > 0) {
+        ids.forEach(async (element) => {
+          var service = layerController.getLayer(element);
+          await functions.selectService(service, isChecked);
+        });
+      }
+      resolve();
+    });
   },
   async getResponseDynamic(service) {
     let responseDynamic = null;

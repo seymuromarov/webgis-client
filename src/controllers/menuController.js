@@ -172,6 +172,9 @@ const getters = {
   getActiveMenuTab() {
     return $store.getters.activeMenuTab;
   },
+  getNotificationCount() {
+    return $store.getters.notificationCount;
+  },
 };
 
 const setters = {
@@ -184,6 +187,9 @@ const setters = {
   },
   setInformationModalUnvisible() {
     $store.dispatch("saveInformationModalVisibility", false);
+  },
+  setNotificationCount() {
+    $store.dispatch("saveNotificationCount", false);
   },
 };
 export default { ...getters, ...setters };

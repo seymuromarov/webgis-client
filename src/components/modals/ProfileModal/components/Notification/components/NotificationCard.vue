@@ -1,11 +1,14 @@
 <template>
   <div class="card">
     <div class="card-header">
-      <div class="float-left">{{ label }}</div>
-      <div class="float-right">
+      <div class="float-left">
+        {{ label }}
         <span v-if="type" class="badge" :class="typeToClass()">{{
           typeToString()
         }}</span>
+      </div>
+      <div class="float-right">
+        <span v-if="!isReaded" class="badge badge-danger"> New </span>
       </div>
     </div>
     <div class="card-body">
@@ -36,6 +39,9 @@ export default {
     },
     type: {
       type: Number,
+    },
+    isReaded: {
+      type: Boolean,
     },
     createdBy: {
       type: String,

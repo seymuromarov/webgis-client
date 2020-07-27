@@ -68,6 +68,10 @@
             opacity: 1;
           }
         }
+        &:active,
+        &:focus {
+          outline: none;
+        }
       }
     }
   }

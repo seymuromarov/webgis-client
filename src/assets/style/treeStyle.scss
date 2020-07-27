@@ -1,0 +1,37 @@
+.tree {
+  ul {
+    list-style: none;
+
+    //  & .tree-li{
+    //     list-style: none;
+    //  }
+
+    .tree-checkbox {
+      /* Double-sized Checkboxes */
+      -ms-transform: scale(1.5); /* IE */
+      -moz-transform: scale(1.5); /* FF */
+      -webkit-transform: scale(1.5); /* Safari and Chrome */
+      -o-transform: scale(1.5); /* Opera */
+      transform: scale(1.5);
+      margin-left: 10px;
+    }
+  }
+
+  .tree-item {
+    border: 1px solid gray;
+    padding: 3px 5px;
+    border-radius: 5px;
+    cursor: pointer;
+
+    // .tree-open-btn :hover,
+    // .tree-open-btn :focus {
+    //   color: blue;
+    // }
+  }
+  .tree-item:hover,
+  .tree-item:focus {
+    transition: all 0.3s ease;
+    color: white;
+    background-color: var(--primary-color);
+  }
+}

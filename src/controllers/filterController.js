@@ -12,7 +12,6 @@ const functions = {};
 const getters = {
   async getFilterColumnValues(id, column) {
     const service = layerController.getDynamicLayer(id);
-    console.log("getFilterColumnValues -> service", service);
     let filterColumnValues = [];
     const params = { id };
 
