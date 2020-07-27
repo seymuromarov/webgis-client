@@ -19,6 +19,7 @@ import {
   Stroke,
   Fill,
   transform,
+  TileWMS,
 } from "@/wrappers/openLayerImports";
 
 const selectedLayerStyle = new Style({
@@ -195,7 +196,32 @@ const functions = {
           });
         }
       } else {
-        if (service.spatial === 3857) {
+        if (
+          service.name == "AzercosmosBasemap" ||
+          service.name == "Azersky2018" ||
+          service.name == "Azersky2019" ||
+          service.name == "Azersky2019_IVrub" ||
+          service.name == "Azersky2020_2May" ||
+          service.name == "Azersky2020_Irub" ||
+          service.name == "CropMap2019" ||
+          service.name == "CropMap2019DQ"
+        ) {
+          layer = new TileLayer({
+            ...defaultProps,
+            source: new TileWMS({
+              url: "http://webgis.azercosmos.az/geowebcache/service/wms",
+              params: {
+                LAYERS: service.name,
+                TILED: true,
+                transparent: true,
+                format: "image/png",
+                srs: "EPSG:3857",
+                WIDTH: 256,
+                HEIGHT: 256,
+              },
+            }),
+          });
+        } else if (service.spatial === 3857) {
           layer = new TileLayer({
             ...defaultProps,
             source: new XYZ({
