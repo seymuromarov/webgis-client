@@ -73,6 +73,7 @@ const functions = {
     }
   },
   async setServicesStatusByIds(ids, isChecked) {
+    console.log("setServicesStatusByIds -> ids", ids);
     await new Promise((resolve, reject) => {
       if (ids && ids.length > 0) {
         ids.forEach(async (element) => {

@@ -321,10 +321,11 @@ export default {
       });
 
       this.$store.dispatch("init").then(() => {
-        serviceController.setServicesStatusByIds(
-          this.hashResolveResult.selectedLayers,
-          true
-        );
+        if (this.hashResolveResult !== null)
+          serviceController.setServicesStatusByIds(
+            this.hashResolveResult.selectedLayers,
+            true
+          );
         const defaultLayers = [
           ...this.$store.getters.defaultDynamicLayerIds,
           ...this.$store.getters.defaultBaseLayerIds,
