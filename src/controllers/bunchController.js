@@ -1,6 +1,6 @@
 import $store from "@/store/store.js";
 import { bunchHelper } from "@/helpers";
-
+import { deepClone } from "@/utils";
 const bunchLayerList = {
   get() {
     return $store.getters.bunchLayerList;
@@ -32,7 +32,7 @@ const functions = {
 const getters = {
   getBunchLayerList() {
     let data = bunchLayerList.get();
-    return data;
+    return deepClone(data);
   },
   getBunch(bunchId) {
     let bunch = bunchLayerList.get().find((c) => c.id == bunchId);

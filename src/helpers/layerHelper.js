@@ -215,11 +215,14 @@ const functions = {
       if (serviceHelper.isCategory(o)) {
         o.children = functions.treeFilter(o.children, label);
         var isContains = o.layers.some((c) => c.name.includes(label));
-        if (o.layers) o.layers = o.layers.filter((c) => c.name.includes(label));
+        if (o.layers)
+          o.layers = o.layers.filter((c) =>
+            c.name.toLowerCase().includes(label.toLowerCase())
+          );
 
         return isContains || o.children.length > 0;
       } else {
-        return o.name.includes(label);
+        return o.name.toLowerCase().includes(label.toLowerCase());
       }
     });
 

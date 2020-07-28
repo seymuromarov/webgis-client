@@ -97,9 +97,9 @@
           Favorites
         </div>
       </div>
-      <!-- <div class="list__search">
-        <input type="text" placeholder="Search" v-model="searchInput" />
-      </div> -->
+      <div class="list__search">
+        <input type="text" placeholder="Search" v-model="dynamicSearchInput" />
+      </div>
       <ul
         v-if="dynamicActiveTab === 'dynamicTab'"
         class="list__content list__content--parent custom-scrollbar"
@@ -121,7 +121,7 @@
         class="list__content list__content--parent custom-scrollbar"
       >
         <LayerTree
-          :list="filterList()"
+          :list="bunchLayerList"
           :dragOptions="{ disabled: false }"
           @updateList="
             (val) => {
@@ -167,11 +167,14 @@
 
         <div
           class="tab"
-          :class="{ 'tab--active': dynamicActiveTab === 'favoriteTab' }"
+          :class="{ 'tab--active': basemapActiveTab === 'favoriteTab' }"
           @click="setBasemapActiveTab('favoriteTab')"
         >
           Favorites
         </div>
+      </div>
+      <div class="list__search">
+        <input type="text" placeholder="Search" v-model="baseSearchInput" />
       </div>
       <ul
         v-if="basemapActiveTab === 'baseTab'"
@@ -222,38 +225,31 @@
 // import Draggable from "vuedraggable";
 import { guid, capitalize } from "@/utils";
 import {
-  toolController,
   menuController,
   mapController,
-  serviceController,
-  userController,
+  bunchController,
   modalController,
   layerController,
 } from "@/controllers";
 import { tokenService, authService } from "@/services";
 import { layerHelper } from "@/helpers";
 import { drawTypeEnum, menuTabEnum, serviceTypeEnum } from "@/enums";
-import permission from "@/directive/permission/index.js";
 import LayerTree from "@/components/LayerTree/Index";
-import checkPermission from "@/utils/permission";
-import role from "@/directive/role/index.js";
 import { deepClone } from "@/utils";
 export default {
   name: "Sidebar",
-  directives: { permission, role },
+
   components: {
     LayerTree,
   },
 
   data() {
     return {
-      searchInput: "",
+      dynamicSearchInput: "",
+      baseSearchInput: "",
 
       serviceTypeEnum: serviceTypeEnum,
-
       activeLayerType: "gray",
-      layerTypesVisible: false,
-      isDragging: false,
       dynamicActiveTab: "dynamicTab",
       basemapActiveTab: "baseTab",
       baseMaps: mapController.getBaseMaps(),
@@ -261,12 +257,6 @@ export default {
   },
   mounted() {},
   computed: {
-    filteredList() {
-      var data = deepClone(this.dynamicLayersList);
-      data = [data[1]];
-      var list = layerHelper.treeFilter(data, this.searchInput);
-      return list;
-    },
     isProfileTabActive() {
       return this.activeMenuTab === menuTabEnum.PROFILE;
     },
@@ -301,7 +291,8 @@ export default {
     },
     bunchLayerList: {
       get() {
-        return this.$store.getters.bunchLayerList;
+        const data = bunchController.getBunchLayerList();
+        return this.filteredList(data, this.dynamicSearchInput);
       },
       set(val) {
         this.$store.dispatch("saveBuncLayerList", val);
@@ -310,7 +301,8 @@ export default {
 
     dynamicLayersList: {
       get() {
-        return layerController.getDynamicLayerList();
+        const data = layerController.getDynamicLayerList();
+        return this.filteredList(data, this.dynamicSearchInput);
       },
       set(val) {
         this.$store.dispatch("saveDynamicLayerList", val);
@@ -318,7 +310,8 @@ export default {
     },
     baselayerList: {
       get() {
-        return layerController.getBaseLayerList();
+        const data = layerController.getBaseLayerList();
+        return this.filteredList(data, this.baseSearchInput);
       },
       set(val) {
         this.$store.dispatch("saveBaseLayerList", val);
@@ -329,7 +322,7 @@ export default {
         var ids = layerController.getFavoriteBaseLayerIds();
         let baselayers = layerController.getBaseLayersWithoutCategory();
         var layers = baselayers.filter((c) => ids.includes(c.id));
-        return layers;
+        return this.filteredList(layers, this.baseSearchInput);
       },
       set(val) {
         this.$store.dispatch("saveBaseLayerList", val);
@@ -342,24 +335,21 @@ export default {
           false
         );
         var layers = dynamicLayers.filter((c) => ids.includes(c.id));
-        return layers;
+        return this.filteredList(layers, this.dynamicSearchInput);
       },
       set(val) {
         this.$store.dispatch("saveDynamicLayerList", val);
       },
     },
-    // favoriteBaseLayerList() {
-    //   var ids = layerController.getFavoriteBaseLayerIds();
-    //   let baselayers = layerController.getBaseLayersWithoutCategory();
-    //   var layers = baselayers.filter((c) => ids.includes(c.id));
-    //   return layers;
-    // },
   },
   methods: {
-    checkPermission,
     guid,
     capitalize,
-
+    filteredList(list, input) {
+      var data = deepClone(list);
+      var list = layerHelper.treeFilter(data, input);
+      return list;
+    },
     logout() {
       authService.logout();
       this.$router.push("/login");
