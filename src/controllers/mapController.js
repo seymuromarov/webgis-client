@@ -1,10 +1,22 @@
 import $store from "@/store/store.js";
-import { tileTypeEnum, layerTypeEnum } from "@/enums";
-import { serviceController, tableController } from "@/controllers";
+import { tileTypeEnum } from "@/enums";
+import {
+  serviceController,
+  tableController,
+  toolController,
+} from "@/controllers";
 import { defaultZoomLevelSettings } from "@/config/settings";
 import { materialColors } from "@/constants/colors";
 import { tokenService } from "@/services";
-import { serviceHelper, layerHelper, tileHelper, colorHelper } from "@/helpers";
+import { operatorEnumTostring } from "@/utils/enumToString";
+
+import {
+  serviceHelper,
+  layerHelper,
+  tileHelper,
+  colorHelper,
+  coreHelper,
+} from "@/helpers";
 import {
   createXYZ,
   VectorTileLayer,
@@ -15,12 +27,17 @@ import {
   TileLayer,
   XYZ,
   TileArcGISRest,
+  Feature,
   Style,
+  Icon,
   Stroke,
   Fill,
+  CircleStyle,
   transform,
+  Polygon,
   TileWMS,
 } from "@/wrappers/openLayerImports";
+import modalController from "./modalController";
 
 const selectedLayerStyle = new Style({
   stroke: new Stroke({
@@ -52,17 +69,7 @@ const baseMaps = {
   }),
 };
 
-const mapLayer = {
-  get() {
-    return $store.getters.mapLayer;
-  },
-  set(val) {
-    $store.dispatch("saveMap", val);
-  },
-};
-
 const functions = {
-  initMap() {},
   addService(service) {
     if (service.extent != null) {
       const { minX, minY, maxX, maxY } = service.extent;
@@ -74,13 +81,13 @@ const functions = {
     var zIndex = serviceController.getZIndex(service);
     layer.setZIndex(zIndex);
 
-    let map = mapLayer.get();
+    let map = getters.getMap();
     map.addLayer(layer);
-    mapLayer.set(map);
+    setters.setMap(map);
   },
-  focusToServicePolygon(pixel) {
-    let activeService = tableController.getTableActiveService();
-    let layer = getters.getLayer(activeService.id);
+
+  focusToServicePolygon(layerId, pixel) {
+    let layer = getters.getLayer(layerId);
 
     layer.getFeatures(pixel).then((features) => {
       //after getfeatures , ol adding chunk canvas sections into html.this is for delete them
@@ -132,23 +139,46 @@ const functions = {
     functions.addService(service);
   },
   removeLayer(layer) {
-    let map = mapLayer.get();
+    let map = getters.getMap();
     map.removeLayer(layer);
-    mapLayer.set(map);
+    setters.setMap(map);
   },
   removeDrawPolygons() {
-    let map = mapLayer.get();
+    let map = getters.getMap();
     map.getLayers().forEach(function(layer) {
       if (layer.get("type") === "draw") {
         functions.removeLayer(layer);
       }
     });
-    mapLayer.set(map);
+    setters.setMap(map);
+  },
+
+  focusToGeometry(coords) {
+    let geometry = [];
+    if (coords.x !== undefined) {
+      geometry = [coords.x, coords.y];
+    } else if (coords.rings !== undefined) {
+      geometry = coords.rings[0];
+    }
+    if (geometry.length > 0) {
+      geometry = geometry.map((item, index) =>
+        transform(item, "EPSG:4326", "EPSG:3857")
+      );
+      var extent = new Polygon([geometry]);
+
+      let map = getters.getMap();
+      map.getView().fit(extent, {
+        padding: [-50, 50, 30, 150],
+        size: [50, 100],
+        maxZoom: 16,
+      });
+      setters.setMap(map);
+    }
   },
   fitView(extent) {
-    var map = mapLayer.get();
+    var map = getters.getMap();
     map.getView().fit(extent);
-    mapLayer.set(map);
+    setters.setMap(map);
   },
   buildLayer(service) {
     const token = tokenService.getToken();
@@ -176,7 +206,48 @@ const functions = {
               }),
               url: tileHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
             }),
-            style: colorHelper.buildVectorStyle(service.color),
+
+            style: (feature) => {
+              var layerColor = service.layerColor;
+              let borderColor = null;
+              let fillColor = null;
+              if (layerColor) {
+                const column = layerColor.column;
+                const currentFeatureColumnVal = feature.get(column);
+                const conditions = layerColor.conditions;
+                for (let i = 0; i < conditions.length; i++) {
+                  const item = conditions[i];
+                  var operator = operatorEnumTostring(item.operator);
+                  const val = coreHelper.parseByTypeString(
+                    layerColor.columnDataType,
+                    item.value
+                  );
+                  const result = coreHelper.checkStringArithmeticOperation(
+                    currentFeatureColumnVal,
+                    val,
+                    operator
+                  );
+                  if (result) {
+                    // const colorObj = {
+                    //   fill: {
+                    //     hex8: item.fillColor,
+                    //   },
+                    //   border: {
+                    //     hex8: item.borderColor,
+                    //   },
+                    // };
+                    borderColor = item.borderColor;
+                    fillColor = item.fillColor;
+                    break;
+                  }
+                }
+              } else {
+                borderColor = service.color.border.hex8;
+                fillColor = service.color.fill.hex8;
+              }
+              // console.log({ service, borderColor, fillColor });
+              return colorHelper.buildVectorStyle(borderColor, fillColor);
+            },
           });
         } else {
           layer = new ImageLayer({
@@ -248,6 +319,7 @@ const functions = {
         }
       }
     } else {
+      //Bunch layer
       layer = new VectorTileLayer({
         ...defaultProps,
         source: new VectorTileSource({
@@ -281,7 +353,82 @@ const functions = {
   },
 };
 
-const events = {};
+const events = {
+  onMapClick(evt) {
+    let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
+
+    setters.setClickedCoordinate(coord);
+    setters.setClickedPixel(evt.pixel);
+    if (toolController.getMarkerStatus()) {
+      let iconFeature = new Feature({
+        crossOrigin: "Anonymous",
+        geometry: new Point(fromLonLat([coord[0], coord[1]])),
+        name: "",
+        id: "232",
+      });
+      iconFeature.setStyle(
+        new Style({
+          image: new Icon({
+            anchor: [0.5, 46],
+            size: [48, 48],
+            anchorXUnits: "fraction",
+            anchorYUnits: "pixels",
+            src:
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAD2ElEQVRogdWaQYgcRRSGv2724HER8eBBFhHJWSWB6ClEood+5pyzJ3P1Ih5EwjKERUQPopJDlICYg4R6IQQMXkxEPETwoBAWWYLIIrIsYQ9xWaY8TPdsbU3XdFV1z5j8UPSb1139/lf16vWr7imstTzOKIDy/ybRB4W1lqIoSmvteKr0fqdARI4BrwMngDVgFRgDO8AfwB3ghqr+1dhw7SXLZMyAtXZcFMWRflVVnQXeA16MvM0t4IKq3k6176LouwZE5BngS+B05i2+As4bY/ZyOh8JIfcIk5GG9ukriqKsquo4oMBTmeQb3APOqOp9107DwZfda7IXcVVVJ4HvgCd6km+wDbyiqlspnbJCSETWgF+YLNAhcQ94KSWcSjicLvfoLlJXFpEV4BuGJw/wAvC5z2GePBM+PvGWjm8BxzuI/A38BGwCe8ABsAtsAQ87+p4TkVdDfPyLV+BwsXblfhEpgXcjyD9dNxerHM7amPlr731r7WsddrDWjo+ETgROA8/OOX/ALPE2dNk7JSJrUSHUFjKhBrzZYXglgnwMSiZP82AINXJprR27ITSvAS8PRDAGJ7r4zISQf/S9BZ5bogPPJ4VQKJV6+ieX6MCqyyckl7HhU1+XVaFmopPPNIR8r0JTBjxYogO7XaMPEAyhgLy5YNIuthq78wa2jJkmJ4R61e6J+CE7C/k6R//1ksjvA9eSQsg9GXJIVe+ynFm4oqo7bXyCIQTRmejCgsmPgVFsWCeFUD0Lt4C7C3TgW2PMZoiPL7dmoa6MBIwWRh9GsXuBoijK7E29iPwOHBuKdY2bxpg3UjoEy2l/V+bqa3Eji+J8jGJHvpFnp8Qj3qavj1eAPwck/2Pzjigm9rNqIbcZY/YZdhbWUzkEa6GQruX8F8A/A5D/1RhzI6djMAt1rv5JSt0HPh7AgZFvN7Yl1UKBB9sn9KtSN4GrufajdmQu/JkwxjxgEkq52FDV6b2Ts1AbsTaiIcdq3YdMCrBUbAOX/XunyNO3CE028uHqQzKwLSKXgLcTHdios1k2knZkbc8IlwyT90Kx2AE+yx35Rk7dkU1l3ylVvQ9cTXDgU1V9GLpfrNw7C3kZaZ24jf8e8NEQNrNrobYRMcb8BlyPcOCSqu72Hf2+tRABeb2D/AGTrJWdeVx5xdqjn20GwM8i8j1wKnD+sjFmsCKwby0UwgcB/T5wMZpdBBb2obuqqovAO45qDJxX1T5P7Rn0/sw6DyJyEjgD/Atcqxf5sKgdKNuObc295lGQp9+JA87NfKP15TkD03nNEGj9r8TjhMFqoa5sNUTOb5P/A8dYOKnlHRBqAAAAAElFTkSuQmCC",
+          }),
+        })
+      );
+      var drawSource = getters.getDrawSource();
+      drawSource.addFeature(iconFeature);
+      setters.setDrawSource(drawSource);
+    } else if (toolController.getRemoveStatus()) {
+      var map = getters.getMap();
+      map.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
+        try {
+          var drawSource = getters.getDrawSource();
+          drawSource.removeFeature(feature);
+          let elem = document.getElementsByClassName(
+            `feature-${feature.get("id")}`
+          );
+          elem[0].remove();
+          setters.setDrawSource(drawSource);
+        } catch (e) {}
+      });
+    } else if (toolController.getColorPickStatus()) {
+      var map = getters.getMap();
+      map.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
+        try {
+          let newStyle = new Style({
+            fill: new Fill({
+              color: self.shapeFillColor.hex8,
+            }),
+            stroke: new Stroke({
+              color: self.shapeBorderColor.hex8,
+              width: 2,
+            }),
+            image: new CircleStyle({
+              radius: 7,
+              fill: new Fill({
+                color: self.shapeFillColor.hex8,
+              }),
+            }),
+          });
+
+          feature.setStyle(newStyle);
+        } catch (e) {}
+      });
+      setters.setMap(map);
+    } //only map click
+    else {
+      modalController.showServiceSelectionModal();
+    }
+    // if (tableController.getTableVisibility()) {
+    //   alert();
+    //   // tableController.getGeometryData(coord);
+    //   // mapController.focusToServicePolygon(evt.pixel);
+    // }
+  },
+};
 
 const setters = {
   setMap(val) {
@@ -300,7 +447,7 @@ const setters = {
     $store.dispatch("saveSketch", val);
   },
   setZIndex(service) {
-    let map = mapLayer.get();
+    let map = getters.getMap();
     map.getLayers().forEach((layer) => {
       if (layer.get("id") != undefined && layer.get("id") === service.id) {
         layer.setZIndex(serviceController.getZIndex(service));
@@ -308,24 +455,30 @@ const setters = {
     });
   },
   setBaseLayout(index) {
-    let map = mapLayer.get();
+    let map = getters.getMap();
     let layers = map.getLayers().getArray();
     layers[0].setSource(baseMaps[index]);
     setters.setMap(map);
   },
   setZoomLevel(zoom) {
-    let map = mapLayer.get();
+    let map = getters.getMap();
     map.getView().setZoom(zoom);
     setters.setMap(map);
   },
   setCenter(center) {
-    let map = mapLayer.get();
+    let map = getters.getMap();
     center = transform(center, "EPSG:4326", "EPSG:3857");
     map.getView().setCenter(center);
     setters.setMap(map);
   },
   setColorsArray(val) {
     $store.dispatch("SAVE_COLOR_PICKER_DYNAMIC_COLORS", val);
+  },
+  setClickedCoordinate(val) {
+    $store.dispatch("saveClickedCoordinate", val);
+  },
+  setClickedPixel(val) {
+    $store.dispatch("saveClickedPixel", val);
   },
 };
 
@@ -364,8 +517,14 @@ const getters = {
   getSketch() {
     return $store.getters.sketch;
   },
+  getClickedCoordinate() {
+    return $store.getters.clickedCoordinate;
+  },
+  getClickedPixel() {
+    return $store.getters.clickedPixel;
+  },
   getLayer(id) {
-    let map = mapLayer.get();
+    let map = getters.getMap();
     let layer = null;
 
     map.getLayers().forEach(function(item) {
@@ -398,4 +557,4 @@ const getters = {
     };
   },
 };
-export default { ...functions, ...getters, ...setters };
+export default { ...functions, ...getters, ...setters, ...events };

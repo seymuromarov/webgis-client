@@ -79,9 +79,6 @@ export default {
       URL + "/api/datatable/GetDatas/" + params.layerId + "/",
       {
         params,
-        paramsSerializer: (params) => {
-          return urlHelper.formatQueryString(params);
-        },
       }
     );
   },
@@ -90,9 +87,9 @@ export default {
       URL + "/api/datatable/Intersect/GetDatas/" + bunchId + "/",
       {
         params,
-        paramsSerializer: (params) => {
-          return urlHelper.formatQueryString(params);
-        },
+        // paramsSerializer: (params) => {
+        //   return urlHelper.formatQueryString(params);
+        // },
       }
     );
   },
@@ -151,5 +148,4 @@ export default {
       params: params,
     });
   },
-
 };

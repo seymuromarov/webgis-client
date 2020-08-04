@@ -57,6 +57,7 @@ const functions = {
         let colorIndex = functions.getLayerColorIndex(service.id);
         let color = colorHelper.getColorByIndex(colorIndex);
         let colorObj = colorHelper.buildColorObject(color);
+
         functions.saveColor(service, colorObj);
 
         mapController.addService(service);
@@ -132,7 +133,7 @@ const functions = {
     functions.dynamicLayersReset(service, isChecked);
     mapController.refreshService(service);
   },
-  saveColor(service, color) {
+  saveColor(service, color, selectedColorOption) {
     var isLayer = serviceHelper.isLayer(service);
     var isSubLayer = serviceHelper.isSublayer(service);
     var isBunch = serviceHelper.isBunch(service);
@@ -140,7 +141,7 @@ const functions = {
     if (isLayer || isSubLayer) {
       var service = isSubLayer ? service.parent : service;
 
-      layerController.setColor(service, color, isSubLayer);
+      layerController.setColor(service, color, isSubLayer, selectedColorOption);
     } else if (isBunch) {
       bunchController.setColor(service.id, color);
     }

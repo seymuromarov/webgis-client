@@ -173,6 +173,7 @@ export default {
       Vue.prototype.$moodal = {};
     }
     this.$moodal[this.name] = this;
+
   },
 };
 </script>

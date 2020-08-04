@@ -18,18 +18,10 @@
               <th scope="col">Extension</th>
               <th scope="col">Size</th>
               <th scope="col">DateCreated</th>
-              <th scope="col"></th>
+              <th v-if="checkPermission(['data_add'])" scope="col"></th>
             </tr>
           </thead>
           <tbody>
-            <!-- "id": 2,
-        "layerId": 236,
-        "gid": 3,
-        "path": "C:\\Users\\KHAYYAM\\Source\\Repos\\webgis-server\\Server\\Uploads\\Images/236/3/download_a11d.jpg",
-        "filename": "download.jpg",
-        "extension": ".jpg",
-        "size": "5973",
-        "dateCreated": "08/07/2020 06:30" -->
             <tr v-for="(item, index) in files" :key="index">
               <th scope="row">{{ item.id }}</th>
               <td v-if="isImage(item.extension)" class="text-center">
@@ -57,6 +49,7 @@
               <td>{{ item.dateCreated }}</td>
               <td>
                 <button
+                  v-if="checkPermission(['data_edit'])"
                   class="btn btn-danger btn-sm"
                   @click="deleteImage(item.id)"
                 >
@@ -68,24 +61,26 @@
         </table>
       </div>
     </div>
-    <div class="row mt-3">
-      <div class="col-md-12">
-        <vue-dropzone
-          ref="dropzone"
-          id="dropzone"
-          v-on:vdropzone-sending="sendingEvent"
-          v-on:vdropzone-success="onSuccess"
-          :options="dropzoneOptions"
-        ></vue-dropzone>
+    <div v-if="checkPermission(['data_add'])">
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <vue-dropzone
+            ref="dropzone"
+            id="dropzone"
+            v-on:vdropzone-sending="sendingEvent"
+            v-on:vdropzone-success="onSuccess"
+            :options="dropzoneOptions"
+          ></vue-dropzone>
+        </div>
       </div>
-    </div>
-    <div class="col-md-12">
-      <button
-        class="btn btn-danger btn-sm float-right mt-3"
-        @click="clearDropzone"
-      >
-        Clear
-      </button>
+      <div class="col-md-12">
+        <button
+          class="btn btn-danger btn-sm float-right mt-3"
+          @click="clearDropzone"
+        >
+          Clear
+        </button>
+      </div>
     </div>
   </CustomModal>
 </template>
@@ -98,18 +93,19 @@ import { LAYER_DATA_IMAGE_URLS } from "@/config/urls";
 import { tokenService } from "@/services";
 import { tableController } from "@/controllers";
 import image from "@/api/layerDataImage";
+import checkPermission from "@/utils/permission";
 export default {
   components: { vueDropzone: vue2Dropzone },
-  // props: {
-  //   layerId: {
-  //     type: Number,
-  //     required: true,
-  //   },
-  //   gid: {
-  //     type: Number,
-  //     required: true,
-  //   },
-  // },
+  props: {
+    layerId: {
+      type: Number,
+      required: true,
+    },
+    gid: {
+      type: Number,
+      required: true,
+    },
+  },
 
   data() {
     return {
@@ -151,15 +147,9 @@ export default {
       },
     };
   },
-  computed: {
-    editDataGid() {
-      return tableController.getEditDataGid();
-    },
-    activeTableService() {
-      return tableController.getTableActiveService();
-    },
-  },
+
   methods: {
+    checkPermission,
     onSuccess(file, response) {
       this.getImages();
     },
@@ -194,10 +184,7 @@ export default {
       }
     },
     async getImages() {
-      var response = await image.getAll(
-        this.activeTableService.id,
-        this.editDataGid
-      );
+      var response = await image.getAll(this.layerId, this.gid);
 
       var data = response.data;
       await Promise.all(
@@ -225,7 +212,7 @@ export default {
       });
     },
     onModalOpen() {
-      this.gid = this.resetData();
+      this.resetData();
       this.getImages();
     },
     onModalClose() {
@@ -237,8 +224,11 @@ export default {
       this.$refs.dropzone.removeAllFiles();
     },
     sendingEvent(file, xhr, formData) {
-      formData.append("layerId", this.activeTableService.id);
-      formData.append("gid", this.editDataGid);
+      // formData.append("layerId", this.activeTableService.id);
+      // formData.append("gid", this.editDataGid);
+      // formData.append("file", file);
+      formData.append("layerId", this.layerId);
+      formData.append("gid", this.gid);
       formData.append("file", file);
     },
   },

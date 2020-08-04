@@ -77,9 +77,7 @@ const getters = {
   bunchLayerList: (state) => {
     return state.bunchLayerList;
   },
-  bunchLayerList: (state) => {
-    return state.bunchLayerList;
-  },
+
   favoriteBaseLayerIds: (state) => {
     return state.favoriteBaseLayerIds;
   },

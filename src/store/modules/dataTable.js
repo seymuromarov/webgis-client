@@ -1,6 +1,7 @@
 import { serviceHelper } from "@/helpers";
 const state = {
   sumData: {},
+  infoData: null,
   data: {},
   paging: {},
   // tabs: [],
@@ -52,24 +53,8 @@ const mutations = {
   SET_SUM_DATA(state, payload) {
     state.sumData = payload;
   },
-};
-
-const getters = {
-  dataTableLoading: (state) => state.loading,
-  isEditData: (state) => state.isEditData,
-  dataTableVisibleStatus: (state) => state.isVisible,
-  tableData: (state) => state.data,
-  tablePaging: (state) => state.paging,
-  sumData: (state) => state.sumData,
-  editDataGid: (state) => state.editDataGid,
-  tableActiveService: (state) => state.activeService,
-  // activeTableData: (state) => {
-  //   const item = state.data.find((x) => x.service.id === state.activeTabId);
-  //   return item ? item.data : {};
-  // },
-  activeTableService: (state) => {
-    const item = state.data.find((x) => x.service.id === state.activeTabId);
-    return item ? item.data : {};
+  SET_INFO_DATA(state, payload) {
+    state.infoData = payload;
   },
 };
 
@@ -122,6 +107,29 @@ const actions = {
   saveSumData(context, payload) {
     context.commit("SET_SUM_DATA", payload);
   },
+  saveInfoData(context, payload) {
+    context.commit("SET_INFO_DATA", payload);
+  },
+};
+
+const getters = {
+  dataTableLoading: (state) => state.loading,
+  isEditData: (state) => state.isEditData,
+  dataTableVisibleStatus: (state) => state.isVisible,
+  tableData: (state) => state.data,
+  tablePaging: (state) => state.paging,
+  sumData: (state) => state.sumData,
+  infoData: (state) => state.infoData,
+  editDataGid: (state) => state.editDataGid,
+  tableActiveService: (state) => state.activeService,
+  // activeTableData: (state) => {
+  //   const item = state.data.find((x) => x.service.id === state.activeTabId);
+  //   return item ? item.data : {};
+  // },
+  // activeTableService: (state) => {
+  //   const item = state.data.find((x) => x.service.id === state.activeTabId);
+  //   return item ? item.data : {};
+  // },
 };
 
 export default { state, mutations, actions, getters };

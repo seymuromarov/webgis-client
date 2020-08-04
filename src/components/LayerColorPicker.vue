@@ -5,24 +5,42 @@
         <a
           class="nav-link"
           href="#"
-          :class="{ active: !isBorder }"
-          @click="borderClick(false)"
-          >Fill Color</a
+          :class="{ active: isBorder }"
+          @click="borderClick(true)"
+          >Border Color</a
         >
       </li>
       <li class="nav-item">
         <a
           class="nav-link"
           href="#"
-          :class="{ active: isBorder }"
-          @click="borderClick(true)"
-          >Border Color</a
+          :class="{ active: !isBorder }"
+          @click="borderClick(false)"
+          >Fill Color</a
         >
       </li>
     </ul>
 
-    <ColorScheme v-if="isBorder" v-model="borderColor"></ColorScheme>
-    <ColorScheme v-else v-model="fillColor"></ColorScheme>
+    <ColorScheme
+      v-if="isBorder"
+      :value="{ hex: borderColor }"
+      @input="
+        (val) => {
+          border = val;
+        }
+      "
+      style="display:inline-block;"
+    ></ColorScheme>
+    <ColorScheme
+      v-else
+      :value="{ hex: fillColor }"
+      @input="
+        (val) => {
+          fill = val;
+        }
+      "
+      style="display:inline-block;"
+    ></ColorScheme>
 
     <div class="colorPickerButton">
       <button class="btn btn-sm btn--cancel" type="button" @click="onClose">
@@ -39,64 +57,25 @@ import { Chrome } from "vue-color";
 
 export default {
   name: "color",
-  props: {},
+  props: {
+    borderColor: {
+      type: String,
+      default: "#2196F3FF",
+    },
+    fillColor: {
+      type: String,
+      default: "#000000FF",
+    },
+  },
   components: {
     ColorScheme: Chrome,
   },
-  mounted() {},
+
   data() {
     return {
-      isBorder: false,
-      borderColor: {
-        hsl: {
-          h: 0,
-          s: 0,
-          l: 0,
-          a: 1,
-        },
-        hex: "#000000",
-        hex8: "#000000FF",
-        rgba: {
-          r: 0,
-          g: 0,
-          b: 0,
-          a: 1,
-        },
-        hsv: {
-          h: 0,
-          s: 0,
-          v: 0,
-          a: 1,
-        },
-        oldHue: 0,
-        source: "hex",
-        a: 1,
-      },
-      fillColor: {
-        hsl: {
-          h: 0,
-          s: 0,
-          l: 0,
-          a: 1,
-        },
-        hex: "#000000",
-        hex8: "#000000FF",
-        rgba: {
-          r: 0,
-          g: 0,
-          b: 0,
-          a: 1,
-        },
-        hsv: {
-          h: 0,
-          s: 0,
-          v: 0,
-          a: 1,
-        },
-        oldHue: 0,
-        source: "hex",
-        a: 1,
-      },
+      isBorder: true,
+      fill: {},
+      border: {},
     };
   },
   methods: {
@@ -104,11 +83,11 @@ export default {
       this.isBorder = status;
     },
     onSave() {
-      let hex8 = "#22222222";
-      hex8 = this.borderColor.hex8;
+      let hex8 = "";
+      hex8 = this.border.hex8;
       const border = { hex8 };
 
-      hex8 = this.fillColor.hex8;
+      hex8 = this.fill.hex8;
       const fill = { hex8 };
       const colorObj = {
         border,

@@ -5,7 +5,7 @@
         <!-- Switch -->
         <ToggleSwitch v-if="!isCategory" class="pre" v-model="switchModel" />
         <i class="far fa-folder pre" v-else></i>
-        {{ item.name }}
+        {{ data.name }}
       </span>
 
       <!-- Caret icons -->
@@ -35,7 +35,7 @@
           v-if="tableIconVisibility"
           src="@/assets/images/icons/list.svg"
           alt=""
-          @click="getTableData(item)"
+          @click="getTableData(data)"
         />
         <img
           v-if="deleteIconVisibility"
@@ -46,40 +46,69 @@
       </span>
     </span>
 
-    <!-- Color Picker -->
-    <LayerColorPicker
-      v-if="colorPickerVisibility"
-      @onSave="onColorPickerSave"
-      @onClose="colorPickerOnClose"
-    />
+    <div v-if="colorPickerVisibility" class="mt-2 item__colorpicker__content">
+      <v-select
+        v-if="conditionSelectVisibility"
+        class="condition__select"
+        v-model="selectedColorOpt"
+        :clearable="false"
+        :options="conditions"
+      ></v-select>
 
-    <ul v-if="item.layers && subListVisibility" class="list__content">
+      <!-- Color Picker -->
+      <LayerColorPicker
+        :borderColor="currentConditionColor.border"
+        :fillColor="currentConditionColor.fill"
+        @onSave="onColorPickerSave"
+        @onClose="colorPickerOnClose"
+      />
+    </div>
+
+    <ul v-if="data.layers && subListVisibility" class="list__content">
       <Draggable
-        v-model="item.children"
+        v-model="children"
+        v-bind="dragOptions"
         @start="isDragging = true"
         @end="onDraggableMoveCallback"
       >
         <layer-tree-item
-          v-for="(children, index) in item.children"
-          :key="children.name + index"
-          :item="children"
-          :parent="item"
+          v-for="(child, index) in children"
+          :key="child.name + index"
+          :item="child"
+          @updateList="
+            (val) => {
+              var d = data;
+              d.children[index] = val;
+              $emit('updateList', d);
+            }
+          "
+          :parent="data"
           :layerType="layerType"
           :loop="loop + 1"
+          :dragOptions="dragOptions"
         />
       </Draggable>
       <Draggable
-        v-model="item.layers"
+        v-model="layers"
+        v-bind="dragOptions"
         @start="isDragging = true"
         @end="onDraggableMoveCallback"
       >
         <layer-tree-item
-          v-for="(layer, index) in item.layers"
+          v-for="(layer, index) in layers"
           :key="layer.name + index"
           :item="layer"
-          :parent="item"
+          @updateList="
+            (val) => {
+              var d = data;
+              d.layers[index] = val;
+              $emit('updateList', d);
+            }
+          "
+          :parent="data"
           :layerType="layerType"
           :loop="loop + 1"
+          :dragOptions="dragOptions"
         />
       </Draggable>
     </ul>
@@ -93,6 +122,7 @@ import LayerColorPicker from "@/components/LayerColorPicker";
 import Draggable from "vuedraggable";
 import { layerHelper, serviceHelper } from "@/helpers";
 import { guid } from "@/utils";
+import { operatorEnumTostring } from "@/utils/enumToString";
 
 import {
   bunchController,
@@ -126,22 +156,100 @@ export default {
       required: true,
       default: "",
     },
+    dragOptions: {
+      type: Object,
+      default: function() {
+        return {
+          disabled: false,
+        };
+      },
+    },
   },
   data() {
     return {
       subListVisibility: false,
       layerIsSelected: false,
       isDragging: false,
+      selectedColorOpt: {
+        code: "default",
+        label: "Default",
+      },
     };
   },
+
   mounted() {},
+
   computed: {
+    data: {
+      get() {
+        return this.item;
+      },
+      set(val) {
+        this.$emit("updateList", val);
+      },
+    },
+    children: {
+      get() {
+        return this.data.children;
+      },
+      set(val) {
+        var data = this.data;
+        data.children = val;
+        this.data = data;
+      },
+    },
+
+    layers: {
+      get() {
+        return this.data.layers;
+      },
+      set(val) {
+        var data = this.data;
+        data.layers = val;
+        this.data = data;
+      },
+    },
+    currentConditionColor() {
+      let border = "";
+      let fill = "";
+      if (this.selectedColorOpt.code === "default") {
+        border = this.data.color.border.hex8;
+        fill = this.data.color.fill.hex8;
+      } else {
+        var condition = this.data.layerColor.conditions.find(
+          (c) => c.id === parseInt(this.selectedColorOpt.code)
+        );
+        border = condition.borderColor;
+        fill = condition.fillColor;
+      }
+
+      return { border, fill };
+    },
+    conditions() {
+      const defaultOpt = {
+        code: "default",
+        label: "Default",
+      };
+      let options = [defaultOpt];
+      if (this.data.layerColor) {
+        const layerColor = this.data.layerColor;
+        var conditionOptions = layerColor.conditions.map((c) => {
+          var code = c.id;
+          var label = `${layerColor.column} ${operatorEnumTostring(
+            c.operator
+          )} ${c.value}`;
+          return { code, label };
+        });
+        options = [defaultOpt, ...conditionOptions];
+      }
+      return options;
+    },
     switchModel: {
       get() {
-        if (serviceHelper.isLayer(this.item)) {
-          return this.item.isSelected;
+        if (serviceHelper.isLayer(this.data)) {
+          return this.data.isSelected;
         } else {
-          return this.item.defaultVisibility;
+          return this.data.defaultVisibility;
         }
       },
       set(e) {
@@ -156,38 +264,41 @@ export default {
       return this.loop * 16 + "px";
     },
     isCategory() {
-      return serviceHelper.isCategory(this.item);
+      return serviceHelper.isCategory(this.data);
     },
 
     caretIconsVisibility() {
       return (
         this.isCategory ||
-        (serviceHelper.isLayer(this.item) &&
-          serviceHelper.isDynamicFromArcgis(this.item) &&
-          this.item.isSelected)
+        (serviceHelper.isLayer(this.data) &&
+          serviceHelper.isDynamicFromArcgis(this.data) &&
+          this.data.isSelected)
       );
     },
     tableIconVisibility() {
       return (
-        this.item.isSelected &&
-        (serviceHelper.isSublayer(this.item) ||
-          serviceHelper.isBunch(this.item) ||
-          (serviceHelper.isLayer(this.item) &&
-            serviceHelper.isDynamicFromLocal(this.item)))
+        this.data.isSelected &&
+        (serviceHelper.isSublayer(this.data) ||
+          serviceHelper.isBunch(this.data) ||
+          (serviceHelper.isLayer(this.data) &&
+            serviceHelper.isDynamicFromLocal(this.data)))
       );
+    },
+    conditionSelectVisibility() {
+      return this.data.layerColor && this.data.layerColor.conditions.length > 0;
     },
     colorIconVisibility() {
       return (
-        this.item.isSelected &&
-        this.item.isColorEnabled &&
-        (serviceHelper.isSublayer(this.item) ||
-          serviceHelper.isBunch(this.item) ||
-          (serviceHelper.isLayer(this.item) &&
-            serviceHelper.isDynamicFromLocal(this.item)))
+        this.data.isSelected &&
+        this.data.isColorEnabled &&
+        (serviceHelper.isSublayer(this.data) ||
+          serviceHelper.isBunch(this.data) ||
+          (serviceHelper.isLayer(this.data) &&
+            serviceHelper.isDynamicFromLocal(this.data)))
       ); // && this.color;
     },
     deleteIconVisibility() {
-      return this.item.isColorEnabled && serviceHelper.isBunch(this.item); // && this.color;
+      return this.data.isColorEnabled && serviceHelper.isBunch(this.data); // && this.color;
     },
     operationsVisibility() {
       return (
@@ -198,7 +309,7 @@ export default {
     },
     colorPickerVisibility() {
       return (
-        this.item.isSelected && this.activeColorPickerId === this.getLayerId()
+        this.data.isSelected && this.activeColorPickerId === this.getLayerId()
       );
     },
     activeColorPickerId: {
@@ -211,18 +322,26 @@ export default {
     },
   },
   methods: {
+
+    updateList(val) {
+      this.$emit("updateList", val);
+    },
     onDraggableMoveCallback() {
       serviceController.onDraggableMoveCallback(this.layerType);
     },
     toggleSubList() {
       this.subListVisibility = !this.subListVisibility;
       if (this.subListVisibility)
-        serviceController.dynamicLayersReset(this.item, this.subListVisibility);
-      // this.dynamicLayersReset(this.item, this.subListVisibility);
+        serviceController.dynamicLayersReset(this.data, this.subListVisibility);
+      // this.dynamicLayersReset(this.data, this.subListVisibility);
     },
     onColorPickerSave(color) {
-      serviceController.saveColor(this.item, color);
-      mapController.refreshService(this.item);
+      new Promise((resolve, reject) => {
+        serviceController.saveColor(this.data, color, this.selectedColorOpt);
+        resolve();
+      }).then(() => {
+        mapController.refreshService(this.data);
+      });
     },
     colorPickerOnClose() {
       this.activeColorPickerId = null;
@@ -230,33 +349,33 @@ export default {
     layerPicker(event) {
       let isChecked = event.target.checked;
 
-      if (serviceHelper.isSublayer(this.item)) {
+      if (serviceHelper.isSublayer(this.data)) {
         serviceController.selectSubLayer(
           this.parent,
           this.parent.order,
-          this.item.id,
+          this.data.id,
           isChecked
         );
       } else {
-        serviceController.selectService(this.item, isChecked);
+        serviceController.selectService(this.data, isChecked);
 
-        serviceController.dynamicLayersReset(this.item, isChecked);
+        serviceController.dynamicLayersReset(this.data, isChecked);
       }
     },
 
-    async getTableData(item) {
-      var service = serviceHelper.isSublayer(item) ? item.parent : item;
+    async getTableData(data) {
+      var service = serviceHelper.isSublayer(data) ? data.parent : data;
       await tableController.getTable(service);
     },
     getLayerId() {
       var id = 0;
-      if (serviceHelper.isSublayer(this.item)) {
-        id = this.item.uid;
+      if (serviceHelper.isSublayer(this.data)) {
+        id = this.data.uid;
       } else if (
-        serviceHelper.isLayer(this.item) &&
-        serviceHelper.isDynamicFromLocal(this.item)
+        serviceHelper.isLayer(this.data) &&
+        serviceHelper.isDynamicFromLocal(this.data)
       ) {
-        id = this.item.id;
+        id = this.data.id;
       }
       return id;
     },
@@ -268,11 +387,37 @@ export default {
       }
     },
     deleteBunch() {
-      bunch.remove(this.item.id).then((response) => {
-        bunchController.remove(this.item.id);
-        mapController.deleteService(this.item);
+      bunch.remove(this.data.id).then((response) => {
+        bunchController.remove(this.data.id);
+        mapController.deleteService(this.data);
       });
     },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+::v-deep .condition__select {
+  border-radius: 0px;
+  background-color: var(--primary-color);
+  width: 90%;
+  color: white;
+  .vs__selected {
+    color: white;
+  }
+  .vs__search::placeholder,
+  .vs__dropdown-toggle,
+  .vs__dropdown-menu {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  .vs__selected,
+  .vs__dropdown-option {
+    color: white;
+  }
+  .vs__clear,
+  .vs__open-indicator {
+    fill: var(--primary-color-lighten-200);
+  }
+}
+</style>

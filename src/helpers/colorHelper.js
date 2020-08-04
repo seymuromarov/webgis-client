@@ -49,26 +49,29 @@ const functions = {
       ',"width":1.0,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}},"minScale":0,"maxScale":0}';
     return layerDyn;
   },
-  buildVectorStyle(color) {
-    if (color === null) {
-      color = getters.getDefaultColorObject();
+  buildVectorStyle(borderColor, fillColor) {
+    if (_.isNull(borderColor) || _.isUndefined(borderColor)) {
+      borderColor = getters.getDefaultColorObject().border;
+    }
+    if (_.isNull(fillColor) || _.isUndefined(fillColor)) {
+      fillColor = getters.getDefaultColorObject().fill;
     }
 
     var style = new Style({
       fill: new Fill({
-        color: color.fill.hex8,
+        color: fillColor,
       }),
       stroke: new Stroke({
-        color: color.border.hex8,
+        color: borderColor,
         width: 0.5,
       }),
       image: new CircleStyle({
         radius: 7,
         fill: new Fill({
-          color: color.fill.hex8,
+          color: fillColor,
         }),
         stroke: new Stroke({
-          color: color.border.hex8,
+          color: borderColor,
           width: 0.5,
         }),
       }),
@@ -76,6 +79,11 @@ const functions = {
     return style;
   },
   buildColorObject(borderHex8, fillHex8) {
+    console.log(
+      "buildColorObject -> borderHex8, fillHex8",
+      borderHex8,
+      fillHex8
+    );
     let border = { hex8: borderHex8 };
     let fill = {};
     let isUndefined = _.isUndefined(fillHex8);

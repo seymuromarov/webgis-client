@@ -74,7 +74,7 @@
             <!-- Textarea -->
             <div class="filter__query">
               <label class="title">SELECT * FROM table WHERE:</label>
-
+              {{ activeTabQuery }}
               <textarea
                 ref="filterQueryTextarea"
                 name="filterQuery"
@@ -183,20 +183,30 @@
             <label>Sum Report Options</label>
 
             <div>
-              <input type="checkbox" id="isSum" v-model="isSumFilter" />
+              <div class="row">
+                <div class="col-md-6">
+                  <input type="checkbox" id="isSum" v-model="isSumFilter" />
 
-              <label class="ml-1">Is Sum</label>
+                  <label class="ml-1">Is Sum</label>
+                </div>
+                <div class="col-md-6">
+                  <select
+                    class="form-control form-control-sm"
+                    v-model="sumFilterColumn"
+                    v-if="isSumFilter"
+                  >
+                    <option
+                      v-for="alias in tableHeaders"
+                      :value="alias"
+                      :key="alias"
+                    >
+                      {{ alias }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
               <!-- Sum -->
-
-              <select class="ml-4" v-model="sumFilterColumn" v-if="isSumFilter">
-                <option
-                  v-for="alias in tableHeaders"
-                  :value="alias"
-                  :key="alias"
-                >
-                  {{ alias }}
-                </option>
-              </select>
             </div>
           </div>
         </div>
@@ -418,7 +428,7 @@ export default {
     },
 
     activeService() {
-      return this.$store.getters.tableActiveService;
+      return tableController.getTableActiveService();
     },
 
     activeTabService() {
@@ -451,7 +461,7 @@ export default {
       },
       set(query) {
         if (query) {
-          let activeService = this.$store.getters.tableActiveService;
+          let activeService = this.activeService;
           let isBunch = serviceHelper.isBunch(activeService);
           if (isBunch) {
             serviceController.setQuery(activeService, query, this.activeTabId);

@@ -11,6 +11,14 @@
       :item="item"
       :layerType="layerType"
       :loop="1"
+      @updateList="
+        (val) => {
+          var d = data;
+          d[index] = val;
+          $emit('updateList', d);
+        }
+      "
+      :dragOptions="dragOptions"
     />
   </Draggable>
 </template>

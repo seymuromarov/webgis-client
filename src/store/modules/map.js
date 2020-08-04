@@ -6,6 +6,8 @@ const state = {
   draw: null,
   drawSource: null,
   sketch: null,
+  clickedCoordinate: [],
+  clickedPixel: [],
 };
 
 const mutations = {
@@ -29,6 +31,12 @@ const mutations = {
   },
   SET_SKETCH(state, payload) {
     state.sketch = payload;
+  },
+  SET_CLICKED_COORDINATE(state, payload) {
+    state.clickedCoordinate = payload;
+  },
+  SET_CLICKED_PIXEL(state, payload) {
+    state.clickedPixel = payload;
   },
 };
 
@@ -54,6 +62,12 @@ const actions = {
   saveSketch(context, payload) {
     context.commit("SET_SKETCH", payload);
   },
+  saveClickedCoordinate(context, payload) {
+    context.commit("SET_CLICKED_COORDINATE", payload);
+  },
+  saveClickedPixel(context, payload) {
+    context.commit("SET_CLICKED_PIXEL", payload);
+  },
 };
 
 const getters = {
@@ -77,6 +91,12 @@ const getters = {
   },
   sketch: (state) => {
     return state.sketch;
+  },
+  clickedCoordinate: (state) => {
+    return state.clickedCoordinate;
+  },
+  clickedPixel: (state) => {
+    return state.clickedPixel;
   },
 };
 

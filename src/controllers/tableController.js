@@ -4,6 +4,7 @@ import { tokenService } from "@/services";
 import layer from "@/api/layer";
 import {
   mapController,
+  layerController,
   modalController,
   filterController,
 } from "@/controllers";
@@ -58,12 +59,12 @@ const functions = {
   },
 
   getTable: async (service) => {
+    service = layerController.getDynamicLayer(service.id);
     setters.setTableVisible();
     setters.setTableLoading(true);
 
     let response = await functions.getTableResponse(service);
     let isSumFilter = getters.getIsSumFilter();
-    // let activeService = getters.getTableActiveService();
 
     let isLayer = serviceHelper.isLayer(service);
     let isLocalService = serviceHelper.isLocalService(service);
@@ -147,6 +148,37 @@ const functions = {
 
     return response;
   },
+  async getGeometryData(layerId, coords) {
+    let response = null;
+    let geometry = null;
+    let service = layerController.getDynamicLayer(layerId);
+    if (serviceHelper.isLayer(service)) {
+      if (serviceHelper.isDynamicFromArcgis(service)) {
+        geometry = coords[0] + "," + coords[1];
+        var params = {
+          token: tokenService.getToken(),
+          name: service.name,
+          layer: service.name,
+          where: service.query.where,
+          geometry: geometry,
+        };
+        response = await layer.getGeometryData(params);
+      } else {
+        var params = {
+          layerId: service.id,
+          where: service.query.where,
+          geometry: coords[0] + "," + coords[1],
+        };
+        response = await layer.getLocalTableData(params);
+      }
+      return response;
+      // if (response.data.totalCount > 0) {
+      //   let features = response.data.features[0];
+      //   this.$refs.dataTable.showDataModal(features.attributes);
+      //   this.mapSetCenter(features);
+      // }
+    }
+  },
 };
 
 const getters = {
@@ -189,6 +221,9 @@ const getters = {
   getEditDataGid() {
     return $store.getters.editDataGid;
   },
+  getInfoData() {
+    return $store.getters.infoData;
+  },
 };
 
 const setters = {
@@ -229,6 +264,9 @@ const setters = {
   },
   setTablePaging(val) {
     $store.dispatch("saveDataTablePaging", val);
+  },
+  setInfoData(val) {
+    $store.dispatch("saveInfoData", val);
   },
 };
 export default { ...functions, ...getters, ...setters };

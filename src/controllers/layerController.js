@@ -11,27 +11,18 @@ const baseLayerList = {
   },
 };
 
-const dynamicLayerList = {
-  get() {
-    return $store.getters.dynamicLayerList;
-  },
-  set(data) {
-    $store.dispatch("saveDynamicLayerList", data);
-  },
-};
-
 const getters = {
   getBaseLayerList() {
-    let data = baseLayerList.get();
+    let data = $store.getters.baseLayerList;
     return deepClone(data);
   },
 
   getDynamicLayerList() {
-    let data = dynamicLayerList.get();
+    let data = $store.getters.dynamicLayerList;
     return deepClone(data);
   },
   getDynamicLayerAsTreeSelect() {
-    var arr = deepClone(getters.getDynamicLayerList());
+    var arr = getters.getDynamicLayerList();
 
     var options = layerHelper.recursiveTreeMapping(arr, (item) => {
       if (serviceHelper.isCategory(item)) {
@@ -49,22 +40,22 @@ const getters = {
   getBasemapLayerAsTreeSelect() {
     var arr = getters.getBaseLayerList();
     var options = layerHelper.recursiveTreeMapping(arr);
-    return deepClone(options);
+    return options;
   },
   getLayer(layerId) {
     var layer = getters.getDynamicLayer(layerId);
     if (!layer) layer = getters.getBaseLayer(layerId);
-    return deepClone(layer);
+    return layer;
   },
   getDynamicLayer(layerId) {
     let layers = getters.getDynamicLayersWithoutCategory();
     let layer = layers.find((c) => c.id === layerId);
-    return deepClone(layer);
+    return layer;
   },
   getBaseLayer(layerId) {
     let layers = getters.getBaseLayersWithoutCategory();
     let layer = layers.find((c) => c.id === layerId);
-    return deepClone(layer);
+    return layer;
   },
   getLayersWithoutCategory() {
     return [
@@ -75,45 +66,58 @@ const getters = {
 
   getBaseLayersWithoutCategory() {
     let list = [];
-    layerHelper.recursiveLayerMapping(baseLayerList.get(), (layer) => {
+    layerHelper.recursiveLayerMapping(getters.getBaseLayerList(), (layer) => {
       list.push(layer);
     });
-    return deepClone(list);
+    return list;
   },
   getDynamicLayersWithoutCategory(isLocalOnly) {
     let list = [];
 
-    layerHelper.recursiveLayerMapping(dynamicLayerList.get(), (layer) => {
-      var isLocal = isLocalOnly
-        ? serviceHelper.isDynamicFromLocal(layer)
-        : true;
-      if (isLocal) list.push(layer);
-    });
-    return deepClone(list);
+    layerHelper.recursiveLayerMapping(
+      getters.getDynamicLayerList(),
+      (layer) => {
+        var isLocal = isLocalOnly
+          ? serviceHelper.isDynamicFromLocal(layer)
+          : true;
+        if (isLocal) list.push(layer);
+      }
+    );
+    return list;
   },
   getSelectedBasemaps() {
-    let list = [];
-    layerHelper.recursiveLayerMapping(baseLayerList.get(), (layer) => {
-      if (layer.isSelected) list.push(layer);
-    });
-    return deepClone(list);
+    let list = getters
+      .getBaseLayersWithoutCategory()
+      .filter((c) => c.isSelected);
+    // layerHelper.recursiveLayerMapping(getters.getBaseLayerList(), (layer) => {
+    //   if (layer.isSelected) list.push(layer);
+    // });
+    return list;
   },
   getSelectedDyanmics() {
-    let list = [];
-    layerHelper.recursiveLayerMapping(dynamicLayerList.get(), (layer) => {
-      if (layer.isSelected) list.push(layer);
-    });
-    return deepClone(list);
+    let list = getters
+      .getDynamicLayersWithoutCategory()
+      .filter((c) => c.isSelected);
+    // layerHelper.recursiveLayerMapping(
+    //   getters.getDynamicLayerList(),
+    //   (layer) => {
+    //     if (layer.isSelected) list.push(layer);
+    //   }
+    // );
+    return list;
   },
   getSelectedLayers() {
-    var selectedLayers = [];
-    var layers = [...dynamicLayerList.get(), ...baseLayerList.get()];
-    layerHelper.recursiveLayerMapping(layers, (layer) => {
-      if (layer.isSelected) {
-        selectedLayers.push(layer);
-      }
-    });
-    return deepClone(selectedLayers);
+    // var selectedLayers = [];
+    var list = [
+      ...getters.getSelectedDyanmics(),
+      ...getters.getSelectedBasemaps(),
+    ];
+    // layerHelper.recursiveLayerMapping(layers, (layer) => {
+    //   if (layer.isSelected) {
+    //     selectedLayers.push(layer);
+    //   }
+    // });
+    return list;
   },
 
   getExtentCoordinates(layerId) {
@@ -142,7 +146,7 @@ const setters = {
     var list = [];
 
     if (serviceHelper.isDynamic(service)) {
-      list = dynamicLayerList.get();
+      list = getters.getDynamicLayerList();
       list = layerHelper.recursiveLayerMapping(list, async (item) => {
         if (item != null && item.id == service.id) {
           item.isSelected = isChecked;
@@ -154,21 +158,24 @@ const setters = {
         }
       });
 
-      dynamicLayerList.set(list);
+      setters.setDynamicLayerList(list);
     } else if (serviceHelper.isBasemap(service)) {
-      list = baseLayerList.get();
-      list = layerHelper.recursiveLayerMapping(list, async (item) => {
-        if (item != null && item.id == service.id) {
-          item.isSelected = isChecked;
+      list = layerHelper.recursiveLayerMapping(
+        getters.getBaseLayerList(),
+        async (item) => {
+          if (item != null && item.id == service.id) {
+            item.isSelected = isChecked;
+          }
         }
-      });
-      baseLayerList.set(list);
+      );
+      setters.setBaseLayerList(list);
     }
   },
 
-  setColor(service, color, isSubLayer) {
+  setColor(service, color, isSubLayer, selectedColorOption) {
+    console.log("setColor -> service", service);
     var list = layerHelper.recursiveLayerMapping(
-      dynamicLayerList.get(),
+      getters.getDynamicLayerList(),
       async (layer) => {
         if (layer != null && layer.id == service.id) {
           if (isSubLayer) {
@@ -179,34 +186,44 @@ const setters = {
               return item;
             });
           } else {
-            layer.color = color;
+            if (selectedColorOption && selectedColorOption.code !== "default") {
+              let conditionColor = layer.layerColor.conditions.find(
+                (c) => c.id == parseInt(selectedColorOption.code)
+              );
+              if (conditionColor) {
+                conditionColor.fillColor = color.fill.hex8;
+                conditionColor.borderColor = color.border.hex8;
+              }
+            } else {
+              layer.color = color;
+            }
           }
         }
       }
     );
-    dynamicLayerList.set(list);
+    setters.setDynamicLayerList(list);
   },
   setQuery(service, query) {
     var list = layerHelper.recursiveLayerMapping(
-      dynamicLayerList.get(),
+      getters.getDynamicLayerList(),
       async (layer) => {
         if (layer != null && layer.id == service.id) {
-          service.query.where = query;
+          layer.query.where = query;
         }
       }
     );
-    dynamicLayerList.set(list);
+    setters.setDynamicLayerList(list);
   },
   setExtentCoordinates(service, coordinates) {
     var list = layerHelper.recursiveLayerMapping(
-      dynamicLayerList.get(),
+      getters.getDynamicLayerList(),
       async (layer) => {
         if (layer != null && layer.id == service.id) {
-          service.query.extentCoordinates = coordinates;
+          layer.query.extentCoordinates = coordinates;
         }
       }
     );
-    dynamicLayerList.set(list);
+    setters.setDynamicLayerList(list);
   },
 
   setBaseLayerList(data) {

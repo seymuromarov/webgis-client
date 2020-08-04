@@ -29,10 +29,10 @@
 
           <div class="table__operations">
             <i
-              v-if="isActiveServiceIsLocal && checkPermission(['data_add'])"
+              v-if="isActiveServiceLocal && checkPermission(['data_add'])"
               title="Add Data"
               class="fas fa-plus tableFilter makeMePoint icon"
-              @click="showDataAddEditModal(false)"
+              @click="addData"
             />
 
             <download-excel
@@ -41,8 +41,6 @@
               type="xls"
               :name="'test' + '_report.xls'"
             >
-              <!-- :fields="checkedColumnsToExcel()" -->
-
               <i
                 title="Export As Excel"
                 class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
@@ -112,11 +110,11 @@
                   {{ alias }}
                 </th>
                 <th
-                  v-if="
-                    isActiveServiceIsLocal && checkPermission(['data_edit'])
-                  "
+                  v-if="isActiveServiceLocal"
                   class="table__column--sticky"
-                  style=" width: 80px;"
+                  :style="{
+                    width: checkPermission(['data_edit']) ? '80px' : '40px',
+                  }"
                 >
                   #
                 </th>
@@ -126,7 +124,7 @@
               <tr v-for="(data, index) in tableData.features" :key="index">
                 <td
                   class="makeMePoint"
-                  @click="fitToPolygon(data)"
+                  @click="focusToGeometry(data)"
                   v-show="
                     checkedColumns.includes(
                       Object.keys(data.attributes).indexOf(key)
@@ -138,13 +136,14 @@
                   {{ attr }}
                 </td>
                 <td
-                  v-if="
-                    isActiveServiceIsLocal && checkPermission(['data_edit'])
-                  "
+                  v-if="isActiveServiceLocal"
                   class="table__column--sticky"
-                  style=" width: 80px;"
+                  :style="{
+                    width: checkPermission(['data_edit']) ? '80px' : '40px',
+                  }"
                 >
                   <i
+                    v-if="checkPermission(['data_edit'])"
                     title="Edit Data"
                     class="far fa-edit 
                   makeMePoint mr-2"
@@ -163,26 +162,16 @@
         </div>
       </div>
     </Resizable>
-
-    <CustomModal name="dataModal" :minWidth="200" :minHeight="200">
-      <p class="tableModalHeader">{{ tableName }}</p>
-      <div class="row" style="overflow: auto">
-        <table class="table popupTable">
-          <thead>
-            <tr class="fields">
-              <th class="paddingLeft">Field</th>
-              <th class="paddingRight">Value</th>
-            </tr>
-          </thead>
-          <tbody class="popupTableBody">
-            <tr v-for="(value, key) in selectedData" :key="key">
-              <td class="paddingLeft">{{ key }}</td>
-              <td class="paddingRight">{{ value }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </CustomModal>
+    <ImageUploadModal
+      v-if="activeService && selectedGid && isActiveServiceLocal"
+      :gid="selectedGid"
+      :layerId="activeService.id"
+    />
+    <DataAddEditModal
+      v-if="activeService && isActiveServiceLocal"
+      :gid="selectedGid"
+      :layerId="activeService.id"
+    />
   </div>
 </template>
 
@@ -191,26 +180,31 @@ import { toggler } from "../helpers";
 import Multiselect from "vue-multiselect";
 import layer from "@/api/layer";
 import Resizable from "vue-resizable";
+import ImageUploadModal from "@/components/modals/ImageUploadModal";
+import DataAddEditModal from "@/components/modals/DataAddEditModal";
 import {
   tableController,
   toolController,
   modalController,
+  mapController,
 } from "@/controllers";
 import { serviceHelper } from "@/helpers";
 import checkPermission from "@/utils/permission";
-
+import { _ } from "vue-underscore";
 export default {
   name: "DataTable",
   components: {
     Multiselect,
     Resizable,
+    ImageUploadModal,
+    DataAddEditModal,
   },
   data() {
     return {
       currentTabId: null,
       toggler: null,
       isColumnPopupShowing: false,
-      selectedData: [],
+      selectedGid: 0,
       resize: {
         handlers: ["t"],
         left: 0,
@@ -253,9 +247,7 @@ export default {
         this.$refs.dataTableContent.scrollTo(0, 0);
       }
     },
-    isActiveServiceIsLocal() {
-      return serviceHelper.isLocalService(this.activeService);
-    },
+
     isEndOfData() {
       return this.paging.page * this.paging.limit > this.totalCount;
     },
@@ -338,32 +330,36 @@ export default {
     showFilterModal() {
       modalController.showFilterModal();
     },
+    addData() {
+      new Promise((resolve, reject) => {
+        this.selectedGid = 0;
+
+        resolve();
+      }).then((c) => {
+        modalController.showDataAddEditModal();
+      });
+    },
     editData(gid) {
-      this.editDataGid = gid;
-      this.showDataAddEditModal(true);
+      new Promise((resolve, reject) => {
+        this.selectedGid = gid;
+        resolve();
+      }).then((c) => {
+        modalController.showDataAddEditModal();
+      });
     },
     uploadImage(gid) {
-      this.editDataGid = gid;
-      modalController.showImageUploadModal();
+      new Promise((resolve, reject) => {
+        this.selectedGid = gid;
+        resolve();
+      }).then((c) => {
+        modalController.showImageUploadModal();
+      });
     },
-    showDataAddEditModal(isEdit) {
-      this.isEditData = isEdit;
-      modalController.showDataAddEditModal();
+
+    focusToGeometry(data) {
+      mapController.focusToGeometry(data.geometry);
     },
-    showSimpleFilterModal() {
-      this.$moodal.dataModal.show();
-    },
-    fitToPolygon(data) {
-      this.selectedData = data;
-      this.$emit("mapSetCenter", data);
-    },
-    showDataModal(data) {
-      this.selectedData = data;
-      this.$moodal.dataModal.show();
-    },
-    showColumnsChange() {
-      this.toggler.showColumnsChange();
-    },
+
     async fetchFullData() {
       let activeService = this.activeService;
       let isBunch = serviceHelper.isBunch(activeService);
@@ -440,11 +436,11 @@ export default {
 
       this.$forceUpdate();
     },
-    // setActiveTab(tab) {
-    //   this.activeTabId = tab;
-    // },
   },
   computed: {
+    isActiveServiceLocal() {
+      return serviceHelper.isLocalService(this.activeService);
+    },
     isVisible() {
       return tableController.getTableVisibility();
     },
@@ -481,9 +477,6 @@ export default {
       return this.tableData.tableHeadersWithAlias;
     },
 
-    target() {
-      return this.activeTableData.target;
-    },
     checkedColumnsData: {
       get() {
         return this.tableData.checkedColumnsData;
@@ -511,15 +504,7 @@ export default {
         tableController.setTableData(val);
       },
     },
-    isEditData: {
-      get() {
-        let data = tableController.getIsEditData();
-        return data;
-      },
-      set(val) {
-        tableController.setIsEditData(val);
-      },
-    },
+
     editDataGid: {
       get() {
         let data = tableController.getEditDataGid();

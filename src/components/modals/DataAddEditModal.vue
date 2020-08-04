@@ -317,14 +317,24 @@ import {
   tableController,
   toolController,
   modalController,
+  layerController,
 } from "@/controllers";
 import { icons } from "@/constants/assets";
 import { drawTypeEnum } from "@/enums";
 import datatable from "@/api/datatable";
 import DynamicFormInput from "@/components/renders/DynamicFormInput";
 export default {
-  components: {DynamicFormInput },
-  props: {},
+  components: { DynamicFormInput },
+  props: {
+    layerId: {
+      type: Number,
+      required: true,
+    },
+    gid: {
+      type: Number,
+      required: false,
+    },
+  },
 
   data() {
     return {
@@ -358,11 +368,9 @@ export default {
       return toolController.getBbox();
     },
     isEdit() {
-      return tableController.getIsEditData();
+      return this.gid && this.gid !== 0;
     },
-    editDataGid() {
-      return tableController.getEditDataGid();
-    },
+
     activeTableService() {
       return tableController.getTableActiveService();
     },
@@ -422,9 +430,10 @@ export default {
 
     drawTypeOnChange(e) {
       let value = e.target.value;
+      var service = layerController.getDynamicLayer(this.layerId);
       var serviceInfo = {
-        id: this.activeTableService.id,
-        type: this.activeTableService.type,
+        id: service.id,
+        type: service.type,
       };
       toolController.deleteActiveServiceFeatures();
       if (this.geometryBtnSelect === value) {
@@ -465,30 +474,26 @@ export default {
     async onSubmit() {
       let params = {
         columns: this.columnData,
-        layerId: this.activeTableService.id,
+        layerId: this.layerId,
         geometryType: this.geometryType,
         geometry: this.geometry ? JSON.stringify(this.geometry) : null,
       };
       const isEdit = this.isEdit;
-      if (isEdit) params.gid = this.editDataGid;
+      if (isEdit) params.gid = this.gid;
       datatable.addOrEditData(params).then((response) => {
         modalController.hideDataAddEditModal();
       });
     },
     async onModalOpen() {
-      var activeService = this.activeTableService;
       let data = null;
       const isEdit = this.isEdit;
       if (isEdit) {
-        let response = await datatable.getData(
-          activeService.id,
-          this.editDataGid
-        );
+        let response = await datatable.getData(this.layerId, this.gid);
         data = response.data;
       }
 
       if (!this.isModalHidingForGeometrySelection) {
-        var tableInfo = await datatable.getTableInfo(activeService.id);
+        var tableInfo = await datatable.getTableInfo(this.layerId);
         const { columns, geometryType } = tableInfo.data;
         if (isEdit) {
           columns.forEach((element) => {

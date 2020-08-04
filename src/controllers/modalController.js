@@ -65,6 +65,22 @@ const functions = {
     let moodal = getters.getMoodal();
     moodal.favoriteQueryModal.show();
   },
+  hideServiceSelectionModal() {
+    let moodal = getters.getMoodal();
+    moodal.serviceSelectionModal.hide();
+  },
+  showServiceSelectionModal() {
+    let moodal = getters.getMoodal();
+    moodal.serviceSelectionModal.show();
+  },
+  hideDataModal() {
+    let moodal = getters.getMoodal();
+    moodal.dataModal.hide();
+  },
+  showDataModal() {
+    let moodal = getters.getMoodal();
+    moodal.dataModal.show();
+  },
 };
 
 const getters = {
