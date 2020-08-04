@@ -1,10 +1,6 @@
 const state = {
-  fill: {
-    hex8: "#FFFFFF00",
-  },
-  border: {
-    hex8: "#F44336FF",
-  },
+  defaultFillColor: "#FFFFFF00",
+  defaultBorderColor: "#F44336FF",
 
   // fillColor: {
   //     hex: "var(--transparent)",
@@ -53,6 +49,12 @@ const state = {
 const getters = {
   colorPicker: (state) => {
     return state.colorPicker;
+  },
+  defaultFillColor: (state) => {
+    return state.defaultFillColor;
+  },
+  defaultBorderColor: (state) => {
+    return state.defaultBorderColor;
   },
   activeColorPickerId: (state) => {
     return state.activeColorPickerId;

@@ -57,8 +57,8 @@
 
       <!-- Color Picker -->
       <LayerColorPicker
-        :borderColor="currentConditionColor.border"
-        :fillColor="currentConditionColor.fill"
+        :borderColor="currentConditionColor.borderColor"
+        :fillColor="currentConditionColor.fillColor"
         @onSave="onColorPickerSave"
         @onClose="colorPickerOnClose"
       />
@@ -210,20 +210,20 @@ export default {
       },
     },
     currentConditionColor() {
-      let border = "";
-      let fill = "";
+      let borderColor = "";
+      let fillColor = "";
       if (this.selectedColorOpt.code === "default") {
-        border = this.data.color.border.hex8;
-        fill = this.data.color.fill.hex8;
+        borderColor = this.data.color.borderColor;
+        fillColor = this.data.color.fillColor;
       } else {
         var condition = this.data.layerColor.conditions.find(
           (c) => c.id === parseInt(this.selectedColorOpt.code)
         );
-        border = condition.borderColor;
-        fill = condition.fillColor;
+        borderColor = condition.borderColor;
+        fillColor = condition.fillColor;
       }
 
-      return { border, fill };
+      return { borderColor, fillColor };
     },
     conditions() {
       const defaultOpt = {
@@ -322,7 +322,6 @@ export default {
     },
   },
   methods: {
-
     updateList(val) {
       this.$emit("updateList", val);
     },
@@ -340,7 +339,7 @@ export default {
         serviceController.saveColor(this.data, color, this.selectedColorOpt);
         resolve();
       }).then(() => {
-        mapController.refreshService(this.data);
+        mapController.refreshService(this.data.id);
       });
     },
     colorPickerOnClose() {

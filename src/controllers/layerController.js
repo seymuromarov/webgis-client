@@ -172,31 +172,21 @@ const setters = {
     }
   },
 
-  setColor(service, color, isSubLayer, selectedColorOption) {
-    console.log("setColor -> service", service);
+  setColor(service, color, selectedColorOption) {
     var list = layerHelper.recursiveLayerMapping(
       getters.getDynamicLayerList(),
       async (layer) => {
         if (layer != null && layer.id == service.id) {
-          if (isSubLayer) {
-            layer.layers = layer.layers.map((item, index) => {
-              if (item.id == service.id) {
-                item.color = color;
-              }
-              return item;
-            });
-          } else {
-            if (selectedColorOption && selectedColorOption.code !== "default") {
-              let conditionColor = layer.layerColor.conditions.find(
-                (c) => c.id == parseInt(selectedColorOption.code)
-              );
-              if (conditionColor) {
-                conditionColor.fillColor = color.fill.hex8;
-                conditionColor.borderColor = color.border.hex8;
-              }
-            } else {
-              layer.color = color;
+          if (selectedColorOption && selectedColorOption.code !== "default") {
+            let conditionColor = layer.layerColor.conditions.find(
+              (c) => c.id == parseInt(selectedColorOption.code)
+            );
+            if (conditionColor) {
+              conditionColor.fillColor = color.fillColor;
+              conditionColor.borderColor = color.borderColor;
             }
+          } else {
+            layer.color = color;
           }
         }
       }

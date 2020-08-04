@@ -84,7 +84,7 @@ export default {
 
         if (!service.isSelected) {
           serviceController.selectService(service, true);
-        } else mapController.refreshService(service);
+        } else mapController.refreshService(service.id);
         modalController.hideProfileModalModal();
         this.$toasted.show("Query Successfully Applied", {
           icon: {

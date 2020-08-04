@@ -57,17 +57,18 @@ const functions = {
         let colorIndex = functions.getLayerColorIndex(service.id);
         let color = colorHelper.getColorByIndex(colorIndex);
         let colorObj = colorHelper.buildColorObject(color);
+        console.log("selectService -> colorObj", colorObj);
 
-        functions.saveColor(service, colorObj);
+        await functions.saveColor(service, colorObj);
 
-        mapController.addService(service);
+        mapController.addService(service.id);
         if (serviceHelper.isDynamicFromLocal(service))
-          mapController.buildSelectionLayer(service);
+          mapController.buildSelectionLayer(service.id);
       } else {
         functions.removeLayerColorIndex(service.id);
-        mapController.deleteService(service);
-        functions.resetQuery(service);
-        toolController.deleteActiveServiceFeatures();
+        mapController.deleteService(service.id);
+        functions.resetQuery(service.id);
+        toolController.deleteServiceFeatures(service.id);
       }
 
       hashService.updateHash();
@@ -131,22 +132,23 @@ const functions = {
     );
     layerController.setDynamicLayerList(list);
     functions.dynamicLayersReset(service, isChecked);
-    mapController.refreshService(service);
+    mapController.refreshService(service.id);
   },
   saveColor(service, color, selectedColorOption) {
     var isLayer = serviceHelper.isLayer(service);
-    var isSubLayer = serviceHelper.isSublayer(service);
     var isBunch = serviceHelper.isBunch(service);
 
-    if (isLayer || isSubLayer) {
-      var service = isSubLayer ? service.parent : service;
-
-      layerController.setColor(service, color, isSubLayer, selectedColorOption);
-    } else if (isBunch) {
-      bunchController.setColor(service.id, color);
-    }
+    return new Promise((resolve) => {
+      if (isLayer) {
+        layerController.setColor(service, color, selectedColorOption);
+      } else if (isBunch) {
+        bunchController.setColor(service.id, color);
+      }
+      resolve();
+    });
   },
-  resetQuery(service) {
+  resetQuery(id) {
+    var service = layerController.getLayer(id);
     var isBunch = serviceHelper.isBunch(service);
     var isDynamicLayer =
       serviceHelper.isDynamic(service) && serviceHelper.isLayer(service);

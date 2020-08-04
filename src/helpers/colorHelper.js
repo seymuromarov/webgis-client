@@ -51,10 +51,10 @@ const functions = {
   },
   buildVectorStyle(borderColor, fillColor) {
     if (_.isNull(borderColor) || _.isUndefined(borderColor)) {
-      borderColor = getters.getDefaultColorObject().border;
+      borderColor = getters.getDefaultColorObject().borderColor;
     }
     if (_.isNull(fillColor) || _.isUndefined(fillColor)) {
-      fillColor = getters.getDefaultColorObject().fill;
+      fillColor = getters.getDefaultColorObject().fillColor;
     }
 
     var style = new Style({
@@ -78,30 +78,23 @@ const functions = {
     });
     return style;
   },
-  buildColorObject(borderHex8, fillHex8) {
-    console.log(
-      "buildColorObject -> borderHex8, fillHex8",
-      borderHex8,
-      fillHex8
-    );
-    let border = { hex8: borderHex8 };
-    let fill = {};
-    let isUndefined = _.isUndefined(fillHex8);
-    if (isUndefined) {
-      let defaultColor = getters.getDefaultColorObject();
-      fill = defaultColor.fill;
-    } else {
-      fill = { hex8: fillHex8 };
+  buildColorObject(borderColor, fillColor) {
+    let defaultColor = getters.getDefaultColorObject();
+    if (_.isUndefined(borderColor) || _.isNull(borderColor)) {
+      borderColor = defaultColor.borderColor;
+    }
+    if (_.isUndefined(fillColor) || _.isNull(fillColor)) {
+      fillColor = defaultColor.fillColor;
     }
 
-    return { fill, border };
+    return { borderColor, fillColor };
   },
 };
 const getters = {
   getDefaultColorObject() {
-    var fill = $store.state.colorPicker.fill;
-    var border = $store.state.colorPicker.border;
-    return { fill, border };
+    var fillColor = $store.state.colorPicker.defaultFillColor;
+    var borderColor = $store.state.colorPicker.defaultBorderColor;
+    return { fillColor, borderColor };
   },
   getColorByIndex(index) {
     let size = materialColors.length;

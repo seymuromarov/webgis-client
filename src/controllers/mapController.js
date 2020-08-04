@@ -2,7 +2,7 @@ import $store from "@/store/store.js";
 import { tileTypeEnum } from "@/enums";
 import {
   serviceController,
-  tableController,
+  layerController,
   toolController,
 } from "@/controllers";
 import { defaultZoomLevelSettings } from "@/config/settings";
@@ -70,14 +70,15 @@ const baseMaps = {
 };
 
 const functions = {
-  addService(service) {
+  addService(id) {
+    let service = layerController.getLayer(id);
     if (service.extent != null) {
       const { minX, minY, maxX, maxY } = service.extent;
       var extent = [minX, minY, maxX, maxY];
       functions.fitView(extent);
     }
 
-    var layer = functions.buildLayer(service);
+    var layer = functions.buildLayer(service.id);
     var zIndex = serviceController.getZIndex(service);
     layer.setZIndex(zIndex);
 
@@ -110,8 +111,8 @@ const functions = {
       selectionLayer.changed();
     });
   },
-  buildSelectionLayer(service) {
-    let layer = getters.getLayer(service.id);
+  buildSelectionLayer(id) {
+    let layer = getters.getLayer(id);
     let source = layer.getSource();
     let selectionLayer = new VectorTileLayer({
       map: getters.getMap(),
@@ -130,13 +131,13 @@ const functions = {
     setters.setSelectionLayer(null);
     setters.setSelectedFeatureId(0);
   },
-  deleteService(service) {
-    var layer = getters.getLayer(service.id);
+  deleteService(id) {
+    var layer = getters.getLayer(id);
     functions.removeLayer(layer);
   },
-  refreshService(service) {
-    functions.deleteService(service);
-    functions.addService(service);
+  refreshService(id) {
+    functions.deleteService(id);
+    functions.addService(id);
   },
   removeLayer(layer) {
     let map = getters.getMap();
@@ -180,7 +181,8 @@ const functions = {
     map.getView().fit(extent);
     setters.setMap(map);
   },
-  buildLayer(service) {
+  buildLayer(id) {
+    const service = layerController.getLayer(id);
     const token = tokenService.getToken();
 
     const defaultProps = {
@@ -211,6 +213,7 @@ const functions = {
               var layerColor = service.layerColor;
               let borderColor = null;
               let fillColor = null;
+              let isConditionExist = false;
               if (layerColor) {
                 const column = layerColor.column;
                 const currentFeatureColumnVal = feature.get(column);
@@ -228,24 +231,18 @@ const functions = {
                     operator
                   );
                   if (result) {
-                    // const colorObj = {
-                    //   fill: {
-                    //     hex8: item.fillColor,
-                    //   },
-                    //   border: {
-                    //     hex8: item.borderColor,
-                    //   },
-                    // };
+                    isConditionExist = true;
                     borderColor = item.borderColor;
                     fillColor = item.fillColor;
                     break;
                   }
                 }
-              } else {
-                borderColor = service.color.border.hex8;
-                fillColor = service.color.fill.hex8;
               }
-              // console.log({ service, borderColor, fillColor });
+
+              if (!layerColor || !isConditionExist) {
+                borderColor = service.color.borderColor;
+                fillColor = service.color.fillColor;
+              }
               return colorHelper.buildVectorStyle(borderColor, fillColor);
             },
           });

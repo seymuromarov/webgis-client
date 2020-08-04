@@ -33,6 +33,7 @@ import {
   transform,
 } from "@/wrappers/openLayerImports";
 import { get } from "ol/proj";
+import layerController from "./layerController";
 
 const functions = {
   pickDrawType(type, callback, featureOptions) {
@@ -125,13 +126,13 @@ const functions = {
     let elem = document.getElementsByClassName(`feature-${featureId}`);
     elem[0].remove();
   },
-  deleteActiveServiceFeatures() {
-    let activeService = tableController.getTableActiveService();
+  deleteServiceFeatures(id) {
+    let service = layerController.getLayer(id);
 
-    if (activeService) {
+    if (service) {
       var serviceInfo = {
-        id: activeService.id,
-        type: activeService.type,
+        id: service.id,
+        type: service.type,
       };
       //delete past features for this service
       functions.deleteFeatureByCallback((feature) => {
@@ -264,7 +265,6 @@ const functions = {
               );
             }
           }
-      
 
           setters.setBbox(coordinates);
         } catch (e) {

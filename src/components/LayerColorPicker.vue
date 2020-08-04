@@ -34,13 +34,19 @@
     <ColorScheme
       v-else
       :value="{ hex: fillColor }"
+      v-model="fill"
+      style="display:inline-block;"
+    ></ColorScheme>
+    <!-- <ColorScheme
+      v-else
+      :value="{ hex: fillColor }"
       @input="
         (val) => {
           fill = val;
         }
       "
       style="display:inline-block;"
-    ></ColorScheme>
+    ></ColorScheme> -->
 
     <div class="colorPickerButton">
       <button class="btn btn-sm btn--cancel" type="button" @click="onClose">
@@ -84,14 +90,18 @@ export default {
     },
     onSave() {
       let hex8 = "";
+
       hex8 = this.border.hex8;
-      const border = { hex8 };
+      let border = hex8;
+      if (!border) border = this.borderColor;
 
       hex8 = this.fill.hex8;
-      const fill = { hex8 };
+      let fill = hex8;
+      if (!fill) fill = this.fillColor;
+
       const colorObj = {
-        border,
-        fill,
+        borderColor: border,
+        fillColor: fill,
       };
       this.$emit("onSave", colorObj);
     },
