@@ -99,9 +99,13 @@ hr {
   }
 }
 
-//#map .ol-zoom .ol-zoom-out {
-//  margin-top: 204px;
-//}
+// #map .ol-zoom .ol-zoom-out {
+//   margin-top: 204px;
+// }
+#map .ol-zoom-out,
+#map .ol-zoom-in {
+  display: none;
+}
 //
 //#map .ol-zoomslider {
 //  background-color: transparent;
