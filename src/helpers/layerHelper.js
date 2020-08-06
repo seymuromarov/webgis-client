@@ -11,6 +11,7 @@ const mapper = {
       minZoomLevel: val.minZoomLevel,
       maxZoomLevel: val.maxZoomLevel,
       extent: val.extent,
+      resolutionOption: val.resolutionOption,
       resourceType: val.resourceTypeId,
       mapType: val.mapTypeId,
       type: serviceTypeEnum.LAYER,
@@ -27,6 +28,7 @@ const mapper = {
       minZoomLevel: val.minZoomLevel,
       maxZoomLevel: val.maxZoomLevel,
       extent: val.extent,
+      resolutionOption: val.resolutionOption,
       resourceType: val.resourceTypeId,
       mapType: val.mapTypeId,
       type: serviceTypeEnum.LAYER,
@@ -95,6 +97,7 @@ const mapper = {
     }
     return layerArr;
   },
+
   recursiveMapping: (item, callback) => {
     var isCategory = serviceHelper.isCategory(item);
     if (isCategory) {

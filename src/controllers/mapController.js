@@ -1,5 +1,6 @@
 import $store from "@/store/store.js";
-import { tileTypeEnum } from "@/enums";
+import { tileTypeEnum, resolutionOptionTypeEnum } from "@/enums";
+console.log("resolutionOptionTypeEnum", resolutionOptionTypeEnum);
 import {
   serviceController,
   layerController,
@@ -8,7 +9,11 @@ import {
 import { defaultZoomLevelSettings } from "@/config/settings";
 import { materialColors } from "@/constants/colors";
 import { tokenService } from "@/services";
-import { operatorEnumTostring } from "@/utils/enumToString";
+import {
+  operatorEnumTostring,
+  distanceEnumToString,
+} from "@/utils/enumToString";
+import { distanceConvert } from "@/utils/unitConvertor";
 
 import {
   serviceHelper,
@@ -72,11 +77,11 @@ const baseMaps = {
 const functions = {
   addService(id) {
     let service = layerController.getLayer(id);
-    if (service.extent != null) {
-      const { minX, minY, maxX, maxY } = service.extent;
-      var extent = [minX, minY, maxX, maxY];
-      functions.fitView(extent);
-    }
+    // if (service.extent != null) {
+    //   const { minX, minY, maxX, maxY } = service.extent;
+    //   var extent = [minX, minY, maxX, maxY];
+    //   functions.fitView(extent);
+    // }
 
     var layer = functions.buildLayer(service.id);
     var zIndex = serviceController.getZIndex(service);
@@ -188,9 +193,10 @@ const functions = {
     const defaultProps = {
       id: service.id,
       name: service.name,
-      zoomLevelProperties: getters.getZoomLevelOptions(service),
+      ...getters.getResolutionOptions(service),
       type: service.type,
     };
+    console.log("buildLayer -> defaultProps", defaultProps);
     const isLayer = serviceHelper.isLayer(service);
 
     let layer;
@@ -539,19 +545,42 @@ const getters = {
     return $store.getters.activeDynamicLayersColors;
   },
 
-  getZoomLevelOptions(service) {
-    let min, max;
-    if (serviceHelper.isLayer(service)) {
-      min = service.minZoomLevel;
-      max = service.maxZoomLevel;
+  getResolutionOptions(service) {
+    const resolutionOption = service.resolutionOption;
+    console.log("getResolutionOptions -> resolutionOption", resolutionOption);
+
+    if (resolutionOption && serviceHelper.isLayer(service)) {
+      let maxResolution = resolutionOption.maxResolution;
+      let minResolution = resolutionOption.minResolution;
+      if (resolutionOption.type == resolutionOptionTypeEnum.ZOOM) {
+        return {
+          maxResolution: createXYZ().getResolution(minResolution) * 1.01,
+          minResolution: createXYZ().getResolution(maxResolution),
+        };
+      } else {
+        var scaleUnit = resolutionOption.scaleUnit;
+        var scaleUnitString = distanceEnumToString(scaleUnit);
+
+        maxResolution = distanceConvert(scaleUnitString, "km", maxResolution);
+        minResolution = distanceConvert(scaleUnitString, "km", minResolution);
+
+        const factor = 10; //for openlayers scale convertion
+        return {
+          maxResolution: maxResolution * factor,
+          minResolution: minResolution * factor,
+        };
+      }
     } else {
-      min = defaultZoomLevelSettings.minZoomLevel;
-      max = defaultZoomLevelSettings.maxZoomLevel;
+      //for bunch and default
+      return {
+        maxResolution:
+          createXYZ().getResolution(defaultZoomLevelSettings.minZoomLevel) *
+          1.01,
+        minResolution: createXYZ().getResolution(
+          defaultZoomLevelSettings.maxZoomLevel
+        ),
+      };
     }
-    return {
-      maxResolution: createXYZ().getResolution(min) * 1.01,
-      minResolution: createXYZ().getResolution(max),
-    };
   },
 };
 export default { ...functions, ...getters, ...setters, ...events };

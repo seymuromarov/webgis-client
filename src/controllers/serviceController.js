@@ -57,7 +57,6 @@ const functions = {
         let colorIndex = functions.getLayerColorIndex(service.id);
         let color = colorHelper.getColorByIndex(colorIndex);
         let colorObj = colorHelper.buildColorObject(color);
-        console.log("selectService -> colorObj", colorObj);
 
         await functions.saveColor(service, colorObj);
 

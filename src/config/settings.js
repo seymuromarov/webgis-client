@@ -7,6 +7,10 @@ const defaultZoomLevelSettings = {
   minZoomLevel: 0,
   maxZoomLevel: 20,
 };
+const defaultScaleSettings = {
+  minResolution: 1, //100m
+  maxResolution: 20000, //2000km
+};
 const arcgisImgExportSettings = {
   f: "image",
   format: "png",
@@ -21,5 +25,6 @@ const arcgisImgExportSettings = {
 export {
   serviceZIndexSettings,
   defaultZoomLevelSettings,
+  defaultScaleSettings,
   arcgisImgExportSettings,
 };
