@@ -1,6 +1,5 @@
 import $store from "@/store/store.js";
 import { tileTypeEnum, resolutionOptionTypeEnum } from "@/enums";
-console.log("resolutionOptionTypeEnum", resolutionOptionTypeEnum);
 import {
   serviceController,
   layerController,
@@ -196,7 +195,6 @@ const functions = {
       ...getters.getResolutionOptions(service),
       type: service.type,
     };
-    console.log("buildLayer -> defaultProps", defaultProps);
     const isLayer = serviceHelper.isLayer(service);
 
     let layer;
@@ -547,7 +545,6 @@ const getters = {
 
   getResolutionOptions(service) {
     const resolutionOption = service.resolutionOption;
-    console.log("getResolutionOptions -> resolutionOption", resolutionOption);
 
     if (resolutionOption && serviceHelper.isLayer(service)) {
       let maxResolution = resolutionOption.maxResolution;

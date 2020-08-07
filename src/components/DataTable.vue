@@ -320,7 +320,7 @@ export default {
       };
     },
     toggleIsVisible() {
-      toolController.deleteActiveServiceFeatures();
+      toolController.deleteServiceFeatures(this.activeService.id);
       tableController.setTableUnvisible();
       // this.$store.dispatch("SAVE_DATATABLE_VISIBLE", !this.isVisible);
     },
