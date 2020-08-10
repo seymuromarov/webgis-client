@@ -22,5 +22,6 @@ export { default as ChangeDetector } from "./modals/ChangeDetector";
 export { default as NdviAssessment } from "./modals/NdviAssessment";
 export { default as DataAddEditModal } from "./modals/DataAddEditModal";
 export { default as ImageUploadModal } from "./modals/ImageUploadModal";
+export { default as BlindSpotModal } from "./modals/BlindSpotModal";
 export { default as ProfileModal } from "./modals/ProfileModal/Index";
 export { default as FavoriteQueryModal } from "./modals/FavoriteQueryModal";

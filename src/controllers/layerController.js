@@ -2,15 +2,6 @@ import $store from "@/store/store.js";
 import { layerHelper, serviceHelper } from "@/helpers";
 import { deepClone } from "@/utils";
 
-const baseLayerList = {
-  get() {
-    return $store.getters.baseLayerList;
-  },
-  set(val) {
-    $store.dispatch("saveBaseLayerList", val);
-  },
-};
-
 const getters = {
   getBaseLayerList() {
     let data = $store.getters.baseLayerList;

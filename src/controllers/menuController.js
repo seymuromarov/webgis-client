@@ -77,6 +77,13 @@ const getters = {
         image: icons.world,
         click: toolController.changeDetector,
       },
+
+      {
+        key: "graticule",
+        label: "Graticule",
+        image: icons.grid,
+        click: toolController.addGraticule,
+      },
       {
         key: "ndviAssessment",
         label: "NDVI Assessment",
@@ -90,10 +97,15 @@ const getters = {
         },
       },
       {
-        key: "graticule",
-        label: "Graticule",
-        image: icons.grid,
-        click: toolController.addGraticule,
+        key: "blindSpot",
+        label: "Blind Spot Detection",
+        image: icons.ndvi,
+        click: () => {
+          let callback = () => {
+            modalController.showBlindSpotModal();
+          };
+          toolController.pickDrawType(drawTypeEnum.LINESTRING, callback);
+        },
       },
     ];
   },

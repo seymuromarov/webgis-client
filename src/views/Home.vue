@@ -34,6 +34,7 @@
     ></detector-modal>
 
     <NdviAssessment />
+    <BlindSpotModal />
     <!-- Information Modal -->
     <InfoModal
       :isOpen="isInformationModalVisible"
@@ -92,6 +93,7 @@ import {
   NdviAssessment,
   ProfileModal,
   ServiceSelectionModal,
+  BlindSpotModal,
 } from "@/components/";
 
 import { toggler, serviceHelper } from "@/helpers";
@@ -122,6 +124,7 @@ export default {
     NdviAssessment,
     ProfileModal,
     ServiceSelectionModal,
+    BlindSpotModal,
   },
   data() {
     return {

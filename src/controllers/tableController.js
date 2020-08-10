@@ -129,6 +129,7 @@ const functions = {
           layerId: service.id,
           ...service.query,
           paging: paging,
+          returnGeom: true,
         };
         let isSumFilter = getters.getIsSumFilter();
 

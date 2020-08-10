@@ -435,7 +435,7 @@ export default {
         id: service.id,
         type: service.type,
       };
-      toolController.deleteActiveServiceFeatures();
+      toolController.deleteServiceFeatures(this.layerId);
       if (this.geometryBtnSelect === value) {
         this.geometryBtnSelect = drawTypeEnum.NONE;
         this.geometry == null;
@@ -523,7 +523,7 @@ export default {
     onModalClose() {
       if (!this.isModalHidingForGeometrySelection) {
         this.resetData();
-        toolController.deleteActiveServiceFeatures();
+             toolController.deleteServiceFeatures(this.layerId);
       }
     },
     onInputChange(name, val) {

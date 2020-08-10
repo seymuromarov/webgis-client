@@ -40,6 +40,7 @@ const functions = {
     let map = mapController.getMap();
     setters.setDrawType(type);
     map.removeInteraction(getters.getDraw());
+
     setters.setColorPickStatus(false);
     setters.setMarkerStatus(false);
     setters.setRemoveStatus(false);
@@ -199,6 +200,7 @@ const functions = {
     draw.on(
       "drawstart",
       function(evt) {
+        setters.setInteractionStatus(true);
         mapController.setSketch(evt.feature);
         /** @type {module:ol/coordinate~Coordinate|undefined} */
         let maptooltipCoord = evt.coordinate;
@@ -301,6 +303,7 @@ const functions = {
         if (!_.isUndefined(callback) && _.isFunction(callback)) {
           callback();
         }
+        setters.setInteractionStatus(false);
       },
       this
     );
@@ -422,6 +425,9 @@ const getters = {
   getBbox() {
     return $store.getters.bbox;
   },
+  getInteractionStatus() {
+    return $store.getters.isInteraction;
+  },
   getColorPickStatus() {
     return $store.getters.isColorPick;
   },
@@ -468,6 +474,9 @@ const setters = {
   },
   setBbox(val) {
     $store.dispatch("saveBbox", val);
+  },
+  setInteractionStatus(val) {
+    $store.dispatch("saveInteractionStatus", val);
   },
   setColorPickStatus(val) {
     $store.dispatch("saveColorPickStatus", val);

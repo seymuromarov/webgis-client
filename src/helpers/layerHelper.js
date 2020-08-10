@@ -87,6 +87,8 @@ const mapper = {
       baseLayers,
       dynamicLayers,
     };
+
+    console.log();
     return mapResult;
   },
 

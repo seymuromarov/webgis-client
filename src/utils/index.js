@@ -7,6 +7,12 @@ export function guid() {
   );
 }
 
+function objectGetKey(object, key) {
+  return !!Object.keys(object).find(
+    (k) => k.toLowerCase() === key.toLowerCase()
+  );
+}
+
 export function deepClone(source) {
   if (!source && typeof source !== "object") {
     throw new Error("error arguments", "deepClone");

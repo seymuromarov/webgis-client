@@ -420,7 +420,7 @@ const events = {
       });
       setters.setMap(map);
     } //only map click
-    else {
+    else if (!toolController.getInteractionStatus()) {
       modalController.showServiceSelectionModal();
     }
     // if (tableController.getTableVisibility()) {

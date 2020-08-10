@@ -81,6 +81,14 @@ const functions = {
     let moodal = getters.getMoodal();
     moodal.dataModal.show();
   },
+  hideBlindSpotModal() {
+    let moodal = getters.getMoodal();
+    moodal.blindSpotModal.hide();
+  },
+  showBlindSpotModal() {
+    let moodal = getters.getMoodal();
+    moodal.blindSpotModal.show();
+  },
 };
 
 const getters = {

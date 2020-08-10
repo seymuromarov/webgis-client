@@ -2,6 +2,7 @@ import { drawTypeEnum } from "@/enums";
 
 const state = {
   graticuleVisibility: false,
+  isInteraction: false,
   isColorPick: false,
   isMarker: false,
   isRemove: false,
@@ -19,6 +20,9 @@ const state = {
 };
 
 const mutations = {
+  SET_IS_INTERACTION(state, payload) {
+    state.isInteraction = payload;
+  },
   SET_GRATICULE_VISIBILITY(state, payload) {
     state.graticuleVisibility = payload;
   },
@@ -65,6 +69,9 @@ const actions = {
   saveGraticuleVisibility(context, payload) {
     context.commit("SET_GRATICULE_VISIBILITY", payload);
   },
+  saveInteractionStatus(context, payload) {
+    context.commit("SET_IS_INTERACTION", payload);
+  },
   saveColorPickStatus(context, payload) {
     context.commit("SET_COLOR_PICK_STATUS", payload);
   },
@@ -107,6 +114,9 @@ const actions = {
 const getters = {
   graticuleVisibility: (state) => {
     return state.graticuleVisibility;
+  },
+  isInteraction: (state) => {
+    return state.isInteraction;
   },
   isColorPick: (state) => {
     return state.isColorPick;

@@ -75,7 +75,6 @@ export default new Vuex.Store({
     },
     setNotificationCounts,
     getLayers,
-    // async getLayers({ dispatch }) {},
   },
   modules,
 });

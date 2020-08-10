@@ -297,7 +297,7 @@ export default {
         id: this.activeService.id,
         type: this.activeService.type,
       };
-      toolController.deleteActiveServiceFeatures();
+      toolController.deleteServiceFeatures(this.activeService.id);
       if (this.extentType == value) {
         this.extentType = drawTypeEnum.NONE;
         serviceController.setExtentCoordinates(this.activeService, "");

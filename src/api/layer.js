@@ -60,20 +60,7 @@ export default {
       }
     );
   },
-  getLayerForEmlakService(params) {
-    return request.get(
-      emlakUrl +
-        "/arcgis/rest/services/AZERCOSMOS/" +
-        params.name +
-        "/MapServer",
-      {
-        params: {
-          token: params.token,
-          f: "json",
-        },
-      }
-    );
-  },
+
   getLocalTableData(params) {
     return request.get(
       URL + "/api/datatable/GetDatas/" + params.layerId + "/",
