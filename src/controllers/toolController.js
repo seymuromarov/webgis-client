@@ -202,6 +202,11 @@ const functions = {
     drawSource.addFeature(feature);
     mapController.setDrawSource(drawSource);
   },
+
+  geometryChange(coordinates, geometry) {
+    console.log("test");
+    return geometry;
+  },
   addInteraction(type, callback, featureOptions) {
     setters.setColorPickStatus(false);
     setters.setMarkerStatus(false);
@@ -225,11 +230,10 @@ const functions = {
       source: mapController.getDrawSource(),
       type: geomType,
       freehandCondition: shiftKeyOnly,
-      geometryFunction: function() {
-        console.log("test");
-      },
+      // geometryFunction: function() {
+      //   console.log("test");
+      // },
     };
-    console.log("addInteraction -> options", options);
 
     if (geometryFunction) options.geometryFunction = geometryFunction;
 
@@ -293,6 +297,9 @@ const functions = {
           measuremaptooltipElement.className = `maptooltip maptooltip-static feature-${getters.getFeatureIdCounter()}`;
           measuremaptooltip.setOffset([0, -7]);
           let coordinates = [];
+
+          let t = e.feature.getGeometry().getType();
+          console.log("addInteraction -> t", t);
           if (geomType == drawTypeEnum.POINT) {
             coordinates = e.feature.getGeometry().getCoordinates();
             coordinates = transform(coordinates, "EPSG:3857", "EPSG:4326");
@@ -342,7 +349,6 @@ const functions = {
             e.feature.setStyle(pointStyle);
           }
         } else {
-          console.log("text point");
           e.feature.setStyle(textPointStyle);
         }
 
