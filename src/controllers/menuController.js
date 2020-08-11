@@ -12,10 +12,22 @@ const getters = {
         click: () => toolController.pickDrawType(drawTypeEnum.NONE),
       },
       {
+        key: "attText",
+        label: "Add Text",
+        image: icons.point,
+        click: () => {
+          let callback = () => {
+            modalController.showMapTextModal();
+          };
+
+          toolController.pickDrawType(drawTypeEnum.TEXT, callback);
+        },
+      },
+      {
         key: "addPoint",
         label: "Add point",
         image: icons.point,
-        click: toolController.addPlace,
+        click: () => toolController.pickDrawType(drawTypeEnum.POINT),
       },
       {
         key: "rectangle",

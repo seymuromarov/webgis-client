@@ -43,6 +43,8 @@
     <ServiceSelectionModal />
     <!-- Information Modal -->
     <ComputedLayersModal />
+
+    <MapTextModal />
   </div>
 </template>
 
@@ -92,6 +94,7 @@ import {
   ChangeDetector as DetectorModal,
   NdviAssessment,
   ProfileModal,
+  MapTextModal,
   ServiceSelectionModal,
   BlindSpotModal,
 } from "@/components/";
@@ -120,6 +123,7 @@ export default {
     FilterModal,
     Report,
     MapControls,
+    MapTextModal,
     ComputedLayersModal,
     NdviAssessment,
     ProfileModal,

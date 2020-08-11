@@ -7,8 +7,13 @@ import {
 } from "@/controllers";
 import { drawTypeEnum } from "@/enums";
 import { mapHelper } from "@/helpers";
+import {
+  featureStyle,
+  pointStyle,
+  textPointStyle,
+} from "@/constants/featureStyles";
 import { _ } from "vue-underscore";
-
+import { stringDivider } from "@/utils";
 import {
   Graticule,
   Stroke,
@@ -18,6 +23,9 @@ import {
   createRegularPolygon,
   createBox,
   Feature,
+  Text,
+  fromLonLat,
+  Point,
   VectorLayer,
   VectorSource,
   getArea,
@@ -159,28 +167,69 @@ const functions = {
       mapController.setDrawSource(source);
     }
   },
+  addText(text, coord) {
+    const weight = "normal";
+    const size = "14px";
+    const height = 1;
+    const fontType = "Arial";
+    var font = weight + " " + size + "/" + height + " " + fontType;
+    let feature = new Feature({
+      geometry: new Point(fromLonLat([coord[0], coord[1]])),
+    });
 
+    feature.setStyle(
+      new Style({
+        image: new CircleStyle({
+          radius: 10,
+          fill: new Fill({ color: "#00000000" }),
+          stroke: new Stroke({ color: "#00000000", width: 1 }),
+        }),
+        text: new Text({
+          textAlign: "center",
+          textBaseline: "middle",
+          font: font,
+          text: stringDivider(text, 16, "\n"),
+          fill: new Fill({ color: "#aa3300" }),
+          stroke: new Stroke({ color: "#ffffff", width: 3 }),
+          offsetX: 0,
+          offsetY: 0,
+          placement: "point",
+        }),
+      })
+    );
+
+    var drawSource = mapController.getDrawSource();
+    drawSource.addFeature(feature);
+    mapController.setDrawSource(drawSource);
+  },
   addInteraction(type, callback, featureOptions) {
     setters.setColorPickStatus(false);
     setters.setMarkerStatus(false);
     setters.setRemoveStatus(false);
 
     let geometryFunction = functions.buildGeometryFunction(type);
-
+    let geomType = type;
     switch (type) {
       case drawTypeEnum.SQUARE:
-        type = drawTypeEnum.CIRCLE;
+        geomType = drawTypeEnum.CIRCLE;
         break;
       case drawTypeEnum.BOX:
-        type = drawTypeEnum.CIRCLE;
+        geomType = drawTypeEnum.CIRCLE;
+        break;
+      case drawTypeEnum.TEXT:
+        geomType = drawTypeEnum.POINT;
         break;
     }
 
     var options = {
       source: mapController.getDrawSource(),
-      type: type,
+      type: geomType,
       freehandCondition: shiftKeyOnly,
+      geometryFunction: function() {
+        console.log("test");
+      },
     };
+    console.log("addInteraction -> options", options);
 
     if (geometryFunction) options.geometryFunction = geometryFunction;
 
@@ -200,7 +249,6 @@ const functions = {
     draw.on(
       "drawstart",
       function(evt) {
-        setters.setInteractionStatus(true);
         mapController.setSketch(evt.feature);
         /** @type {module:ol/coordinate~Coordinate|undefined} */
         let maptooltipCoord = evt.coordinate;
@@ -245,10 +293,10 @@ const functions = {
           measuremaptooltipElement.className = `maptooltip maptooltip-static feature-${getters.getFeatureIdCounter()}`;
           measuremaptooltip.setOffset([0, -7]);
           let coordinates = [];
-          if (type == drawTypeEnum.POINT) {
+          if (geomType == drawTypeEnum.POINT) {
             coordinates = e.feature.getGeometry().getCoordinates();
             coordinates = transform(coordinates, "EPSG:3857", "EPSG:4326");
-          } else if (type == drawTypeEnum.LINESTRING) {
+          } else if (geomType == drawTypeEnum.LINESTRING) {
             coordinates = e.feature.getGeometry().getCoordinates();
             for (var i = 0; i < coordinates.length; i++) {
               coordinates[i] = transform(
@@ -286,24 +334,23 @@ const functions = {
           featureOpt = Object.assign(featureOpt, featureOptions); //extend object
         }
         e.feature.setProperties(featureOpt);
-        let newStyle = new Style({
-          fill: new Fill({ color: "#00000000" }),
-          stroke: new Stroke({ color: "#C672F5", width: 2 }),
-          image: new CircleStyle({
-            radius: 7,
-            fill: new Fill({ color: "#00000000" }),
-          }),
-        });
 
-        if (type !== "Point") {
-          e.feature.setStyle(newStyle);
+        if (type !== drawTypeEnum.TEXT) {
+          if (type !== drawTypeEnum.POINT) {
+            e.feature.setStyle(featureStyle);
+          } else if (type === drawTypeEnum.POINT) {
+            e.feature.setStyle(pointStyle);
+          }
+        } else {
+          console.log("text point");
+          e.feature.setStyle(textPointStyle);
         }
+
         setters.addFeatureIdCounter(10);
 
         if (!_.isUndefined(callback) && _.isFunction(callback)) {
           callback();
         }
-        setters.setInteractionStatus(false);
       },
       this
     );
@@ -425,9 +472,10 @@ const getters = {
   getBbox() {
     return $store.getters.bbox;
   },
-  getInteractionStatus() {
-    return $store.getters.isInteraction;
+  getDrawType() {
+    return $store.getters.drawType;
   },
+
   getColorPickStatus() {
     return $store.getters.isColorPick;
   },
@@ -475,9 +523,7 @@ const setters = {
   setBbox(val) {
     $store.dispatch("saveBbox", val);
   },
-  setInteractionStatus(val) {
-    $store.dispatch("saveInteractionStatus", val);
-  },
+
   setColorPickStatus(val) {
     $store.dispatch("saveColorPickStatus", val);
   },

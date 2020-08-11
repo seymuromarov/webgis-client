@@ -7,12 +7,25 @@ export function guid() {
   );
 }
 
-function objectGetKey(object, key) {
-  return !!Object.keys(object).find(
-    (k) => k.toLowerCase() === key.toLowerCase()
-  );
+export function stringDivider(str, width, spaceReplacer) {
+  if (str.length > width) {
+    var p = width;
+    while (p > 0 && str[p] != " " && str[p] != "-") {
+      p--;
+    }
+    if (p > 0) {
+      var left;
+      if (str.substring(p, p + 1) == "-") {
+        left = str.substring(0, p + 1);
+      } else {
+        left = str.substring(0, p);
+      }
+      var right = str.substring(p + 1);
+      return left + spaceReplacer + stringDivider(right, width, spaceReplacer);
+    }
+  }
+  return str;
 }
-
 export function deepClone(source) {
   if (!source && typeof source !== "object") {
     throw new Error("error arguments", "deepClone");

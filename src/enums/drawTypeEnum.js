@@ -6,5 +6,6 @@ const drawTypeEnum = {
   LINESTRING: "LineString",
   POLYGON: "Polygon",
   POINT: "Point",
+  TEXT: "Text",
 };
 export default drawTypeEnum;

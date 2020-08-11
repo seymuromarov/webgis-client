@@ -62,7 +62,7 @@ export default {
       chartOptions: {
         title: {
           display: true,
-          text: "Ndvi Data",
+          text: "",
         },
       },
       chartVisibility: false,
@@ -108,6 +108,7 @@ export default {
               };
             });
         }
+        this.chartOptions.title.text = item.label + " Data";
         this.selectedColumn = null;
         this.chartVisibility = false;
       });

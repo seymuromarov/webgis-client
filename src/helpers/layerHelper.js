@@ -18,6 +18,7 @@ const mapper = {
       isDisabled: val.isDisabled,
       isSelected: false,
       layers: null,
+      sourceUrl: val.sourceUrl,
     };
   },
   dynamicMapping: (val) => {
@@ -35,7 +36,7 @@ const mapper = {
       isDisabled: val.isDisabled,
       isSelected: false,
       isColorEnabled: true,
-
+      sourceUrl: val.sourceUrl,
       ...(val.resourceTypeId === "local" && {
         color: null,
         layerColor: val.layerColor,
@@ -88,7 +89,6 @@ const mapper = {
       dynamicLayers,
     };
 
-    console.log();
     return mapResult;
   },
 
