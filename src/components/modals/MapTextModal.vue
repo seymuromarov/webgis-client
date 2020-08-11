@@ -20,8 +20,8 @@
           Add
         </button>
       </div>
-    </form></CustomModal
-  >
+    </form>
+  </CustomModal>
 </template>
 
 <script>

@@ -54,7 +54,6 @@ const mapper = {
         mapTypeId: val.mapTypeId,
         children: val.children.map((val, i) => mapper.recursiveMap(val)),
         type: serviceTypeEnum.CATEGORY,
-        layers: val.layers,
         layers: val.layers.map((item, i) =>
           serviceHelper.isBasemap(val.mapTypeId)
             ? mapper.basemapMapping(item)
