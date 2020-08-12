@@ -1,18 +1,18 @@
 import $store from "@/store/store.js";
-import { tileTypeEnum, resolutionOptionTypeEnum } from "@/enums";
+import {tileTypeEnum, resolutionOptionTypeEnum} from "@/enums";
 import {
   serviceController,
   layerController,
   toolController,
 } from "@/controllers";
-import { defaultZoomLevelSettings } from "@/config/settings";
-import { materialColors } from "@/constants/colors";
-import { tokenService } from "@/services";
+import {defaultZoomLevelSettings} from "@/config/settings";
+import {materialColors} from "@/constants/colors";
+import {tokenService} from "@/services";
 import {
   operatorEnumTostring,
   distanceEnumToString,
 } from "@/utils/enumToString";
-import { distanceConvert } from "@/utils/unitConvertor";
+import {distanceConvert} from "@/utils/unitConvertor";
 
 import {
   serviceHelper,
@@ -42,7 +42,8 @@ import {
   TileWMS,
 } from "@/wrappers/openLayerImports";
 import modalController from "./modalController";
-import { drawTypeEnum } from "@/enums";
+import {drawTypeEnum} from "@/enums";
+
 const selectedLayerStyle = new Style({
   stroke: new Stroke({
     color: "rgba(200,20,20,1)",
@@ -150,7 +151,7 @@ const functions = {
   },
   removeDrawPolygons() {
     let map = getters.getMap();
-    map.getLayers().forEach(function(layer) {
+    map.getLayers().forEach(function (layer) {
       if (layer.get("type") === "draw") {
         functions.removeLayer(layer);
       }
@@ -268,19 +269,11 @@ const functions = {
           });
         }
       } else {
-        if (
-          service.name == "Azersky2018" ||
-          service.name == "Azersky2019" ||
-          service.name == "Azersky2019_IVrub" ||
-          service.name == "Azersky2020_2May" ||
-          service.name == "Azersky2020_Irub" ||
-          service.name == "CropMap2019" ||
-          service.name == "CropMap2019DQ"
-        ) {
+        if (service.resourceType == "geowebcache") {
           layer = new TileLayer({
             ...defaultProps,
             source: new TileWMS({
-              url: "http://webgis.azercosmos.az/geowebcache/service/wms",
+              url: service.sourceUrl,
               params: {
                 LAYERS: service.name,
                 TILED: true,
@@ -292,6 +285,33 @@ const functions = {
               },
             }),
           });
+        } else if (service.resourceType == "geoserver") {
+          layer = new TileLayer({
+            ...defaultProps,
+            source: new TileWMS({
+              url: service.sourceUrl,
+              params: {
+                LAYERS: service.name,
+                TILED: true,
+                format: "image/png",
+              },
+              serverType: 'geoserver',
+            }),
+          });
+
+        }else if (service.resourceType == "geoserverGws") {
+          layer = new TileLayer({
+            ...defaultProps,
+            source: new TileWMS({
+              url: service.sourceUrl,
+              params: {
+                LAYERS: service.name,
+                TILED: true,
+                format: "image/png",
+              },
+            }),
+          });
+
         } else if (service.spatial === 3857) {
           layer = new TileLayer({
             ...defaultProps,
@@ -369,7 +389,8 @@ const events = {
           );
           elem[0].remove();
           setters.setDrawSource(drawSource);
-        } catch (e) {}
+        } catch (e) {
+        }
       });
     } else if (toolController.getColorPickStatus()) {
       var map = getters.getMap();
@@ -392,7 +413,8 @@ const events = {
           });
 
           feature.setStyle(newStyle);
-        } catch (e) {}
+        } catch (e) {
+        }
       });
       setters.setMap(map);
     } //only map click
@@ -508,7 +530,7 @@ const getters = {
     let map = getters.getMap();
     let layer = null;
 
-    map.getLayers().forEach(function(item) {
+    map.getLayers().forEach(function (item) {
       var layerId = item.get("id");
       if (layerId !== undefined && layerId === id) {
         layer = item;
@@ -560,4 +582,4 @@ const getters = {
     }
   },
 };
-export default { ...functions, ...getters, ...setters, ...events };
+export default {...functions, ...getters, ...setters, ...events};
