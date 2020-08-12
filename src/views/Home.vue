@@ -44,6 +44,8 @@
     <!-- Information Modal -->
     <ComputedLayersModal />
 
+    <ComparerModal />
+
     <MapTextModal />
   </div>
 </template>
@@ -97,9 +99,10 @@ import {
   MapTextModal,
   ServiceSelectionModal,
   BlindSpotModal,
+  ComparerModal,
 } from "@/components/";
 
-import { toggler, serviceHelper } from "@/helpers";
+import { serviceHelper } from "@/helpers";
 import {
   layerController,
   tableController,
@@ -129,10 +132,10 @@ export default {
     ProfileModal,
     ServiceSelectionModal,
     BlindSpotModal,
+    ComparerModal,
   },
   data() {
     return {
-      toggler: null,
       latChange: null,
       longChange: null,
 
@@ -168,8 +171,6 @@ export default {
     this.moodal = this.$moodal;
 
     this.hashResolveResult = hashService.resolveHash();
-
-    this.toggler = new toggler(this);
 
     this.drawSource = new VectorSource({
       wrapX: false,
@@ -313,7 +314,6 @@ export default {
         return toolController.getDrawForChangeDetectionStatus();
       },
       set(value) {
-        // this.filterQueryIsSum = false;
         toolController.setDrawForChangeDetectionStatus(value);
       },
     },
@@ -322,7 +322,6 @@ export default {
         return this.$store.getters.drawSource;
       },
       set(value) {
-        // this.filterQueryIsSum = false;
         this.$store.dispatch("saveDrawSource", value);
       },
     },

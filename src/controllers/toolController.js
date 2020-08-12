@@ -43,6 +43,8 @@ import {
 import { get } from "ol/proj";
 import layerController from "./layerController";
 
+let lastEvent = null;
+
 const functions = {
   pickDrawType(type, callback, featureOptions) {
     let map = mapController.getMap();
@@ -203,10 +205,6 @@ const functions = {
     mapController.setDrawSource(drawSource);
   },
 
-  geometryChange(coordinates, geometry) {
-    console.log("test");
-    return geometry;
-  },
   addInteraction(type, callback, featureOptions) {
     setters.setColorPickStatus(false);
     setters.setMarkerStatus(false);
@@ -230,9 +228,14 @@ const functions = {
       source: mapController.getDrawSource(),
       type: geomType,
       freehandCondition: shiftKeyOnly,
-      // geometryFunction: function() {
-      //   console.log("test");
-      // },
+      condition: function(e) {
+        // when the point's button is 1(leftclick), allows drawing
+        if (e.pointerEvent.buttons === 1) {
+          return true;
+        } else {
+          return false;
+        }
+      },
     };
 
     if (geometryFunction) options.geometryFunction = geometryFunction;
@@ -286,6 +289,14 @@ const functions = {
       },
       this
     );
+
+    document.removeEventListener("mousedown", lastEvent);
+    lastEvent = (e) => {
+      if (e.which == 3) {
+        draw.removeLastPoint();
+      }
+    };
+    document.addEventListener("mousedown", lastEvent);
 
     draw.on(
       "drawend",

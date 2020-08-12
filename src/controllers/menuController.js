@@ -119,6 +119,14 @@ const getters = {
           toolController.pickDrawType(drawTypeEnum.LINESTRING, callback);
         },
       },
+      {
+        key: "swap",
+        label: "Swap Image",
+        image: icons.ndvi,
+        click: () => {
+          modalController.showComparerModal();
+        },
+      },
     ];
   },
   getBottomMenu() {

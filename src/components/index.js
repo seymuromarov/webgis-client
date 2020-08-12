@@ -21,6 +21,7 @@ export { default as ComputedLayersModal } from "./modals/ComputedLayers";
 export { default as MapTextModal } from "./modals/MapTextModal";
 export { default as ChangeDetector } from "./modals/ChangeDetector";
 export { default as NdviAssessment } from "./modals/NdviAssessment";
+export { default as ComparerModal } from "./modals/ComparerModal";
 export { default as DataAddEditModal } from "./modals/DataAddEditModal";
 export { default as ImageUploadModal } from "./modals/ImageUploadModal";
 export { default as BlindSpotModal } from "./modals/BlindSpotModal";

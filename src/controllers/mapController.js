@@ -469,6 +469,10 @@ const getters = {
     let zoom = view.getZoom();
     return zoom;
   },
+  getCurrentExtent() {
+    let map = getters.getMap();
+    return map.getView().calculateExtent(map.getSize());
+  },
   getCurrentCenter() {
     let map = getters.getMap();
     let view = map.getView();

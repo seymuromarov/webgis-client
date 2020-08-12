@@ -97,6 +97,14 @@ const functions = {
     let moodal = getters.getMoodal();
     moodal.mapTextModal.show();
   },
+  hideComparerModal() {
+    let moodal = getters.getMoodal();
+    moodal.comparerModal.hide();
+  },
+  showComparerModal() {
+    let moodal = getters.getMoodal();
+    moodal.comparerModal.show();
+  },
 };
 
 const getters = {
