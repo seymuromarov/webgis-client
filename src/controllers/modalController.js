@@ -89,14 +89,6 @@ const functions = {
     let moodal = getters.getMoodal();
     moodal.blindSpotModal.show();
   },
-  hideMapTextModal() {
-    let moodal = getters.getMoodal();
-    moodal.mapTextModal.hide();
-  },
-  showMapTextModal() {
-    let moodal = getters.getMoodal();
-    moodal.mapTextModal.show();
-  },
 };
 
 const getters = {

@@ -16,8 +16,8 @@ const getters = {
         label: "Add Text",
         image: icons.point,
         click: () => {
-          let callback = () => {
-            modalController.showMapTextModal();
+          const callback = (e) => {
+            toolController.showMapTextInput(e);
           };
 
           toolController.pickDrawType(drawTypeEnum.TEXT, callback);
@@ -63,7 +63,7 @@ const getters = {
         key: "addPlace",
         label: "Add place",
         image: icons.place,
-        click: () => {},
+        click: () => { },
       },
       {
         key: "reset",
