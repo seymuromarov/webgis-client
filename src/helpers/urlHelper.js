@@ -76,7 +76,6 @@ const functions = {
         break;
     }
 
-    console.log("buildTileUrl -> url", url);
     return url;
   },
   getImageUrl(name, extent, type) {

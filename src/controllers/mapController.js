@@ -263,7 +263,6 @@ const functions = {
         }
       } else {
         if (serviceHelper.isGeowebcacheService(service)) {
-          console.log("isGeowebcacheService");
           layer = new TileLayer({
             ...defaultProps,
             source: new TileWMS({
@@ -280,7 +279,6 @@ const functions = {
             }),
           });
         } else if (serviceHelper.isGeoserverService(service)) {
-          console.log("isGeoserverService");
           layer = new TileLayer({
             ...defaultProps,
             source: new TileWMS({
@@ -294,7 +292,6 @@ const functions = {
             }),
           });
         } else if (serviceHelper.isGeoserverGwsService(service)) {
-          console.log("isGeoserverService");
           layer = new TileLayer({
             ...defaultProps,
             source: new TileWMS({
