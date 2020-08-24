@@ -81,6 +81,9 @@ import {
   KML,
   TopoJSON,
   Icon,
+  TileGrid,
+  createXYZ,
+  getProjection,
 } from "@/wrappers/openLayerImports";
 
 // Custom components
@@ -164,7 +167,12 @@ export default {
     var debugLayer = new TileLayer({
       source: new TileDebug({
         projection: "EPSG:3857",
-        tileGrid: new OSM().getTileGrid(),
+        tileGrid: new TileGrid({
+          extent: getProjection("EPSG:3857").getExtent(),
+          resolutions: createXYZ()
+            .getResolutions()
+            .slice(1),
+        }),
       }),
     });
 
@@ -187,7 +195,7 @@ export default {
       let dragAndDropInteraction = new DragAndDrop({
         formatConstructors: [GPX, GeoJSON, IGC, KML, TopoJSON],
       });
-      this.layers = [baseLayer, this.vector];
+      this.layers = [baseLayer, this.vector, debugLayer];
       let zoom =
         this.hashResolveResult !== null ? this.hashResolveResult.zoom : 8;
       let center =

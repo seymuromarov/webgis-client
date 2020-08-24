@@ -4,6 +4,7 @@ const state = {
   graticuleVisibility: false,
   isColorPick: false,
   isMarker: false,
+  isInteraction: false,
   isRemove: false,
   isDrawForChangeDetection: false,
   isDrawForFilter: false,
@@ -27,6 +28,9 @@ const mutations = {
   },
   SET_MARKER_STATUS(state, payload) {
     state.isMarker = payload;
+  },
+  SET_INTERACTION_STATUS(state, payload) {
+    state.isInteraction = payload;
   },
   SET_DRAW_FOR_CHANGE_DETECTION_STATUS(state, payload) {
     state.isDrawForChangeDetection = payload;
@@ -72,6 +76,9 @@ const actions = {
   saveMarkerStatus(context, payload) {
     context.commit("SET_MARKER_STATUS", payload);
   },
+  saveInteractionStatus(context, payload) {
+    context.commit("SET_INTERACTION_STATUS", payload);
+  },
   saveDrawForChangeDetectionStatus(context, payload) {
     context.commit("SET_DRAW_FOR_CHANGE_DETECTION_STATUS", payload);
   },
@@ -115,6 +122,9 @@ const getters = {
   },
   isMarker: (state) => {
     return state.isMarker;
+  },
+  isInteraction: (state) => {
+    return state.isInteraction;
   },
   isRemove: (state) => {
     return state.isRemove;

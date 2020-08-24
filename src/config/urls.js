@@ -11,6 +11,7 @@ const URL =
 
 const USER_URLS = {
   GET_INFO_URL: URL + "/api/user/GetInfo",
+  GET_URL: URL + "/api/user/Get",
 };
 const ACCOUNT_URL = {
   LOGIN_URL: URL + "/api/account/login",

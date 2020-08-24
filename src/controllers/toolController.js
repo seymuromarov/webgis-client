@@ -55,7 +55,10 @@ const functions = {
     setters.setMarkerStatus(false);
     setters.setRemoveStatus(false);
     if (type !== drawTypeEnum.NONE) {
+      setters.setInteractionStatus(true);
       functions.addInteraction(type, callback, featureOptions);
+    } else {
+      setters.setInteractionStatus(false);
     }
 
     setters.addFeatureIdCounter(10);
@@ -149,9 +152,17 @@ const functions = {
       functions.deleteFeatureByCallback((feature) => {
         var forService = feature.get("forService");
         let isEqual = _.isMatch(forService, serviceInfo);
+        if (isEqual) functions.deleteFeatureTooltip(feature.get("id"));
         return isEqual;
       });
     }
+  },
+  deleteFeatureByName(name) {
+    functions.deleteFeatureByCallback((feature) => {
+      var n = feature.get("name");
+      let isEqual = n == name;
+      return isEqual;
+    });
   },
   deleteFeatureByCallback(callback) {
     let source = mapController.getDrawSource();
@@ -164,7 +175,6 @@ const functions = {
       for (var i = 0; i < result.length; i++) {
         var item = result[i];
         source.removeFeature(item);
-        functions.deleteFeatureTooltip(item.get("id"));
       }
       mapController.setDrawSource(source);
     }
@@ -310,7 +320,6 @@ const functions = {
           let coordinates = [];
 
           let t = e.feature.getGeometry().getType();
-          console.log("addInteraction -> t", t);
           if (geomType == drawTypeEnum.POINT) {
             coordinates = e.feature.getGeometry().getCoordinates();
             coordinates = transform(coordinates, "EPSG:3857", "EPSG:4326");
@@ -499,6 +508,9 @@ const getters = {
   getMarkerStatus() {
     return $store.getters.isMarker;
   },
+  getInteractionStatus() {
+    return $store.getters.isInteraction;
+  },
   getRemoveStatus() {
     return $store.getters.isRemove;
   },
@@ -546,6 +558,9 @@ const setters = {
   },
   setMarkerStatus(val) {
     $store.dispatch("saveMarkerStatus", val);
+  },
+  setInteractionStatus(val) {
+    $store.dispatch("saveInteractionStatus", val);
   },
   setRemoveStatus(val) {
     $store.dispatch("saveRemoveStatus", val);

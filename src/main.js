@@ -18,6 +18,7 @@ import App from "./App.vue";
  */
 import "bootstrap/dist/css/bootstrap.css";
 import "@/assets/style/bootstrapCustom.scss";
+import "juxtaposejs/build/css/juxtapose.css";
 
 import "@/assets/style/globalStyle.scss";
 import "@/assets/style/treeStyle.scss";

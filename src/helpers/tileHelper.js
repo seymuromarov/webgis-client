@@ -1,9 +1,8 @@
 import { tileTypeEnum } from "@/enums";
 import { serviceHelper, urlHelper } from "@/helpers";
 import { tokenService } from "@/services";
-import $store from "@/store/store.js";
-import { URL, MAP_URLS } from "@/config/urls";
-import qs from "qs";
+import { URL, MAP_URLS, ARCGIS_URLS } from "@/config/urls";
+import { arcgisImgExportSettings } from "@/config/settings";
 const functions = {
   buildTileUrl(service, type) {
     let url = "";
@@ -14,6 +13,7 @@ const functions = {
       XYZ,
       TILE_ARCGIS_REST,
       IMAGE_ARCGIS_REST,
+      WMS,
     } = tileTypeEnum;
 
     switch (type) {
@@ -48,9 +48,23 @@ const functions = {
       case IMAGE_ARCGIS_REST:
         url = `${URL}/api/map/service/${service.name}/MapServer/`;
         break;
+      case WMS:
+        if (serviceHelper.isGeoserverService(service)) {
+        } else if (serviceHelper.isGeoserverGwsService(service)) {
+        } else if (serviceHelper.isGeowebcacheService(service)) {
+        }
+        break;
     }
 
     return url;
+  },
+  getImageUrl(name, extent, type) {
+    var params = arcgisImgExportSettings;
+    params["token"] = tokenService.getToken();
+    params["bbox"] = extent.toString();
+
+    let arcgisImgUrl = ARCGIS_URLS.EXPORT_IMAGE_URL(name, params);
+    return arcgisImgUrl;
   },
 };
 export default { ...functions };

@@ -8,6 +8,15 @@ const checker = {
   isArcgisService: (service) => {
     return service && service.resourceType === "azcArcgis";
   },
+  isGeoserverService: (service) => {
+    return service && service.resourceType === "geoserver";
+  },
+  isGeoserverGwsService: (service) => {
+    return service && service.resourceType === "geoserverGws";
+  },
+  isGeowebcacheService: (service) => {
+    return service && service.resourceType === "geowebcache";
+  },
 
   isDynamic(service) {
     return service && service.mapType == "dynamic";

@@ -24,6 +24,7 @@ import VectorTileLayer from "ol/layer/VectorTile.js";
 import VectorTileSource from "ol/source/VectorTile.js";
 import MVT from "ol/format/MVT.js";
 import { createXYZ } from "ol/tilegrid";
+import TileGrid from "ol/tilegrid/TileGrid.js";
 import {
   OSM,
   TileArcGISRest,
@@ -78,6 +79,8 @@ export {
   DragAndDrop,
   //"ol/source/TileDebug"
   TileDebug,
+  //ol/tilegrid/TileGrid.js
+  TileGrid,
   //"ol/style.js"
   CircleStyle,
   Text,

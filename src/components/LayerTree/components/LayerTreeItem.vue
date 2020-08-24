@@ -5,7 +5,7 @@
         <!-- Switch -->
         <ToggleSwitch v-if="!isCategory" class="pre" v-model="switchModel" />
         <i class="far fa-folder pre" v-else></i>
-        {{ data.showingLabel }}
+        {{ isCategory ? data.name : data.showingLabel }}
       </span>
 
       <!-- Caret icons -->

@@ -5,6 +5,15 @@ import {
   CircleStyle,
   Icon,
 } from "@/wrappers/openLayerImports";
+const selectedLayerStyle = new Style({
+  stroke: new Stroke({
+    color: "rgba(200,20,20,1)",
+    width: 1,
+  }),
+  fill: new Fill({
+    color: "rgba(200,20,20,0.4)",
+  }),
+});
 const featureStyle = new Style({
   fill: new Fill({ color: "#00000000" }),
   stroke: new Stroke({ color: "#C672F5", width: 2 }),
@@ -28,4 +37,4 @@ const textPointStyle = new Style({
   stroke: new Stroke({ color: "#00000000", width: 2 }),
 });
 
-export { pointStyle, featureStyle, textPointStyle };
+export { pointStyle, featureStyle, textPointStyle, selectedLayerStyle };

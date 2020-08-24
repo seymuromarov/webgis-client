@@ -1,23 +1,24 @@
 import $store from "@/store/store.js";
-import {tileTypeEnum, resolutionOptionTypeEnum} from "@/enums";
+import { tileTypeEnum, resolutionOptionTypeEnum } from "@/enums";
 import {
   serviceController,
   layerController,
   toolController,
 } from "@/controllers";
-import {defaultZoomLevelSettings} from "@/config/settings";
-import {materialColors} from "@/constants/colors";
-import {tokenService} from "@/services";
+import { defaultZoomLevelSettings } from "@/config/settings";
+import { materialColors } from "@/constants/colors";
+import { selectedLayerStyle } from "@/constants/featureStyles";
+import { tokenService } from "@/services";
 import {
   operatorEnumTostring,
   distanceEnumToString,
 } from "@/utils/enumToString";
-import {distanceConvert} from "@/utils/unitConvertor";
+import { distanceConvert } from "@/utils/unitConvertor";
 
 import {
   serviceHelper,
   layerHelper,
-  tileHelper,
+  urlHelper,
   colorHelper,
   coreHelper,
 } from "@/helpers";
@@ -38,21 +39,13 @@ import {
   Fill,
   CircleStyle,
   transform,
+  transformExtent,
   Polygon,
   TileWMS,
 } from "@/wrappers/openLayerImports";
 import modalController from "./modalController";
-import {drawTypeEnum} from "@/enums";
+import { drawTypeEnum } from "@/enums";
 
-const selectedLayerStyle = new Style({
-  stroke: new Stroke({
-    color: "rgba(200,20,20,1)",
-    width: 1,
-  }),
-  fill: new Fill({
-    color: "rgba(200,20,20,0.4)",
-  }),
-});
 const baseMaps = {
   none: new XYZ({
     crossOrigin: "Anonymous",
@@ -151,7 +144,7 @@ const functions = {
   },
   removeDrawPolygons() {
     let map = getters.getMap();
-    map.getLayers().forEach(function (layer) {
+    map.getLayers().forEach(function(layer) {
       if (layer.get("type") === "draw") {
         functions.removeLayer(layer);
       }
@@ -211,7 +204,7 @@ const functions = {
                 idProperty: "gid",
                 geometryName: "geom",
               }),
-              url: tileHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
+              url: urlHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
             }),
 
             style: (feature) => {
@@ -255,7 +248,7 @@ const functions = {
           layer = new ImageLayer({
             ...defaultProps,
             source: new ImageArcGISRest({
-              url: tileHelper.buildTileUrl(
+              url: urlHelper.buildTileUrl(
                 service,
                 tileTypeEnum.IMAGE_ARCGIS_REST
               ),
@@ -269,11 +262,12 @@ const functions = {
           });
         }
       } else {
-        if (service.resourceType == "geowebcache") {
+        if (serviceHelper.isGeowebcacheService(service)) {
+          console.log("isGeowebcacheService");
           layer = new TileLayer({
             ...defaultProps,
             source: new TileWMS({
-              url: service.sourceUrl,
+              url: urlHelper.buildTileUrl(service, tileTypeEnum.WMS),
               params: {
                 LAYERS: service.name,
                 TILED: true,
@@ -285,38 +279,39 @@ const functions = {
               },
             }),
           });
-        } else if (service.resourceType == "geoserver") {
+        } else if (serviceHelper.isGeoserverService(service)) {
+          console.log("isGeoserverService");
           layer = new TileLayer({
             ...defaultProps,
             source: new TileWMS({
-              url: service.sourceUrl,
+              url: urlHelper.buildTileUrl(service, tileTypeEnum.WMS),
+              params: {
+                LAYER: service.name,
+                TILED: true,
+                format: "image/png",
+              },
+              serverType: "geoserver",
+            }),
+          });
+        } else if (serviceHelper.isGeoserverGwsService(service)) {
+          console.log("isGeoserverService");
+          layer = new TileLayer({
+            ...defaultProps,
+            source: new TileWMS({
+              url: urlHelper.buildTileUrl(service, tileTypeEnum.WMS),
               params: {
                 LAYERS: service.name,
                 TILED: true,
                 format: "image/png",
-              },
-              serverType: 'geoserver',
-            }),
-          });
-
-        }else if (service.resourceType == "geoserverGws") {
-          layer = new TileLayer({
-            ...defaultProps,
-            source: new TileWMS({
-              url: service.sourceUrl,
-              params: {
-                LAYERS: service.name,
-                TILED: true,
-                format: "image/png",
+                srs: "EPSG:3857",
               },
             }),
           });
-
         } else if (service.spatial === 3857) {
           layer = new TileLayer({
             ...defaultProps,
             source: new XYZ({
-              url: tileHelper.buildTileUrl(service, tileTypeEnum.XYZ),
+              url: urlHelper.buildTileUrl(service, tileTypeEnum.XYZ),
               projection: "EPSG:3857",
               crossOrigin: "Anonymous",
             }),
@@ -325,7 +320,7 @@ const functions = {
           layer = new TileLayer({
             ...defaultProps,
             source: new TileArcGISRest({
-              url: tileHelper.buildTileUrl(
+              url: urlHelper.buildTileUrl(
                 service,
                 tileTypeEnum.TILE_ARCGIS_REST
               ),
@@ -346,7 +341,7 @@ const functions = {
           format: new MVT({
             geometryName: "geom",
           }),
-          url: tileHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
+          url: urlHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
         }),
         style: (feature) => {
           var featureLayerId = feature.get("layerId");
@@ -389,8 +384,7 @@ const events = {
           );
           elem[0].remove();
           setters.setDrawSource(drawSource);
-        } catch (e) {
-        }
+        } catch (e) {}
       });
     } else if (toolController.getColorPickStatus()) {
       var map = getters.getMap();
@@ -413,19 +407,13 @@ const events = {
           });
 
           feature.setStyle(newStyle);
-        } catch (e) {
-        }
+        } catch (e) {}
       });
       setters.setMap(map);
     } //only map click
-    else if (toolController.getDrawType() === drawTypeEnum.NONE) {
+    else if (!toolController.getInteractionStatus()) {
       modalController.showServiceSelectionModal();
     }
-    // if (tableController.getTableVisibility()) {
-    //   alert();
-    //   // tableController.getGeometryData(coord);
-    //   // mapController.focusToServicePolygon(evt.pixel);
-    // }
   },
 };
 
@@ -493,7 +481,8 @@ const getters = {
   },
   getCurrentExtent() {
     let map = getters.getMap();
-    return map.getView().calculateExtent(map.getSize());
+    var extent = map.getView().calculateExtent(map.getSize());
+    return transformExtent(extent, "EPSG:3857", "EPSG:4326");
   },
   getCurrentCenter() {
     let map = getters.getMap();
@@ -530,7 +519,7 @@ const getters = {
     let map = getters.getMap();
     let layer = null;
 
-    map.getLayers().forEach(function (item) {
+    map.getLayers().forEach(function(item) {
       var layerId = item.get("id");
       if (layerId !== undefined && layerId === id) {
         layer = item;
@@ -582,4 +571,4 @@ const getters = {
     }
   },
 };
-export default {...functions, ...getters, ...setters, ...events};
+export default { ...functions, ...getters, ...setters, ...events };

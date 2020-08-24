@@ -36,6 +36,7 @@ const icons = {
   user: svgIconPathBuilder("user"),
   world: svgIconPathBuilder("world"),
   ndvi: svgIconPathBuilder("ndvi"),
+  swap: svgIconPathBuilder("swap"),
 };
 
 export { icons };

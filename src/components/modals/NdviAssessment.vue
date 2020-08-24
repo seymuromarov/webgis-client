@@ -273,8 +273,6 @@ export default {
       var extent = mapHelper.bboxToExtent(ndviController.getNdviExtent());
       params["token"] = tokenService.getToken();
       params["bbox"] = extent.toString();
-      var queryString = urlHelper.formatQueryString(params);
-
       let arcgisImgUrl = ARCGIS_URLS.EXPORT_IMAGE_URL(basemap.name, params);
       // let defaultImgUrl = "https://i.picsum.photos/id/608/256/256.jpg";
       return arcgisImgUrl;
