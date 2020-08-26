@@ -16,8 +16,8 @@ const getters = {
         label: "Add Text",
         image: icons.point,
         click: () => {
-          let callback = () => {
-            modalController.showMapTextModal();
+          const callback = (e) => {
+            toolController.showMapTextInput(e);
           };
 
           toolController.pickDrawType(drawTypeEnum.TEXT, callback);
@@ -125,6 +125,14 @@ const getters = {
         image: icons.ndvi,
         click: () => {
           modalController.showComparerModal();
+        },
+      },
+      {
+        key: "print",
+        label: "Print",
+        image: icons.ndvi,
+        click: () => {
+          modalController.showPrintModal();
         },
       },
     ];

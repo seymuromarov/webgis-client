@@ -1,115 +1,92 @@
 import $store from "@/store/store.js";
+import Vue from "vue";
+const vm = new Vue();
 const functions = {
   showSumResultModal() {
-    let moodal = getters.getMoodal();
-    moodal.sumResultModal.show();
+    vm.$moodal.sumResultModal.show();
   },
   showFilterModal() {
-    let moodal = getters.getMoodal();
-    moodal.filterModal.show();
+    vm.$moodal.filterModal.show();
   },
   hideFilterModal() {
-    let moodal = getters.getMoodal();
-    moodal.filterModal.hide();
+    vm.$moodal.filterModal.hide();
   },
 
   showNdviAssessmentModal() {
-    let moodal = getters.getMoodal();
-    moodal.ndviAssessmentModal.show();
+    vm.$moodal.ndviAssessmentModal.show();
   },
   hideNdviAssessmentModal() {
-    let moodal = getters.getMoodal();
-    moodal.ndviAssessmentModal.hide();
+    vm.$moodal.ndviAssessmentModal.hide();
   },
   showDataAddEditModal() {
-    let moodal = getters.getMoodal();
-    moodal.dataAddEditModal.show();
+    vm.$moodal.dataAddEditModal.show();
   },
   hideDataAddEditModal() {
-    let moodal = getters.getMoodal();
-    moodal.dataAddEditModal.hide();
+    vm.$moodal.dataAddEditModal.hide();
   },
   showGeometryModal() {
-    let moodal = getters.getMoodal();
-    moodal.geometryModal.show();
+    vm.$moodal.geometryModal.show();
   },
   hideGeometryModal() {
-    let moodal = getters.getMoodal();
-    moodal.geometryModal.hide();
+    vm.$moodal.geometryModal.hide();
   },
   showColorPickerModal() {
-    let moodal = getters.getMoodal();
-    moodal.colorPickerModal.show();
+    vm.$moodal.colorPickerModal.show();
   },
   hideImageUploadModal() {
-    let moodal = getters.getMoodal();
-    moodal.imageUploadModal.hide();
+    vm.$moodal.imageUploadModal.hide();
   },
   showImageUploadModal() {
-    let moodal = getters.getMoodal();
-    moodal.imageUploadModal.show();
+    vm.$moodal.imageUploadModal.show();
   },
   hideProfileModalModal() {
-    let moodal = getters.getMoodal();
-    moodal.profileModal.hide();
+    vm.$moodal.profileModal.hide();
   },
   showProfileModalModal() {
-    let moodal = getters.getMoodal();
-    moodal.profileModal.show();
+    vm.$moodal.profileModal.show();
   },
   hideFavoriteQueryModal() {
-    let moodal = getters.getMoodal();
-    moodal.favoriteQueryModal.hide();
+    vm.$moodal.favoriteQueryModal.hide();
   },
   showFavoriteQueryModal() {
-    let moodal = getters.getMoodal();
-    moodal.favoriteQueryModal.show();
+    vm.$moodal.favoriteQueryModal.show();
   },
   hideServiceSelectionModal() {
-    let moodal = getters.getMoodal();
-    moodal.serviceSelectionModal.hide();
+    vm.$moodal.serviceSelectionModal.hide();
   },
   showServiceSelectionModal() {
-    let moodal = getters.getMoodal();
-    moodal.serviceSelectionModal.show();
+    vm.$moodal.serviceSelectionModal.show();
   },
   hideDataModal() {
-    let moodal = getters.getMoodal();
-    moodal.dataModal.hide();
+    vm.$moodal.dataModal.hide();
   },
   showDataModal() {
-    let moodal = getters.getMoodal();
-    moodal.dataModal.show();
+    vm.$moodal.dataModal.show();
   },
   hideBlindSpotModal() {
-    let moodal = getters.getMoodal();
-    moodal.blindSpotModal.hide();
+    vm.$moodal.blindSpotModal.hide();
   },
   showBlindSpotModal() {
-    let moodal = getters.getMoodal();
-    moodal.blindSpotModal.show();
+    vm.$moodal.blindSpotModal.show();
   },
-  hideMapTextModal() {
-    let moodal = getters.getMoodal();
-    moodal.mapTextModal.hide();
-  },
-  showMapTextModal() {
-    let moodal = getters.getMoodal();
-    moodal.mapTextModal.show();
-  },
+
   hideComparerModal() {
-    let moodal = getters.getMoodal();
-    moodal.comparerModal.hide();
+    vm.$moodal.comparerModal.hide();
   },
   showComparerModal() {
-    let moodal = getters.getMoodal();
-    moodal.comparerModal.show();
+    vm.$moodal.comparerModal.show();
+  },
+  hidePrintModal() {
+    vm.$moodal.printModal.hide();
+  },
+  showPrintModal() {
+    vm.$moodal.printModal.show();
   },
 };
 
 const getters = {
   getMoodal() {
-    return $store.getters.moodal;
+    return $store.getters.vm.$moodal;
   },
 };
 const setters = {

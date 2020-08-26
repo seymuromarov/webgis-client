@@ -45,8 +45,9 @@
     <ComputedLayersModal />
 
     <ComparerModal />
+    <PrintModal />
 
-    <MapTextModal />
+    <MapText />
   </div>
 </template>
 
@@ -99,7 +100,8 @@ import {
   ChangeDetector as DetectorModal,
   NdviAssessment,
   ProfileModal,
-  MapTextModal,
+  MapText,
+  PrintModal,
   ServiceSelectionModal,
   BlindSpotModal,
   ComparerModal,
@@ -129,13 +131,14 @@ export default {
     FilterModal,
     Report,
     MapControls,
-    MapTextModal,
+    MapText,
     ComputedLayersModal,
     NdviAssessment,
     ProfileModal,
     ServiceSelectionModal,
     BlindSpotModal,
     ComparerModal,
+    PrintModal,
   },
   data() {
     return {
@@ -175,8 +178,6 @@ export default {
         }),
       }),
     });
-
-    this.moodal = this.$moodal;
 
     this.hashResolveResult = hashService.resolveHash();
 

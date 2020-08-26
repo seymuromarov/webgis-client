@@ -1,9 +1,24 @@
-<template> </template>
+<template>
+  <CustomModal
+    name="printModal"
+    title="Print"
+    width="50%"
+    :minHeight="500"
+    @beforeShow="onModalOpen"
+    @afterHide="onModalClose"
+  ></CustomModal>
+</template>
 
 <script>
 export default {
   name: "PrintModal",
-  data: {},
+  data() {
+    return {};
+  },
+  methods: {
+    onModalOpen() {},
+    onModalClose() {},
+  },
 };
 </script>
 

@@ -8,7 +8,6 @@ import filter from "./filter";
 import map from "./map";
 import tool from "./tool";
 import menu from "./menu";
-import modal from "./modal";
 import history from "./history";
 import ndvi from "./ndvi";
 import user from "./user";
@@ -24,7 +23,6 @@ export default {
   map,
   tool,
   menu,
-  modal,
   history,
   ndvi,
   user,

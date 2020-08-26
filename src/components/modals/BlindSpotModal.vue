@@ -121,7 +121,7 @@ export default {
       );
       const column = item.code;
 
-      if (data.features.length > 0) {
+      if (data.totalCount > 0) {
         const label = column;
         const values = data.features.map((c) => {
           const val = c.attributes[column.toLowerCase()];
@@ -129,7 +129,7 @@ export default {
         });
         this.renderGraph(column, values, values);
       } else {
-        this.renderGraph(column, null, null);
+        this.renderGraph(column, [], []);
       }
       this.chartVisibility = true;
     },
@@ -163,6 +163,7 @@ export default {
     },
 
     stringFixed(val, fix) {
+      console.log("stringFixed -> val", val);
       let splitedText = val.toString().split(".");
       let rasengan =
         splitedText[0] +
