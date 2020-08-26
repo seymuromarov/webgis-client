@@ -6,7 +6,7 @@ export default {
       let hashString = hash.replace("#shareMap=", "");
       let parts = hashString.split("&");
       if (parts.length === 4) {
-        let zoom = parseInt(parts[0], 10);
+        let zoom = parseFloat(parts[0], 10);
         let center = [parseFloat(parts[1]), parseFloat(parts[2])];
         let selectedLayers = [];
         let selectedPartSplit = parts[3].split(",");

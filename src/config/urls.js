@@ -71,7 +71,6 @@ const LAYER_DATA_IMAGE_URLS = {
 
 const MAP_URLS = {
   MVT: "api/Tile/VectorAsMvt",
-  GEOJSON: "api/Tile/VectorAsGeoJson",
 };
 
 const ARCGIS_URLS = {

@@ -38,7 +38,7 @@ const functions = {
 
           let queryString = urlHelper.formatQueryString(params);
 
-          url = `${URL}/${MAP_URLS.MVT}/${service.id}/{z}/{x}/{y}/?${queryString}`;
+          url = `${URL}/api/service/webgis/${service.name}/mvt/{z}/{x}/{y}/?${queryString}`;
         } else {
           var params = service.layers.map((item, index) => {
             let obj = { layerId: item.id };
@@ -50,24 +50,22 @@ const functions = {
             queries: params,
           });
 
-          url = `${URL}/api/Tile/Intersect/VectorAsMvt/${service.id}/{z}/{x}/{y}/?${queryString}`;
+          url = `${URL}/api/service/webgis/${service.name}/intersect/mvt/{z}/{x}/{y}/?${queryString}`;
         }
 
         break;
       case XYZ:
-        url = `${URL}/api/map/service/${service.name}/MapServer/tile/{z}/{y}/{x}?token=${token}`;
+        url = `${URL}/api/service/arcgis/${service.name}/{z}/{y}/{x}?token=${token}`;
         break;
       case TILE_ARCGIS_REST:
-        url = `${URL}/api/map/service/${service.name}/MapServer/`;
+        url = `${URL}/api/service/arcgis/${service.name}/`;
         break;
       case IMAGE_ARCGIS_REST:
-        url = `${URL}/api/map/service/${service.name}/MapServer/`;
+        url = `${URL}/api/service/arcgis/${service.name}/`;
         break;
       case WMS:
         if (serviceHelper.isGeoserverService(service)) {
-          let workspace = service.name.split(":")[0];
-          if (!workspace) workspace = service.name;
-          url = `${URL}/api/geoserver/${workspace}/wms`;
+          url = `${URL}/api/geoserver/services/wms`;
         } else if (serviceHelper.isGeoserverGwsService(service)) {
           url = `${URL}/api/geoserver/gwc/service/wms`;
         } else if (serviceHelper.isGeowebcacheService(service)) {

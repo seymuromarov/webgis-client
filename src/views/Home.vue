@@ -195,9 +195,10 @@ export default {
       let dragAndDropInteraction = new DragAndDrop({
         formatConstructors: [GPX, GeoJSON, IGC, KML, TopoJSON],
       });
-      this.layers = [baseLayer, this.vector, debugLayer];
+      this.layers = [baseLayer, this.vector];
       let zoom =
         this.hashResolveResult !== null ? this.hashResolveResult.zoom : 8;
+
       let center =
         this.hashResolveResult !== null
           ? this.hashResolveResult.center
