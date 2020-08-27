@@ -152,16 +152,16 @@ export default {
       vectorSource: null,
       vectorLayer: null,
       hashResolveResult: {},
-      scaleLineOptions: new ScaleLine({
-        units: "metric",
-        changed: () => {
-          console.log("dsadsad");
-        },
-        // bar: true,
-        // steps: 4,
-        // text: true,
-        // minWidth: 140,
-      }),
+      // scaleLineOptions: new ScaleLine({
+      //   units: "metric",
+      //   changed: () => {
+      //     console.log("dsadsad");
+      //   },
+      //   // bar: true,
+      //   // steps: 4,
+      //   // text: true,
+      //   // minWidth: 140,
+      // }),
       isMetricCoordinateSystem: false,
     };
   },

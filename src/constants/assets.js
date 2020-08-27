@@ -10,6 +10,7 @@ const icons = {
   circle: svgIconPathBuilder("circle"),
   color_fill: svgIconPathBuilder("color_fill"),
   color_picker: svgIconPathBuilder("color_picker"),
+  compass: svgIconPathBuilder("compass"),
   delete: svgIconPathBuilder("delete"),
   file_download: svgIconPathBuilder("file_download"),
   fullscreen: svgIconPathBuilder("fullscreen"),
