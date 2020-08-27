@@ -154,6 +154,9 @@ export default {
       hashResolveResult: {},
       scaleLineOptions: new ScaleLine({
         units: "metric",
+        changed: () => {
+          console.log("dsadsad");
+        },
         // bar: true,
         // steps: 4,
         // text: true,
@@ -162,8 +165,14 @@ export default {
       isMetricCoordinateSystem: false,
     };
   },
+  watch: {
+    scaleLineOptions(old, newVal) {
+      console.log(old, newVal);
+    },
+  },
   created() {},
   mounted() {
+    console.log(this.scaleLineOptions);
     let baseLayer = new TileLayer({
       source: mapController.getBaseMaps()["gray"],
     });

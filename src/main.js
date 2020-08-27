@@ -82,7 +82,6 @@ Vue.use(Snotify, {
 Vue.component("CustomModal", CustomModal);
 Vue.component("paginate", Paginate);
 Vue.component("v-select", vSelect);
-
 Vue.use(Vuelidate);
 Vue.use(Loading);
 Vue.use(Multiselect);
