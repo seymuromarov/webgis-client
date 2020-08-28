@@ -487,6 +487,7 @@ export default {
         font-size: 14px;
         display: flex;
         align-items: center;
+        transition: all 0.2s ease-in-out;
       }
 
       input {
@@ -497,10 +498,11 @@ export default {
         border: 0;
         color: var(--white);
         transition: all 0.2s ease-in-out;
-        transition-delay: 0.1s;
         font-size: 14px;
+      }
 
-        &:focus {
+      &:focus-within {
+        label, input {
           background-color: var(--primary-color-opacity-95);
         }
       }
