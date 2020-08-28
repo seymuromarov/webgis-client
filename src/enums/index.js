@@ -3,6 +3,7 @@ import serviceTypeEnum from "./serviceTypeEnum";
 import drawTypeEnum from "./drawTypeEnum";
 import menuTabEnum from "./menuTabEnum";
 import resolutionOptionTypeEnum from "./resolutionOptionTypeEnum";
+import coordinateTypeEnum from "./coordinateTypeEnum";
 
 export {
   tileTypeEnum,
@@ -10,4 +11,5 @@ export {
   drawTypeEnum,
   menuTabEnum,
   resolutionOptionTypeEnum,
+  coordinateTypeEnum,
 };

@@ -124,6 +124,7 @@ import {
   layerController,
   serviceController,
 } from "@/controllers";
+import { coordinateTypeEnum } from "@/enums";
 import workspace from "@/api/workspace";
 export default {
   name: "Workspace",
@@ -144,10 +145,11 @@ export default {
   methods: {
     getCurrentConfigurations() {
       this.zoomLevel = mapController.getCurrentZoomLevel();
-      this.center = mapController.getCurrentCenter();
+      this.center = mapController.getCurrentCenter(
+        coordinateTypeEnum.GEOGRAPHIC
+      );
       this.rotation = mapController.getCurrentRotation();
       this.selectedLayers = layerController.getSelectedLayers();
-   
     },
     getLayersName() {},
     getWorkspace() {
@@ -182,7 +184,7 @@ export default {
         const center = [this.workspace.coordinateX, this.workspace.coordinateY];
         const activeLayers = this.workspace.activeLayers;
         mapController.setZoomLevel(zoom);
-        mapController.setCenter(center);
+        mapController.setCenter(center, coordinateTypeEnum.GEOGRAPHIC);
 
         const currentSelecteds = layerController.getSelectedLayers();
 

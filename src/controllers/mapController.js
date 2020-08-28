@@ -1,5 +1,9 @@
 import $store from "@/store/store.js";
-import { tileTypeEnum, resolutionOptionTypeEnum } from "@/enums";
+import {
+  tileTypeEnum,
+  resolutionOptionTypeEnum,
+  coordinateTypeEnum,
+} from "@/enums";
 import {
   serviceController,
   layerController,
@@ -449,9 +453,10 @@ const setters = {
     map.getView().setZoom(zoom);
     setters.setMap(map);
   },
-  setCenter(center) {
+  setCenter(center, type) {
     let map = getters.getMap();
-    center = transform(center, "EPSG:4326", "EPSG:3857");
+    if (type && type == coordinateTypeEnum.GEOGRAPHIC)
+      center = transform(center, "EPSG:4326", "EPSG:3857");
     map.getView().setCenter(center);
     setters.setMap(map);
   },
@@ -481,12 +486,13 @@ const getters = {
     var extent = map.getView().calculateExtent(map.getSize());
     return transformExtent(extent, "EPSG:3857", "EPSG:4326");
   },
-  getCurrentCenter() {
+  getCurrentCenter(type) {
     let map = getters.getMap();
     let view = map.getView();
     let center = view.getCenter();
-
-    return transform(center, "EPSG:3857", "EPSG:4326");
+    if (type && type == coordinateTypeEnum.GEOGRAPHIC)
+      return transform(center, "EPSG:3857", "EPSG:4326");
+    else return center;
   },
   getCurrentRotation() {
     let map = getters.getMap();
