@@ -3,7 +3,7 @@
     <!-- Main content -->
     <div class="padding-0 map-layout">
       <div id="map">
-        <MapControls />
+        <MapControls v-if="isMapControlsVisible" />
         <!-- <Sidebar @setBaseLayout="setBaseLayout" /> -->
         <Sidebar />
       </div>
@@ -153,6 +153,7 @@ export default {
       vectorLayer: null,
       hashResolveResult: {},
       isMetricCoordinateSystem: false,
+      isMapControlsVisible: false,
     };
   },
   watch: {
@@ -180,13 +181,6 @@ export default {
     this.hashResolveResult = hashService.resolveHash();
     this.scaleOptions = new ScaleLine({
       units: "metric",
-      changed: () => {
-        console.log("dsadsad");
-      },
-      // bar: true,
-      // steps: 4,
-      // text: true,
-      // minWidth: 140,
     });
     this.drawSource = new VectorSource({
       wrapX: false,
@@ -287,6 +281,8 @@ export default {
         this.mapLayer.getView().setZoom(event.state.zoom);
         this.mapLayer.getView().setRotation(event.state.rotation);
       });
+
+      this.isMapControlsVisible = true;
     });
   },
   methods: {

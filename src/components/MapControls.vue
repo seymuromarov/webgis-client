@@ -2,7 +2,6 @@
   <div class="map-controls" id="map-controls">
     {{/* Top controls */}}
     <div class="map-controls--horizontal">
-    
       {{/* Search */}}
       <div class="search">
         <div class="search__logo">
@@ -36,9 +35,11 @@
           <img :src="icons.search" alt="Home" />
         </button>
       </div>
-      
+
       {{/* Coordinates */}}
-      <div class="control__button-group control__button-group--horizontal coordinates">
+      <div
+        class="control__button-group control__button-group--horizontal coordinates"
+      >
         <div class="control-select">
           <input
             type="text"
@@ -48,14 +49,10 @@
           />
           <div class="control-select__results custom-scrollbar">
             <ul>
-              <li
-                @click="onModeSelect('metric')"
-              >
+              <li @click="onModeSelect('metric')">
                 Metric
               </li>
-              <li
-                @click="onModeSelect('horseric')"
-              >
+              <li @click="onModeSelect('horseric')">
                 Horseric
               </li>
             </ul>
@@ -64,12 +61,12 @@
 
         <div class="coordinate">
           <label for="coordinate-x">X:</label>
-          <input id="coordinate-x" v-model="coordinates.lng" placeholder="x"/>
+          <input id="coordinate-x" v-model="coordinates.lng" placeholder="x" />
         </div>
 
         <div class="coordinate">
           <label for="coordinate-y">Y:</label>
-          <input id="coordinate-y" v-model="coordinates.lat" placeholder="y"/>
+          <input id="coordinate-y" v-model="coordinates.lat" placeholder="y" />
         </div>
 
         <button class="control__button" @click="goToCoordinates">
@@ -113,7 +110,7 @@
     <div class="control__button-group scale">
       <input
         v-model="scale"
-        :style="{'width': scaleWidth + 'px'}"
+        :style="{ width: scaleWidth + 'px' }"
         @focus="scaleFocus"
         @blur="scaleBlur"
       />
@@ -125,7 +122,7 @@
 import { fromLonLat } from "ol/proj";
 import { mapController, historyController } from "@/controllers";
 import cities from "../data/cities.json";
-import { icons } from '@/constants/assets.js'
+import { icons } from "@/constants/assets.js";
 
 export default {
   name: "MapControls",
@@ -138,13 +135,14 @@ export default {
       searchInputValue: "",
       coordinatesMode: "metric",
       coordinates: {
-        lat: '40.395278',
-        lng: '49.882222'
+        lat: "40.395278",
+        lng: "49.882222",
       },
-      scale: "50 km",
-      scaleWidth: "123"
+      // scale: "50 km",
+      // scaleWidth: "123",
     };
   },
+
   methods: {
     onCitySelect(city) {
       this.map.getView().setCenter(
@@ -158,9 +156,14 @@ export default {
       this.coordinatesMode = mode;
     },
     goToCoordinates() {
-      this.map.getView().setCenter(
-        fromLonLat([parseFloat(this.coordinates.lng), parseFloat(this.coordinates.lat)])
-      );
+      this.map
+        .getView()
+        .setCenter(
+          fromLonLat([
+            parseFloat(this.coordinates.lng),
+            parseFloat(this.coordinates.lat),
+          ])
+        );
       this.map.getView().setZoom(11);
     },
     zoomIn() {
@@ -181,19 +184,35 @@ export default {
       historyController.historyNext(this);
     },
     scaleFocus() {
-      this.scale = this.scale.replace(/[^0-9]/g, '')
+      this.scale = this.scale.replace(/[^0-9.]/g, "");
+      console.log("scaleFocus -> this.scale", this.scale);
     },
     scaleBlur() {
-      const s = this.scale.replace(/[^0-9]/g, '')
-      this.scale = s + ' km' // or smth
-
-      this.setScale(s)
+      const s = this.scale.replace(/[^0-9.]/g, "");
+      console.log("scaleBlur ->  this.scale", this.scale);
+      console.log("scaleBlur -> s", s);
+      this.setScale(s);
     },
-    setScale() {
-      console.log('I love it when you call me señorita')
-    }
+    getScale() {
+      var res = mapController.getCurrentResolution();
+      return (res / 10).toFixed(2);
+    },
+    setScale(val) {
+      console.log("setScale -> val", val);
+      mapController.setCurrentResolution(val);
+    },
   },
   computed: {
+    scaleOptions() {
+      return mapController.getScaleLineOptions();
+    },
+    scale() {
+      return this.getScale() + " km";
+    },
+    scaleWidth() {
+      var width = this.scaleOptions.width;
+      return width;
+    },
     isNextExist() {
       return historyController.getHistoryIsNextExist();
     },
@@ -239,7 +258,7 @@ export default {
   z-index: 1;
   text-align: initial;
   pointer-events: none;
-  
+
   & > * {
     align-self: flex-start;
     pointer-events: auto;
@@ -250,7 +269,8 @@ export default {
     align-items: flex-start;
   }
 
-  button:focus, input:focus {
+  button:focus,
+  input:focus {
     outline: none;
   }
 
@@ -331,7 +351,7 @@ export default {
       }
     }
 
-    &--horizontal { 
+    &--horizontal {
       flex-direction: row;
 
       .control__button {
@@ -350,7 +370,6 @@ export default {
     .control__button {
       margin: 0;
       border-radius: 0;
-      
     }
   }
 
@@ -409,7 +428,7 @@ export default {
     display: flex;
     align-items: stretch !important;
 
-    .control-select{
+    .control-select {
       &:after {
         position: absolute;
         content: "";
@@ -426,7 +445,7 @@ export default {
         border-bottom-left-radius: 5px;
 
         &--expanded {
-          width: 80px
+          width: 80px;
         }
       }
     }
@@ -460,11 +479,10 @@ export default {
         font-size: 14px;
 
         &:focus {
-      background-color: var(--primary-color-opacity-95);
-    }
+          background-color: var(--primary-color-opacity-95);
+        }
       }
     }
-
 
     .control__button {
       &:first-of-type {

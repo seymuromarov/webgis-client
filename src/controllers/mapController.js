@@ -49,7 +49,7 @@ import {
 } from "@/wrappers/openLayerImports";
 import modalController from "./modalController";
 import { drawTypeEnum } from "@/enums";
-
+const resolutionFactor = 10;
 const baseMaps = {
   none: new XYZ({
     crossOrigin: "Anonymous",
@@ -442,6 +442,12 @@ const setters = {
       }
     });
   },
+  setCurrentResolution(val) {
+    let map = getters.getMap();
+    let view = map.getView();
+    view.setResolution(val * resolutionFactor);
+    setters.setMap(map);
+  },
   setBaseLayout(index) {
     let map = getters.getMap();
     let layers = map.getLayers().getArray();
@@ -486,6 +492,12 @@ const getters = {
     var extent = map.getView().calculateExtent(map.getSize());
     return transformExtent(extent, "EPSG:3857", "EPSG:4326");
   },
+  getCurrentResolution() {
+    let map = getters.getMap();
+    let view = map.getView();
+    var val = view.getResolution() / resolutionFactor;
+    return val;
+  },
   getCurrentCenter(type) {
     let map = getters.getMap();
     let view = map.getView();
@@ -505,11 +517,17 @@ const getters = {
   },
   getScaleLineOptions() {
     var opt = $store.getters.scaleOptions;
-    var t = opt.renderedHTML_.split(" ");
+    var value = 0;
+    var unit = "km";
+    var width = 62;
+    if (opt) {
+      var t = opt.renderedHTML_.split(" ");
 
-    var value = t[0];
-    var unit = t[1];
-    var width = opt.renderedWidth_;
+      value = t[0];
+      unit = t[1];
+      width = opt.renderedWidth_;
+    }
+
     return { value, unit, width };
   },
   getSelectedFeatureId() {
@@ -564,10 +582,9 @@ const getters = {
         maxResolution = distanceConvert(scaleUnitString, "km", maxResolution);
         minResolution = distanceConvert(scaleUnitString, "km", minResolution);
 
-        const factor = 10; //for openlayers scale convertion
         return {
-          maxResolution: maxResolution * factor,
-          minResolution: minResolution * factor,
+          maxResolution: maxResolution * resolutionFactor,
+          minResolution: minResolution * resolutionFactor,
         };
       }
     } else {
