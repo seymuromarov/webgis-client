@@ -120,16 +120,6 @@ export default {
       map.getView().setResolution(viewResolution / scaling);
     },
     onModalClose() {},
-    printHtml() {
-      // var element = document.getElementById("mapPrint");
-      // var doc = new jsPDF({ format: this.format });
-      // doc.html(element, {
-      //   callback: function(doc) {
-      //     doc.save();
-      //   },
-      // });
-      // console.log("onModalClose -> element", element);
-    },
     print() {
       var pdf = new jsPDF({
         format: this.format,

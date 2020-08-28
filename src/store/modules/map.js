@@ -3,6 +3,7 @@ const state = {
   graticuleLayer: null,
   selectionLayer: null,
   selectedFeatureId: 0,
+  scaleOptions: null,
   draw: null,
   drawSource: null,
   sketch: null,
@@ -38,6 +39,9 @@ const mutations = {
   SET_CLICKED_PIXEL(state, payload) {
     state.clickedPixel = payload;
   },
+  SET_SCALE_OPTIONS(state, payload) {
+    state.scaleOptions = payload;
+  },
 };
 
 const actions = {
@@ -68,6 +72,9 @@ const actions = {
   saveClickedPixel(context, payload) {
     context.commit("SET_CLICKED_PIXEL", payload);
   },
+  saveScaleOptions(context, payload) {
+    context.commit("SET_SCALE_OPTIONS", payload);
+  },
 };
 
 const getters = {
@@ -97,6 +104,9 @@ const getters = {
   },
   clickedPixel: (state) => {
     return state.clickedPixel;
+  },
+  scaleOptions: (state) => {
+    return state.scaleOptions;
   },
 };
 

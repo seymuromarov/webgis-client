@@ -77,9 +77,9 @@ const ARCGIS_URLS = {
   EXPORT_IMAGE_URL: (name, params) => {
     let url =
       URL +
-      "/api/map/service/" +
+      "/api/service/arcgis/" +
       name +
-      "/MapServer/export?" +
+      "/?" +
       urlHelper.formatQueryString(params);
     return url;
   },

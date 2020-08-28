@@ -79,6 +79,15 @@ export default {
   },
   created() {},
   methods: {
+    reset() {
+      this.tableInfo = null;
+      this.selectedLayer = null;
+      this.selectedColumn = null;
+      this.layerOptions = [];
+      this.columnOptions = [];
+      this.chartVisibility = false;
+      this.chartData = null;
+    },
     onModalOpen() {
       this.layerOptions = layerController
         .getDynamicLayersWithoutCategory()
@@ -89,7 +98,9 @@ export default {
           };
         });
     },
-    onModalClose() {},
+    onModalClose() {
+      this.reset();
+    },
 
     onChange(item) {
       datatable.getTableInfo(item.code).then((response) => {

@@ -14,7 +14,7 @@ const getters = {
       {
         key: "attText",
         label: "Add Text",
-        image: icons.point,
+        image: icons.text,
         click: () => {
           const callback = (e) => {
             toolController.showMapTextInput(e);
@@ -111,7 +111,7 @@ const getters = {
       {
         key: "blindSpot",
         label: "Blind Spot Detection",
-        image: icons.ndvi,
+        image: icons.blindSpot,
         click: () => {
           let callback = () => {
             modalController.showBlindSpotModal();
@@ -122,7 +122,7 @@ const getters = {
       {
         key: "swap",
         label: "Swap Image",
-        image: icons.ndvi,
+        image: icons.swap,
         click: () => {
           modalController.showComparerModal();
         },

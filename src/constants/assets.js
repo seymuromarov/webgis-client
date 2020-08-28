@@ -37,6 +37,8 @@ const icons = {
   world: svgIconPathBuilder("world"),
   ndvi: svgIconPathBuilder("ndvi"),
   swap: svgIconPathBuilder("swap"),
+  text: svgIconPathBuilder("text"),
+  blindSpot: svgIconPathBuilder("blindSpot"),
 };
 
 export { icons };

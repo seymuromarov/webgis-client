@@ -152,16 +152,7 @@ export default {
       vectorSource: null,
       vectorLayer: null,
       hashResolveResult: {},
-      scaleLineOptions: new ScaleLine({
-        units: "metric",
-        changed: () => {
-          console.log("dsadsad");
-        },
-        // bar: true,
-        // steps: 4,
-        // text: true,
-        // minWidth: 140,
-      }),
+
       isMetricCoordinateSystem: false,
     };
   },
@@ -172,7 +163,6 @@ export default {
   },
   created() {},
   mounted() {
-    console.log(this.scaleLineOptions);
     let baseLayer = new TileLayer({
       source: mapController.getBaseMaps()["gray"],
     });
@@ -189,7 +179,16 @@ export default {
     });
 
     this.hashResolveResult = hashService.resolveHash();
-
+    this.scaleOptions = new ScaleLine({
+      units: "metric",
+      changed: () => {
+        console.log("dsadsad");
+      },
+      // bar: true,
+      // steps: 4,
+      // text: true,
+      // minWidth: 140,
+    });
     this.drawSource = new VectorSource({
       wrapX: false,
     });
@@ -221,8 +220,7 @@ export default {
           new DragRotateAndZoom(),
           dragAndDropInteraction,
         ]),
-
-        controls: defaultControls().extend([this.scaleLineOptions]), // defaultControls(), //.extend([new FullScreen()]),
+        controls: defaultControls().extend([this.scaleOptions]), // defaultControls(), //.extend([new FullScreen()]),
         target: "map",
         layers: this.layers,
         view: new View({
@@ -244,24 +242,24 @@ export default {
         self.mapLayer.getView().fit(this.drawSource.getExtent());
       });
 
-      this.mapLayer.on("pointermove", function(evt) {
+      this.mapLayer.on("pointermove", (evt) => {
         if (evt.dragging) {
           return;
         }
-        let pixel = self.mapLayer.getEventPixel(evt.originalEvent);
-        let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
-        if (self.isMetricCoordinateSystem) {
-          coord = fromLonLat([coord[0], coord[1]]);
-          coord = [
-            coord[1].toString().substring(0, 10),
-            coord[0].toString().substring(0, 10),
-          ];
-        } else {
-          coord = [
-            coord[1].toString().substring(0, 7),
-            coord[0].toString().substring(0, 7),
-          ];
-        }
+        // let pixel = self.mapLayer.getEventPixel(evt.originalEvent);
+        // let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
+        // if (self.isMetricCoordinateSystem) {
+        //   coord = fromLonLat([coord[0], coord[1]]);
+        //   coord = [
+        //     coord[1].toString().substring(0, 10),
+        //     coord[0].toString().substring(0, 10),
+        //   ];
+        // } else {
+        //   coord = [
+        //     coord[1].toString().substring(0, 7),
+        //     coord[0].toString().substring(0, 7),
+        //   ];
+        // }
       });
       this.mapLayer.on("click", mapController.onMapClick);
 
@@ -276,7 +274,11 @@ export default {
           ...this.$store.getters.defaultBaseLayerIds,
         ];
         serviceController.setServicesStatusByIds(defaultLayers, true);
-        self.mapLayer.on("moveend", historyController.updateHistoryMap);
+        self.mapLayer.on("moveend", () => {
+          console.log(mapController.getScaleLineOptions());
+
+          historyController.updateHistoryMap;
+        });
       });
       window.addEventListener("popstate", (event) => {
         if (event.state === null) {
@@ -306,15 +308,14 @@ export default {
     },
   },
   computed: {
-    moodal: {
+    scaleOptions: {
       get() {
-        return this.$store.getters.moodal;
+        return this.$store.getters.scaleOptions;
       },
       set(value) {
-        this.$store.dispatch("saveMoodal", value);
+        this.$store.dispatch("saveScaleOptions", value);
       },
     },
-
     isInformationModalVisible: {
       get() {
         return this.$store.getters.isInformationModalVisible;
@@ -323,9 +324,6 @@ export default {
         // this.filterQueryIsSum = false;
         this.$store.dispatch("saveInformationModalVisibility", value);
       },
-    },
-    tableActiveService() {
-      return this.$store.getters.tableActiveService;
     },
 
     isDrawnShapeForDetection: {

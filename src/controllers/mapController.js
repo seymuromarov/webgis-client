@@ -497,6 +497,15 @@ const getters = {
   getSelectionLayer() {
     return $store.getters.selectionLayer;
   },
+  getScaleLineOptions() {
+    var opt = $store.getters.scaleOptions;
+    var t = opt.renderedHTML_.split(" ");
+
+    var value = t[0];
+    var unit = t[1];
+    var width = opt.renderedWidth_;
+    return { value, unit, width };
+  },
   getSelectedFeatureId() {
     return $store.getters.selectedFeatureId;
   },
