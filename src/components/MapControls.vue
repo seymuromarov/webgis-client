@@ -2,7 +2,6 @@
   <div class="map-controls" id="map-controls">
     {{/* Top controls */}}
     <div class="map-controls--horizontal">
-    
       {{/* Search */}}
       <div class="search">
         <div class="search__logo">
@@ -36,7 +35,7 @@
           <img :src="icons.search" alt="Home" />
         </button>
       </div>
-      
+
       {{/* Coordinates */}}
       <div class="control__button-group control__button-group--horizontal coordinates">
 
@@ -51,12 +50,12 @@
 
         <div class="coordinate">
           <label for="coordinate-x">X:</label>
-          <input id="coordinate-x" v-model="coordinates.lng" placeholder="x"/>
+          <input id="coordinate-x" v-model="coordinates.lng" placeholder="x" />
         </div>
 
         <div class="coordinate">
           <label for="coordinate-y">Y:</label>
-          <input id="coordinate-y" v-model="coordinates.lat" placeholder="y"/>
+          <input id="coordinate-y" v-model="coordinates.lat" placeholder="y" />
         </div>
 
         <button class="control__button" @click="goToCoordinates">
@@ -97,13 +96,16 @@
     </div>
 
     {{/* Scale */}}
-    <div class="control__button-group scale">
+    <div class="control__button-group control__button-group--horizontal scale">
       <input
-        v-model="scale"
-        :style="{'width': scaleWidth + 'px'}"
+        v-model="scaleText"
+        :style="{ width: scaleWidth + 'px' }"
         @focus="scaleFocus"
         @blur="scaleBlur"
       />
+      <button class="control__button" @click="setScale()">
+        <img :src="icons.diagonal_arrow" alt="Scale" />
+      </button>
     </div>
   </div>
 </template>
@@ -112,14 +114,13 @@
 import { fromLonLat } from "ol/proj";
 import { mapController, historyController } from "@/controllers";
 import cities from "../data/cities.json";
-import { icons } from '@/constants/assets.js'
+import { icons } from "@/constants/assets.js";
 
 export default {
   name: "MapControls",
   data() {
     return {
       icons,
-
       cities,
       searchExpanded: false,
       searchInputValue: "",
@@ -138,11 +139,10 @@ export default {
         title: "Metric",
       },
       coordinates: {
-        lat: '40.395278',
-        lng: '49.882222'
+        lat: "40.395278",
+        lng: "49.882222",
       },
-      scale: "50 km",
-      scaleWidth: "123"
+      scaleText: ''
     };
   },
   methods: {
@@ -158,9 +158,14 @@ export default {
       this.coordinatesMode = mode;
     },
     goToCoordinates() {
-      this.map.getView().setCenter(
-        fromLonLat([parseFloat(this.coordinates.lng), parseFloat(this.coordinates.lat)])
-      );
+      this.map
+        .getView()
+        .setCenter(
+          fromLonLat([
+            parseFloat(this.coordinates.lng),
+            parseFloat(this.coordinates.lat),
+          ])
+        );
       this.map.getView().setZoom(11);
     },
     zoomIn() {
@@ -181,19 +186,30 @@ export default {
       historyController.historyNext(this);
     },
     scaleFocus() {
-      this.scale = this.scale.replace(/[^0-9]/g, '')
+      this.scaleText = this.convertToNum(this.scaleText);
     },
     scaleBlur() {
-      const s = this.scale.replace(/[^0-9]/g, '')
-      this.scale = s + ' km' // or smth
-
-      this.setScale(s)
+      this.scaleText = this.convertToNum(this.scaleText);
+      this.scaleText = this.scaleText + ' ' + this.scaleOptions.unit
     },
     setScale() {
-      console.log('I love it when you call me señorita')
+      mapController.setCurrentResolution(this.convertToNum(this.scaleText));
+    },
+    convertToNum(val) {
+      return val.replace(/[^0-9.]/g, "");
     }
   },
   computed: {
+    scaleOptions() {
+      return mapController.getScaleLineOptions();
+    },
+    scale() {
+      return this.scaleOptions.value + ' ' + this.scaleOptions.unit
+    },
+    scaleWidth() {
+      var width = this.scaleOptions.width;
+      return width;
+    },
     isNextExist() {
       return historyController.getHistoryIsNextExist();
     },
@@ -223,6 +239,11 @@ export default {
         });
     },
   },
+  watch: {
+    scaleOptions(value) {
+      this.scaleText = this.scaleOptions.value + ' ' + this.scaleOptions.unit
+    }
+  }
 };
 </script>
 
@@ -239,7 +260,7 @@ export default {
   z-index: 1;
   text-align: initial;
   pointer-events: none;
-  
+
   & > * {
     align-self: flex-start;
     pointer-events: auto;
@@ -250,7 +271,8 @@ export default {
     align-items: flex-start;
   }
 
-  button:focus, input:focus {
+  button:focus,
+  input:focus {
     outline: none;
   }
 
@@ -331,7 +353,7 @@ export default {
       }
     }
 
-    &--horizontal { 
+    &--horizontal {
       flex-direction: row;
 
       .control__button {
@@ -350,7 +372,6 @@ export default {
     .control__button {
       margin: 0;
       border-radius: 0;
-      
     }
   }
 
@@ -508,6 +529,12 @@ export default {
       text-align: center;
       color: #fff;
       font-size: 14px;
+    }
+
+    .control__button {
+      padding: 4px 8px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
     }
   }
 }

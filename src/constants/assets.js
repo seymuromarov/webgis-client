@@ -12,6 +12,7 @@ const icons = {
   color_picker: svgIconPathBuilder("color_picker"),
   compass: svgIconPathBuilder("compass"),
   delete: svgIconPathBuilder("delete"),
+  diagonal_arrow: svgIconPathBuilder("diagonal_arrow"),
   file_download: svgIconPathBuilder("file_download"),
   fullscreen: svgIconPathBuilder("fullscreen"),
   grid: svgIconPathBuilder("grid"),
