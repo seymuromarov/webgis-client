@@ -39,28 +39,15 @@
       
       {{/* Coordinates */}}
       <div class="control__button-group control__button-group--horizontal coordinates">
-        <div class="control-select">
-          <input
-            type="text"
-            placeholder="Mode"
-            class="control-select__input control-select__input--expanded"
-            v-model="coordinatesMode"
-          />
-          <div class="control-select__results custom-scrollbar">
-            <ul>
-              <li
-                @click="onModeSelect('metric')"
-              >
-                Metric
-              </li>
-              <li
-                @click="onModeSelect('horseric')"
-              >
-                Horseric
-              </li>
-            </ul>
-          </div>
-        </div>
+
+        <v-select
+          class="mode-select"
+          label="title"
+          v-model="coordinatesMode"
+          :options="coordinateModes"
+          :clearable="false"
+          :searchable="false"
+        />
 
         <div class="coordinate">
           <label for="coordinate-x">X:</label>
@@ -136,7 +123,20 @@ export default {
       cities,
       searchExpanded: false,
       searchInputValue: "",
-      coordinatesMode: "metric",
+      coordinateModes: [
+        {
+          key: "metric",
+          title: "Metric",
+        },
+        {
+          key: "samsinq",
+          title: "Geographical",
+        }
+      ],
+      coordinatesMode: {
+        key: "metric",
+        title: "Metric",
+      },
       coordinates: {
         lat: '40.395278',
         lng: '49.882222'
@@ -409,25 +409,45 @@ export default {
     display: flex;
     align-items: stretch !important;
 
-    .control-select{
-      &:after {
-        position: absolute;
-        content: "";
-        top: 19px;
-        right: 10px;
-        width: 0;
-        height: 0;
-        border: 6px solid transparent;
-        border-color: #fff transparent transparent transparent;
+    .mode-select {
+      min-width: 120px;
+
+      &.vs--single.vs--open .vs__selected {
+        position: initial
       }
 
-      &__input {
-        border-top-left-radius: 5px;
-        border-bottom-left-radius: 5px;
+      &.vs--open .vs__dropdown-toggle {
+        height: 100%;
+        border-radius: 5px 0 0 0;
+      }
 
-        &--expanded {
-          width: 80px
+      .vs__dropdown-toggle {
+        height: 100%;
+        border-radius: 5px 0 0 5px;
+        border: 0;
+        background-color: var(--primary-color-opacity-85);
+
+        .vs__selected {
+          color: var(--white);
         }
+      }
+
+      .vs__dropdown-menu {
+        min-width: unset;
+        overflow: hidden;
+        background-color: var(--primary-color-opacity-85);
+
+        li {
+          padding: 2px 8px;
+          color: var(--white);
+          &:hover {
+            background-color: var(--primary-color-opacity-95);
+          }
+        }
+      }
+
+      .vs__open-indicator {
+        fill: var(--white)
       }
     }
 
@@ -460,11 +480,10 @@ export default {
         font-size: 14px;
 
         &:focus {
-      background-color: var(--primary-color-opacity-95);
-    }
+          background-color: var(--primary-color-opacity-95);
+        }
       }
     }
-
 
     .control__button {
       &:first-of-type {
