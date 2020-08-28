@@ -152,7 +152,6 @@ export default {
       vectorSource: null,
       vectorLayer: null,
       hashResolveResult: {},
-
       isMetricCoordinateSystem: false,
     };
   },
