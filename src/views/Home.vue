@@ -156,11 +156,7 @@ export default {
       isMapControlsVisible: false,
     };
   },
-  watch: {
-    scaleLineOptions(old, newVal) {
-      console.log(old, newVal);
-    },
-  },
+
   created() {},
   mounted() {
     let baseLayer = new TileLayer({
@@ -268,8 +264,6 @@ export default {
         ];
         serviceController.setServicesStatusByIds(defaultLayers, true);
         self.mapLayer.on("moveend", () => {
-          console.log(mapController.getScaleLineOptions());
-
           historyController.updateHistoryMap;
         });
       });

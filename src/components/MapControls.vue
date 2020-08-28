@@ -61,12 +61,12 @@
 
         <div class="coordinate">
           <label for="coordinate-x">X:</label>
-          <input id="coordinate-x" v-model="coordinates.lng" placeholder="x" />
+          <input id="coordinate-x" v-model="coordinates.x" placeholder="x" />
         </div>
 
         <div class="coordinate">
           <label for="coordinate-y">Y:</label>
-          <input id="coordinate-y" v-model="coordinates.lat" placeholder="y" />
+          <input id="coordinate-y" v-model="coordinates.y" placeholder="y" />
         </div>
 
         <button class="control__button" @click="goToCoordinates">
@@ -123,7 +123,7 @@ import { fromLonLat } from "ol/proj";
 import { mapController, historyController } from "@/controllers";
 import cities from "../data/cities.json";
 import { icons } from "@/constants/assets.js";
-
+import { coordinateTypeEnum } from "@/enums";
 export default {
   name: "MapControls",
   data() {
@@ -135,21 +135,74 @@ export default {
       searchInputValue: "",
       coordinatesMode: "metric",
       coordinates: {
-        lat: "40.395278",
-        lng: "49.882222",
+        x: "40.395278",
+        y: "49.882222",
       },
       // scale: "50 km",
       // scaleWidth: "123",
     };
   },
-
+  created() {
+    this.coordinates.x = this.currentCenter[0];
+    this.coordinates.y = this.currentCenter[1];
+  },
+  watch: {
+    currentCenter(oldVal, newVal) {
+      this.coordinates.x = newVal[0];
+      this.coordinates.y = newVal[1];
+    },
+  },
+  computed: {
+    currentCenter() {
+      if (this.coordinatesMode == "metric")
+        return mapController.getCurrentCenter(coordinateTypeEnum.METRIC);
+      else return mapController.getCurrentCenter(coordinateTypeEnum.GEOGRAPHIC);
+    },
+    scaleOptions() {
+      return mapController.getScaleLineOptions();
+    },
+    scale() {
+      return this.getScale() + " km";
+    },
+    scaleWidth() {
+      var width = this.scaleOptions.width;
+      return width;
+    },
+    isNextExist() {
+      return historyController.getHistoryIsNextExist();
+    },
+    isPreviousExist() {
+      return historyController.getHistoryIsPreviousExist();
+    },
+    map: {
+      get() {
+        return mapController.getMap();
+      },
+      set(payload) {
+        mapController.setMap(payload);
+      },
+    },
+    citiesToShow() {
+      return this.cities
+        .filter((x) =>
+          x.city.toLowerCase().includes(this.searchInputValue.toLowerCase())
+        )
+        .sort((a, b) => {
+          if (a.city > b.city) {
+            return 1;
+          } else if (a.city < b.city) {
+            return -1;
+          }
+          return 0;
+        });
+    },
+  },
   methods: {
     onCitySelect(city) {
-      this.map.getView().setCenter(
-        //[city.lng, city.lat]
-        fromLonLat([parseFloat(city.lng), parseFloat(city.lat)])
-      );
-      this.map.getView().setZoom(11);
+      const center = [city.lng, city.lat];
+      mapController.setCenter(center, coordinateTypeEnum.GEOGRAPHIC);
+      mapController.setZoomLevel(11);
+
       this.searchInputValue = city.city;
     },
     onModeSelect(mode) {
@@ -160,8 +213,8 @@ export default {
         .getView()
         .setCenter(
           fromLonLat([
-            parseFloat(this.coordinates.lng),
-            parseFloat(this.coordinates.lat),
+            parseFloat(this.coordinates.x),
+            parseFloat(this.coordinates.y),
           ])
         );
       this.map.getView().setZoom(11);
@@ -200,46 +253,6 @@ export default {
     setScale(val) {
       console.log("setScale -> val", val);
       mapController.setCurrentResolution(val);
-    },
-  },
-  computed: {
-    scaleOptions() {
-      return mapController.getScaleLineOptions();
-    },
-    scale() {
-      return this.getScale() + " km";
-    },
-    scaleWidth() {
-      var width = this.scaleOptions.width;
-      return width;
-    },
-    isNextExist() {
-      return historyController.getHistoryIsNextExist();
-    },
-    isPreviousExist() {
-      return historyController.getHistoryIsPreviousExist();
-    },
-    map: {
-      get() {
-        return mapController.getMap();
-      },
-      set(payload) {
-        mapController.setMap(payload);
-      },
-    },
-    citiesToShow() {
-      return this.cities
-        .filter((x) =>
-          x.city.toLowerCase().includes(this.searchInputValue.toLowerCase())
-        )
-        .sort((a, b) => {
-          if (a.city > b.city) {
-            return 1;
-          } else if (a.city < b.city) {
-            return -1;
-          }
-          return 0;
-        });
     },
   },
 };

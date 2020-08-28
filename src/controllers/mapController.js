@@ -502,9 +502,11 @@ const getters = {
     let map = getters.getMap();
     let view = map.getView();
     let center = view.getCenter();
+
     if (type && type == coordinateTypeEnum.GEOGRAPHIC)
-      return transform(center, "EPSG:3857", "EPSG:4326");
-    else return center;
+      center = transform(center, "EPSG:3857", "EPSG:4326");
+
+    return center;
   },
   getCurrentRotation() {
     let map = getters.getMap();
