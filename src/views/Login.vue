@@ -1,13 +1,21 @@
 <template lang="html">
   <div class="main">
     <div class="form-block">
-      <form class="form" @submit.prevent="login">
+      <form class="form">
         <img class="logo" src="../assets/logo-en.png" />
         <input type="text" placeholder="username" v-model="username" />
         <input type="password" placeholder="password" v-model="password" />
+        <!-- <vue-recaptcha
+          ref="recaptcha"
+          @verify="onCaptchaVerified"
+          @expired="onCaptchaExpired"
+          :sitekey="captchaSettings.key"
+        >
+        </vue-recaptcha> -->
         <p class="error-message" v-if="error">{{ error }}</p>
-        <!--                <button><i class="fas fa-arrow-right"></i></button>-->
-        <button><i class="fas fa-arrow-right"></i></button>
+        <button type="button" @click="login">
+          <i class="fas fa-arrow-right"></i>
+        </button>
       </form>
     </div>
     <div class="sign-block">
@@ -22,24 +30,31 @@
 import auth from "@/api/auth";
 import { authService, tokenService } from "@/services";
 import { userController } from "@/controllers";
+import captchaSettings from "@/data/captcha";
+import VueRecaptcha from "vue-recaptcha";
 export default {
+  name: "Login",
+  components: { VueRecaptcha },
   mounted() {
     this.error = this.$store.getters.authError;
+    console.warn("mounted____", this.$refs.invisibleRecaptcha);
   },
   data: function() {
     return {
       username: "",
       password: "",
+      recaptchaToken: "",
       error: "",
+      captchaSettings,
     };
   },
   methods: {
     async login() {
-      const { username, password } = this;
-
+      const { username, password, recaptchaToken } = this;
       const response = await auth.login({
         emailOrUsername: username,
         password: password,
+        recaptchaToken: recaptchaToken,
       });
       if (response.status === 400) {
         this.error = response.data;
@@ -48,11 +63,17 @@ export default {
         let token = data.token;
         let username = data.user.userName;
         tokenService.setToken(token);
-
         this.$store.dispatch("SAVE_AUTH_TOKEN", token);
         localStorage.setItem("username", username);
         this.$router.push("/");
       }
+    },
+    onCaptchaVerified(recaptchaToken) {
+      console.log("onCaptchaVerified -> recaptchaToken", recaptchaToken);
+      this.recaptchaToken = recaptchaToken;
+    },
+    onCaptchaExpired: function() {
+      this.$refs.recaptcha.reset();
     },
   },
 };
