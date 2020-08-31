@@ -1,10 +1,5 @@
 import $store from "@/store/store.js";
-import {
-  mapController,
-  modalController,
-  tableController,
-  ndviController,
-} from "@/controllers";
+import { mapController, modalController } from "@/controllers";
 import { drawTypeEnum } from "@/enums";
 import { mapHelper } from "@/helpers";
 import {
@@ -40,9 +35,7 @@ import {
   Fill,
   transform,
 } from "@/wrappers/openLayerImports";
-import { get } from "ol/proj";
 import layerController from "./layerController";
-
 let lastEvent = null;
 
 const functions = {
@@ -265,13 +258,13 @@ const functions = {
     mapController.setSketch(null);
     draw.on(
       "drawstart",
-      function (evt) {
+      function(evt) {
         mapController.setSketch(evt.feature);
         /** @type {module:ol/coordinate~Coordinate|undefined} */
         let maptooltipCoord = evt.coordinate;
         let sketch = mapController.getSketch();
 
-        listener = sketch.getGeometry().on("change", function (evt) {
+        listener = sketch.getGeometry().on("change", function(evt) {
           let geom = evt.target;
           let output;
 
@@ -310,7 +303,7 @@ const functions = {
 
     draw.on(
       "drawend",
-      function (e) {
+      function(e) {
         let measuremaptooltipElement = getters.getMeasureMapTooltipElement();
         let measuremaptooltip = getters.getMeasureMapTooltip();
 
@@ -427,12 +420,12 @@ const functions = {
 
   pngExport() {
     let map = mapController.getMap();
-    map.once("rendercomplete", function (event) {
+    map.once("rendercomplete", function(event) {
       let canvas = event.context.canvas;
       if (navigator.msSaveBlob) {
         navigator.msSaveBlob(canvas.msToBlob(), "map.png");
       } else {
-        canvas.toBlob(function (blob) {
+        canvas.toBlob(function(blob) {
           saveAs(blob, "map.png");
         });
       }
@@ -465,6 +458,22 @@ const functions = {
     functions.pickDrawType(drawTypeEnum.NONE);
     setters.setMarkerStatus(true);
   },
+  addPoint(coord, featureOptions) {
+    let feature = new Feature({
+      geometry: new Point(fromLonLat([coord[0], coord[1]])),
+    });
+    let featureOpt = {
+      id: getters.getFeatureIdCounter(),
+    };
+    if (!_.isUndefined(featureOptions) && _.isObject(featureOptions)) {
+      featureOpt = Object.assign(featureOpt, featureOptions); //extend object
+    }
+    feature.setStyle(pointStyle);
+    feature.setProperties(featureOpt);
+    var drawSource = mapController.getDrawSource();
+    drawSource.addFeature(feature);
+    mapController.setDrawSource(drawSource);
+  },
   fullScreen() {
     if (
       window.innerWidth == screen.width &&
@@ -488,22 +497,22 @@ const functions = {
     const map = mapController.getMap();
     const coordinates = e.target.sketchCoords_;
 
-    const element = document.querySelector('.map-text')
-    const button = document.querySelector('.map-text__action--close')
+    const element = document.querySelector(".map-text");
+    const button = document.querySelector(".map-text__action--close");
 
     const popup = new Overlay({
-      element
+      element,
     });
 
-    button.addEventListener('click', function close() {
+    button.addEventListener("click", function close() {
       popup.setPosition(undefined);
       element.blur();
       return false;
-    })
+    });
 
     popup.setPosition(coordinates);
     map.addOverlay(popup);
-  }
+  },
 };
 
 const getters = {

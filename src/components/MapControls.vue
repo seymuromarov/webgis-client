@@ -130,7 +130,11 @@
 
 <script>
 import { fromLonLat } from "ol/proj";
-import { mapController, historyController } from "@/controllers";
+import {
+  mapController,
+  historyController,
+  toolController,
+} from "@/controllers";
 import cities from "../data/cities.json";
 import { icons } from "@/constants/assets.js";
 import { coordinateTypeEnum } from "@/enums";
@@ -252,17 +256,12 @@ export default {
     goToCoordinates() {
       var center = [this.coordinates.x, this.coordinates.y];
       mapController.setCenter(center, this.selectedCoordinateMode.key);
-
-      // mapController.setCenter()
-      // this.map
-      //   .getView()
-      //   .setCenter(
-      //     fromLonLat([
-      //       parseFloat(this.coordinates.x),
-      //       parseFloat(this.coordinates.y),
-      //     ])
-      //   );
-      // this.map.getView().setZoom(11);
+      const featureName = "centerPoint";
+      const featureOpts = {
+        name: featureName,
+      };
+      toolController.deleteFeatureByName(featureName);
+      toolController.addPoint(center, featureOpts);
     },
     zoomIn() {
       this.map.getView().setZoom(this.map.getView().getZoom() + 1);
