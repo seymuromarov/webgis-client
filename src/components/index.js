@@ -21,6 +21,7 @@ export { default as DataModal } from "./modals/DataModal";
 export { default as PrintModal } from "./modals/PrintModal";
 export { default as ComputedLayersModal } from "./modals/ComputedLayers";
 export { default as ChangeDetector } from "./modals/ChangeDetector";
+export { default as ColorConditionInfoModal } from "./modals/ColorConditionInfoModal";
 export { default as NdviAssessment } from "./modals/NdviAssessment";
 export { default as ComparerModal } from "./modals/ComparerModal";
 export { default as DataAddEditModal } from "./modals/DataAddEditModal";

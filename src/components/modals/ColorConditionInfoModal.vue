@@ -1,0 +1,51 @@
+<template>
+  <CustomModal
+    name="colorConditionInfoModal"
+    :maxWidth="300"
+    :minHeight="200"
+    title="Legenda"
+  >
+    <div class="row">
+      <div v-for="(item, index) in data" :key="index" class="col-md-12 ">
+        <span
+          class="condition-color-box"
+          :style="{
+            'background-color': item.fillColor,
+            border: `2px solid ${item.borderColer}`,
+          }"
+        ></span>
+        <span class="m-1 condition-text">
+          {{ item.title }}
+        </span>
+      </div>
+    </div>
+  </CustomModal>
+</template>
+
+<script>
+export default {
+  name: "ColorConditionInfoModal",
+  props: {
+    data: {
+      type: Array,
+      default: function() {
+        return [];
+      },
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.condition {
+  &-text {
+    display: inline-block;
+    // vertical-align: middle;
+  }
+  &-color-box {
+    display: inline-block;
+    width: 30px;
+    height: 20px;
+  }
+}
+</style>

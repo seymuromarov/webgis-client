@@ -82,6 +82,12 @@ const functions = {
   showPrintModal() {
     vm.$moodal.printModal.show();
   },
+  hideColorConditionInfoModal() {
+    vm.$moodal.colorConditionInfoModal.hide();
+  },
+  showColorConditionInfoModal() {
+    vm.$moodal.colorConditionInfoModal.show();
+  },
 };
 
 const getters = {

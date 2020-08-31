@@ -47,6 +47,15 @@
     </span>
 
     <div v-if="colorPickerVisibility" class="mt-2 item__colorpicker__content">
+      <!-- <a role="button" class="condition-modal-btn " @click="showConditionModal"
+        >Show Conditions</a
+      > -->
+      <ColorConditionInfoModal
+        v-if="isColorConditionInfoModalVisible"
+        :data="getConditionLegendData()"
+        @afterHide="isColorConditionInfoModalVisible = false"
+      />
+
       <v-select
         v-if="conditionSelectVisibility"
         class="condition__select"
@@ -118,6 +127,7 @@
 <script>
 import ToggleSwitch from "@/components/common/ToggleSwitch";
 import LayerColorPicker from "@/components/LayerColorPicker";
+import ColorConditionInfoModal from "@/components/modals/ColorConditionInfoModal";
 
 import Draggable from "vuedraggable";
 import { layerHelper, serviceHelper } from "@/helpers";
@@ -129,6 +139,7 @@ import {
   mapController,
   serviceController,
   tableController,
+  modalController,
 } from "@/controllers";
 import bunch from "@/api/bunch";
 export default {
@@ -137,6 +148,7 @@ export default {
     ToggleSwitch,
     Draggable,
     LayerColorPicker,
+    ColorConditionInfoModal,
   },
   props: {
     item: {
@@ -170,6 +182,7 @@ export default {
       subListVisibility: false,
       layerIsSelected: false,
       isDragging: false,
+      isColorConditionInfoModalVisible: false,
       selectedColorOpt: {
         code: "default",
         label: "Default",
@@ -225,6 +238,7 @@ export default {
 
       return { borderColor, fillColor };
     },
+
     conditions() {
       const defaultOpt = {
         code: "default",
@@ -235,9 +249,11 @@ export default {
         const layerColor = this.data.layerColor;
         var conditionOptions = layerColor.conditions.map((c) => {
           var code = c.id;
-          var label = `${layerColor.column} ${operatorEnumTostring(
-            c.operator
-          )} ${c.value}`;
+          var label = this.buildConditionLabel(
+            layerColor.column,
+            c.operator,
+            c.value
+          );
           return { code, label };
         });
         options = [defaultOpt, ...conditionOptions];
@@ -322,6 +338,33 @@ export default {
     },
   },
   methods: {
+    showConditionModal() {
+      this.isColorConditionInfoModalVisible = true;
+      modalController.showColorConditionInfoModal();
+    },
+    buildConditionLabel(column, operatorNo, value) {
+      return `${column} ${operatorEnumTostring(operatorNo)} ${value}`;
+    },
+    getConditionLegendData() {
+      const data = [
+        {
+          title: "Default",
+          borderColor: this.data.color.borderColor,
+          fillColor: this.data.color.fillColor,
+        },
+      ];
+      const layerColor = this.data.layerColor;
+      const conditonData = layerColor.conditions.map((c) => {
+        var title = this.buildConditionLabel(
+          layerColor.column,
+          c.operator,
+          c.value
+        );
+        return { title, borderColor: c.borderColor, fillColor: c.fillColor };
+      });
+
+      return [...data, ...conditonData];
+    },
     updateList(val) {
       this.$emit("updateList", val);
     },
@@ -417,6 +460,19 @@ export default {
   .vs__clear,
   .vs__open-indicator {
     fill: var(--primary-color-lighten-200);
+  }
+}
+
+.condition-modal-btn {
+  text-decoration: none;
+  color: white;
+  width: 90%;
+  &:hover,
+  &:focus {
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
   }
 }
 </style>
