@@ -174,7 +174,6 @@ export default {
     },
 
     stringFixed(val, fix) {
-      console.log("stringFixed -> val", val);
       let splitedText = val.toString().split(".");
       let rasengan =
         splitedText[0] +

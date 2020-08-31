@@ -46,7 +46,6 @@
 
     <ComparerModal />
     <PrintModal />
-
     <MapText />
   </div>
 </template>
@@ -157,7 +156,6 @@ export default {
     };
   },
 
-  created() {},
   mounted() {
     let baseLayer = new TileLayer({
       source: mapController.getBaseMaps()["gray"],
@@ -231,25 +229,12 @@ export default {
         self.mapLayer.getView().fit(this.drawSource.getExtent());
       });
 
-      this.mapLayer.on("pointermove", (evt) => {
-        if (evt.dragging) {
-          return;
-        }
-        // let pixel = self.mapLayer.getEventPixel(evt.originalEvent);
-        // let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
-        // if (self.isMetricCoordinateSystem) {
-        //   coord = fromLonLat([coord[0], coord[1]]);
-        //   coord = [
-        //     coord[1].toString().substring(0, 10),
-        //     coord[0].toString().substring(0, 10),
-        //   ];
-        // } else {
-        //   coord = [
-        //     coord[1].toString().substring(0, 7),
-        //     coord[0].toString().substring(0, 7),
-        //   ];
-        // }
-      });
+      // this.mapLayer.on("pointermove", (evt) => {
+      //   if (evt.dragging) {
+      //     return;
+      //   }
+
+      // });
       this.mapLayer.on("click", mapController.onMapClick);
 
       this.$store.dispatch("init").then(() => {

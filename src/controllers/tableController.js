@@ -1,5 +1,5 @@
 import $store from "@/store/store.js";
-import { serviceHelper, layerHelper } from "@/helpers";
+import { serviceHelper } from "@/helpers";
 import { tokenService } from "@/services";
 import layer from "@/api/layer";
 import {
@@ -8,14 +8,7 @@ import {
   modalController,
   filterController,
 } from "@/controllers";
-const tableData = {
-  get() {
-    return $store.getters.tableData;
-  },
-  set(val) {
-    $store.dispatch("SAVE_DATATABLE", val);
-  },
-};
+
 const functions = {
   buildTableData(data, selectedService) {
     const item = data;
