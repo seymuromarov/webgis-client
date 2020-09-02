@@ -200,20 +200,22 @@ export default {
           ? this.hashResolveResult.center
           : //: [47.82858, 40.3598414];
             fromLonLat([47.82858, 40.3598414]);
-      let rotation = 0;
 
       this.mapLayer = new Map({
         interactions: defaultInteractions().extend([
           new DragRotateAndZoom(),
+          // new MouseWheelZoom({
+          //   constrainResolution: true,
+          // }),
           dragAndDropInteraction,
         ]),
         controls: defaultControls().extend([this.scaleOptions]), // defaultControls(), //.extend([new FullScreen()]),
         target: "map",
         layers: this.layers,
         view: new View({
+          constrainResolution: true,
           center: center,
           zoom: zoom,
-          rotation: rotation,
         }),
       });
 
