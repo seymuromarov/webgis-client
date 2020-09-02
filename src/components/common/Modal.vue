@@ -91,6 +91,11 @@ export default {
       type: Boolean,
       default: true,
     },
+    appendToBody: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
   },
   data() {
     return {
@@ -173,7 +178,16 @@ export default {
       Vue.prototype.$moodal = {};
     }
     this.$moodal[this.name] = this;
-
   },
+  mounted() {
+    if(this.appendToBody) {
+      this.$root.$el.append(this.$el);
+    }
+  },
+  destroyed() {
+    if(this.appendToBody) {
+      this.$el.parentNode.removeChild(this.$el);
+    }
+  }
 };
 </script>
