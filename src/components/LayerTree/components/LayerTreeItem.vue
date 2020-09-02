@@ -47,22 +47,23 @@
     </span>
 
     <div v-if="colorPickerVisibility" class="mt-2 item__colorpicker__content">
-      <!-- <a role="button" class="condition-modal-btn " @click="showConditionModal"
-        >Show Conditions</a
-      > -->
-      <ColorConditionInfoModal
-        v-if="isColorConditionInfoModalVisible"
-        :data="getConditionLegendData()"
-        @afterHide="isColorConditionInfoModalVisible = false"
-      />
+      <div v-if="isLayerColorExist" style="display: contents;">
+        <a
+          role="button"
+          class="condition-modal-btn "
+          @click="showConditionModal"
+          >Show Conditions</a
+        >
+        <ColorConditionInfoModal :data="getConditionLegendData()" />
 
-      <v-select
-        v-if="conditionSelectVisibility"
-        class="condition__select"
-        v-model="selectedColorOpt"
-        :clearable="false"
-        :options="conditions"
-      ></v-select>
+        <v-select
+          v-if="isLayerColorExist"
+          class="condition__select"
+          v-model="selectedColorOpt"
+          :clearable="false"
+          :options="conditions"
+        ></v-select>
+      </div>
 
       <!-- Color Picker -->
       <LayerColorPicker
@@ -300,7 +301,7 @@ export default {
             serviceHelper.isDynamicFromLocal(this.data)))
       );
     },
-    conditionSelectVisibility() {
+    isLayerColorExist() {
       return this.data.layerColor && this.data.layerColor.conditions.length > 0;
     },
     colorIconVisibility() {
@@ -353,6 +354,7 @@ export default {
           fillColor: this.data.color.fillColor,
         },
       ];
+      console.log("getConditionLegendData -> data", data);
       const layerColor = this.data.layerColor;
       const conditonData = layerColor.conditions.map((c) => {
         var title = this.buildConditionLabel(
