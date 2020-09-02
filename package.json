@@ -16,6 +16,7 @@
     "chart.js": "^2.9.3",
     "dayjs": "^1.8.18",
     "downloadjs": "^1.4.7",
+    "file-saver": "^2.0.2",
     "jspdf": "^2.1.0",
     "juxtaposejs": "^1.1.6",
     "ol": "^6.3.1",
