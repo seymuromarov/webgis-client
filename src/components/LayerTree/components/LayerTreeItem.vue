@@ -354,7 +354,6 @@ export default {
           fillColor: this.data.color.fillColor,
         },
       ];
-      console.log("getConditionLegendData -> data", data);
       const layerColor = this.data.layerColor;
       const conditonData = layerColor.conditions.map((c) => {
         var title = this.buildConditionLabel(

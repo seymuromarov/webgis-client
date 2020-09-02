@@ -229,12 +229,6 @@ export default {
         self.mapLayer.getView().fit(this.drawSource.getExtent());
       });
 
-      // this.mapLayer.on("pointermove", (evt) => {
-      //   if (evt.dragging) {
-      //     return;
-      //   }
-
-      // });
       this.mapLayer.on("click", mapController.onMapClick);
 
       this.$store.dispatch("init").then(() => {
@@ -249,7 +243,7 @@ export default {
         ];
         serviceController.setServicesStatusByIds(defaultLayers, true);
         self.mapLayer.on("moveend", () => {
-          historyController.updateHistoryMap;
+          historyController.updateHistoryMap();
         });
       });
       window.addEventListener("popstate", (event) => {
