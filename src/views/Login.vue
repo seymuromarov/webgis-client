@@ -5,14 +5,18 @@
         <img class="logo" src="../assets/logo-en.png" />
         <input type="text" placeholder="username" v-model="username" />
         <input type="password" placeholder="password" v-model="password" />
-        <!-- <vue-recaptcha
-          ref="recaptcha"
-          @verify="onCaptchaVerified"
-          @expired="onCaptchaExpired"
-          :sitekey="captchaSettings.key"
-        >
-        </vue-recaptcha> -->
-        <p class="error-message" v-if="error">{{ error }}</p>
+        <div class="recaptcha-container mt-1">
+          <vue-recaptcha
+            v-if="isRecaptchaRequired"
+            ref="recaptcha"
+            @verify="onCaptchaVerified"
+            @expired="onCaptchaExpired"
+            :sitekey="captchaSettings.key"
+          >
+          </vue-recaptcha>
+        </div>
+
+        <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
         <button type="button" @click="login">
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -30,23 +34,42 @@
 import auth from "@/api/auth";
 import { authService, tokenService } from "@/services";
 import { userController } from "@/controllers";
+import { getErrorMessage } from "@/utils";
 import captchaSettings from "@/data/captcha";
 import VueRecaptcha from "vue-recaptcha";
 export default {
   name: "Login",
   components: { VueRecaptcha },
-  mounted() {
-    this.error = this.$store.getters.authError;
-    console.warn("mounted____", this.$refs.invisibleRecaptcha);
-  },
+
   data: function() {
     return {
       username: "",
       password: "",
       recaptchaToken: "",
-      error: "",
+      errorMessage: "",
       captchaSettings,
+
+      failedAttemptCount: 0,
     };
+  },
+  mounted() {
+    this.failedAttemptCount = authService.getFailedAttemptCount();
+  },
+  computed: {
+    isRecaptchaRequired: {
+      get() {
+        return this.failedAttemptCount >= 4;
+      },
+      set(val) {
+        if (val) {
+          this.failedAttemptCount = 4;
+          authService.setFailedAttempCount(4);
+        } else {
+          this.failedAttemptCount = 0;
+          resetFailedAttemptCount(0);
+        }
+      },
+    },
   },
   methods: {
     async login() {
@@ -56,20 +79,26 @@ export default {
         password: password,
         recaptchaToken: recaptchaToken,
       });
-      if (response.status === 400) {
-        this.error = response.data;
-      } else {
+      if (response.status === 200) {
         let data = response.data;
         let token = data.token;
-        let username = data.user.userName;
         tokenService.setToken(token);
         this.$store.dispatch("SAVE_AUTH_TOKEN", token);
-        localStorage.setItem("username", username);
         this.$router.push("/");
+        authService.resetFailedAttemptCount();
+      } else {
+        authService.increaseFailedAttempCount();
+        this.failedAttemptCount += 1;
+        let errors = getErrorMessage(response);
+        if (errors.some((c) => c.key.toLowerCase() === "recaptchatoken")) {
+          this.errorMessage = "Recaptcha Is Required";
+          this.isRecaptchaRequired = true;
+        } else {
+          this.errorMessage = errors[0].message;
+        }
       }
     },
     onCaptchaVerified(recaptchaToken) {
-      console.log("onCaptchaVerified -> recaptchaToken", recaptchaToken);
       this.recaptchaToken = recaptchaToken;
     },
     onCaptchaExpired: function() {
@@ -81,7 +110,10 @@ export default {
 
 <style scoped>
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
-
+.recaptcha-container {
+  display: flex;
+  justify-content: center;
+}
 .form-block {
   top: 20%;
   left: calc(50% - 200px);

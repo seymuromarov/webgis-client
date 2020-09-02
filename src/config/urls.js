@@ -14,7 +14,7 @@ const USER_URLS = {
   GET_URL: URL + "/api/user/Get",
 };
 const ACCOUNT_URL = {
-  LOGIN_URL: URL + "/api/account/login",
+  LOGIN_URL: URL + "/api/account/gettoken",
 };
 const BUNCH_URLS = {
   ADD: URL + "/api/bunch/add",
