@@ -65,11 +65,11 @@ const functions = {
         break;
       case WMS:
         if (serviceHelper.isGeoserverService(service)) {
-          url = `${URL}/api/geoserver/services/wms`;
+          url = `${URL}/api/service/geoserver/${service.name}/`;
         } else if (serviceHelper.isGeoserverGwsService(service)) {
-          url = `${URL}/api/geoserver/gwc/service/wms`;
+          url = `${URL}/api/service/geoserver/${service.name}/gwc/`;
         } else if (serviceHelper.isGeowebcacheService(service)) {
-          url = `${URL}/api/geowebcache/service/wms`;
+          url = `${URL}/api/service/geowebcache/${service.name}/`;
         }
         break;
     }
