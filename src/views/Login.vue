@@ -5,7 +5,7 @@
         <img class="logo" src="../assets/logo-en.png" />
         <input type="text" placeholder="username" v-model="username" />
         <input type="password" placeholder="password" v-model="password" />
-        <div class="recaptcha-container mt-1">
+        <!-- <div class="recaptcha-container mt-1">
           <vue-recaptcha
             v-if="isRecaptchaRequired"
             ref="recaptcha"
@@ -14,7 +14,7 @@
             :sitekey="captchaSettings.key"
           >
           </vue-recaptcha>
-        </div>
+        </div> -->
 
         <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
         <button type="button" @click="login">
