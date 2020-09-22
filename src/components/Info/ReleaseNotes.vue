@@ -1,11 +1,16 @@
 <template>
   <div>
     <Loader v-if="loading" />
-    <div class="release-note" v-for="note in notes" :key="note.id">
+    {{ notes }}
+    <div
+      class="release-note"
+      v-for="(item, index) in releaseNotesData"
+      :key="index"
+    >
       <div class="date">
-        <b>{{ formatDate(note.dateCreated) }}</b>
+        <b>{{ item.dateCreated }}</b>
       </div>
-      <p class="content">{{ note.note }}</p>
+      <p class="content">{{ item.note }}</p>
     </div>
   </div>
 </template>
@@ -35,15 +40,16 @@ export default {
         .then((response) => {
           if (response.data) {
             this.releaseNotesData = response.data;
+            console.log(
+              "getReleaseNotes -> this.releaseNotesData",
+              this.releaseNotesData
+            );
           }
           this.loading = false;
         })
         .catch((error) => {
           this.loading = false;
         });
-    },
-    formatDate(date) {
-      return dayjs(date).format("DD MMMM YYYY");
     },
   },
   mounted() {
