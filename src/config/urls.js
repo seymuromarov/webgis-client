@@ -16,6 +16,9 @@ const USER_URLS = {
 const ACCOUNT_URL = {
   LOGIN_URL: URL + "/api/account/gettoken",
 };
+const LANGUAGE_URL = {
+  GET_LANGUAGE: URL + "/api/language/getlanguages",
+};
 const BUNCH_URLS = {
   ADD: URL + "/api/bunch/add",
   EDIT: URL + "/api/bunch/edit",
@@ -91,6 +94,7 @@ export {
   URL,
   LAYER_DATA_IMAGE_URLS,
   USER_URLS,
+  LANGUAGE_URL,
   FAVORITEQUERY_URLS,
   DEFAULTLAYER_URLS,
   FAVORITELAYER_URLS,

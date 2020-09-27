@@ -42,36 +42,36 @@
     </div>
 
     <!-- User Profile -->
-    <div class="profile-popup" v-show="isProfileTabActive">
+    <div class="profile-popup" v-if="isProfileTabActive">
       <div
         class="profile-popup-item"
         style="cursor: pointer;"
         @click="showProfileModal"
       >
-        <span>Profile</span>
+        <span>{{ $t("menu.profile.title") }}</span>
       </div>
       <div class="profile-popup-item" style="cursor: pointer;" @click="logout">
-        <span>Log Out</span>
+        <span>{{ $t("auth.logout") }}</span>
         <i title="Log out" class="fas fa-power-off ml-1"></i>
       </div>
     </div>
 
     <!-- Layer Types -->
-    <div class="layer-types" v-show="isBaseMapTypeTabActive">
+    <div class="layer-types" v-if="isBaseMapTypeTabActive">
       <div
-        v-for="(layer, key) in baseMaps"
-        :key="key"
+        v-for="(layer, index) in baseLayouts"
+        :key="index"
         class="layer-types__item"
-        :class="{ active: activeLayerType === key }"
-        @click="setBaseLayout(key)"
+        :class="{ active: activeLayerType === layer.name }"
+        @click="setBaseLayout(index)"
       >
-        {{ capitalize(key) }}
+        {{ layer.name }}
       </div>
     </div>
 
     <!-- Dynamic Layers -->
-    <div class="list layers" v-show="isDynamicLayerTabActive">
-      <div class="list__header">Dynamic layers</div>
+    <div class="list layers" v-if="isDynamicLayerTabActive">
+      <div class="list__header">{{ $t("menu.dynamicLayers") }}</div>
       <div class="list__tabs">
         <div
           class="tab"
@@ -80,25 +80,29 @@
           }"
           @click="setDynamicActiveTab('dynamicTab')"
         >
-          Standard
+          {{ $t("menu.layerTabs.standard") }}
         </div>
         <div
           class="tab"
           :class="{ 'tab--active': dynamicActiveTab === 'bunchTab' }"
           @click="setDynamicActiveTab('bunchTab')"
         >
-          Customized
+          {{ $t("menu.layerTabs.customized") }}
         </div>
         <div
           class="tab"
           :class="{ 'tab--active': dynamicActiveTab === 'favoriteTab' }"
           @click="setDynamicActiveTab('favoriteTab')"
         >
-          Favorites
+          {{ $t("menu.layerTabs.favorites") }}
         </div>
       </div>
       <div class="list__search">
-        <input type="text" placeholder="Search" v-model="dynamicSearchInput" />
+        <input
+          type="text"
+          :placeholder="$t('general.search')"
+          v-model="dynamicSearchInput"
+        />
       </div>
       <ul
         v-if="dynamicActiveTab === 'dynamicTab'"
@@ -147,13 +151,13 @@
         class="btn btn--add-new"
         @click="openComputedLayerModal"
       >
-        <i class="fas fa-plus"></i>&nbsp;&nbsp;Add
+        <i class="fas fa-plus"></i>&nbsp;&nbsp; {{ $t("button.add") }}
       </button>
     </div>
 
     <!-- Basemaps -->
-    <div class="list layers" v-show="isBaseLayerTabActive">
-      <div class="list__header">Basemaps</div>
+    <div class="list layers" v-if="isBaseLayerTabActive">
+      <div class="list__header">{{ $t("menu.baseLayers") }}</div>
       <div class="list__tabs">
         <div
           class="tab"
@@ -162,7 +166,7 @@
           }"
           @click="setBasemapActiveTab('baseTab')"
         >
-          Standard
+          {{ $t("menu.layerTabs.standard") }}
         </div>
 
         <div
@@ -170,11 +174,15 @@
           :class="{ 'tab--active': basemapActiveTab === 'favoriteTab' }"
           @click="setBasemapActiveTab('favoriteTab')"
         >
-          Favorites
+          {{ $t("menu.layerTabs.favorites") }}
         </div>
       </div>
       <div class="list__search">
-        <input type="text" placeholder="Search" v-model="baseSearchInput" />
+        <input
+          type="text"
+          :placeholder="$t('general.search')"
+          v-model="baseSearchInput"
+        />
       </div>
       <ul
         v-if="basemapActiveTab === 'baseTab'"
@@ -204,7 +212,7 @@
     </div>
 
     <!-- Tools -->
-    <div class="list tools" v-show="isToolTabActive">
+    <div class="list tools" v-if="isToolTabActive">
       <div class="list__header">Tools</div>
 
       <ul class="list__content list__content--parent custom-scrollbar">
@@ -252,11 +260,13 @@ export default {
       activeLayerType: "gray",
       dynamicActiveTab: "dynamicTab",
       basemapActiveTab: "baseTab",
-      baseMaps: mapController.getBaseMaps(),
     };
   },
   mounted() {},
   computed: {
+    baseLayouts() {
+      return mapController.getBaseLayouts();
+    },
     isProfileTabActive() {
       return this.activeMenuTab === menuTabEnum.PROFILE;
     },

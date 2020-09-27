@@ -1,12 +1,7 @@
 <template>
   <div>
     <Loader v-if="loading" />
-    {{ notes }}
-    <div
-      class="release-note"
-      v-for="(item, index) in releaseNotesData"
-      :key="index"
-    >
+    <div class="release-note" v-for="(item, index) in notes" :key="index">
       <div class="date">
         <b>{{ item.dateCreated }}</b>
       </div>
@@ -19,15 +14,16 @@
 import info from "@/api/info";
 import dayjs from "dayjs";
 
-import Loader from "./parts/Loader";
+// import Loader from "./parts/Loader";
 
 export default {
   name: "ReleaseNotes",
-  components: {
-    Loader,
-  },
+  // components: {
+  //   Loader,
+  // },
   data() {
     return {
+      notes: [],
       loading: false,
     };
   },
@@ -39,11 +35,7 @@ export default {
         .getReleaseNotes()
         .then((response) => {
           if (response.data) {
-            this.releaseNotesData = response.data;
-            console.log(
-              "getReleaseNotes -> this.releaseNotesData",
-              this.releaseNotesData
-            );
+            this.notes = response.data;
           }
           this.loading = false;
         })
@@ -56,11 +48,6 @@ export default {
     if (!this.notes.length) {
       this.getReleaseNotes();
     }
-  },
-  computed: {
-    notes() {
-      return this.$store.state.information.releaseNotes.data;
-    },
   },
 };
 </script>

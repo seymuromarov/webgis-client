@@ -47,8 +47,8 @@
         <v-select
           class="mode-select"
           label="title"
-          v-model="selectedCoordinateMode"
-          :options="coordinateModes"
+          v-model="selectedCoordinateOptions"
+          :options="coordinateOptions"
           :clearable="false"
           :searchable="false"
           @input="onChange"
@@ -141,21 +141,15 @@ import { coordinateTypeEnum } from "@/enums";
 export default {
   name: "MapControls",
   data() {
-    let dataObj = {
+    // let dataObj = ;
+    // dataObj.selectedCoordinateMode = dataObj.coordinateOptions[0];
+
+    return {
       icons,
       cities,
       searchExpanded: false,
       searchInputValue: "",
-      coordinateModes: [
-        {
-          key: coordinateTypeEnum.GEOGRAPHIC,
-          title: "Geographical",
-        },
-        {
-          key: coordinateTypeEnum.METRIC,
-          title: "Metric",
-        },
-      ],
+      // coordinateOptions: [],
       selectedCoordinateMode: null,
       coordinates: {
         x: 0,
@@ -163,16 +157,22 @@ export default {
       },
       scaleInput: "",
     };
-    dataObj.selectedCoordinateMode = dataObj.coordinateModes[0];
-
-    return dataObj;
   },
-  created() {
-    this.selectedCoordinateMode = this.coordinateModes[0];
+  mounted() {
+    this.selectedCoordinateOptions = this.coordinateOptions[0];
+
     var coordinates = this.getCoordinates();
     this.setCoordinates(coordinates[0], coordinates[1]);
   },
   watch: {
+    language(val) {
+      if (this.coordinateOptions && this.coordinateOptions.length > 0) {
+        var selected = this.coordinateOptions.find(
+          (c) => c.key == this.selectedCoordinateOptions.key
+        );
+        this.selectedCoordinateOptions = selected;
+      }
+    },
     currentCenter(val) {
       this.coordinates.x = val[0];
       this.coordinates.y = val[1];
@@ -183,6 +183,29 @@ export default {
     },
   },
   computed: {
+    language() {
+      return this.$store.getters.language;
+    },
+    selectedCoordinateOptions: {
+      get() {
+        return this.selectedCoordinateMode;
+      },
+      set(val) {
+        this.selectedCoordinateMode = val;
+      },
+    },
+    coordinateOptions() {
+      return [
+        {
+          key: coordinateTypeEnum.GEOGRAPHIC,
+          title: this.$i18n.t("coordinateType.geographical"),
+        },
+        {
+          key: coordinateTypeEnum.METRIC,
+          title: this.$i18n.t("coordinateType.metric"),
+        },
+      ];
+    },
     currentCenter() {
       return this.getCoordinates();
     },
@@ -231,6 +254,7 @@ export default {
       var coordinates = this.getCoordinates();
       this.setCoordinates(coordinates[0], coordinates[1]);
     },
+
     setCoordinates(x, y) {
       this.coordinates.x = x;
       this.coordinates.y = y;
@@ -238,9 +262,15 @@ export default {
     getCoordinates() {
       let coordinates = [];
 
-      coordinates = mapController.getCurrentCenter(
-        this.selectedCoordinateMode.key
-      );
+      if (
+        this.selectedCoordinateOptions &&
+        this.selectedCoordinateOptions.key
+      ) {
+        coordinates = mapController.getCurrentCenter(
+          this.selectedCoordinateOptions.key
+        );
+      }
+
       return coordinates;
     },
     onCitySelect(city) {
@@ -250,12 +280,10 @@ export default {
 
       this.searchInputValue = city.city;
     },
-    onModeSelect(mode) {
-      this.selectedCoordinateMode = mode;
-    },
+
     goToCoordinates() {
       var center = [this.coordinates.x, this.coordinates.y];
-      mapController.setCenter(center, this.selectedCoordinateMode.key);
+      mapController.setCenter(center, this.selectedCoordinateOptions.key);
       const featureName = "centerPoint";
       const featureOpts = {
         name: featureName,

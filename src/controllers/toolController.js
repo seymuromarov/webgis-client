@@ -508,23 +508,28 @@ const functions = {
   },
   fullScreen() {
     if (
-      window.innerWidth == screen.width &&
-      window.innerHeight == screen.height
+      window.fullScreen ||
+      (window.innerWidth == screen.width && window.innerHeight == screen.height)
     ) {
       document.exitFullscreen();
     } else {
-      document.querySelector("body").requestFullscreen();
+      var elem = document.querySelector("body");
+
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        /* Firefox */
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) {
+        /* Chrome, Safari and Opera */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        /* IE/Edge */
+        elem.msRequestFullscreen();
+      }
     }
   },
-  changeDetector() {
-    setters.setBbox([]);
-    functions.pickDrawType(drawTypeEnum.BOX);
-    setters.setDrawForChangeDetectionStatus(true);
-  },
-  ndviAssessment(callback) {
-    setters.setBbox([]);
-    functions.pickDrawType(drawTypeEnum.BOX, callback);
-  },
+
   showMapTextInput(e) {
     const map = mapController.getMap();
     const coordinates = e.target.sketchCoords_;

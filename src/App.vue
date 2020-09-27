@@ -1,9 +1,23 @@
 <template>
-  <div id="app">
+  <div v-if="appReady" id="app">
     <router-view />
   </div>
 </template>
-
+<script>
+export default {
+  name: "app",
+  data() {
+    return {
+      appReady: false,
+    };
+  },
+  created() {
+    this.$store.dispatch("fetchRemoteMessages").then(() => {
+      this.appReady = true;
+    });
+  },
+};
+</script>
 <style lang="scss">
 #app {
   font-family: "Roboto", Helvetica, Arial, sans-serif;

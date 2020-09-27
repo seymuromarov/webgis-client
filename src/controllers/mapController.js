@@ -1,4 +1,5 @@
 import $store from "@/store/store.js";
+import $i18n from "@/lang";
 import {
   tileTypeEnum,
   resolutionOptionTypeEnum,
@@ -48,39 +49,14 @@ import {
   TileWMS,
 } from "@/wrappers/openLayerImports";
 import modalController from "./modalController";
-import { drawTypeEnum } from "@/enums";
 const resolutionFactor = 10;
-const baseMaps = {
-  none: new XYZ({
-    crossOrigin: "Anonymous",
-    url: "",
-  }),
-  satellite: new XYZ({
-    name: "sat",
-    url:
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-  }),
-  street: new XYZ({
-    url:
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-  }),
-  gray: new XYZ({
-    crossOrigin: "Anonymous",
-    url:
-      "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-  }),
-};
 
 const functions = {
-  addService(id) {
-    let service = layerController.getLayer(id);
-    // if (service.extent != null) {
-    //   const { minX, minY, maxX, maxY } = service.extent;
-    //   var extent = [minX, minY, maxX, maxY];
-    //   functions.fitView(extent);
-    // }
+  addService(service) {
+    //get last version
+    service = serviceController.getServiceByObj(service);
 
-    var layer = functions.buildLayer(service.id);
+    var layer = functions.buildLayer(service);
     var zIndex = serviceController.getZIndex(service);
     layer.setZIndex(zIndex);
 
@@ -183,8 +159,8 @@ const functions = {
     map.getView().fit(extent);
     setters.setMap(map);
   },
-  buildLayer(id) {
-    const service = layerController.getLayer(id);
+  buildLayer(service) {
+    service = serviceController.getServiceByObj(service);
     const token = tokenService.getToken();
 
     const defaultProps = {
@@ -451,7 +427,7 @@ const setters = {
   setBaseLayout(index) {
     let map = getters.getMap();
     let layers = map.getLayers().getArray();
-    layers[0].setSource(baseMaps[index]);
+    layers[0].setSource(getters.getBaseLayouts()[index].layout);
     setters.setMap(map);
   },
   setZoomLevel(zoom) {
@@ -559,8 +535,40 @@ const getters = {
     });
     return layer;
   },
-  getBaseMaps() {
-    return baseMaps;
+  getBaseLayouts() {
+    const layouts = [
+      {
+        name: $i18n.t("menu.baseLayouts.options.none"),
+        layout: new XYZ({
+          crossOrigin: "Anonymous",
+          url: "",
+        }),
+      },
+      {
+        name: $i18n.t("menu.baseLayouts.options.satellite"),
+        layout: new XYZ({
+          name: "sat",
+          url:
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        }),
+      },
+      {
+        name: $i18n.t("menu.baseLayouts.options.street"),
+        layout: new XYZ({
+          url:
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+        }),
+      },
+      {
+        name: $i18n.t("menu.baseLayouts.options.gray"),
+        layout: new XYZ({
+          crossOrigin: "Anonymous",
+          url:
+            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+        }),
+      },
+    ];
+    return layouts;
   },
   getActiveDynamicLayersColorsGetter() {
     return $store.getters.activeDynamicLayersColors;

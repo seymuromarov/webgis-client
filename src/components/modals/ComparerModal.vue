@@ -60,7 +60,7 @@ import {
   toolController,
   modalController,
 } from "@/controllers";
-import { drawTypeEnum } from "@/enums";
+import { drawTypeEnum, resourceTypeEnum } from "@/enums";
 import { icons } from "@/constants/assets";
 import { urlHelper, mapHelper } from "@/helpers";
 export default {
@@ -87,7 +87,6 @@ export default {
       },
     };
   },
-  created() {},
   computed: {
     selectedBasemaps() {
       return basemaps;
@@ -183,13 +182,13 @@ export default {
         this.leftImage = urlHelper.getImageUrl(
           this.selecteds[0].label,
           this.extent,
-          null
+          resourceTypeEnum.ARCGIS
         );
 
         this.rightImage = urlHelper.getImageUrl(
           this.selecteds[1].label,
           this.extent,
-          null
+          resourceTypeEnum.ARCGIS
         );
       } else this.reset();
 

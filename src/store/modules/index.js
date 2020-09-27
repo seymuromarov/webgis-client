@@ -11,6 +11,7 @@ import menu from "./menu";
 import history from "./history";
 import ndvi from "./ndvi";
 import user from "./user";
+import language from "./language";
 
 export default {
   auth,
@@ -26,4 +27,5 @@ export default {
   history,
   ndvi,
   user,
+  language,
 };

@@ -1,7 +1,7 @@
 <template>
   <CustomModal
     name="profileModal"
-    title="Profile"
+    :title="$t('menu.profile.title')"
     width="70%"
     :minHeight="600"
     @beforeShow="onModalOpen"
@@ -18,16 +18,18 @@
             <a
               role="button"
               class="nav-link"
-              :class="{ active: activeTab === 'profile' }"
-              @click="() => (activeTab = 'profile')"
-              >Profile
+              :class="{ active: activeTab === 'account' }"
+              @click="() => (activeTab = 'account')"
+            >
+              {{ $t("menu.profile.account.title") }}
             </a>
             <a
               role="button"
               class="nav-link"
               :class="{ active: activeTab === 'notification' }"
               @click="() => (activeTab = 'notification')"
-              >Notifications
+            >
+              {{ $t("menu.profile.notifications") }}
               <span
                 v-if="notificationCount > 0"
                 class="badge badge-danger float-right"
@@ -39,39 +41,40 @@
               class="nav-link"
               :class="{ active: activeTab === 'favoritequery' }"
               @click="() => (activeTab = 'favoritequery')"
-              >Favorite Queries</a
+            >
+              {{ $t("menu.profile.favoriteQueries") }}</a
             >
             <a
               role="button"
               class="nav-link"
               :class="{ active: activeTab === 'favoritelayer' }"
               @click="() => (activeTab = 'favoritelayer')"
-              >Favorite Layers</a
+              >{{ $t("menu.profile.favoriteLayers") }}</a
             >
             <a
               role="button"
               class="nav-link"
               :class="{ active: activeTab === 'defaultlayer' }"
               @click="() => (activeTab = 'defaultlayer')"
-              >Default Layers</a
+              >{{ $t("menu.profile.defaultLayers") }}</a
             >
             <a
               role="button"
               class="nav-link"
               :class="{ active: activeTab === 'workspace' }"
               @click="() => (activeTab = 'workspace')"
-              >Workspace</a
+              >{{ $t("menu.profile.workspace.title") }}</a
             >
           </div>
         </div>
 
         <div class="col-md-9">
-          <div v-if="activeTab === 'profile'" class="tab-content">
+          <div v-if="activeTab === 'account'" class="tab-content">
             <div
               class="tab-pane fade show "
-              :class="{ active: activeTab === 'profile' }"
+              :class="{ active: activeTab === 'account' }"
             >
-              <Profile />
+              <Account />
             </div>
           </div>
           <div v-if="activeTab === 'notification'" class="tab-content">
@@ -125,7 +128,7 @@ import Notification from "./components/Notification/Index";
 import FavoriteQuery from "./components/FavoriteQuery/Index";
 import FavoriteLayer from "./components/FavoriteLayer";
 import DefaultLayer from "./components/DefaultLayer";
-import Profile from "./components/Profile";
+import Account from "./components/Account";
 import Workspace from "./components/Workspace";
 
 import { menuController } from "@/controllers";
@@ -134,14 +137,14 @@ export default {
   components: {
     Notification,
     FavoriteQuery,
-    Profile,
+    Account,
     FavoriteLayer,
     DefaultLayer,
     Workspace,
   },
   data() {
     return {
-      activeTab: "profile",
+      activeTab: "account",
     };
   },
   computed: {
@@ -151,7 +154,7 @@ export default {
   },
   methods: {
     onModalOpen() {
-      this.activeTab = "profile";
+      this.activeTab = "account";
     },
   },
 };

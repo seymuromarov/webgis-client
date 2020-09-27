@@ -78,29 +78,34 @@ export default {
   data() {
     return {
       activeTab: "about",
-      tabs: [
+    };
+  },
+
+  computed: {
+    tabs() {
+      return [
         {
           key: "about",
-          text: "About",
+          text: this.$t("menu.information.about.title"),
         },
         {
           key: "faq",
-          text: "FAQ",
+          text: this.$t("menu.information.faq"),
         },
         {
           key: "releaseNotes",
-          text: "Release notes",
+          text: this.$t("menu.information.releaseNotes"),
         },
         {
           key: "forum",
-          text: "Forum",
+          text: this.$t("menu.information.forum.title"),
         },
         {
           key: "contact",
-          text: "Contact us",
+          text: this.$t("menu.information.contactUs.title"),
         },
-      ],
-    };
+      ];
+    },
   },
   methods: {
     changeTab(tab) {
@@ -119,7 +124,7 @@ export default {
   }
 
   .modal-dialog {
-    max-width: 650px;
+    // max-width: 650px;
     .modal-content {
       border: 1px solid var(--primary-color);
       .modal-header {

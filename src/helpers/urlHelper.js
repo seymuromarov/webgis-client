@@ -1,5 +1,5 @@
-import { tileTypeEnum } from "@/enums";
-import { serviceHelper, urlHelper } from "@/helpers";
+import { tileTypeEnum, resourceTypeEnum } from "@/enums";
+import { serviceHelper } from "@/helpers";
 import { tokenService } from "@/services";
 import { URL, MAP_URLS, ARCGIS_URLS } from "@/config/urls";
 import { arcgisImgExportSettings } from "@/config/settings";
@@ -36,7 +36,7 @@ const functions = {
         if (serviceHelper.isLayer(service)) {
           let params = service.query;
 
-          let queryString = urlHelper.formatQueryString(params);
+          let queryString = functions.formatQueryString(params);
 
           url = `${URL}/api/service/webgis/${service.name}/mvt/{z}/{x}/{y}/?${queryString}`;
         } else {
@@ -46,7 +46,7 @@ const functions = {
             return obj;
           });
 
-          let queryString = urlHelper.formatQueryString({
+          let queryString = functions.formatQueryString({
             queries: params,
           });
 
@@ -76,13 +76,18 @@ const functions = {
 
     return url;
   },
-  getImageUrl(name, extent, type) {
-    var params = arcgisImgExportSettings;
-    params["token"] = tokenService.getToken();
-    params["bbox"] = extent.toString();
+  getImageUrl(name, extentArray, resourceType) {
+    const token = tokenService.getToken();
+    const bbox = extentArray.toString();
 
-    let arcgisImgUrl = ARCGIS_URLS.EXPORT_IMAGE_URL(name, params);
-    return arcgisImgUrl;
+    if (resourceType == resourceTypeEnum.ARCGIS) {
+      var params = arcgisImgExportSettings;
+      params["token"] = token;
+      params["bbox"] = bbox;
+      let arcgisImgUrl = ARCGIS_URLS.EXPORT_IMAGE_URL(name, params);
+      return arcgisImgUrl;
+    }
+    return "";
   },
 };
 export default { ...functions };

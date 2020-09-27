@@ -1,6 +1,6 @@
 <template>
   <CustomModal
-    name="detectorModal"
+    name="changeDetectionModal"
     title="Change detection"
     :width="800"
     :minHeight="400"
@@ -34,61 +34,38 @@
         </div>
       </div>
     </div>
-
-    <!-- <div class="detector-wrapper"> -->
-
-    <!-- </div> -->
   </CustomModal>
 </template>
 
 <script>
-import Multiselect from "vue-multiselect";
-import { URL } from "@/config/urls";
-import { layerController } from "@/controllers";
-import { fromLonLat, Polygon } from "@/wrappers/openLayerImports";
+import { layerController, toolController } from "@/controllers";
+import { urlHelper, mapHelper } from "@/helpers";
+import { resourceTypeEnum } from "@/enums";
 // import the component
 import Treeselect from "@riophae/vue-treeselect";
 // import the styles
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 export default {
   components: {
-    Multiselect,
     Treeselect,
   },
-  props: {
-    bbox: {
-      required: true,
-      type: Array,
-    },
-    token: {
-      // required: true,
-      type: String,
-    },
-    visible: {
-      type: Boolean,
-    },
+  data() {
+    return {
+      selectedLayers: [],
+      exportedImages: [],
+    };
   },
   watch: {
     selectedLayers: async function(arr) {
       this.exportedImages = [];
 
-      var extent = new Polygon([this.bbox]).getExtent();
+      var extent = mapHelper.bboxToExtent(this.bbox);
       for (let item of arr) {
-        let url =
-          URL +
-          "/api/map/service/" +
-          item.label +
-          "/MapServer/export" +
-          "?" +
-          `token=${this.token}&` +
-          `f=image&` +
-          `format=png8&` +
-          `transparent=true&` +
-          `size=1024,1024&` +
-          `bbox=${extent.toString()}&` +
-          `bboxsr=4326&` +
-          `imagesr=4326&` +
-          `dpi=90`;
+        const url = urlHelper.getImageUrl(
+          item.label,
+          extent,
+          resourceTypeEnum.ARCGIS
+        );
 
         this.exportedImages.push({
           image: url,
@@ -96,33 +73,18 @@ export default {
         });
       }
     },
-    visible(value) {
-      if (value) {
-        this.selectedLayers = layerController.getSelectedBasemaps();
-
-        this.$moodal.detectorModal.show();
-      } else {
-        this.$moodal.detectorModal.hide();
-      }
-    },
   },
 
-  data() {
-    return {
-      selectedLayers: [],
-      exportedImages: [],
-    };
-  },
   computed: {
     baseOptions() {
       let options = layerController.getBasemapLayerAsTreeSelect();
       return options;
     },
     // selectedLayers() {
-
+    bbox() {
+      return toolController.getBbox();
+    },
     // }
   },
 };
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

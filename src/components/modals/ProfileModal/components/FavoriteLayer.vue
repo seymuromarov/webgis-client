@@ -4,10 +4,11 @@
       <div class="row">
         <div class="col-md-12">
           <h5>
-            Dynamic Layers
+            {{ $t("menu.dynamicLayers") }}
+
             <button
               type="button"
-              title="Reset Tree"
+              :title="$t('button.reset')"
               class="btn btn-danger mr-5 float-right btn-sm"
               @click="resetDynamicTree"
             >
@@ -29,10 +30,10 @@
       <div class="row">
         <div class="col-md-12">
           <h5>
-            Basemap Layers
+            {{ $t("menu.baseLayers") }}
             <button
               type="button"
-              title="Reset Tree"
+              :title="$t('button.reset')"
               class="btn btn-danger mr-5 float-right btn-sm"
               @click="resetBasemapTree"
             >
@@ -52,21 +53,13 @@
     </div>
     <div class="col-md-12 mt-5">
       <div class="row">
-        <!-- <div class="col-md-6">
-          <span>
-            <strong class="text-muted">Note : </strong>
-            <small class="text-muted"
-              >Changes will be applied after refresh.</small
-            ></span
-          >
-        </div> -->
         <div class="col-md-12">
           <button
             type="button"
             class="btn btn-success  float-right btn-sm"
             @click="submit"
           >
-            Set Favorite Layers
+            {{ $t("button.set") }}
           </button>
         </div>
       </div>
@@ -76,7 +69,7 @@
     <div class="row ">
       <div class="col-md-12">
         <div class="alert alert-info" role="alert">
-          You dont have any Layers.
+          {{ $t("general.nodata") }}
         </div>
       </div>
     </div>

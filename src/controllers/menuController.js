@@ -1,19 +1,22 @@
 import $store from "@/store/store.js";
+import $i18n from "@/lang";
 import { toolController, modalController } from "@/controllers";
 import { icons } from "@/constants/assets";
 import { menuTabEnum, drawTypeEnum } from "@/enums";
+
 const getters = {
   getToolList() {
     return [
       {
         key: "mouse",
-        label: "Mouse",
+        label: $i18n.t("menu.tool.mouse"),
         image: icons.mouse,
         click: () => toolController.pickDrawType(drawTypeEnum.NONE),
       },
       {
-        key: "attText",
-        label: "Add Text",
+        key: "addText",
+        // label: "Add Text",
+        label: $i18n.t("menu.tool.addText"),
         image: icons.text,
         click: () => {
           const callback = (e) => {
@@ -25,92 +28,96 @@ const getters = {
       },
       {
         key: "addPoint",
-        label: "Add point",
+        label: $i18n.t("menu.tool.addPoint"),
         image: icons.point,
         click: () => toolController.pickDrawType(drawTypeEnum.POINT),
       },
       {
         key: "rectangle",
-        label: "Rectangle",
+        label: $i18n.t("menu.tool.rectangle"),
         image: icons.rectangle,
         click: () => toolController.pickDrawType(drawTypeEnum.BOX),
       },
       {
         key: "square",
-        label: "Square",
+        label: $i18n.t("menu.tool.square"),
         image: icons.square,
         click: () => toolController.pickDrawType(drawTypeEnum.SQUARE),
       },
       {
         key: "circle",
-        label: "Circle",
+        label: $i18n.t("menu.tool.circle"),
         image: icons.circle,
         click: () => toolController.pickDrawType(drawTypeEnum.CIRCLE),
       },
       {
         key: "polygon",
-        label: "Polygon",
+        label: $i18n.t("menu.tool.polygon"),
         image: icons.polygon,
         click: () => toolController.pickDrawType(drawTypeEnum.POLYGON),
       },
       {
         key: "line",
-        label: "Line",
+        label: $i18n.t("menu.tool.line"),
         image: icons.line,
         click: () => toolController.pickDrawType(drawTypeEnum.LINESTRING),
       },
       {
         key: "addPlace",
-        label: "Add place",
+        label: $i18n.t("menu.tool.addPlace"),
         image: icons.place,
         click: () => {},
       },
       {
         key: "reset",
-        label: "Reset",
+        label: $i18n.t("menu.tool.reset"),
         image: icons.reset,
         click: toolController.resetFeatures,
       },
       {
         key: "delete",
-        label: "Delete",
+        label: $i18n.t("menu.tool.delete"),
         image: icons.delete,
         click: toolController.deleteFeature,
       },
       {
         key: "pickColor",
-        label: "Pick color",
+        label: $i18n.t("menu.tool.pickColor"),
         image: icons.color_picker,
         click: toolController.eyeDropper,
       },
       {
         key: "changeDetection",
-        label: "Change detection",
+        label: $i18n.t("menu.tool.changeDetection"),
         image: icons.world,
-        click: toolController.changeDetector,
+        click: () => {
+          let callback = () => {
+            modalController.showChangeDetectionModal();
+          };
+          toolController.pickDrawType(drawTypeEnum.BOX, callback);
+        },
       },
 
       {
         key: "graticule",
-        label: "Graticule",
+        label: $i18n.t("menu.tool.graticule"),
         image: icons.grid,
         click: toolController.addGraticule,
       },
       {
         key: "ndviAssessment",
-        label: "NDVI Assessment",
+        label: $i18n.t("menu.tool.ndviAssesment"),
         image: icons.ndvi,
         click: () => {
           let callback = () => {
             modalController.showNdviAssessmentModal();
           };
-
-          toolController.ndviAssessment(callback);
+          toolController.pickDrawType(drawTypeEnum.BOX, callback);
         },
       },
       {
         key: "blindSpot",
-        label: "Blind Spot Detection",
+        label: $i18n.t("menu.tool.blindSpotDetection"),
         image: icons.blindSpot,
         click: () => {
           let callback = () => {
@@ -121,7 +128,7 @@ const getters = {
       },
       {
         key: "swap",
-        label: "Swap Image",
+        label: $i18n.t("menu.tool.swapImage"),
         image: icons.swap,
         click: () => {
           modalController.showComparerModal();
@@ -141,13 +148,13 @@ const getters = {
     return [
       {
         key: "information",
-        label: "Information",
+        label: $i18n.t("menu.information.title"),
         image: icons.information,
         click: setters.setInformationModalVisible,
       },
       {
         key: menuTabEnum.BASE_MAP_TYPE,
-        label: "Layer Types",
+        label: $i18n.t("menu.baseLayouts.title"),
         image: icons.hamburger,
         click: () => {
           setters.setActiveMenuTab(menuTabEnum.BASE_MAP_TYPE);
@@ -155,19 +162,19 @@ const getters = {
       },
       {
         key: "exportPNG",
-        label: "Export PNG",
+        label: $i18n.t("menu.exportPng"),
         image: icons.picture,
         click: toolController.pngExport,
       },
       {
         key: "exportGeojson",
-        label: "Export GeoJSON",
+        label: $i18n.t("menu.exportGeojson"),
         image: icons.file_download,
         click: toolController.exportData,
       },
       {
         key: "fullscreen",
-        label: "Full screen",
+        label: $i18n.t("menu.fullscreen"),
         image: icons.fullscreen,
         click: toolController.fullScreen,
       },
@@ -177,7 +184,7 @@ const getters = {
     return [
       {
         key: menuTabEnum.PROFILE,
-        label: "Profile",
+        label: $i18n.t("menu.profile.title"),
         image: icons.user,
         click: () => {
           setters.setActiveMenuTab(menuTabEnum.PROFILE);
@@ -185,7 +192,7 @@ const getters = {
       },
       {
         key: menuTabEnum.TOOL,
-        label: "Tools",
+        label: $i18n.t("menu.tool.title"),
         image: icons.pencil,
         click: () => {
           setters.setActiveMenuTab(menuTabEnum.TOOL);
@@ -193,7 +200,7 @@ const getters = {
       },
       {
         key: menuTabEnum.DYNAMIC_LAYER,
-        label: "Dynamic Layers",
+        label: $i18n.t("menu.dynamicLayers"),
         image: icons.layer,
         click: () => {
           setters.setActiveMenuTab(menuTabEnum.DYNAMIC_LAYER);
@@ -201,7 +208,7 @@ const getters = {
       },
       {
         key: menuTabEnum.BASE_LAYER,
-        label: "Basemaps",
+        label: $i18n.t("menu.baseLayers"),
         image: icons.map,
         click: () => {
           setters.setActiveMenuTab(menuTabEnum.BASE_LAYER);

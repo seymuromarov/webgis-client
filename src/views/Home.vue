@@ -3,9 +3,11 @@
     <!-- Main content -->
     <div class="padding-0 map-layout">
       <div id="map">
-        <MapControls v-if="isMapControlsVisible" />
-        <!-- <Sidebar @setBaseLayout="setBaseLayout" /> -->
-        <Sidebar />
+        <div v-if="isMapReady">
+          <MapControls />
+          <!-- <Sidebar @setBaseLayout="setBaseLayout" /> -->
+          <Sidebar />
+        </div>
       </div>
     </div>
     <!-- Profile Modal -->
@@ -27,11 +29,7 @@
     </CustomModal>
 
     <!-- Change Detection -->
-    <detector-modal
-      :visible="bbox.length > 0 && isDrawnShapeForDetection"
-      v-bind="{ bbox, token }"
-      @close="(bbox = []) & (isDrawnShapeForDetection = false)"
-    ></detector-modal>
+    <ChangeDetectionModal />
 
     <NdviAssessment />
     <BlindSpotModal />
@@ -42,7 +40,7 @@
     />
     <ServiceSelectionModal />
     <!-- Information Modal -->
-    <ComputedLayersModal />
+    <BunchLayerAddModal />
 
     <ComparerModal />
     <PrintModal />
@@ -95,8 +93,8 @@ import {
   Report,
   MapControls,
   InfoModal,
-  ComputedLayersModal,
-  ChangeDetector as DetectorModal,
+  BunchLayerAddModal,
+  ChangeDetectionModal,
   NdviAssessment,
   ProfileModal,
   MapText,
@@ -118,20 +116,19 @@ import {
 
 // Services
 import { tokenService, hashService } from "@/services";
-import layer from "@/api/layer";
 export default {
   name: "Home",
   components: {
     ShapeColorPicker,
     DataTable,
-    DetectorModal,
+    ChangeDetectionModal,
     InfoModal,
     Sidebar,
     FilterModal,
     Report,
     MapControls,
     MapText,
-    ComputedLayersModal,
+    BunchLayerAddModal,
     NdviAssessment,
     ProfileModal,
     ServiceSelectionModal,
@@ -152,13 +149,13 @@ export default {
       vectorLayer: null,
       hashResolveResult: {},
       isMetricCoordinateSystem: false,
-      isMapControlsVisible: false,
+      isMapReady: false,
     };
   },
 
   mounted() {
     let baseLayer = new TileLayer({
-      source: mapController.getBaseMaps()["gray"],
+      source: mapController.getBaseLayouts()[3].layout,
     });
     var debugLayer = new TileLayer({
       source: new TileDebug({
@@ -257,7 +254,7 @@ export default {
         this.mapLayer.getView().setRotation(event.state.rotation);
       });
 
-      this.isMapControlsVisible = true;
+      this.isMapReady = true;
     });
   },
   methods: {
@@ -296,14 +293,14 @@ export default {
       },
     },
 
-    isDrawnShapeForDetection: {
-      get() {
-        return toolController.getDrawForChangeDetectionStatus();
-      },
-      set(value) {
-        toolController.setDrawForChangeDetectionStatus(value);
-      },
-    },
+    // isDrawnShapeForDetection: {
+    //   get() {
+    //     return toolController.getDrawForChangeDetectionStatus();
+    //   },
+    //   set(value) {
+    //     toolController.setDrawForChangeDetectionStatus(value);
+    //   },
+    // },
     drawSource: {
       get() {
         return this.$store.getters.drawSource;

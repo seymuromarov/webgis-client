@@ -12,7 +12,6 @@ import { Modal as CustomModal } from "@/components";
 import store from "./store/store";
 
 import App from "./App.vue";
-
 /**
  * Styles
  */
@@ -40,6 +39,9 @@ import "sweetalert2/dist/sweetalert2.min.css";
 // Vue Loading
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
+
+// Loader
+import { Loader } from "@/components";
 
 // Vue Vue Toasted
 import VueToasted from "vue-toasted";
@@ -73,12 +75,15 @@ import Vuelidate from "vuelidate";
 
 import "./permission"; // permission control
 
+import i18n from "./lang"; // internationalization
+
 Vue.use(Snotify, {
   toast: {
     position: SnotifyPosition.leftBottom,
     timeout: 3000,
   },
 });
+Vue.component("Loader", Loader);
 Vue.component("CustomModal", CustomModal);
 Vue.component("paginate", Paginate);
 Vue.component("v-select", vSelect);
@@ -105,5 +110,6 @@ Vue.use(VueQuillEditor);
 new Vue({
   router,
   store,
+  i18n,
   render: (h) => h(App),
 }).$mount("#app");

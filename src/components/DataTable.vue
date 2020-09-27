@@ -30,7 +30,7 @@
           <div class="table__operations">
             <i
               v-if="isActiveServiceLocal && checkPermission(['data_add'])"
-              title="Add Data"
+              :title="$t('datatable.addData')"
               class="fas fa-plus tableFilter makeMePoint icon"
               @click="addData"
             />
@@ -42,23 +42,23 @@
               :name="'test' + '_report.xls'"
             >
               <i
-                title="Export As Excel"
+                :title="$t('datatable.exportExcel')"
                 class="fas fa-file-excel icon excelDataIcon excelIcon makeMePoint"
               ></i>
             </download-excel>
 
             <i
-              title="Filter"
+              :title="$t('datatable.filter')"
               class="fas fa-filter tableFilter makeMePoint icon"
               @click="showFilterModal"
             />
             <i
-              title="Show/Hide Table Columns"
+              :title="$t('datatable.showHideTableColumns')"
               class="fas fa-columns tableColumns makeMePoint icon"
               @click="togglePopup"
             ></i>
             <i
-              title="Close"
+              :title="$t('button.close')"
               class="fas fa-times tableClose makeMePoint icon"
               @click="toggleIsVisible"
             />
@@ -94,9 +94,7 @@
           ref="dataTableContent"
         >
           <!-- Loader -->
-          <div class="loader" v-if="loading">
-            <img src="@/assets/loading.svg" alt />
-          </div>
+          <Loader v-if="loading" />
 
           <!-- Table -->
           <table class="selfTable table" v-else>
@@ -144,13 +142,13 @@
                 >
                   <i
                     v-if="checkPermission(['data_edit'])"
-                    title="Edit Data"
+                    :title="$t('datatable.editData')"
                     class="far fa-edit 
                   makeMePoint mr-2"
                     @click="editData(data.attributes['gid'])"
                   />
                   <i
-                    title="Edit Data"
+                    :title="$t('datatable.fileUpload')"
                     class="fas fa-file-upload 
                   makeMePoint "
                     @click="uploadImage(data.attributes['gid'])"
@@ -176,7 +174,6 @@
 </template>
 
 <script>
-import { toggler } from "../helpers";
 import Multiselect from "vue-multiselect";
 import layer from "@/api/layer";
 import Resizable from "vue-resizable";
@@ -202,7 +199,6 @@ export default {
   data() {
     return {
       currentTabId: null,
-      toggler: null,
       isColumnPopupShowing: false,
       selectedGid: 0,
       resize: {
@@ -596,21 +592,6 @@ export default {
 
   .tableContent {
     background-color: var(--primary-color-lighten-100);
-    .loader {
-      font-size: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-grow: 1;
-      left: 0;
-      bottom: 0;
-      top: 0;
-      right: 0;
-      position: absolute;
-      img {
-        width: 60px;
-      }
-    }
   }
 
   .selfTable {

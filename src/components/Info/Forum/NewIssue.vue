@@ -7,31 +7,35 @@
           class="btn btn-light back-btn"
           @click="$emit('back')"
         >
-          <i class="fas fa-arrow-left"></i> Back</button
-        >Create issue
+          <i class="fas fa-arrow-left"></i> {{ $t("button.back") }}</button
+        >{{ $t("menu.information.forum.createIssue") }}
       </h4>
 
       <form>
         <div class="form-group">
-          <label for="title">Title</label>
+          <label for="title">{{ $t("form.createIssueForm.title") }}</label>
           <input
             class="form-control"
             :class="{ 'is-invalid': !titleValid }"
             id="title"
-            placeholder="Title"
+            :placeholder="$t('form.createIssueForm.title')"
             v-model="title"
             required
           />
-          <div class="invalid-feedback">Please enter the title.</div>
+          <div class="invalid-feedback">
+            {{ $t("form.createIssueForm.validationMessages.titleRequired") }}
+          </div>
         </div>
 
         <div class="form-group">
-          <label for="category">Category</label>
+          <label for="category">{{
+            $t("form.createIssueForm.category")
+          }}</label>
           <select
             id="category"
             class="form-control category"
             :class="{ 'is-invalid': !categoryValid }"
-            placeholder="Filter by category"
+            :placeholder="$t('form.createIssueForm.title')"
             v-model="selectedCategory"
           >
             <option
@@ -41,11 +45,13 @@
               >{{ category.name }}</option
             >
           </select>
-          <div class="invalid-feedback">Please select the category.</div>
+          <div class="invalid-feedback">
+            {{ $t("form.createIssueForm.validationMessages.categoryRequired") }}
+          </div>
         </div>
 
         <div class="form-group content">
-          <label for="content">Content</label>
+          <label for="content">{{ $t("form.createIssueForm.content") }}</label>
           <quill-editor
             id="content"
             class="content__editor"
@@ -54,7 +60,9 @@
             ref="myQuillEditor"
             :options="editorOption"
           ></quill-editor>
-          <div class="invalid-feedback">Please enter the content</div>
+          <div class="invalid-feedback">
+            {{ $t("form.createIssueForm.validationMessages.contentRequired") }}
+          </div>
 
           <button
             type="button"
@@ -62,7 +70,7 @@
             :disabled="submitButtonDisabled && false"
             @click="submitForm"
           >
-            Submit
+            {{ $t("button.submit") }}
           </button>
         </div>
       </form>

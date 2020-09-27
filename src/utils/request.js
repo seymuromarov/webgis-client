@@ -2,6 +2,7 @@ import axios from "axios";
 import { baseUrl } from "@/config/urls";
 import { tokenService } from "@/services";
 import { urlHelper } from "@/helpers";
+import { getLanguage } from "@/lang/index";
 
 const service = axios.create({
   baseURL: `${baseUrl}/arcgis/rest/services`,
@@ -15,6 +16,7 @@ const service = axios.create({
 service.interceptors.request.use(
   (request) => {
     request.headers["Authorization"] = "Bearer " + tokenService.getToken();
+    request.headers["Accept-Language"] = getLanguage();
 
     return request;
   },

@@ -1,34 +1,41 @@
 <template>
   <div>
-    <transition name="collapse">
-      <div v-if="messageSent" class="alert alert-success" role="alert">
-        Your message has been sent
-      </div>
-    </transition>
     <form class="contact-block">
       <div class="form-group">
-        <label for="subject">Subject</label>
+        <label for="subject">{{ $t("form.contactUsForm.subject") }}</label>
         <input
           type="text"
           class="form-control"
-          :class="{ 'is-invalid': subjectIsInvalid }"
+          :class="{ 'is-invalid': submitted && !$v.data.subject.required }"
           id="subject"
-          placeholder="Subject"
+          :placeholder="$t('form.contactUsForm.subject')"
           required
-          v-model="subject"
+          v-model="data.subject"
         />
+        <div
+          v-if="submitted && !$v.data.subject.required"
+          class="invalid-feedback"
+        >
+          {{ $t("form.contactUsForm.validationMessages.subjectRequired") }}
+        </div>
       </div>
       <div class="form-group">
-        <label for="content">Content</label>
+        <label for="content">{{ $t("form.contactUsForm.content") }}</label>
         <textarea
           class="form-control"
-          :class="{ 'is-invalid': messageIsInvalid }"
+          :class="{ 'is-invalid': submitted && !$v.data.message.required }"
           id="content"
           rows="3"
-          placeholder="Content"
+          :placeholder="$t('form.contactUsForm.content')"
           required
-          v-model="message"
+          v-model="data.message"
         ></textarea>
+        <div
+          v-if="submitted && !$v.data.message.required"
+          class="invalid-feedback"
+        >
+          {{ $t("form.contactUsForm.validationMessages.contentRequired") }}
+        </div>
       </div>
       <button
         type="submit"
@@ -36,7 +43,7 @@
         @click.prevent="sendMessage"
         :disabled="loading"
       >
-        Submit
+        {{ $t("button.submit") }}
       </button>
     </form>
   </div>
@@ -44,56 +51,66 @@
 
 <script>
 import info from "@/api/info";
-
+import { required } from "vuelidate/lib/validators";
 export default {
   name: "Contact",
   data() {
     return {
-      subject: null,
-      message: null,
+      data: {
+        subject: null,
+        message: null,
+      },
+      submitted: false,
       loading: false,
-      messageSent: false,
     };
   },
-  methods: {
-    sendMessage() {
-      this.loading = true;
-
-      const body = {
-        subject: this.subject.trim(),
-        message: this.message.trim(),
-      };
-
-      info
-        .sendMessage(body)
-        .then((response) => {
-          if (response.status === 200) {
-            this.subject = null;
-            this.message = null;
-            this.messageSent = true;
-            setTimeout(() => {
-              this.messageSent = false;
-            }, 5000);
-          }
-          this.loading = false;
-        })
-        .catch((error) => {
-          this.loading = false;
-        });
+  validations: {
+    data: {
+      subject: { required },
+      message: { required },
     },
   },
-  computed: {
-    subjectIsInvalid() {
-      if (this.subject !== null) {
-        return this.subject.trim() === "";
-      }
-      return false;
+  mounted() {
+    this.reset();
+  },
+  methods: {
+    reset() {
+      this.submitted = false;
+      this.loading = false;
+      this.resetData();
     },
-    messageIsInvalid() {
-      if (this.message !== null) {
-        return this.message.trim() === "";
+    resetData() {
+      this.data = {
+        subject: null,
+        message: null,
+      };
+    },
+    sendMessage() {
+      this.submitted = true;
+      this.$v.$touch();
+      if (!this.$v.$invalid) {
+        this.loading = true;
+
+        info
+          .sendMessage(this.data)
+          .then((response) => {
+            if (response.status === 200) {
+              this.$toasted.show("Successfully Added", {
+                icon: {
+                  name: "fas fa-check",
+                },
+              });
+              this.resetData();
+            }
+            this.loading = false;
+          })
+          .catch((error) => {
+            // this.loading = false;
+          })
+          .finally(() => {
+            this.loading = true;
+          });
       }
-      return false;
     },
   },
 };
@@ -102,25 +119,5 @@ export default {
 <style lang="scss">
 .contact-block {
   padding: 1rem 4rem 2rem;
-}
-
-.submit-btn {
-  width: 100%;
-}
-
-.collapse-body {
-  opacity: 1;
-  overflow: auto;
-}
-
-.collapse-enter-active,
-.collapse-leave-active {
-  transition: all 0.5s ease-in-out;
-  transition-delay: 0s;
-}
-
-.collapse-enter,
-.collapse-leave-to {
-  opacity: 0;
 }
 </style>

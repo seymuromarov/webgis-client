@@ -5,7 +5,7 @@
         <!-- Switch -->
         <ToggleSwitch v-if="!isCategory" class="pre" v-model="switchModel" />
         <i class="far fa-folder pre" v-else></i>
-        {{ isCategory ? data.name : data.showingLabel }}
+        {{ isLayer ? (isCategory ? data.name : data.showingLabel) : data.name }}
       </span>
 
       <!-- Caret icons -->
@@ -52,7 +52,7 @@
           role="button"
           class="condition-modal-btn "
           @click="showConditionModal"
-          >Show Conditions</a
+          >{{ $t("general.showConditionsButtonTitle") }}</a
         >
         <ColorConditionInfoModal :data="getConditionLegendData()" />
 
@@ -283,6 +283,9 @@ export default {
     isCategory() {
       return serviceHelper.isCategory(this.data);
     },
+    isLayer() {
+      return serviceHelper.isLayer(this.data);
+    },
 
     caretIconsVisibility() {
       return (
@@ -466,11 +469,12 @@ export default {
 
 .condition-modal-btn {
   text-decoration: none;
-  color: white;
+  color: #4fc3f7;
   width: 90%;
   &:hover,
   &:focus {
-    color: var(--primary-color);
+    // color: var(--primary-color);
+    color: #01579b;
     transition: all 0.3s ease;
     cursor: pointer;
     text-decoration: none;

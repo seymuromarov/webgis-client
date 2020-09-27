@@ -22,6 +22,15 @@ const functions = {
     let i = layerColorOrder.findIndex((c) => c === number);
     return i;
   },
+  getServiceByObj(obj) {
+    const isLayer = serviceHelper.isLayer(obj);
+    const isBunch = serviceHelper.isBunch(obj);
+    if (isLayer) {
+      return layerController.getLayer(obj.id);
+    } else if (isBunch) {
+      return bunchController.getBunch(obj.id);
+    }
+  },
   removeLayerColorIndex(number) {
     let layerColorOrder = layerController.getLayerColorOrderList();
     let i = layerColorOrder.findIndex((c) => c === number);
@@ -60,7 +69,7 @@ const functions = {
 
         await functions.saveColor(service, colorObj);
 
-        mapController.addService(service.id);
+        mapController.addService(service);
         if (serviceHelper.isDynamicFromLocal(service))
           mapController.buildSelectionLayer(service.id);
       } else {

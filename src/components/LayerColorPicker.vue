@@ -7,7 +7,7 @@
           href="#"
           :class="{ active: isBorder }"
           @click="borderClick(true)"
-          >Border Color</a
+          >{{ $t("colorPicker.borderColor") }}</a
         >
       </li>
       <li class="nav-item">
@@ -16,7 +16,7 @@
           href="#"
           :class="{ active: !isBorder }"
           @click="borderClick(false)"
-          >Fill Color</a
+          >{{ $t("colorPicker.fillColor") }}</a
         >
       </li>
     </ul>
@@ -37,23 +37,13 @@
       v-model="fill"
       style="display:inline-block;"
     ></ColorScheme>
-    <!-- <ColorScheme
-      v-else
-      :value="{ hex: fillColor }"
-      @input="
-        (val) => {
-          fill = val;
-        }
-      "
-      style="display:inline-block;"
-    ></ColorScheme> -->
 
     <div class="colorPickerButton">
       <button class="btn btn-sm btn--cancel" type="button" @click="onClose">
-        Close
+        {{ $t("button.close") }}
       </button>
       <button class="btn btn-sm btn--save" type="button" @click="onSave">
-        Save
+        {{ $t("button.save") }}
       </button>
     </div>
   </div>
