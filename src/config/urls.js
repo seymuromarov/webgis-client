@@ -83,7 +83,7 @@ const ARCGIS_URLS = {
       urlHelper.formatQueryString(params);
     return url;
   },
-  SERVICE_URl: URL + "/api/map/service",
+  SERVICE_URl: URL + "/api/service/arcgis",
 };
 
 export {

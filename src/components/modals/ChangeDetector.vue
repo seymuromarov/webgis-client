@@ -76,11 +76,9 @@ export default {
       for (let item of arr) {
         let url =
           URL +
-          "/api/map/service/" +
+          "/api/service/arcgis/" +
           item.label +
-          "/MapServer/export" +
-          "?" +
-          `token=${this.token}&` +
+          `/?token=${this.token}&` +
           `f=image&` +
           `format=png8&` +
           `transparent=true&` +
