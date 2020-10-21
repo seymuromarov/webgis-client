@@ -213,7 +213,7 @@
 
     <!-- Tools -->
     <div class="list tools" v-if="isToolTabActive">
-      <div class="list__header">Tools</div>
+      <div class="list__header">{{ $t("menu.tool.title") }}</div>
 
       <ul class="list__content list__content--parent custom-scrollbar">
         <li class="list__item" v-for="item in toolList" :key="item.key">

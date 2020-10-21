@@ -70,7 +70,7 @@ export default {
   },
   getIntersectLocalTableData(bunchId, params) {
     return request.get(
-      URL + "/api/datatable/Intersect/GetDatas/" + bunchId + "/",
+      URL + "/api/datatable/Intersect/GetData/" + bunchId + "/",
       {
         params,
         // paramsSerializer: (params) => {
@@ -87,51 +87,7 @@ export default {
       }
     );
   },
-  getTableData(params) {
-    return request.get(
-      URL +
-        "/api/data/get/" +
-        params.name +
-        "/MapServer/" +
-        params.layer +
-        "/query/",
-      {
-        params: {
-          f: "json",
-          ...params,
-          returnGeometry: true,
-          outFields: "*",
-        },
-      }
-    );
-  },
   getTableHeaders(layerId) {
     return request.get(DATATABLE_URLS.GET_TABLE_INFO + `/${layerId}`);
-  },
-  getGeometryData(params) {
-    return request.get(
-      URL +
-        "/api/data/get/" +
-        params.name +
-        "/MapServer/" +
-        params.layer +
-        "/query/",
-      {
-        params: {
-          token: params.token,
-          f: "json",
-          where: params.where,
-          returnGeometry: true,
-          geometryType: "esriGeometryPoint",
-          geometry: params.geometry,
-          outFields: "*",
-        },
-      }
-    );
-  },
-  getLocalGeometryData(params) {
-    return request.get(URL + "/api/geo/vectordata/" + params.layerId + "/", {
-      params: params,
-    });
   },
 };

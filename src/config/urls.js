@@ -8,6 +8,7 @@ const URL =
   process.env.NODE_ENV === "development"
     ? process.env.VUE_APP_BASE_API
     : getUrl.protocol + "//" + process.env.VUE_APP_BASE_API;
+console.log("URL", URL);
 
 const USER_URLS = {
   GET_INFO_URL: URL + "/api/user/GetInfo",
