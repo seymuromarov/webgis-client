@@ -134,14 +134,14 @@ const getters = {
           modalController.showComparerModal();
         },
       },
-      // {
-      //   key: "print",
-      //   label: "Print",
-      //   image: icons.ndvi,
-      //   click: () => {
-      //     modalController.showPrintModal();
-      //   },
-      // },
+      {
+        key: "print",
+        label: "Print",
+        image: icons.ndvi,
+        click: () => {
+          modalController.showPrintModal();
+        },
+      },
     ];
   },
   getBottomMenu() {

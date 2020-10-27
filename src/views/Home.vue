@@ -5,46 +5,48 @@
       <div id="map">
         <div v-if="isMapReady">
           <MapControls />
-          <!-- <Sidebar @setBaseLayout="setBaseLayout" /> -->
-          <Sidebar />
         </div>
       </div>
     </div>
-    <!-- Profile Modal -->
-    <ProfileModal />
-    <!-- Data table -->
-    <DataTable ref="dataTable" />
 
-    <!-- Report -->
-    <CustomModal name="sumResultModal" :maxWidth="600">
-      <Report :result="sumData" />
-    </CustomModal>
+    <div v-if="isMapReady">
+      <Sidebar />
+      <!-- Profile Modal -->
+      <ProfileModal />
+      <!-- Data table -->
+      <DataTable ref="dataTable" />
 
-    <!-- Filter -->
-    <FilterModal />
+      <!-- Report -->
+      <CustomModal name="sumResultModal" :maxWidth="600">
+        <Report :result="sumData" />
+      </CustomModal>
 
-    <!-- Shape Color Picker -->
-    <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
-      <ShapeColorPicker @setShapeColor="setShapeColor" />
-    </CustomModal>
+      <!-- Filter -->
+      <FilterModal />
 
-    <!-- Change Detection -->
-    <ChangeDetectionModal />
+      <!-- Shape Color Picker -->
+      <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
+        <ShapeColorPicker @setShapeColor="setShapeColor" />
+      </CustomModal>
 
-    <NdviAssessment />
-    <BlindSpotModal />
-    <!-- Information Modal -->
-    <InfoModal
-      :isOpen="isInformationModalVisible"
-      @close="isInformationModalVisible = false"
-    />
-    <ServiceSelectionModal />
-    <!-- Information Modal -->
-    <BunchLayerAddModal />
+      <!-- Change Detection -->
+      <ChangeDetectionModal />
 
-    <ComparerModal />
-    <PrintModal />
-    <MapText />
+      <NdviAssessment />
+      <BlindSpotModal />
+      <!-- Information Modal -->
+      <InfoModal
+        :isOpen="isInformationModalVisible"
+        @close="isInformationModalVisible = false"
+      />
+      <ServiceSelectionModal />
+      <!-- Information Modal -->
+      <BunchLayerAddModal />
+
+      <ComparerModal />
+      <PrintModal />
+      <MapText />
+    </div>
   </div>
 </template>
 
