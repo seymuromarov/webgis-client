@@ -1,24 +1,16 @@
 <template>
   <CustomModal
     name="printModal"
-    title="Print"
+    :title="$t('form.printForm.modalTitle')"
     width="50%"
     :minHeight="500"
     @beforeShow="onModalOpen"
     @afterHide="onModalClose"
   >
-    <!-- 
-      1.print Duymesi
-      2.azc logo
-      3.miqyas +
-      4.kompas 
-      5.title +
-      6.kordinatlar +
-       -->
     <form>
       <div id="mapPrint" class="row">
         <div class="col-md-12">
-          <h3 class="text-center">Options</h3>
+          <h3 class="text-center">{{ $t("form.printForm.options") }}</h3>
         </div>
 
         <div class="col-md-12">
@@ -30,13 +22,13 @@
               <input class="checkbox" type="checkbox" v-model="hasTitle" />
             </div>
             <div class="col-md-11">
-              <label class="d-block">Title</label>
+              <label class="d-block">{{ $t("form.printForm.title") }}</label>
 
               <input
                 type="text"
                 class="form-control"
                 id="title"
-                placeholder="Enter title"
+                :placeholder="$t('form.printForm.title')"
                 v-model="title"
                 :disabled="!hasTitle"
               />
@@ -48,7 +40,7 @@
             </div>
             <div class="col-md-11">
               <div class="form-group">
-                <label class="d-block">Scale</label>
+                <label class="d-block">{{ $t("form.printForm.scale") }}</label>
                 <span>
                   <small
                     ><strong> {{ currentResolution }}</strong></small
@@ -64,7 +56,9 @@
             </div>
             <div class="col-md-11">
               <div class="form-group">
-                <label class="d-block">Coordinate</label>
+                <label class="d-block">{{
+                  $t("form.printForm.coordinate")
+                }}</label>
                 <span>
                   <small
                     ><strong> {{ currentExtent }}</strong></small
@@ -85,7 +79,7 @@
               class="btn btn-success float-right"
               @click="print"
             >
-              Print
+              {{ $t("button.print") }}
             </button>
           </div>
         </div>
@@ -251,33 +245,41 @@ export default {
       //add options
       let optionsStartY = timeY;
       if (this.hastScale) {
+        var scaleTitle = this.$t("form.printForm.scale");
         optionsStartY -= 10;
         pdf.setFontSize(scaleFontSize);
         pdf.text(
-          "Miqyas : " + this.currentResolution + " km",
+          `${scaleTitle} : ` + this.currentResolution + " km",
           scaleX,
           optionsStartY
         );
       }
       if (this.hasExtent) {
+        var coordinateTitle = this.$t("form.printForm.coordinate");
         optionsStartY -= 10;
         pdf.setFontSize(extentFontSize);
-        pdf.text("Kordinat : ", extentX, optionsStartY);
+        pdf.text(`${coordinateTitle} : `, extentX, optionsStartY);
         pdf.setFontSize(extentFontSize - 1);
-        pdf.text(this.currentExtent.join(" , "), extentX + 13, optionsStartY);
+        pdf.text(
+          this.currentExtent.join(" , "),
+          extentX + pdf.getTextWidth(coordinateTitle) + 5,
+          optionsStartY
+        );
       }
       //
 
       pdf.setFontSize(timeFontSize);
       var currentdate = new Date();
+      var dateTitle = this.$t("general.date");
+      var timeTitle = this.$t("general.time");
       var datetime =
-        "Tarix : " +
+        `${dateTitle} : ` +
         currentdate.getDate() +
         "/" +
         (currentdate.getMonth() + 1) +
         "/" +
         currentdate.getFullYear() +
-        "  Saat : " +
+        `  ${timeTitle} : ` +
         currentdate.getHours() +
         ":" +
         currentdate.getMinutes() +

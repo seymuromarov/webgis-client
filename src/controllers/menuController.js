@@ -136,7 +136,7 @@ const getters = {
       },
       {
         key: "print",
-        label: "Print",
+        label: $i18n.t("menu.tool.print"),
         image: icons.ndvi,
         click: () => {
           modalController.showPrintModal();
