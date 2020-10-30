@@ -1,7 +1,7 @@
 <template>
   <CustomModal
     name="favoriteQueryModal"
-    title="Profile"
+    :title="$t('form.favoriteQueryForm.modalTitle')"
     width="30%"
     :minHeight="300"
     @beforeShow="onModalOpen"
@@ -10,7 +10,7 @@
       <div class="row mt-3">
         <div class="col-md-12">
           <div class="form-group">
-            <label for="label">Label</label>
+            <label for="label">{{ $t("form.favoriteQueryForm.label") }}</label>
             <input
               type="text"
               class="form-control "
@@ -23,13 +23,15 @@
               v-if="submitted && !$v.data.label.required"
               class="invalid-feedback"
             >
-              Label is required
+              {{
+                $t("form.favoriteQueryForm.validationMessages.labelRequired")
+              }}
             </div>
           </div>
         </div>
         <div class="col-md-12">
           <div class="form-group">
-            <label for="query">Query</label>
+            <label for="query">{{ $t("form.favoriteQueryForm.query") }}</label>
 
             <textarea
               class="form-control"
@@ -46,7 +48,7 @@
             class="btn btn-primary float-right"
             @click="addFavoriteQuery"
           >
-            Add
+            {{ $t("button.add") }}
           </button>
         </div>
       </div>
@@ -54,7 +56,7 @@
   </CustomModal>
 </template>
 <script>
-import { required, minLength } from "vuelidate/lib/validators";
+import { required } from "vuelidate/lib/validators";
 import favoriteQuery from "@/api/favoriteQuery";
 import { modalController } from "@/controllers";
 export default {

@@ -7,9 +7,11 @@ export { default as Report } from "./Report";
 export { default as MapControls } from "./MapControls";
 export { default as LayerTree } from "./LayerTree/Index";
 export { default as MapText } from "./MapText";
+export { default as LanguageSelect } from "./LanguageSelect";
 
 // Reusable components
 export { default as Modal } from "./common/Modal";
+export { default as Loader } from "./common/Loader";
 export { default as Tree } from "./common/Tree/Index";
 export { default as ToggleSwitch } from "./common/ToggleSwitch";
 
@@ -19,8 +21,8 @@ export { default as ServiceSelectionModal } from "./modals/ServiceSelectionModal
 export { default as FilterModal } from "./modals/FilterModal";
 export { default as DataModal } from "./modals/DataModal";
 export { default as PrintModal } from "./modals/PrintModal";
-export { default as ComputedLayersModal } from "./modals/ComputedLayers";
-export { default as ChangeDetector } from "./modals/ChangeDetector";
+export { default as BunchLayerAddModal } from "./modals/BunchLayerAddModal";
+export { default as ChangeDetectionModal } from "./modals/ChangeDetectionModal";
 export { default as ColorConditionInfoModal } from "./modals/ColorConditionInfoModal";
 export { default as NdviAssessment } from "./modals/NdviAssessment";
 export { default as ComparerModal } from "./modals/ComparerModal";

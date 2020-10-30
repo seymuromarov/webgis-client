@@ -15,10 +15,10 @@
       </p>
       <div class="float-right">
         <button class="btn btn-success btn-sm m-1" @click="onApplyClick">
-          Apply Query
+          {{ applyText }}
         </button>
         <button class="btn btn-danger btn-sm m-1" @click="onDeleteClick">
-          Delete
+          {{ deleteText }}
         </button>
       </div>
     </div>
@@ -37,6 +37,14 @@ export default {
     },
     layerLabel: {
       type: String,
+    },
+    applyText: {
+      type: String,
+      required: true,
+    },
+    deleteText: {
+      type: String,
+      required: true,
     },
     query: {
       type: String,

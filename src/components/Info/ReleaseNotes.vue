@@ -1,11 +1,11 @@
 <template>
   <div>
     <Loader v-if="loading" />
-    <div class="release-note" v-for="note in notes" :key="note.id">
+    <div class="release-note" v-for="(item, index) in notes" :key="index">
       <div class="date">
-        <b>{{ formatDate(note.dateCreated) }}</b>
+        <b>{{ item.dateCreated }}</b>
       </div>
-      <p class="content">{{ note.note }}</p>
+      <p class="content">{{ item.note }}</p>
     </div>
   </div>
 </template>
@@ -14,15 +14,16 @@
 import info from "@/api/info";
 import dayjs from "dayjs";
 
-import Loader from "./parts/Loader";
+// import Loader from "./parts/Loader";
 
 export default {
   name: "ReleaseNotes",
-  components: {
-    Loader,
-  },
+  // components: {
+  //   Loader,
+  // },
   data() {
     return {
+      notes: [],
       loading: false,
     };
   },
@@ -34,7 +35,7 @@ export default {
         .getReleaseNotes()
         .then((response) => {
           if (response.data) {
-            this.releaseNotesData = response.data;
+            this.notes = response.data;
           }
           this.loading = false;
         })
@@ -42,19 +43,11 @@ export default {
           this.loading = false;
         });
     },
-    formatDate(date) {
-      return dayjs(date).format("DD MMMM YYYY");
-    },
   },
   mounted() {
     if (!this.notes.length) {
       this.getReleaseNotes();
     }
-  },
-  computed: {
-    notes() {
-      return this.$store.state.information.releaseNotes.data;
-    },
   },
 };
 </script>

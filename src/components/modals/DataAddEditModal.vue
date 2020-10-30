@@ -2,7 +2,7 @@
   <div>
     <CustomModal
       name="dataAddEditModal"
-      title="Data Modal"
+      :title="$t('form.dataForm.modalTitle')"
       width="50%"
       :minHeight="400"
       @beforeShow="onModalOpen"
@@ -14,12 +14,12 @@
             <div class="row">
               <div class="col-md-12">
                 <label>
-                  Is Geometry Exist :
+                  {{ $t("form.dataForm.isGeometryExist") }} :
                   <span v-if="isGeometryExist" class="badge badge-success">
-                    true
+                    {{ $t("general.true") }}
                   </span>
                   <span v-else class="badge badge-danger">
-                    false
+                    {{ $t("general.false") }}
                   </span>
                 </label>
               </div>
@@ -173,7 +173,7 @@
               class="btn btn-primary float-right"
               @click="onSubmit"
             >
-              Apply
+              {{ $t("button.apply") }}
             </button>
           </div>
         </div>
@@ -205,12 +205,12 @@
               class="btn btn-danger float-right"
               @click="resetCoordinates"
             >
-              Reset Coordinates
+              {{ $t("form.dataForm.resetCoordinate") }}
             </button>
           </div>
         </div>
         <div v-if="isGeometryExist" class="col-md-12">
-          <div v-if="this.geometryType == 'point'" class="row">
+          <div v-if="geometryType == 'point'" class="row">
             <div class="col-md-5">
               <div class="form-group">
                 <label for="label">X</label>
@@ -304,7 +304,7 @@
             :disabled="!canAddCoordinate"
             @click="addCoordinate"
           >
-            Add Coordinate
+            {{ $t("form.dataForm.addCoordinate") }}
           </button>
         </div>
       </div>
@@ -523,7 +523,7 @@ export default {
     onModalClose() {
       if (!this.isModalHidingForGeometrySelection) {
         this.resetData();
-             toolController.deleteServiceFeatures(this.layerId);
+        toolController.deleteServiceFeatures(this.layerId);
       }
     },
     onInputChange(name, val) {

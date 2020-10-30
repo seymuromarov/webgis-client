@@ -8,13 +8,17 @@ const URL =
   process.env.NODE_ENV === "development"
     ? process.env.VUE_APP_BASE_API
     : getUrl.protocol + "//" + process.env.VUE_APP_BASE_API;
+console.log("URL", URL);
 
 const USER_URLS = {
   GET_INFO_URL: URL + "/api/user/GetInfo",
   GET_URL: URL + "/api/user/Get",
 };
 const ACCOUNT_URL = {
-  LOGIN_URL: URL + "/api/account/login",
+  LOGIN_URL: URL + "/api/account/gettoken",
+};
+const LANGUAGE_URL = {
+  GET_LANGUAGE: URL + "/api/language/getlanguages",
 };
 const BUNCH_URLS = {
   ADD: URL + "/api/bunch/add",
@@ -83,7 +87,7 @@ const ARCGIS_URLS = {
       urlHelper.formatQueryString(params);
     return url;
   },
-  SERVICE_URl: URL + "/api/map/service",
+  SERVICE_URl: URL + "/api/service/arcgis",
 };
 
 export {
@@ -91,6 +95,7 @@ export {
   URL,
   LAYER_DATA_IMAGE_URLS,
   USER_URLS,
+  LANGUAGE_URL,
   FAVORITEQUERY_URLS,
   DEFAULTLAYER_URLS,
   FAVORITELAYER_URLS,

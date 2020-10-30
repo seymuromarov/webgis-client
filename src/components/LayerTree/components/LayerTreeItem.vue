@@ -5,7 +5,7 @@
         <!-- Switch -->
         <ToggleSwitch v-if="!isCategory" class="pre" v-model="switchModel" />
         <i class="far fa-folder pre" v-else></i>
-        {{ isCategory ? data.name : data.showingLabel }}
+        {{ isLayer ? (isCategory ? data.name : data.showingLabel) : data.name }}
       </span>
 
       <!-- Caret icons -->
@@ -47,22 +47,23 @@
     </span>
 
     <div v-if="colorPickerVisibility" class="mt-2 item__colorpicker__content">
-      <!-- <a role="button" class="condition-modal-btn " @click="showConditionModal"
-        >Show Conditions</a
-      > -->
-      <ColorConditionInfoModal
-        v-if="isColorConditionInfoModalVisible"
-        :data="getConditionLegendData()"
-        @afterHide="isColorConditionInfoModalVisible = false"
-      />
+      <div v-if="isLayerColorExist" style="display: contents;">
+        <a
+          role="button"
+          class="condition-modal-btn "
+          @click="showConditionModal"
+          >{{ $t("general.showConditionsButtonTitle") }}</a
+        >
+        <ColorConditionInfoModal :data="getConditionLegendData()" />
 
-      <v-select
-        v-if="conditionSelectVisibility"
-        class="condition__select"
-        v-model="selectedColorOpt"
-        :clearable="false"
-        :options="conditions"
-      ></v-select>
+        <v-select
+          v-if="isLayerColorExist"
+          class="condition__select"
+          v-model="selectedColorOpt"
+          :clearable="false"
+          :options="conditions"
+        ></v-select>
+      </div>
 
       <!-- Color Picker -->
       <LayerColorPicker
@@ -282,6 +283,9 @@ export default {
     isCategory() {
       return serviceHelper.isCategory(this.data);
     },
+    isLayer() {
+      return serviceHelper.isLayer(this.data);
+    },
 
     caretIconsVisibility() {
       return (
@@ -300,7 +304,7 @@ export default {
             serviceHelper.isDynamicFromLocal(this.data)))
       );
     },
-    conditionSelectVisibility() {
+    isLayerColorExist() {
       return this.data.layerColor && this.data.layerColor.conditions.length > 0;
     },
     colorIconVisibility() {
@@ -465,11 +469,12 @@ export default {
 
 .condition-modal-btn {
   text-decoration: none;
-  color: white;
+  color: #4fc3f7;
   width: 90%;
   &:hover,
   &:focus {
-    color: var(--primary-color);
+    // color: var(--primary-color);
+    color: #01579b;
     transition: all 0.3s ease;
     cursor: pointer;
     text-decoration: none;

@@ -7,8 +7,8 @@
             :page-count="pageCount"
             :page-range="5"
             :click-handler="onPageChange"
-            :prev-text="'Prev'"
-            :next-text="'Next'"
+            :prev-text="$t('button.pagination.prev')"
+            :next-text="$t('button.pagination.next')"
             :container-class="'pagination'"
             :page-class="'page-item'"
           >

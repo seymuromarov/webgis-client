@@ -1,7 +1,7 @@
 <template>
   <CustomModal
     name="imageUploadModal"
-    title="File Modal"
+    :title="$t('form.fileForm.modalTitle')"
     width="50%"
     :minHeight="400"
     @beforeShow="onModalOpen"
@@ -12,18 +12,18 @@
         <table class="table">
           <thead>
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">Image</th>
-              <th scope="col">Filename</th>
-              <th scope="col">Extension</th>
-              <th scope="col">Size</th>
-              <th scope="col">DateCreated</th>
+              <!-- <th scope="col">#</th> -->
+              <th scope="col">{{ $t("form.fileForm.image") }}</th>
+              <th scope="col">{{ $t("form.fileForm.filename") }}</th>
+              <th scope="col">{{ $t("form.fileForm.extension") }}</th>
+              <th scope="col">{{ $t("form.fileForm.size") }}</th>
+              <th scope="col">{{ $t("form.fileForm.dateCreated") }}</th>
               <th v-if="checkPermission(['data_add'])" scope="col"></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(item, index) in files" :key="index">
-              <th scope="row">{{ item.id }}</th>
+              <!-- <th scope="row">{{ item.id }}</th> -->
               <td v-if="isImage(item.extension)" class="text-center">
                 <img
                   :src="item.base64"
@@ -45,11 +45,12 @@
                 <span></span>
               </td>
               <td>{{ item.extension }}</td>
-              <td>{{ item.size }}</td>
+              <td>{{ readableFileSizeConverter(item.size, true) }}</td>
               <td>{{ item.dateCreated }}</td>
               <td>
                 <button
                   v-if="checkPermission(['data_edit'])"
+                  :title="$t('button.delete')"
                   class="btn btn-danger btn-sm"
                   @click="deleteImage(item.id)"
                 >
@@ -76,9 +77,10 @@
       <div class="col-md-12">
         <button
           class="btn btn-danger btn-sm float-right mt-3"
+          :title="$t('button.clear')"
           @click="clearDropzone"
         >
-          Clear
+          {{ $t("button.clear") }}
         </button>
       </div>
     </div>
@@ -94,6 +96,7 @@ import { tokenService } from "@/services";
 import { tableController } from "@/controllers";
 import image from "@/api/layerDataImage";
 import checkPermission from "@/utils/permission";
+import { readableFileSizeConverter } from "@/utils";
 export default {
   components: { vueDropzone: vue2Dropzone },
   props: {
@@ -149,6 +152,7 @@ export default {
   },
 
   methods: {
+    readableFileSizeConverter,
     checkPermission,
     onSuccess(file, response) {
       this.getImages();

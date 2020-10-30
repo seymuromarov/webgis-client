@@ -2,6 +2,7 @@ import $store from "@/store/store.js";
 import { mapController, modalController } from "@/controllers";
 import { drawTypeEnum } from "@/enums";
 import { mapHelper } from "@/helpers";
+import { saveAs } from "file-saver";
 import {
   featureStyle,
   pointStyle,
@@ -420,12 +421,43 @@ const functions = {
 
   pngExport() {
     let map = mapController.getMap();
-    map.once("rendercomplete", function(event) {
-      let canvas = event.context.canvas;
+    // map.once("rendercomplete", function(event) {
+    //   let canvas = event.context.canvas;
+
+    // map.renderSync();
+
+    map.once("rendercomplete", function() {
+      var mapCanvas = document.createElement("canvas");
+      var size = map.getSize();
+      mapCanvas.width = size[0];
+      mapCanvas.height = size[1];
+      var mapContext = mapCanvas.getContext("2d");
+      Array.prototype.forEach.call(
+        document.querySelectorAll(".ol-layer canvas"),
+        function(canvas) {
+          if (canvas.width > 0) {
+            var opacity = canvas.parentNode.style.opacity;
+            mapContext.globalAlpha = opacity === "" ? 1 : Number(opacity);
+            var transform = canvas.style.transform;
+            // Get the transform parameters from the style's transform matrix
+            var matrix = transform
+              .match(/^matrix\(([^\(]*)\)$/)[1]
+              .split(",")
+              .map(Number);
+            // Apply the transform to the export map context
+            CanvasRenderingContext2D.prototype.setTransform.apply(
+              mapContext,
+              matrix
+            );
+            mapContext.drawImage(canvas, 0, 0);
+          }
+        }
+      );
+
       if (navigator.msSaveBlob) {
         navigator.msSaveBlob(canvas.msToBlob(), "map.png");
       } else {
-        canvas.toBlob(function(blob) {
+        mapCanvas.toBlob(function(blob) {
           saveAs(blob, "map.png");
         });
       }
@@ -476,23 +508,28 @@ const functions = {
   },
   fullScreen() {
     if (
-      window.innerWidth == screen.width &&
-      window.innerHeight == screen.height
+      window.fullScreen ||
+      (window.innerWidth == screen.width && window.innerHeight == screen.height)
     ) {
       document.exitFullscreen();
     } else {
-      document.querySelector("body").requestFullscreen();
+      var elem = document.querySelector("body");
+
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        /* Firefox */
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) {
+        /* Chrome, Safari and Opera */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        /* IE/Edge */
+        elem.msRequestFullscreen();
+      }
     }
   },
-  changeDetector() {
-    setters.setBbox([]);
-    functions.pickDrawType(drawTypeEnum.BOX);
-    setters.setDrawForChangeDetectionStatus(true);
-  },
-  ndviAssessment(callback) {
-    setters.setBbox([]);
-    functions.pickDrawType(drawTypeEnum.BOX, callback);
-  },
+
   showMapTextInput(e) {
     const map = mapController.getMap();
     const coordinates = e.target.sketchCoords_;

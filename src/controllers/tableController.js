@@ -70,7 +70,7 @@ const functions = {
       }
 
       if (filterController.getIsRequiredServiceRefresh())
-        mapController.refreshService(service.id);
+        mapController.refreshService(service);
     }
 
     if (response.data.error !== undefined) {

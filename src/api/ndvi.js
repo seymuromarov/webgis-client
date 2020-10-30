@@ -11,6 +11,7 @@ export default {
   },
   async getNdviValue(name, pointX, pointY) {
     let infoResponse = await this.getNdviInfo(name);
+    console.log("getNdviValue -> infoResponse", infoResponse);
     let fullExtent = infoResponse.data.fullExtent;
     let extent = {
       xmin: fullExtent.xmin,
@@ -32,7 +33,7 @@ export default {
     };
     let url = `${
       ARCGIS_URLS.SERVICE_URl
-    }/${name}/MapServer/Identify?${urlHelper.formatQueryString(params)}`;
+    }/${name}/Identify?${urlHelper.formatQueryString(params)}`;
     let response = await request.get(url);
     let results = response.data.results;
     let attributes = results[0].attributes;
@@ -53,7 +54,7 @@ export default {
     };
     let url = `${
       ARCGIS_URLS.SERVICE_URl
-    }/${name}/MapServer?${urlHelper.formatQueryString(params)}`;
+    }/${name}/info?${urlHelper.formatQueryString(params)}`;
     return request.get(url);
   },
 };

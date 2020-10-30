@@ -1,7 +1,7 @@
 <template>
   <CustomModal
     name="ndviAssessmentModal"
-    title="NDVI Assessment"
+    :title="$t('form.ndviAssesmentForm.modalTitle')"
     width="95%"
     :minHeight="400"
     @beforeShow="onModalOpen"
@@ -11,7 +11,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="form-group">
-            <label for="ndvis">Layers</label>
+            <label for="ndvis">{{ $t("form.ndviAssesmentForm.layers") }}</label>
             <div class="d-block">
               <div class="row">
                 <div class="col-md-9 p-0">
@@ -37,7 +37,10 @@
                 >
                   <div class="text-center">
                     <div class="btn-group-toggle" data-toggle="buttons">
-                      <label class="btn btn-info  mr-2">
+                      <label
+                        class="btn btn-info  mr-2"
+                        :title="$t('form.ndviAssesmentForm.pickPoint')"
+                      >
                         <input
                           type="checkbox"
                           name="pointSelectionBtn"
@@ -48,6 +51,11 @@
                       </label>
                       <label
                         class="btn   mr-2"
+                        :title="
+                          isBasemapsShowing
+                            ? $t('form.ndviAssesmentForm.hideBasemaps')
+                            : $t('form.ndviAssesmentForm.showBasemaps')
+                        "
                         v-bind:class="{
                           active: isPointExist,
                           'btn-success': !isBasemapsShowing,
@@ -56,7 +64,9 @@
                       >
                         <input type="checkbox" v-model="isBasemapsShowing" />
                         {{
-                          isBasemapsShowing ? "Hide Basemaps" : "Show Basemaps"
+                          isBasemapsShowing
+                            ? $t("form.ndviAssesmentForm.hideBasemaps")
+                            : $t("form.ndviAssesmentForm.showBasemaps")
                         }}
                       </label>
                     </div>

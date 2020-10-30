@@ -3,17 +3,21 @@
     <div class="col-md-6">
       <div class="row">
         <div class="col-md-12 text-center">
-          <h5>Current Map Configurations</h5>
+          <h5>{{ $t("menu.profile.workspace.currentMapConfigurations") }}</h5>
         </div>
         <div class="col-md-12">
           <div class="m-1">
-            <label class="font-weight-bold">Zoom Level :</label>
+            <label class="font-weight-bold"
+              >{{ $t("menu.profile.workspace.zoomLevel") }} :</label
+            >
             <span>
               <span class="badge badge-primary ml-1">{{ zoomLevel }}</span>
             </span>
           </div>
           <div class="m-1">
-            <label class="font-weight-bold">Map X Coordinate :</label>
+            <label class="font-weight-bold"
+              >{{ $t("menu.profile.workspace.mapXCoordinate") }} :</label
+            >
             <span v-if="center && center[0]">
               <span class="badge badge-warning  ml-1"
                 >{{ center[0] }}
@@ -21,13 +25,17 @@
             >
           </div>
           <div class="m-1">
-            <label class="font-weight-bold">Map Y Coordinate :</label>
+            <label class="font-weight-bold"
+              >{{ $t("menu.profile.workspace.mapYCoordinate") }} :</label
+            >
             <span v-if="center && center[1]"
               ><span class="badge badge-warning  ml-1"> {{ center[1] }} </span>
             </span>
           </div>
           <div class="m-1">
-            <label class="font-weight-bold">Selected Layers :</label>
+            <label class="font-weight-bold"
+              >{{ $t("menu.profile.workspace.selectedLayers") }} :</label
+            >
             <span v-if="selectedLayers">
               <span v-for="(item, index) in selectedLayers" :key="index">
                 <span class="badge badge-info ml-1">{{ item.name }}</span>
@@ -40,11 +48,13 @@
     <div class="col-md-6">
       <div class="row">
         <div class="col-md-12 text-center">
-          <h5>Saved Map Configurations</h5>
+          <h5>{{ $t("menu.profile.workspace.savedMapConfigurations") }}</h5>
         </div>
         <div v-if="workspace" class="col-md-12">
           <div class="m-1">
-            <label class="font-weight-bold">Zoom Level :</label>
+            <label class="font-weight-bold"
+              >{{ $t("menu.profile.workspace.zoomLevel") }} :</label
+            >
             <span>
               <span class="badge badge-primary ml-1">{{
                 workspace.zoomLevel
@@ -52,7 +62,9 @@
             </span>
           </div>
           <div class="m-1">
-            <label class="font-weight-bold">Map X Coordinate :</label>
+            <label class="font-weight-bold"
+              >{{ $t("menu.profile.workspace.mapXCoordinate") }} :</label
+            >
             <span>
               <span class="badge badge-warning  ml-1"
                 >{{ workspace.coordinateX }}
@@ -60,7 +72,9 @@
             >
           </div>
           <div class="m-1">
-            <label class="font-weight-bold">Map Y Coordinate :</label>
+            <label class="font-weight-bold"
+              >{{ $t("menu.profile.workspace.mapYCoordinate") }} :</label
+            >
             <span
               ><span class="badge badge-warning  ml-1">
                 {{ workspace.coordinateY }}
@@ -68,7 +82,9 @@
             </span>
           </div>
           <div class="m-1">
-            <label class="font-weight-bold">Selected Layers :</label>
+            <label class="font-weight-bold"
+              >{{ $t("menu.profile.workspace.selectedLayers") }} :</label
+            >
             <span v-for="(item, index) in workspace.activeLayers" :key="index">
               <span class="badge badge-info ml-1">{{ item.label }}</span>
             </span>
@@ -77,7 +93,7 @@
         <div v-else>
           <div class="col-md-12">
             <div class="alert alert-info" role="alert">
-              You dont have any Configurations Data.
+              {{ $t("general.nodata") }}
             </div>
           </div>
         </div>
@@ -96,21 +112,21 @@
         <div class="col-md-12">
           <div class="float-right">
             <button class="btn btn-success m-1 btn-sm" @click="saveWorkspace">
-              Save
+              {{ $t("button.save") }}
             </button>
             <button
               v-if="workspace"
               class="btn btn-info m-1 btn-sm"
               @click="loadWorkspace"
             >
-              Load Workspace
+              {{ $t("button.load") }}
             </button>
             <button
               v-if="workspace"
               class="btn btn-danger m-1 btn-sm"
               @click="resetWorkspace"
             >
-              Reset
+              {{ $t("button.reset") }}
             </button>
           </div>
         </div>

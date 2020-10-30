@@ -2,6 +2,8 @@ function svgIconPathBuilder(name) {
   return require(`../assets/images/icons/${name}.svg`);
 }
 
+const logo = require(`@/assets/images/logo.png`);
+const compass = require(`@/assets/images/compass.png`);
 const icons = {
   arrow_down: svgIconPathBuilder("arrow_down"),
   arrow_left: svgIconPathBuilder("arrow_left"),
@@ -44,4 +46,4 @@ const icons = {
   send: svgIconPathBuilder("send"),
 };
 
-export { icons };
+export { icons, logo, compass };

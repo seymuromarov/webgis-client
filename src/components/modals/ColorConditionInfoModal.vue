@@ -3,6 +3,7 @@
     name="colorConditionInfoModal"
     :maxWidth="300"
     :minHeight="200"
+    :appendToBody="true"
     title="Legenda"
   >
     <div class="row">
@@ -11,7 +12,7 @@
           class="condition-color-box"
           :style="{
             'background-color': item.fillColor,
-            border: `2px solid ${item.borderColer}`,
+            border: `2px solid ${item.borderColor}`,
           }"
         ></span>
         <span class="m-1 condition-text">
@@ -43,6 +44,8 @@ export default {
     // vertical-align: middle;
   }
   &-color-box {
+    vertical-align: middle;
+
     display: inline-block;
     width: 30px;
     height: 20px;

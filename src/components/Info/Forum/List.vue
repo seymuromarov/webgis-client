@@ -13,7 +13,8 @@
             <i
               class="fas fa-exclamation-circle issue-icon issue-icon--open"
             ></i>
-            {{ issueCount.open }} Open issues
+            {{ issueCount.open }}
+            {{ $t("menu.information.forum.openedIssues") }}
           </button>
           <button
             type="button"
@@ -22,7 +23,8 @@
             @click="changeActiveTab(2)"
           >
             <i class="far fa-check-circle issue-icon issue-icon--closed"></i>
-            {{ issueCount.closed }} Closed issues
+            {{ issueCount.closed }}
+            {{ $t("menu.information.forum.closedIssues") }}
           </button>
         </div>
         <select
@@ -46,7 +48,7 @@
           class="btn btn-primary new-issue"
           @click="$emit('newIssue')"
         >
-          Create issue
+          {{ $t("menu.information.forum.createIssue") }}
         </button>
       </div>
     </div>
@@ -75,27 +77,28 @@
 <script>
 import forum from "@/api/forum";
 import { dateFormatter } from "@/helpers";
-import Loader from "../parts/Loader";
+// import Loader from "../parts/Loader";
 
 export default {
   name: "IssueList",
-  components: {
-    Loader
-  },
+  // components: {
+  //   Loader,
+  // },
   data() {
     return {
       filteredIssues: {
         open: [],
-        closed: []
+        closed: [],
       },
-      loading: false
+      loading: false,
     };
   },
   methods: {
     getOpenIssues() {
       this.loading = true;
-      forum.getIssues(1)
-        .then(response => {
+      forum
+        .getIssues(1)
+        .then((response) => {
           if (response.data) {
             this.$store.commit("SET_OPEN_ISSUES", response.data);
             this.filteredIssues.open = response.data;
@@ -106,8 +109,9 @@ export default {
     },
     getClosedIssues() {
       this.loading = true;
-      forum.getIssues(2)
-        .then(response => {
+      forum
+        .getIssues(2)
+        .then((response) => {
           if (response.data) {
             this.$store.commit("SET_CLOSED_ISSUES", response.data);
             this.filteredIssues.closed = response.data;
@@ -117,8 +121,9 @@ export default {
         .catch();
     },
     getIssueCount() {
-      forum.getIssueCount()
-        .then(response => {
+      forum
+        .getIssueCount()
+        .then((response) => {
           if (response.data) {
             this.$store.state.forum.issueCount = response.data;
           }
@@ -134,10 +139,10 @@ export default {
     },
     filterList() {
       if (this.activeCategoryId !== 0) {
-        this.filteredIssues.open = this.issues.open.filter(issue => {
+        this.filteredIssues.open = this.issues.open.filter((issue) => {
           return issue.categoryId === this.activeCategoryId;
         });
-        this.filteredIssues.closed = this.issues.closed.filter(issue => {
+        this.filteredIssues.closed = this.issues.closed.filter((issue) => {
           return issue.categoryId === this.activeCategoryId;
         });
       } else {
@@ -153,7 +158,7 @@ export default {
         this.getClosedIssues();
       }
     },
-    formatDate: dateFormatter.formatDate
+    formatDate: dateFormatter.formatDate,
   },
   mounted() {
     if (!this.issues.open.length) {
@@ -194,8 +199,8 @@ export default {
     },
     categories() {
       return this.$store.state.forum.categories;
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -7,8 +7,8 @@
             :page-count="pageCount"
             :page-range="5"
             :click-handler="onPageChange"
-            :prev-text="'Prev'"
-            :next-text="'Next'"
+            :prev-text="$t('button.pagination.prev')"
+            :next-text="$t('button.pagination.next')"
             :container-class="'pagination'"
             :page-class="'page-item'"
           >
@@ -26,6 +26,8 @@
             :label="item.label"
             :query="item.query"
             :layerLabel="item.layer.label"
+            :applyText="$t('button.apply')"
+            :deleteText="$t('button.delete')"
             :date="item.dateCreated"
             @onApplyClick="onApplyClick"
             @onDeleteClick="onDeleteClick"
@@ -37,7 +39,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="alert alert-info" role="alert">
-            You dont have any Favorite Queries.
+            {{ $t("general.nodata") }}
           </div>
         </div>
       </div>

@@ -29,6 +29,7 @@ const mapper = {
       minZoomLevel: val.minZoomLevel,
       maxZoomLevel: val.maxZoomLevel,
       extent: val.extent,
+      spatial: val.spatial,
       resolutionOption: val.resolutionOption,
       resourceType: val.resourceTypeId,
       mapType: val.mapTypeId,

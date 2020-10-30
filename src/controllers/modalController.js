@@ -76,6 +76,12 @@ const functions = {
   showComparerModal() {
     vm.$moodal.comparerModal.show();
   },
+  hideChangeDetectionModal() {
+    vm.$moodal.changeDetectionModal.hide();
+  },
+  showChangeDetectionModal() {
+    vm.$moodal.changeDetectionModal.show();
+  },
   hidePrintModal() {
     vm.$moodal.printModal.hide();
   },

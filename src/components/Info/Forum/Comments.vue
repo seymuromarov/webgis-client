@@ -171,13 +171,13 @@
 import { dateFormatter } from "@/helpers";
 import forum from "@/api/forum";
 import NewComment from "./NewComment";
-import Loader from "../parts/Loader";
+// import Loader from "../parts/Loader";
 
 export default {
   name: "Comments",
   components: {
     NewComment,
-    Loader,
+    // Loader,
   },
   props: {
     rawComments: {

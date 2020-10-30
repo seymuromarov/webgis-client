@@ -61,13 +61,13 @@
 import forum from "@/api/forum";
 import { dateFormatter } from "@/helpers";
 import Comments from "./Comments";
-import Loader from "../parts/Loader";
+// import Loader from "../parts/Loader";
 
 export default {
   name: "IssueDetailed",
   components: {
     Comments,
-    Loader,
+    // Loader,
   },
   props: {
     openIssueId: {

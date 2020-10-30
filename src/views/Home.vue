@@ -3,50 +3,50 @@
     <!-- Main content -->
     <div class="padding-0 map-layout">
       <div id="map">
-        <MapControls v-if="isMapControlsVisible" />
-        <!-- <Sidebar @setBaseLayout="setBaseLayout" /> -->
-        <Sidebar />
+        <div v-if="isMapReady">
+          <MapControls />
+        </div>
       </div>
     </div>
-    <!-- Profile Modal -->
-    <ProfileModal />
-    <!-- Data table -->
-    <DataTable ref="dataTable" />
 
-    <!-- Report -->
-    <CustomModal name="sumResultModal" :maxWidth="600">
-      <Report :result="sumData" />
-    </CustomModal>
+    <div v-if="isMapReady">
+      <Sidebar />
+      <!-- Profile Modal -->
+      <ProfileModal />
+      <!-- Data table -->
+      <DataTable ref="dataTable" />
 
-    <!-- Filter -->
-    <FilterModal />
+      <!-- Report -->
+      <CustomModal name="sumResultModal" :maxWidth="600">
+        <Report :result="sumData" />
+      </CustomModal>
 
-    <!-- Shape Color Picker -->
-    <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
-      <ShapeColorPicker @setShapeColor="setShapeColor" />
-    </CustomModal>
+      <!-- Filter -->
+      <FilterModal />
 
-    <!-- Change Detection -->
-    <detector-modal
-      :visible="bbox.length > 0 && isDrawnShapeForDetection"
-      v-bind="{ bbox, token }"
-      @close="(bbox = []) & (isDrawnShapeForDetection = false)"
-    ></detector-modal>
+      <!-- Shape Color Picker -->
+      <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
+        <ShapeColorPicker @setShapeColor="setShapeColor" />
+      </CustomModal>
 
-    <NdviAssessment />
-    <BlindSpotModal />
-    <!-- Information Modal -->
-    <InfoModal
-      :isOpen="isInformationModalVisible"
-      @close="isInformationModalVisible = false"
-    />
-    <ServiceSelectionModal />
-    <!-- Information Modal -->
-    <ComputedLayersModal />
+      <!-- Change Detection -->
+      <ChangeDetectionModal />
 
-    <ComparerModal />
-    <PrintModal />
-    <MapText />
+      <NdviAssessment />
+      <BlindSpotModal />
+      <!-- Information Modal -->
+      <InfoModal
+        :isOpen="isInformationModalVisible"
+        @close="isInformationModalVisible = false"
+      />
+      <ServiceSelectionModal />
+      <!-- Information Modal -->
+      <BunchLayerAddModal />
+
+      <ComparerModal />
+      <PrintModal />
+      <MapText />
+    </div>
   </div>
 </template>
 
@@ -95,8 +95,8 @@ import {
   Report,
   MapControls,
   InfoModal,
-  ComputedLayersModal,
-  ChangeDetector as DetectorModal,
+  BunchLayerAddModal,
+  ChangeDetectionModal,
   NdviAssessment,
   ProfileModal,
   MapText,
@@ -118,20 +118,19 @@ import {
 
 // Services
 import { tokenService, hashService } from "@/services";
-import layer from "@/api/layer";
 export default {
   name: "Home",
   components: {
     ShapeColorPicker,
     DataTable,
-    DetectorModal,
+    ChangeDetectionModal,
     InfoModal,
     Sidebar,
     FilterModal,
     Report,
     MapControls,
     MapText,
-    ComputedLayersModal,
+    BunchLayerAddModal,
     NdviAssessment,
     ProfileModal,
     ServiceSelectionModal,
@@ -152,13 +151,13 @@ export default {
       vectorLayer: null,
       hashResolveResult: {},
       isMetricCoordinateSystem: false,
-      isMapControlsVisible: false,
+      isMapReady: false,
     };
   },
 
   mounted() {
     let baseLayer = new TileLayer({
-      source: mapController.getBaseMaps()["gray"],
+      source: mapController.getBaseLayouts()[3].layout,
     });
     var debugLayer = new TileLayer({
       source: new TileDebug({
@@ -200,20 +199,22 @@ export default {
           ? this.hashResolveResult.center
           : //: [47.82858, 40.3598414];
             fromLonLat([47.82858, 40.3598414]);
-      let rotation = 0;
 
       this.mapLayer = new Map({
         interactions: defaultInteractions().extend([
           new DragRotateAndZoom(),
+          // new MouseWheelZoom({
+          //   constrainResolution: true,
+          // }),
           dragAndDropInteraction,
         ]),
         controls: defaultControls().extend([this.scaleOptions]), // defaultControls(), //.extend([new FullScreen()]),
         target: "map",
         layers: this.layers,
         view: new View({
+          constrainResolution: true,
           center: center,
           zoom: zoom,
-          rotation: rotation,
         }),
       });
 
@@ -229,12 +230,6 @@ export default {
         self.mapLayer.getView().fit(this.drawSource.getExtent());
       });
 
-      // this.mapLayer.on("pointermove", (evt) => {
-      //   if (evt.dragging) {
-      //     return;
-      //   }
-
-      // });
       this.mapLayer.on("click", mapController.onMapClick);
 
       this.$store.dispatch("init").then(() => {
@@ -249,7 +244,7 @@ export default {
         ];
         serviceController.setServicesStatusByIds(defaultLayers, true);
         self.mapLayer.on("moveend", () => {
-          historyController.updateHistoryMap;
+          historyController.updateHistoryMap();
         });
       });
       window.addEventListener("popstate", (event) => {
@@ -261,7 +256,7 @@ export default {
         this.mapLayer.getView().setRotation(event.state.rotation);
       });
 
-      this.isMapControlsVisible = true;
+      this.isMapReady = true;
     });
   },
   methods: {
@@ -300,14 +295,14 @@ export default {
       },
     },
 
-    isDrawnShapeForDetection: {
-      get() {
-        return toolController.getDrawForChangeDetectionStatus();
-      },
-      set(value) {
-        toolController.setDrawForChangeDetectionStatus(value);
-      },
-    },
+    // isDrawnShapeForDetection: {
+    //   get() {
+    //     return toolController.getDrawForChangeDetectionStatus();
+    //   },
+    //   set(value) {
+    //     toolController.setDrawForChangeDetectionStatus(value);
+    //   },
+    // },
     drawSource: {
       get() {
         return this.$store.getters.drawSource;

@@ -91,11 +91,16 @@ export default {
       type: Boolean,
       default: true,
     },
-    appendToRoot: {
+    ts: {
       type: Boolean,
       required: false,
-      default: false
-    }
+      default: false,
+    },
+    appendToBody: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -180,14 +185,14 @@ export default {
     this.$moodal[this.name] = this;
   },
   mounted() {
-    if(this.appendToRoot) {
+    if (this.appendToBody) {
       this.$root.$el.append(this.$el);
     }
   },
   destroyed() {
-    if(this.appendToRoot) {
+    if (this.appendToBody) {
       this.$el.parentNode.removeChild(this.$el);
     }
-  }
+  },
 };
 </script>

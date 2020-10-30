@@ -1,6 +1,10 @@
 <template>
   <div>
-    <CustomModal name="filterModal" title="Filter" :maxWidth="600">
+    <CustomModal
+      name="filterModal"
+      :title="$t('form.filterForm.modalTitle')"
+      :maxWidth="600"
+    >
       <div class="data-table__filter">
         <div class="row form-group">
           <div class="col-md-12">
@@ -23,7 +27,7 @@
             <div class="filter__fields">
               <!-- Columns -->
               <div class="filter__fields__columns">
-                <h5>Columns</h5>
+                <h5>{{ $t("form.filterForm.columns") }}</h5>
                 <ul class="filter__fields__list custom-scrollbar">
                   <li
                     v-for="(alias, column) in tableHeaders"
@@ -39,7 +43,7 @@
 
               <!-- Column Values -->
               <div class="filter__fields__values">
-                <h5>Values</h5>
+                <h5>{{ $t("form.filterForm.values") }}</h5>
                 <ul class="filter__fields__list custom-scrollbar">
                   <li
                     @dblclick="appendFilterQuery(value, true)"
@@ -93,16 +97,16 @@
               :disabled="!(isQueryExist && activeTabId)"
               @click="showFavoriteQueryModal"
             >
-              Add To Favorite Query
+              {{ $t("form.filterForm.addFavoriteQuery") }}
             </button>
           </div>
         </div>
         <div class="row form-group">
           <div class="col-md-6" v-show="extentOptionsVisibility">
-            <label>
-              Extent Options
+            <b>
+              {{ $t("form.filterForm.extentOptions") }}
               <span style="font-size:0.9rem">
-                (Is Exist :
+                ( {{ $t("form.filterForm.isExist") }} :
                 <span v-if="isExtentAreaExist" class="badge badge-success">
                   true
                 </span>
@@ -111,7 +115,7 @@
                 </span>
                 )
               </span>
-            </label>
+            </b>
             <div
               class="btn-group btn-group-toggle btn-group-sm"
               role="group"
@@ -180,14 +184,16 @@
             </div>
           </div>
           <div class="col-md-6" v-show="reportCheckboxVisibility">
-            <label>Sum Report Options</label>
+            <b>{{ $t("form.filterForm.sumReportOptions") }}</b>
 
             <div>
               <div class="row">
                 <div class="col-md-6">
                   <input type="checkbox" id="isSum" v-model="isSumFilter" />
 
-                  <label class="ml-1">Is Sum</label>
+                  <label class="ml-1">
+                    {{ $t("form.filterForm.isSum") }}
+                  </label>
                 </div>
                 <div class="col-md-6">
                   <select
@@ -216,7 +222,7 @@
             <!-- Apply button -->
 
             <button class="btn btn-primary float-right" @click="applyFilter">
-              Apply
+              ( {{ $t("button.apply") }}
             </button>
           </div>
         </div>

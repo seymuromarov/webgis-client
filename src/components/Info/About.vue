@@ -1,23 +1,25 @@
 <template>
-    <div class="about">
-        <h3>What is WebGIS?</h3>
-        <p>WebGIS is an online platform that ensures safety of sharing of satellite imagery with clients of Azercosmos and provides them with a source for independent processing of the images online.</p>
-    </div>
+  <div class="about">
+    <h3>{{ $t("menu.information.about.whatIsWebgis") }}</h3>
+    <p>
+      {{ $t("menu.information.about.whatIsWebgisContent") }}
+    </p>
+  </div>
 </template>
 
 <script>
-    export default {
-        name: "About"
-    };
+export default {
+  name: "About",
+};
 </script>
 
 <style>
-    .about {
-        font-size: 1.25rem;
-        margin: 1rem 2rem;
-    }
+.about {
+  font-size: 1.25rem;
+  margin: 1rem 2rem;
+}
 
-    h3 {
-        margin-bottom: 2rem;
-    }
+h3 {
+  margin-bottom: 2rem;
+}
 </style>
