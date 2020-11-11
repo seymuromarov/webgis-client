@@ -15,11 +15,11 @@ export default {
 
 <style>
 .about {
-  font-size: 1.25rem;
-  margin: 1rem 2rem;
+  font-size: 2rem;
+  margin: 1.6rem 3.2rem;
 }
 
 h3 {
-  margin-bottom: 2rem;
+  margin-bottom: 3.2rem;
 }
 </style>

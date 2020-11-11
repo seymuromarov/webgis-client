@@ -289,23 +289,23 @@ export default {
 <style lang="scss">
 .issue__comments {
   .issue__comment {
-    margin-top: 1.5rem;
+    margin-top: 2.4rem;
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.25rem 1.25rem;
+      padding: 0.4rem 2rem;
       height: 36px;
     }
     img {
       width: 100%;
       border-radius: 4px;
-      margin: 1rem 0;
+      margin: 1.6rem 0;
     }
   }
   .issue__comment_replies {
-    margin-left: 2rem;
-    padding-left: 2rem;
+    margin-left: 3.2rem;
+    padding-left: 3.2rem;
     border-left: 1px solid rgba(0, 0, 0, 0.1);
   }
 }

@@ -5,14 +5,22 @@
 @import "modals/change-detector";
 @import "snotify/index";
 
+:root {
+  font-size: 10px;
+}
+
+body {
+  font-size: 1.6rem;
+}
+
 #map {
   height: 100vh;
   width: 100%;
 }
 
 hr {
-  margin-top: 0.5rem !important;
-  margin-bottom: 0.5rem !important;
+  margin-top: 0.8rem !important;
+  margin-bottom: 0.8rem !important;
 }
 
 .text-left-layer {
@@ -31,10 +39,10 @@ hr {
   margin-top: 8px;
 }
 .btn-xs {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.6rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
   line-height: 1.5;
-  border-radius: 0.2rem;
+  border-radius: 0.32rem;
 }
 .action-button-class {
   position: absolute;
@@ -67,7 +75,7 @@ hr {
     }
 
     &:hover {
-      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+      box-shadow: 0 0 0 0.32rem rgba(0, 123, 255, 0.25) !important;
     }
 
     color: black;
@@ -91,7 +99,7 @@ hr {
   }
 
   &:hover {
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+    box-shadow: 0 0 0 0.32rem rgba(0, 123, 255, 0.25) !important;
   }
 
   .i {
@@ -307,7 +315,7 @@ hr {
     .nav-item {
       flex: 1;
       a {
-        padding: 0.5rem;
+        padding: 0.8rem;
       }
     }
   }
@@ -317,7 +325,7 @@ hr {
     text-align: right;
     .btn {
       border-radius: 0;
-      padding: 0.2rem 0.75rem;
+      padding: 0.32rem 1.2rem;
       &:focus {
         box-shadow: none;
       }
@@ -492,7 +500,7 @@ hr {
 .sidebar {
   .list-group-item {
     border: none;
-    padding: 0.2rem 0;
+    padding: 0.32rem 0;
   }
 }
 

@@ -563,7 +563,7 @@ export default {
 
       label {
         height: 100%;
-        padding: 0 0.5rem;
+        padding: 0 0.8rem;
         background-color: var(--primary-color-opacity-85);
         color: var(--white);
         font-size: 14px;
@@ -575,7 +575,7 @@ export default {
       input {
         height: 100%;
         width: 100px;
-        padding: 0 0.25rem;
+        padding: 0 0.4rem;
         background-color: var(--primary-color-opacity-85);
         border: 0;
         color: var(--white);

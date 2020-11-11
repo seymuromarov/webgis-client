@@ -585,7 +585,7 @@ export default {
       }
 
       & > *:not(:first-child) {
-        margin-left: 1rem;
+        margin-left: 1.6rem;
       }
     }
   }

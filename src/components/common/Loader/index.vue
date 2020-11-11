@@ -13,7 +13,7 @@ export default {
 <style lang="scss">
 .loader {
   z-index: 9999;
-  font-size: 2rem;
+  font-size: 3.2rem;
   display: flex;
   align-items: center;
   justify-content: center;

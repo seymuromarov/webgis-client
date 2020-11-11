@@ -138,7 +138,7 @@ export default {
             border-bottom: 1px solid #dee2e6;
             .nav-link {
               color: var(--white);
-              padding: 0.35rem 1rem;
+              padding: 0.56rem 1.6rem;
               &.active {
                 border-color: var(--primary-color) var(--primary-color) #fff;
                 color: var(--primary-color);
