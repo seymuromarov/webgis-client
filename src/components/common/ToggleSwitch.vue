@@ -26,10 +26,10 @@
         margin: 0;
         position: relative;
         display: inline-block;
-        width: 24px;
-        height: 12px;
-        border: 2px solid #fff;
-        border-radius: 12px;
+        width: 2.4rem;
+        height: 1.2rem;
+        border: 0.2rem solid #fff;
+        border-radius: 1.2rem;
         input
 
     {
@@ -43,11 +43,11 @@
     }
 
     &:focus + .slider {
-        box-shadow: 0 0 1px #7aff6f;
+        box-shadow: 0 0 0.1rem #7aff6f;
     }
 
     &:checked + .slider:before {
-        transform: translateX(12px);
+        transform: translateX(1.2rem);
     }
 
     }
@@ -59,7 +59,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        border-radius: 12px;
+        border-radius: 1.2rem;
         background-color: var(--primary-color-lighten-100);
         -webkit-transition: 0.4s;
         transition: 0.4s;
@@ -68,13 +68,13 @@
     {
         position: absolute;
         content: "";
-        height: 10px;
-        width: 10px;
-        left: -1px;
-        bottom: -1px;
+        height: 1rem;
+        width: 1rem;
+        left: -0.1rem;
+        bottom: -0.1rem;
         border-radius: 50%;
         background-color: white;
-        box-shadow: 0 0 2px #333;
+        box-shadow: 0 0 0.2rem #333;
         -webkit-transition: 0.4s;
         transition: 0.4s;
     }

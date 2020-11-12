@@ -1,13 +1,13 @@
 .pagination {
   padding-left: 0;
-  margin: 20px 0;
-  border-radius: 4px;
+  margin: 2rem 0;
+  border-radius: 0.4rem;
 
   li {
-    padding: 5px 10px;
-    margin: 2px;
-    border: 1px solid var(--primary-color);
-    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    margin: 0.2rem;
+    border: 0.1rem solid var(--primary-color);
+    border-radius: 0.5rem;
 
     a:focus {
       outline: none;

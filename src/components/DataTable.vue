@@ -111,7 +111,7 @@
                   v-if="isActiveServiceLocal"
                   class="table__column--sticky"
                   :style="{
-                    width: checkPermission(['data_edit']) ? '80px' : '40px',
+                    width: checkPermission(['data_edit']) ? '8rem' : '4rem',
                   }"
                 >
                   #
@@ -137,7 +137,7 @@
                   v-if="isActiveServiceLocal"
                   class="table__column--sticky"
                   :style="{
-                    width: checkPermission(['data_edit']) ? '80px' : '40px',
+                    width: checkPermission(['data_edit']) ? '8rem' : '4rem',
                   }"
                 >
                   <i
@@ -530,9 +530,11 @@ export default {
   position: absolute;
   bottom: 0;
   top: 0;
+  left: 0;
   display: flex;
   align-items: flex-end;
   pointer-events: none;
+  z-index: 11;
   & > * {
     pointer-events: all;
   }
@@ -542,6 +544,7 @@ export default {
   position: absolute !important;
   .resizable-t {
     z-index: 10 !important;
+    width: calc(100% - 5.6rem) !important;
     &:hover {
       background-color: #2a354baa;
     }
@@ -553,17 +556,17 @@ export default {
   .tableHeader {
     background-color: #1b2537;
     color: #ffffff;
-    height: 40px;
+    height: 4rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 0 2rem;
     .table__tabs {
       display: flex;
       .table__tab {
-        margin: 0 10px 0 0;
-        padding: 0 10px;
-        font-size: 16px;
+        margin: 0 1rem 0 0;
+        padding: 0 1rem;
+        font-size: 1.6rem;
         font-weight: 500;
         opacity: 0.6;
         &:hover {
@@ -611,8 +614,8 @@ export default {
 
     th,
     td {
-      font-size: 14px;
-      padding: 4px 20px;
+      font-size: 1.4rem;
+      padding: 0.4rem 2rem;
       text-align: left;
       vertical-align: middle;
     }

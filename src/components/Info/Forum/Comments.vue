@@ -295,24 +295,24 @@ export default {
       justify-content: space-between;
       align-items: center;
       padding: 0.4rem 2rem;
-      height: 36px;
+      height: 3.6rem;
     }
     img {
       width: 100%;
-      border-radius: 4px;
+      border-radius: 0.4rem;
       margin: 1.6rem 0;
     }
   }
   .issue__comment_replies {
     margin-left: 3.2rem;
     padding-left: 3.2rem;
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 0.1rem solid rgba(0, 0, 0, 0.1);
   }
 }
 
 .new-comment {
   // .card-header {
-  //     height: 36px;
+  //     height: 3.6rem;
   // }
   .card-body {
     padding: 0;
@@ -320,7 +320,7 @@ export default {
   .quill-editor {
     border: 0;
     .ql-toolbar {
-      border-width: 0 0 1px 0;
+      border-width: 0 0 0.1rem 0;
     }
     .ql-container {
       border-width: 0;
