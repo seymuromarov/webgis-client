@@ -65,8 +65,8 @@ export default {
   methods: {
     async getNotifications() {
       notification.getAll(this.limitQuery).then(async (response) => {
-        this.totalCount = response.data.totalCount;
-        this.notifications = response.data.items;
+        this.totalCount = response.totalCount;
+        this.notifications = response.items;
         await new Promise(async (resolve, reject) => {
           for (let i = 0; i < this.notifications.length; i++) {
             const item = this.notifications[i];

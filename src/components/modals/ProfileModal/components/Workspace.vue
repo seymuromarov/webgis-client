@@ -142,6 +142,7 @@ import {
 } from "@/controllers";
 import { coordinateTypeEnum } from "@/enums";
 import workspace from "@/api/workspace";
+import { notifyService } from "@/services";
 export default {
   name: "Workspace",
 
@@ -167,31 +168,16 @@ export default {
       this.rotation = mapController.getCurrentRotation();
       this.selectedLayers = layerController.getSelectedLayers();
     },
-    getLayersName() {},
     getWorkspace() {
       workspace.get().then((response) => {
-        if (response.data && response.data != "")
-          this.workspace = response.data;
+        if (response) this.workspace = response;
         else this.workspace = null;
       });
     },
     resetWorkspace() {
-      workspace.delete().then((response) => {
-        if (response.status == 200) {
-          this.getWorkspace();
-          this.$toasted.show("Configurations Successfully Reseted", {
-            icon: {
-              name: "fas fa-check",
-            },
-          });
-        } else {
-          this.$toasted.show("Failed!", {
-            theme: "bubble",
-            icon: {
-              name: "fas fa-exclamation",
-            },
-          });
-        }
+      workspace.reset().then((response) => {
+        notifyService.success("Configurations Successfully Reseted");
+        this.getWorkspace();
       });
     },
     async loadWorkspace() {
@@ -236,21 +222,8 @@ export default {
         activeLayers: this.selectedLayers.map((c) => c.id),
       };
       workspace.set(data).then((response) => {
-        if (response.status == 200) {
-          this.getWorkspace();
-          this.$toasted.show("Configurations Successfully Setted", {
-            icon: {
-              name: "fas fa-check",
-            },
-          });
-        } else {
-          this.$toasted.show("Failed!", {
-            theme: "bubble",
-            icon: {
-              name: "fas fa-exclamation",
-            },
-          });
-        }
+        notifyService.success("Configurations Successfully Setted");
+        this.getWorkspace();
       });
     },
   },

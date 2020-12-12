@@ -86,6 +86,7 @@
 import { layerController } from "@/controllers";
 import { Tree } from "@/components";
 import defaultLayer from "@/api/defaultLayer";
+import { notifyService } from "@/services";
 export default {
   name: "DefaultLayer",
   components: { Tree },
@@ -145,12 +146,8 @@ export default {
     getDefaultLayers() {
       return new Promise((resolve, reject) => {
         defaultLayer.getAll().then((response) => {
-          if (response.status == 200) {
-            this.defaultLayers = response.data;
-            resolve(response.data);
-          } else {
-            reject(new Error("Faild"));
-          }
+          this.defaultLayers = response;
+          resolve(response);
         });
       });
     },
@@ -160,26 +157,13 @@ export default {
       var selectedBasemaps = this.$refs.basemapTree.getCheckeds();
 
       selectedDynamics.forEach((c) => {
-        data.push({ layerId: c });
+        data.push(c);
       });
       selectedBasemaps.forEach((c) => {
-        data.push({ layerId: c });
+        data.push(c);
       });
       defaultLayer.set(data).then((response) => {
-        if (response.status == 200) {
-          this.$toasted.show("Default Layers Successfully Setted", {
-            icon: {
-              name: "fas fa-check",
-            },
-          });
-        } else {
-          this.$toasted.show("Failed!", {
-            theme: "bubble",
-            icon: {
-              name: "fas fa-exclamation",
-            },
-          });
-        }
+        notifyService.success("Default Layers Successfully Setted");
       });
     },
   },

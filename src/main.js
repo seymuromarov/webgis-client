@@ -80,7 +80,8 @@ import i18n from "./lang"; // internationalization
 Vue.use(Snotify, {
   toast: {
     position: SnotifyPosition.leftBottom,
-    timeout: 3000,
+    timeout: 2000,
+    showProgressBar: false,
   },
 });
 Vue.component("Loader", Loader);
@@ -92,7 +93,7 @@ Vue.use(Loading);
 Vue.use(Multiselect);
 Vue.use(VueToasted, {
   position: "bottom-left",
-  duration: 3000,
+  duration: 2000,
   iconPack: "custom-class", // set your iconPack, defaults to material. material|fontawesome|custom-class
 });
 Vue.use(VModal); // TODO Remove VModal

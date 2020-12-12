@@ -12,7 +12,6 @@
 
 <script>
 import info from "@/api/info";
-import dayjs from "dayjs";
 
 // import Loader from "./parts/Loader";
 

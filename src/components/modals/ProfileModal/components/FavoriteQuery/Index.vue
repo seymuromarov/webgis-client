@@ -55,6 +55,7 @@ import {
   serviceController,
   modalController,
 } from "@/controllers";
+import { notifyService } from "@/services";
 export default {
   name: "FavoriteQuery",
   components: { FavoriteQueryCard },
@@ -74,8 +75,8 @@ export default {
   methods: {
     getFavoriteQueries() {
       favoriteQuery.getAll(this.limitQuery).then((response) => {
-        this.totalCount = response.data.totalCount;
-        this.favoriteQueries = response.data.items;
+        this.totalCount = response.totalCount;
+        this.favoriteQueries = response.items;
       });
     },
     onApplyClick(id) {
@@ -97,11 +98,8 @@ export default {
     },
     onDeleteClick(id) {
       favoriteQuery.delete(id).then((response) => {
-        this.$toasted.show("Successfully Deleted", {
-          icon: {
-            name: "fas fa-check",
-          },
-        });
+        notifyService.success("Successfully Deleted");
+
         if (this.favoriteQueries.length === 1) {
           this.limitQuery.page -= 1;
         }

@@ -15,15 +15,19 @@ router.beforeEach(async (to, from, next) => {
     } else {
       // determine whether the user has obtained his permission roles through getInfo
       const hasRoles = $store.getters.roles && $store.getters.roles.length > 0;
+
       if (hasRoles) {
         next();
       } else {
         try {
-          let response = await userService.getInfo();
-          if (response.status !== 200) {
-            authService.logout();
-            next(`/login`);
-          }
+          await $store
+            .dispatch("auth/getAuthorizedUser")
+            .then(() => {})
+            .catch(async () => {
+              await $store.dispatch("auth/logout");
+              next(`/login`);
+            });
+
           next({ ...to, replace: true });
         } catch (error) {
           next(`/login`);

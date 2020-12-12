@@ -59,11 +59,9 @@
           <h6 class="card-header">
             <div>
               <span class="issue__author">{{ comment.user.userName }}</span>
-              <span
-                class="issue__date"
-                :title="formatDateTime(comment.dateCreated)"
-                >{{ formatDate(comment.dateCreated) }}</span
-              >
+              <span class="issue__date" :title="comment.dateCreated">{{
+                comment.dateCreated
+              }}</span>
             </div>
             <div class="btn-group">
               <button
@@ -105,11 +103,9 @@
               <h6 class="card-header">
                 <div>
                   <span class="issue__author">{{ reply.user.userName }}</span>
-                  <span
-                    class="issue__date"
-                    :title="formatDateTime(reply.dateCreated)"
-                    >{{ formatDate(reply.dateCreated) }}</span
-                  >
+                  <span class="issue__date" :title="reply.dateCreated">{{
+                    reply.dateCreated
+                  }}</span>
                 </div>
                 <button
                   type="button"
@@ -168,7 +164,6 @@
 </template>
 
 <script>
-import { dateFormatter } from "@/helpers";
 import forum from "@/api/forum";
 import NewComment from "./NewComment";
 // import Loader from "../parts/Loader";
@@ -229,7 +224,8 @@ export default {
         ...data,
       };
 
-      forum.insertComment(body)
+      forum
+        .insertComment(body)
         .then((response) => {
           if (response.data) {
             this.rawComments.push(response.data);
@@ -252,7 +248,8 @@ export default {
         if (result.value) {
           this.loading = true;
 
-          forum.deleteComment(id)
+          forum
+            .deleteComment(id)
             .then((response) => {
               if (response.status === 200) {
                 this.rawComments.splice(
@@ -266,8 +263,6 @@ export default {
         }
       });
     },
-    formatDate: dateFormatter.formatDate,
-    formatDateTime: dateFormatter.formatDateTime,
   },
   computed: {
     showDeleteBtn() {

@@ -40,11 +40,9 @@
           </h3>
           <div>
             <span class="issue__author">{{ issue.user.userName }}</span>
-            <span
-              class="issue__date"
-              :title="formatDateTime(issue.dateCreated)"
-              >{{ formatDate(issue.dateCreated) }}</span
-            >
+            <span class="issue__date" :title="issue.dateCreated">{{
+              issue.dateCreated
+            }}</span>
           </div>
         </div>
       </div>
@@ -59,7 +57,6 @@
 
 <script>
 import forum from "@/api/forum";
-import { dateFormatter } from "@/helpers";
 import Comments from "./Comments";
 // import Loader from "../parts/Loader";
 
@@ -84,7 +81,8 @@ export default {
     getIssueById(id) {
       this.loading = true;
 
-      forum.getIssueById(id)
+      forum
+        .getIssueById(id)
         .then((response) => {
           if (response.data) {
             this.issue = response.data;
@@ -94,7 +92,8 @@ export default {
         .catch();
     },
     closeIssue() {
-      forum.closeIssue(this.issue.id)
+      forum
+        .closeIssue(this.issue.id)
         .then((response) => {
           if (response.data) {
             this.issue = response.data;
@@ -125,7 +124,8 @@ export default {
         if (result.value) {
           this.loading = true;
 
-          forum.deleteIssue(id)
+          forum
+            .deleteIssue(id)
             .then((response) => {
               if (response.status === 200) {
                 if (this.issue.status === 1) {
@@ -142,8 +142,6 @@ export default {
         }
       });
     },
-    formatDate: dateFormatter.formatDate,
-    formatDateTime: dateFormatter.formatDateTime,
   },
   computed: {
     showDeleteBtn() {

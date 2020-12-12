@@ -23,8 +23,8 @@ const actions = {
     localStorage.setItem("language", payload);
   },
   async fetchRemoteMessages(context) {
-    const response = await api.getLanguages();
-    var msg = response.data;
+    const msg = await api.getLanguages();
+
     context.commit("SET_MESSAGES", msg);
     var keys = Object.keys(msg);
     context.commit("SET_LOCALES", keys);

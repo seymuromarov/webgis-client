@@ -103,13 +103,10 @@ export default {
     },
 
     onChange(item) {
-      datatable.getTableInfo(item.code).then((response) => {
-        if (response.status !== 200) {
-          this.tableInfo = null;
-          this.columnOptions = [];
-          this.chartVisibility = false;
-        } else {
-          this.tableInfo = response.data;
+      datatable
+        .getTableInfo(item.code)
+        .then((response) => {
+          this.tableInfo = response;
           this.columnOptions = this.tableInfo.columns
             .filter((c) => c.valueType == "int" || c.valueType == "double")
             .map((c) => {
@@ -118,11 +115,17 @@ export default {
                 label: c.columnName,
               };
             });
-        }
-        this.chartOptions.title.text = item.label + " Data";
-        this.selectedColumn = null;
-        this.chartVisibility = false;
-      });
+        })
+        .catch(() => {
+          this.tableInfo = null;
+          this.columnOptions = [];
+          this.chartVisibility = false;
+        })
+        .finally(() => {
+          this.chartOptions.title.text = item.label + " Data";
+          this.selectedColumn = null;
+          this.chartVisibility = false;
+        });
     },
     async onColumnChange(item) {
       let data = await this.getData(
@@ -159,18 +162,13 @@ export default {
     },
     getData(id, column, coordinates) {
       let params = {
-        layerId: id,
         geometryType: "linestring",
         extentCoordinates: JSON.stringify(coordinates),
         returnGeom: false,
         columns: [column],
         isAll: true,
       };
-      return new Promise((resolve, reject) => {
-        layer.getLocalTableData(params).then((response) => {
-          resolve(response.data);
-        });
-      });
+      return datatable.getData(id, params);
     },
 
     stringFixed(val, fix) {

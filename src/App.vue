@@ -1,6 +1,7 @@
 <template>
   <div v-if="appReady" id="app">
     <router-view />
+    <vue-snotify></vue-snotify>
   </div>
 </template>
 <script>

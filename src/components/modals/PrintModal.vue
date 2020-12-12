@@ -90,7 +90,6 @@
 
 <script>
 import { jsPDF } from "jspdf";
-
 import { mapController } from "@/controllers";
 import { logo, compass } from "@/constants/assets";
 
@@ -98,7 +97,7 @@ export default {
   name: "PrintModal",
   data() {
     return {
-      title: "",
+      title: "əəəəəə",
       hasTitle: true,
       hasExtent: true,
       hastScale: true,
@@ -129,6 +128,7 @@ export default {
       compass,
     };
   },
+  async created() {},
   computed: {
     dim() {
       return this.dims[this.format];
@@ -194,11 +194,10 @@ export default {
       map.getView().setResolution(viewResolution / scaling);
     },
     onModalClose() {},
-    print() {
+    async print() {
       var pdf = new jsPDF({
         format: this.format,
       });
-
       var pageWidth = pdf.internal.pageSize.width;
       var pageHeight = pdf.internal.pageSize.height;
 
@@ -266,7 +265,6 @@ export default {
           optionsStartY
         );
       }
-      //
 
       pdf.setFontSize(timeFontSize);
       var currentdate = new Date();
@@ -309,8 +307,6 @@ export default {
         compassImageWidth,
         compassImageHeight
       );
-
-      console.log(pdf.getTextWidth("sa"));
 
       var imgWidth = this.imageWidth;
       var imgHeight = this.imageHeight;

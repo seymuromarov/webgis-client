@@ -11,6 +11,7 @@ Vue.use(Vuex);
 
 const getLayers = async ({ dispatch }) => {
   let layerResponse = await layer.getLayers();
+
   let favoriteLayerResponse = await favoriteLayer.getAll();
   let defaultLayerResponse = await defaultLayer.getAll();
 
@@ -18,24 +19,25 @@ const getLayers = async ({ dispatch }) => {
   let favoriteBaseLayerIds = [];
   let defaultDynamicLayerIds = [];
   let defaultBaseLayerIds = [];
-  if (favoriteLayerResponse.data && favoriteLayerResponse.data != "") {
-    favoriteDynamicLayerIds = favoriteLayerResponse.data
+  if (favoriteLayerResponse && favoriteLayerResponse.length > 0) {
+    favoriteDynamicLayerIds = favoriteLayerResponse
       .filter((c) => c.layer.mapTypeId == "dynamic")
       .map((c) => c.layer.id);
-    favoriteBaseLayerIds = favoriteLayerResponse.data
+    favoriteBaseLayerIds = favoriteLayerResponse
       .filter((c) => c.layer.mapTypeId == "basemap")
       .map((c) => c.layer.id);
   }
-  if (defaultLayerResponse.data && defaultLayerResponse.data != "") {
-    defaultDynamicLayerIds = defaultLayerResponse.data
+  if (defaultLayerResponse && defaultLayerResponse.length > 0) {
+    defaultDynamicLayerIds = defaultLayerResponse
       .filter((c) => c.layer.mapTypeId == "dynamic")
       .map((c) => c.layer.id);
-    defaultBaseLayerIds = defaultLayerResponse.data
+
+    defaultBaseLayerIds = defaultLayerResponse
       .filter((c) => c.layer.mapTypeId == "basemap")
       .map((c) => c.layer.id);
   }
 
-  let layers = layerHelper.mapLayers(layerResponse.data);
+  let layers = layerHelper.mapLayers(layerResponse);
   let baseLayerList = layers.baseLayers;
   let dynamicLayerList = layers.dynamicLayers;
   dispatch("saveDynamicLayerList", dynamicLayerList);
@@ -53,12 +55,12 @@ const getLayers = async ({ dispatch }) => {
   dispatch("SAVE_LAYER_COLOR_ORDER_LIST", layerColorOderList);
 
   let bunchResponse = await bunch.getAll();
-  let bunchMapResult = bunchHelper.mapBunchs(bunchResponse.data);
+  let bunchMapResult = bunchHelper.mapBunchs(bunchResponse);
   dispatch("saveBunchLayerList", bunchMapResult);
 };
 const setNotificationCounts = async ({ dispatch }) => {
   var response = await notification.getUnradNotificationCount();
-  dispatch("saveNotificationCount", response.data);
+  dispatch("saveNotificationCount", response);
 };
 export default new Vuex.Store({
   state: {},

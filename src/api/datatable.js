@@ -3,9 +3,9 @@ import { DATATABLE_URLS } from "@/config/urls";
 
 export default {
   getTableInfo(layerId) {
-    return request.get(DATATABLE_URLS.GET_TABLE_INFO + "/" + layerId);
+    return request.get(DATATABLE_URLS.GET_TABLE_INFO(layerId));
   },
-  getData(layerId, gid) {
+  getItem(layerId, gid) {
     let params = { gid };
 
     return request.get(DATATABLE_URLS.GET_ITEM + "/" + layerId + "/", {
@@ -14,5 +14,10 @@ export default {
   },
   addOrEditData(params) {
     return request.post(DATATABLE_URLS.ADD_OR_EDIT, params);
+  },
+  getData(layerId, params) {
+    return request.get(DATATABLE_URLS.GET_DATA(layerId), {
+      params,
+    });
   },
 };

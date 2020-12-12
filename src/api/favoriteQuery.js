@@ -3,7 +3,7 @@ import { FAVORITEQUERY_URLS } from "@/config/urls";
 
 export default {
   get(id) {
-    return request.get(FAVORITEQUERY_URLS.GET_TABLE_INFO + "/" + id);
+    return request.get(FAVORITEQUERY_URLS.GET(id));
   },
   getAll(params) {
     return request.get(FAVORITEQUERY_URLS.GET_ALL, { params });
@@ -12,9 +12,9 @@ export default {
     return request.post(FAVORITEQUERY_URLS.ADD, data);
   },
   edit(data) {
-    return request.post(FAVORITEQUERY_URLS.EDIT, data);
+    return request.put(FAVORITEQUERY_URLS.EDIT, data);
   },
   delete(id) {
-    return request.post(FAVORITEQUERY_URLS.DELETE + "/" + id);
+    return request.delete(FAVORITEQUERY_URLS.DELETE(id));
   },
 };

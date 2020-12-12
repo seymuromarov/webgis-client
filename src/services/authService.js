@@ -1,16 +1,5 @@
-import { tokenService } from "@/services";
-import { userController } from "@/controllers";
-import $store from "@/store/store.js";
-
 const failedAttemptKey = "loginFailedAttemptCount";
 export default {
-  logout() {
-    userController.setRoles([]);
-    userController.setDirectivePermissions([]);
-    userController.setUserInfo({});
-    $store.dispatch("SAVE_AUTH_TOKEN", "");
-    tokenService.removeToken();
-  },
   getFailedAttemptCount() {
     var c = localStorage.getItem(failedAttemptKey);
 

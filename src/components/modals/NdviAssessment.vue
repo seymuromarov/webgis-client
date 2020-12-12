@@ -139,9 +139,8 @@ import { toolController, modalController, ndviController } from "@/controllers";
 import { tokenService } from "@/services";
 import { ARCGIS_URLS } from "@/config/urls";
 import { icons } from "@/constants/assets";
-import { drawTypeEnum } from "@/enums";
+import { drawTypeEnum, resourceTypeEnum } from "@/enums";
 import Multiselect from "vue-multiselect";
-
 import { LineChart } from "@/charts";
 
 export default {
@@ -186,14 +185,14 @@ export default {
       this.isModalHidingForPoint = false;
     },
     async getNdvis() {
-      let { data } = await ndvi.getNdvis();
-      data = data.map((item) => {
+      let response = await ndvi.getNdvis();
+      response = response.map((item) => {
         item.basemaps = item.basemaps.map((x) => layerHelper.basemapMapping(x));
         item.ndvi = layerHelper.basemapMapping(item.ndvi);
         return item;
       });
 
-      this.options = data;
+      this.options = response;
     },
     onPointSelection(e) {
       let value = e.target.value;
@@ -279,13 +278,14 @@ export default {
       return item.ndvi.name;
     },
     getImgUrl(basemap) {
-      var params = arcgisImgExportSettings;
       var extent = mapHelper.bboxToExtent(ndviController.getNdviExtent());
-      params["token"] = tokenService.getToken();
-      params["bbox"] = extent.toString();
-      let arcgisImgUrl = ARCGIS_URLS.EXPORT_IMAGE_URL(basemap.name, params);
-      // let defaultImgUrl = "https://i.picsum.photos/id/608/256/256.jpg";
-      return arcgisImgUrl;
+
+      const url = urlHelper.getImageUrl(
+        basemap.name,
+        extent,
+        resourceTypeEnum.ARCGIS
+      );
+      return url;
     },
 
     onModalOpen() {

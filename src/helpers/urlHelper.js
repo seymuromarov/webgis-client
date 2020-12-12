@@ -1,7 +1,7 @@
 import { tileTypeEnum, resourceTypeEnum } from "@/enums";
 import { serviceHelper } from "@/helpers";
 import { tokenService } from "@/services";
-import { URL, MAP_URLS, ARCGIS_URLS } from "@/config/urls";
+import { ARCGIS_URLS } from "@/config/urls";
 import { arcgisImgExportSettings } from "@/config/settings";
 import qs from "qs";
 const functions = {
@@ -21,6 +21,8 @@ const functions = {
   },
   buildTileUrl(service, type) {
     let url = "";
+    const apiUrl = process.env.VUE_APP_BASE_API;
+
     const token = tokenService.getToken();
 
     const {
@@ -38,7 +40,7 @@ const functions = {
 
           let queryString = functions.formatQueryString(params);
 
-          url = `${URL}/api/service/webgis/${service.name}/mvt/{z}/{x}/{y}/?${queryString}`;
+          url = `${apiUrl}/service/webgis/${service.name}/mvt/{z}/{x}/{y}/?${queryString}`;
         } else {
           var params = service.layers.map((item, index) => {
             let obj = { layerId: item.id };
@@ -50,26 +52,26 @@ const functions = {
             queries: params,
           });
 
-          url = `${URL}/api/service/webgis/${service.name}/intersect/mvt/{z}/{x}/{y}/?${queryString}`;
+          url = `${apiUrl}/service/webgis/${service.name}/intersect/mvt/{z}/{x}/{y}/?${queryString}`;
         }
 
         break;
       case XYZ:
-        url = `${URL}/api/service/arcgis/${service.name}/{z}/{y}/{x}?token=${token}`;
+        url = `${apiUrl}/service/arcgis/${service.name}/{z}/{y}/{x}?token=${token}`;
         break;
       case TILE_ARCGIS_REST:
-        url = `${URL}/api/service/arcgis/${service.name}/`;
+        url = `${apiUrl}/service/arcgis/${service.name}/`;
         break;
       case IMAGE_ARCGIS_REST:
-        url = `${URL}/api/service/arcgis/${service.name}/`;
+        url = `${apiUrl}/service/arcgis/${service.name}/`;
         break;
       case WMS:
         if (serviceHelper.isGeoserverService(service)) {
-          url = `${URL}/api/service/geoserver/${service.name}/`;
+          url = `${apiUrl}/service/geoserver/${service.name}/`;
         } else if (serviceHelper.isGeoserverGwsService(service)) {
-          url = `${URL}/api/service/geoserver/${service.name}/gwc/`;
+          url = `${apiUrl}/service/geoserver/${service.name}/gwc/`;
         } else if (serviceHelper.isGeowebcacheService(service)) {
-          url = `${URL}/api/service/geowebcache/${service.name}/`;
+          url = `${apiUrl}/service/geowebcache/${service.name}/`;
         }
         break;
     }

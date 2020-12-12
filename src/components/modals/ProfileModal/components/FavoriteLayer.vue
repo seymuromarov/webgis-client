@@ -79,6 +79,7 @@
 import { layerController } from "@/controllers";
 import { Tree } from "@/components";
 import favoriteLayer from "@/api/favoriteLayer";
+import { notifyService } from "@/services";
 export default {
   name: "FavoriteLayer",
   components: { Tree },
@@ -138,12 +139,8 @@ export default {
     getFavoriteLayers() {
       return new Promise((resolve, reject) => {
         favoriteLayer.getAll().then((response) => {
-          if (response.status == 200) {
-            this.favoriteLayers = response.data;
-            resolve(response.data);
-          } else {
-            reject(new Error("Faild"));
-          }
+          this.favoriteLayers = response;
+          resolve(response);
         });
       });
     },
@@ -153,29 +150,16 @@ export default {
       var selectedBasemaps = this.$refs.basemapTree.getCheckeds();
 
       selectedDynamics.forEach((c) => {
-        data.push({ layerId: c });
+        data.push(c);
       });
       selectedBasemaps.forEach((c) => {
-        data.push({ layerId: c });
+        data.push(c);
       });
 
       favoriteLayer.set(data).then((response) => {
-        if (response.status == 200) {
-          layerController.setFavoriteDynamicLayerIds(selectedDynamics);
-          layerController.setFavoriteBaseLayerIds(selectedBasemaps);
-          this.$toasted.show("Favorite Queries Successfully Setted", {
-            icon: {
-              name: "fas fa-check",
-            },
-          });
-        } else {
-          this.$toasted.show("Failed!", {
-            theme: "bubble",
-            icon: {
-              name: "fas fa-exclamation",
-            },
-          });
-        }
+        notifyService.success("Favorite Queries Successfully Setted");
+        layerController.setFavoriteDynamicLayerIds(selectedDynamics);
+        layerController.setFavoriteBaseLayerIds(selectedBasemaps);
       });
     },
   },

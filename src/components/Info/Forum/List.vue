@@ -67,7 +67,7 @@
         >
           <i class="issue-icon" :class="issueIconClass"></i>
           <span>{{ issue.title }}</span>
-          <span class="issue__date">{{ formatDate(issue.dateCreated) }}</span>
+          <span class="issue__date">{{ issue.dateCreated }}</span>
         </li>
       </ul>
     </div>
@@ -76,7 +76,6 @@
 
 <script>
 import forum from "@/api/forum";
-import { dateFormatter } from "@/helpers";
 // import Loader from "../parts/Loader";
 
 export default {
@@ -158,7 +157,6 @@ export default {
         this.getClosedIssues();
       }
     },
-    formatDate: dateFormatter.formatDate,
   },
   mounted() {
     if (!this.issues.open.length) {

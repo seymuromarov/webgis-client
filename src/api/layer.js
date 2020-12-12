@@ -2,9 +2,6 @@ import request from "@/utils/request";
 import { URL, LAYER_URLS, DATATABLE_URLS } from "@/config/urls";
 
 export default {
-  getUserRelatedLayers() {
-    return request.get(URL + "/api/userlayer/getuserlayers");
-  },
   getLayers() {
     return request.get(LAYER_URLS.GET_ALL);
   },
@@ -60,14 +57,6 @@ export default {
     );
   },
 
-  getLocalTableData(params) {
-    return request.get(
-      URL + "/api/datatable/GetDatas/" + params.layerId + "/",
-      {
-        params,
-      }
-    );
-  },
   getIntersectLocalTableData(bunchId, params) {
     return request.get(
       URL + "/api/datatable/Intersect/GetData/" + bunchId + "/",

@@ -1,9 +1,6 @@
 import user from "@/api/user";
 import { userHelper } from "@/helpers";
-import { tokenService } from "@/services";
 import { userController } from "@/controllers";
-import $store from "@/store/store.js";
-import router from "@/router";
 
 export default {
   getInfo() {

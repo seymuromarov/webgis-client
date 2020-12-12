@@ -18,7 +18,7 @@
             type="text"
             class="form-control"
             :placeholder="$t('form.loginForm.username')"
-            v-model="username"
+            v-model="emailOrUsername"
           />
         </div>
         <div class="form-group">
@@ -61,7 +61,7 @@
 
 <script>
 import auth from "@/api/auth";
-import { authService, tokenService } from "@/services";
+import { authService, tokenService, notifyService } from "@/services";
 import { userController } from "@/controllers";
 import { getErrorMessage } from "@/utils";
 import { LanguageSelect } from "@/components";
@@ -73,7 +73,7 @@ export default {
 
   data: function() {
     return {
-      username: "",
+      emailOrUsername: "",
       password: "",
       recaptchaToken: "",
       errorMessage: "",
@@ -103,30 +103,52 @@ export default {
   },
   methods: {
     async login() {
-      const { username, password, recaptchaToken } = this;
-      const response = await auth.login({
-        emailOrUsername: username,
-        password: password,
-        recaptchaToken: recaptchaToken,
-      });
-      if (response.status === 200) {
-        let data = response.data;
-        let token = data.token;
-        tokenService.setToken(token);
-        this.$store.dispatch("SAVE_AUTH_TOKEN", token);
-        this.$router.push("/");
-        authService.resetFailedAttemptCount();
-      } else {
-        authService.increaseFailedAttempCount();
-        this.failedAttemptCount += 1;
-        let errors = getErrorMessage(response);
-        if (errors.some((c) => c.key.toLowerCase() === "recaptchatoken")) {
-          this.errorMessage = "Recaptcha Is Required";
-          this.isRecaptchaRequired = true;
-        } else {
-          this.errorMessage = errors[0].message;
-        }
-      }
+      const { emailOrUsername, password, recaptchaToken } = this;
+      // const response = await auth.login({
+      //   emailOrUsername: username,
+      //   password: password,
+      //   recaptchaToken: recaptchaToken,
+      // });
+      this.$store
+        .dispatch("auth/login", {
+          emailOrUsername,
+          password,
+          recaptchaToken,
+        })
+        .then(() => {
+          this.$router.push("/");
+          authService.resetFailedAttemptCount();
+        })
+        .catch(() => {
+          authService.increaseFailedAttempCount();
+          this.failedAttemptCount += 1;
+
+          let errors = getErrorMessage(response);
+          if (errors.some((c) => c.key.toLowerCase() === "recaptchatoken")) {
+            this.errorMessage = "Recaptcha Is Required";
+            this.isRecaptchaRequired = true;
+          } else {
+            this.errorMessage = errors[0].message;
+          }
+        });
+
+      //   if (response.status === 200) {
+      //     let token = response.token;
+      //     tokenService.setToken(token);
+      //     this.$store.dispatch("SAVE_AUTH_TOKEN", token);
+      //     this.$router.push("/");
+      //     authService.resetFailedAttemptCount();
+      //   } else {
+      //     authService.increaseFailedAttempCount();
+      //     this.failedAttemptCount += 1;
+      //     let errors = getErrorMessage(response);
+      //     if (errors.some((c) => c.key.toLowerCase() === "recaptchatoken")) {
+      //       this.errorMessage = "Recaptcha Is Required";
+      //       this.isRecaptchaRequired = true;
+      //     } else {
+      //       this.errorMessage = errors[0].message;
+      //     }
+      //   }
     },
     onCaptchaVerified(recaptchaToken) {
       this.recaptchaToken = recaptchaToken;

@@ -8,7 +8,7 @@ export default {
   set(data) {
     return request.post(WORKSPACE_URLS.SET, data);
   },
-  delete() {
-    return request.post(WORKSPACE_URLS.DELETE);
+  reset() {
+    return request.put(WORKSPACE_URLS.RESET);
   },
 };
