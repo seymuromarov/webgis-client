@@ -20,4 +20,17 @@ export default {
       params,
     });
   },
+  getIntersectedData(bunchId, params) {
+    return request.get(DATATABLE_URLS.GET_INTERSECT_DATA(bunchId), {
+      params,
+    });
+  },
+  getArithmeticData(layerId, params) {
+    return request.get(DATATABLE_URLS.GET_ARITHMETIC_DATA(layerId), {
+      params,
+    });
+  },
+  getDistinctValues(layerId, params) {
+    return request.get(DATATABLE_URLS.GET_DISTINCT_VALUES(layerId));
+  },
 };

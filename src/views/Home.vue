@@ -22,7 +22,7 @@
       </CustomModal>
 
       <!-- Filter -->
-      <FilterModal />
+      <!-- <FilterModal /> -->
 
       <!-- Shape Color Picker -->
       <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">

@@ -53,6 +53,9 @@ const DATATABLE_URLS = {
   ADD_OR_EDIT: "/datatable/AddOrEdit",
   GET_ITEM: "/datatable/GetItem",
   GET_DATA: (layerId) => `/datatable/${layerId}/GetData`,
+  GET_INTERSECT_DATA: (bunchId) => `/datatable/${bunchId}/GetIntersectedData`,
+  GET_ARITHMETIC_DATA: (layerId) => `/datatable/${layerId}/GetArithmeticData`,
+  GET_DISTINCT_VALUES: (layerId) => `/datatable/${layerId}/GetDistinctValues`,
 };
 
 const LAYER_DATA_IMAGE_URLS = {

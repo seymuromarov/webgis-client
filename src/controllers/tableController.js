@@ -2,6 +2,7 @@ import $store from "@/store/store.js";
 import { serviceHelper } from "@/helpers";
 import { tokenService } from "@/services";
 import layer from "@/api/layer";
+import datatable from "@/api/datatable";
 import {
   mapController,
   layerController,
@@ -65,7 +66,7 @@ const functions = {
 
     if (isLocalService || isBunch) {
       if (isSumFilter && isLayer && !isBunch) {
-        setters.setSumData(response.data.result);
+        setters.setSumData(response);
         modalController.showSumResultModal();
       }
 
@@ -73,15 +74,11 @@ const functions = {
         mapController.refreshService(service);
     }
 
-    if (response.data.error !== undefined) {
-      return;
-    }
-
     if (!isSumFilter) {
       setters.setTableUnvisible();
 
-      functions.buildTableData(response.data, service);
-
+      functions.buildTableData(response, service);
+      console.log("test");
       setters.setTableVisible();
     }
     setters.setTableActiveService(service);
@@ -91,52 +88,37 @@ const functions = {
   getTableResponse: async (service) => {
     let response;
     let params = {};
-    let token = tokenService.getToken();
     let paging = getters.getDefaultPagingOptions();
-    let activeService = getters.getTableActiveService();
-    let isArcgisService = serviceHelper.isArcgisService(service);
 
-    if (isArcgisService) {
-      params = {
-        token: token,
-        name: service.name,
-        layer: service.id,
-        ...service.query,
-      };
-      response = await layer.getTableData(params);
-    } else {
-      var isBunch = serviceHelper.isBunch(service);
-      if (isBunch) {
-        params = service.layers.map((item, index) => {
-          return {
-            layerId: item.id,
-            query: { ...item.query },
-          };
-        });
-        response = await layer.getIntersectLocalTableData(service.id, {
-          layerQueries: params,
-          paging: paging,
-        });
-      } else {
-        params = {
-          layerId: service.id,
-          ...service.query,
-          paging: paging,
-          returnGeom: true,
+    var isBunch = serviceHelper.isBunch(service);
+    if (isBunch) {
+      const bunchId = service.id;
+      params = service.layers.map((item, index) => {
+        return {
+          layerId: item.id,
+          query: { ...item.query },
         };
-        let isSumFilter = getters.getIsSumFilter();
+      });
+      response = await datatable.getIntersectedData(bunchId, {
+        layerQueries: params,
+        paging: paging,
+      });
+    } else {
+      const layerId = service.id;
+      params = {
+        ...service.query,
+        ...paging,
+        returnGeom: true,
+      };
+      let isSumFilter = getters.getIsSumFilter();
 
-        if (isSumFilter) {
-          params.isSum = isSumFilter;
-          params.ArithmeticColumnName = getters.getSumFilterColumn();
+      if (isSumFilter) {
+        params.isSum = isSumFilter;
+        params.ArithmeticColumnName = getters.getSumFilterColumn();
 
-          response = await layer.getLocalArithmeticData(params);
-          // this.ArithmeticDataResult = response.data.result;
-          // setters.setSumData(response.data.result);
-          // this.$moodal.arithmeticResultModal.show();
-        } else {
-          response = await layer.getLocalTableData(params);
-        }
+        response = await datatable.getArithmeticData(params);
+      } else {
+        response = await datatable.getData(layerId, params);
       }
     }
 
@@ -144,34 +126,17 @@ const functions = {
   },
   async getGeometryData(layerId, coords) {
     let response = null;
-    let geometry = null;
     let service = layerController.getDynamicLayer(layerId);
     if (serviceHelper.isLayer(service)) {
-      if (serviceHelper.isDynamicFromArcgis(service)) {
-        geometry = coords[0] + "," + coords[1];
-        var params = {
-          token: tokenService.getToken(),
-          name: service.name,
-          layer: service.name,
-          where: service.query.where,
-          geometry: geometry,
-        };
-        response = await layer.getGeometryData(params);
-      } else {
-        var params = {
-          layerId: service.id,
-          where: service.query.where,
-          geometry: coords[0] + "," + coords[1],
-        };
-        response = await layer.getLocalTableData(params);
-      }
+      var params = {
+        where: service.query.where,
+        geometry: coords[0] + "," + coords[1],
+      };
+      response = await datatable.getData(layerId, params);
+
       return response;
-      // if (response.data.totalCount > 0) {
-      //   let features = response.data.features[0];
-      //   this.$refs.dataTable.showDataModal(features.attributes);
-      //   this.mapSetCenter(features);
-      // }
     }
+    throw "layer must be dynamic type!";
   },
 };
 

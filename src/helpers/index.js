@@ -8,7 +8,6 @@ import urlHelper from "./urlHelper";
 import coreHelper from "./coreHelper";
 import userHelper from "./userHelper";
 import permissionHelper from "./permissionHelper";
-import notifyHelper from "./notifyHelper";
 
 export {
   mapHelper,
@@ -21,5 +20,4 @@ export {
   coreHelper,
   userHelper,
   permissionHelper,
-  notifyHelper,
 };
