@@ -52,7 +52,7 @@ export default {
 <style lang="scss">
 .map-text {
   position: fixed;
-  transform: translate(-50%, calc(-100% - 1rem));
+  transform: translate(-50%, calc(-100% - 1.6rem));
   
   &:before {
     content: '';
@@ -60,11 +60,11 @@ export default {
     width: 0;
     height: 0;
     position: absolute;
-    border-top: 0.5rem solid black;
-    border-right: 0.5rem solid transparent;
-    left: calc(50% - 0.5rem);
+    border-top: 0.8rem solid black;
+    border-right: 0.8rem solid transparent;
+    left: calc(50% - 0.8rem);
     top: 100%;
-    border-left: 0.5rem solid transparent;
+    border-left: 0.8rem solid transparent;
   }
 
   &__container{
@@ -73,8 +73,8 @@ export default {
   }
   
   &__input {
-    width: 8rem;
-    height: 2rem;
+    width: 12.8rem;
+    height: 3.2rem;
     text-align: center;
 
     &, &:hover, &:focus {
@@ -87,7 +87,7 @@ export default {
   }
 
   &__button{
-    width: 2rem;
+    width: 3.2rem;
     border: 0;
     background-color: var(--primary-color);
     color: var(--white);

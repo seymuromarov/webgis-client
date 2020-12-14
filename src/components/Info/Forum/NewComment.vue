@@ -74,6 +74,6 @@ export default {
     align-items: flex-end;
 }
 .submit-btn {
-    margin-top: 1rem;
+    margin-top: 1.6rem;
 }
 </style>

@@ -166,9 +166,9 @@ export default {
     &.nav-tabs {
       .nav-link {
         cursor: pointer;
-        margin-top: 5px;
+        margin-top: 0.5rem;
         color: var(--primary-color);
-        padding: 0.35rem 1rem;
+        padding: 0.56rem 1.6rem;
         &.active {
           background-color: var(--primary-color);
 

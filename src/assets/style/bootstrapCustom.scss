@@ -12,7 +12,7 @@
 
 .btn-primary:focus,
 .btn-primary.focus {
-  box-shadow: 0 0 0 0.2rem var(--primary-color-opacity-85);
+  box-shadow: 0 0 0 0.32rem var(--primary-color-opacity-85);
 }
 
 .btn-primary.disabled,
@@ -33,7 +33,7 @@
 .btn-primary:not(:disabled):not(.disabled):active:focus,
 .btn-primary:not(:disabled):not(.disabled).active:focus,
 .show > .btn-primary.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem var(--primary-color-opacity-85);
+  box-shadow: 0 0 0 0.32rem var(--primary-color-opacity-85);
 }
 
 .btn-outline-primary {
@@ -51,7 +51,7 @@
 
 .btn-outline-primary:focus,
 .btn-outline-primary.focus {
-  box-shadow: 0 0 0 0.2rem var(--primary-color-opacity-85);
+  box-shadow: 0 0 0 0.32rem var(--primary-color-opacity-85);
 }
 
 .btn-outline-primary.disabled,
@@ -71,5 +71,5 @@
 .btn-outline-primary:not(:disabled):not(.disabled):active:focus,
 .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
 .show > .btn-outline-primary.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem var(--primary-color-opacity-85);
+  box-shadow: 0 0 0 0.32rem var(--primary-color-opacity-85);
 }

@@ -153,9 +153,9 @@ export default {
 .title {
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3.2rem;
   .back-btn {
-    margin-right: 1rem;
+    margin-right: 1.6rem;
     margin-bottom: 0 !important;
   }
 }
@@ -163,7 +163,7 @@ export default {
   display: flex;
   flex-direction: column;
   .content__editor {
-    margin-bottom: 1rem;
+    margin-bottom: 1.6rem;
   }
   .submit-btn {
     align-self: flex-end;

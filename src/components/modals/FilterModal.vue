@@ -105,7 +105,7 @@
           <div class="col-md-6" v-show="extentOptionsVisibility">
             <b>
               {{ $t("form.filterForm.extentOptions") }}
-              <span style="font-size:0.9rem">
+              <span style="font-size: 1.44rem">
                 ( {{ $t("form.filterForm.isExist") }} :
                 <span v-if="isExtentAreaExist" class="badge badge-success">
                   true

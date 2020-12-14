@@ -208,7 +208,7 @@ export default {
   display: flex;
   flex-direction: column;
   .issue__action-bar {
-    margin-bottom: 1.25rem;
+    margin-bottom: 2rem;
     display: flex;
     justify-content: space-between;
 
@@ -227,13 +227,13 @@ export default {
       }
 
       select.category {
-        width: 130px;
-        margin-left: 1rem;
+        width: 13rem;
+        margin-left: 1.6rem;
       }
     }
 
     .new-issue {
-      margin-left: 1rem;
+      margin-left: 1.6rem;
     }
   }
 
@@ -247,12 +247,12 @@ export default {
       }
 
       .issue__date {
-        margin-left: 0.5rem;
+        margin-left: 0.8rem;
       }
 
       .issue-icon {
-        font-size: 16px;
-        margin-right: 1.25rem;
+        font-size: 1.6rem;
+        margin-right: 2rem;
       }
     }
   }

@@ -284,30 +284,30 @@ export default {
 <style lang="scss">
 .issue__comments {
   .issue__comment {
-    margin-top: 1.5rem;
+    margin-top: 2.4rem;
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.25rem 1.25rem;
-      height: 36px;
+      padding: 0.4rem 2rem;
+      height: 3.6rem;
     }
     img {
       width: 100%;
-      border-radius: 4px;
-      margin: 1rem 0;
+      border-radius: 0.4rem;
+      margin: 1.6rem 0;
     }
   }
   .issue__comment_replies {
-    margin-left: 2rem;
-    padding-left: 2rem;
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    margin-left: 3.2rem;
+    padding-left: 3.2rem;
+    border-left: 0.1rem solid rgba(0, 0, 0, 0.1);
   }
 }
 
 .new-comment {
   // .card-header {
-  //     height: 36px;
+  //     height: 3.6rem;
   // }
   .card-body {
     padding: 0;
@@ -315,7 +315,7 @@ export default {
   .quill-editor {
     border: 0;
     .ql-toolbar {
-      border-width: 0 0 1px 0;
+      border-width: 0 0 0.1rem 0;
     }
     .ql-container {
       border-width: 0;

@@ -5,7 +5,7 @@
   border-spacing: 0;
 
   th {
-    width: 200px;
+    width: 20rem;
   }
   thead,
   tbody tr {
@@ -37,7 +37,7 @@
   .table__column--sticky {
     position: sticky;
     right: 0;
-    border-left: 1px solid #ddefef !important;
+    border-left: 0.1rem solid #ddefef !important;
   }
 }
 
@@ -45,7 +45,7 @@
   overflow-x: auto;
   overflow-y: auto;
   width: 100%;
-  height: calc(100% - 40px);
+  height: calc(100% - 4rem);
   position: relative;
 }
 
@@ -55,86 +55,86 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  //height: 300px;
+  //height: 30rem;
   // overflow-x: auto;
   // overflow-y: hidden;
   //overflow: auto;
-  border-radius: 10px 10px 0 0;
+  border-radius: 1rem 1rem 0 0;
   z-index: 10;
 }
 
 .tableHeader {
-  height: 35px;
+  height: 3.5rem;
   background-color: #fff;
 }
 
 .tableShowColumns {
-  max-height: 125px;
+  max-height: 12.5rem;
   padding: 0;
   position: absolute;
-  top: 45px;
-  right: 45px;
+  top: 4.5rem;
+  right: 4.5rem;
   overflow: auto;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   background-color: var(--primary-color-opacity-85);
   color: var(--white);
   text-align: left;
   z-index: 99;
 
   .table__column {
-    padding: 2px 10px;
+    padding: 0.2rem 1rem;
     display: flex;
     align-items: center;
     .column__checkbox {
-      margin-right: 8px;
+      margin-right: 0.8rem;
     }
     .column__name {
       margin: 0;
-      font-size: 14px;
+      font-size: 1.4rem;
     }
   }
 }
 
 .tableColumns {
   // position: absolute;
-  top: 8px;
-  right: 40px;
+  top: 0.8rem;
+  right: 4rem;
 }
 .tableClose {
   // position: absolute;
-  top: 8px;
-  right: 15px;
+  top: 0.8rem;
+  right: 1.5rem;
 }
 
 .tableFilter {
   // position: absolute;
-  top: 8px;
-  right: 70px;
+  top: 0.8rem;
+  right: 7rem;
 }
 
 .excelIcon {
   // position: absolute;
-  right: 100px;
-  top: 8px;
+  right: 10rem;
+  top: 0.8rem;
 }
 .tableSimpleFilter {
   position: absolute;
-  top: 8px;
-  right: 125px;
+  top: 0.8rem;
+  right: 12.5rem;
 }
 .tableModalHeader {
   text-align: center;
-  margin-top: 10px;
+  margin-top: 1rem;
   margin-bottom: 0;
-  padding-bottom: 5px;
-  border-bottom: 1px solid;
+  padding-bottom: 0.5rem;
+  border-bottom: 0.1rem solid;
   color: #606060;
 }
 
 .table th,
 .table td {
-  padding: 0.75rem;
+  padding: 1.2rem;
   vertical-align: top;
-  border-top: 1px solid #dee2e6;
-  //border-right: 1px solid black;
+  border-top: 0.1rem solid #dee2e6;
+  //border-right: 0.1rem solid black;
 }
