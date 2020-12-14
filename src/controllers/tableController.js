@@ -70,15 +70,14 @@ const functions = {
         modalController.showSumResultModal();
       }
 
-      if (filterController.getIsRequiredServiceRefresh())
+      if (filterController.getIsRequiredServiceRefresh()) {
         mapController.refreshService(service);
+      }
     }
 
     if (!isSumFilter) {
       setters.setTableUnvisible();
-
       functions.buildTableData(response, service);
-      console.log("test");
       setters.setTableVisible();
     }
     setters.setTableActiveService(service);

@@ -49,6 +49,7 @@
 <script>
 import FavoriteQueryCard from "./components/FavoriteQueryCard";
 import favoriteQuery from "@/api/favoriteQuery";
+
 import {
   layerController,
   mapController,
@@ -89,11 +90,7 @@ export default {
           serviceController.selectService(service, true);
         } else mapController.refreshService(service.id);
         modalController.hideProfileModalModal();
-        this.$toasted.show("Query Successfully Applied", {
-          icon: {
-            name: "fas fa-check",
-          },
-        });
+        notifyService.success("Query Successfully Applied");
       }
     },
     onDeleteClick(id) {

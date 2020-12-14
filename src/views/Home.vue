@@ -21,9 +21,6 @@
         <Report :result="sumData" />
       </CustomModal>
 
-      <!-- Filter -->
-      <!-- <FilterModal /> -->
-
       <!-- Shape Color Picker -->
       <CustomModal name="colorPickerModal" title="Color picker" :minWidth="300">
         <ShapeColorPicker @setShapeColor="setShapeColor" />
@@ -117,7 +114,7 @@ import {
 } from "@/controllers";
 
 // Services
-import { tokenService, hashService } from "@/services";
+import { tokenService, hashService, notifyService } from "@/services";
 export default {
   name: "Home",
   components: {
@@ -267,13 +264,8 @@ export default {
     },
 
     dragAndDropToast() {
-      let toast = this.$toasted.show(
-        "Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map",
-        {
-          theme: "outline",
-          position: "bottom-center",
-          duration: 3500,
-        }
+      notifyService.info(
+        "Drag & drop GPX, GeoJSON, IGC, KML, TopoJSON files over map"
       );
     },
   },

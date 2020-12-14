@@ -35,6 +35,7 @@ import {
   tableController,
 } from "@/controllers";
 import DataModal from "@/components/modals/DataModal";
+import { notifyService } from "@/services";
 import { _ } from "vue-underscore";
 export default {
   name: "ServiceSelectionModal",
@@ -71,7 +72,7 @@ export default {
       let response = await tableController
         .getGeometryData(item.id, this.clickedCoordinate)
         .then((response) => {
-          let data = response.data.features[0].attributes;
+          let data = response.features[0].attributes;
           if (!_.isEmpty(data)) {
             new Promise((resolve) => {
               this.selectedLayer = item;
@@ -82,12 +83,8 @@ export default {
               mapController.focusToServicePolygon(item.id, this.clickedPixel);
             });
           } else {
-            this.$toasted.show("Data Not Exist In This Coordinate!", {
-              theme: "bubble",
-              icon: {
-                name: "fas fa-exclamation",
-              },
-            });
+            notifyService.error("Data Not Exist In This Coordinate!");
+   
           }
           modalController.hideServiceSelectionModal();
         });

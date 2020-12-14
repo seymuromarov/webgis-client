@@ -5,41 +5,24 @@ import {
   resolutionOptionTypeEnum,
   coordinateTypeEnum,
 } from "@/enums";
-import {
-  serviceController,
-  layerController,
-  toolController,
-} from "@/controllers";
+import { serviceController, toolController } from "@/controllers";
 import { defaultZoomLevelSettings } from "@/config/settings";
 import { materialColors } from "@/constants/colors";
 import { selectedLayerStyle } from "@/constants/featureStyles";
 import { tokenService } from "@/services";
-import {
-  operatorEnumTostring,
-  distanceEnumToString,
-} from "@/utils/enumToString";
+import { distanceEnumToString } from "@/utils/enumToString";
 import { distanceConvert } from "@/utils/unitConvertor";
 
-import {
-  serviceHelper,
-  layerHelper,
-  urlHelper,
-  colorHelper,
-  coreHelper,
-} from "@/helpers";
+import { serviceHelper, urlHelper, colorHelper } from "@/helpers";
 import {
   createXYZ,
   VectorTileLayer,
   VectorTileSource,
   MVT,
-  ImageLayer,
-  ImageArcGISRest,
   TileLayer,
   XYZ,
   TileArcGISRest,
-  Feature,
   Style,
-  Icon,
   Stroke,
   Fill,
   CircleStyle,
@@ -109,13 +92,14 @@ const functions = {
     setters.setSelectionLayer(null);
     setters.setSelectedFeatureId(0);
   },
-  deleteService(id) {
-    var layer = getters.getLayer(id);
+  deleteService(service) {
+    var layer = getters.getLayer(service.id);
+
     functions.removeLayer(layer);
   },
-  refreshService(id) {
-    functions.deleteService(id);
-    functions.addService(id);
+  refreshService(service) {
+    functions.deleteService(service);
+    functions.addService(service);
   },
   removeLayer(layer) {
     let map = getters.getMap();
@@ -175,72 +159,26 @@ const functions = {
     if (isLayer) {
       var isDynamic = serviceHelper.isDynamic(service);
       if (isDynamic) {
-        if (serviceHelper.isLocalService(service)) {
-          layer = new VectorTileLayer({
-            ...defaultProps,
-            declutter: true,
-            source: new VectorTileSource({
-              format: new MVT({
-                idProperty: "gid",
-                geometryName: "geom",
-              }),
-              url: urlHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
-            }),
+        var isConditionalColorExist = service.layerColor != null;
+        console.log(
+          "🚀 ~ file: mapController.js ~ line 163 ~ buildLayer ~ isConditionalColorExist",
+          isConditionalColorExist
+        );
 
-            style: (feature) => {
-              var layerColor = service.layerColor;
-              let borderColor = null;
-              let fillColor = null;
-              let isConditionExist = false;
-              if (layerColor) {
-                const column = layerColor.column;
-                const currentFeatureColumnVal = feature.get(column);
-                const conditions = layerColor.conditions;
-                for (let i = 0; i < conditions.length; i++) {
-                  const item = conditions[i];
-                  var operator = operatorEnumTostring(item.operator);
-                  const val = coreHelper.parseByTypeString(
-                    layerColor.columnDataType,
-                    item.value
-                  );
-                  const result = coreHelper.checkStringArithmeticOperation(
-                    currentFeatureColumnVal,
-                    val,
-                    operator
-                  );
-                  if (result) {
-                    isConditionExist = true;
-                    borderColor = item.borderColor;
-                    fillColor = item.fillColor;
-                    break;
-                  }
-                }
-              }
-
-              if (!layerColor || !isConditionExist) {
-                borderColor = service.color.borderColor;
-                fillColor = service.color.fillColor;
-              }
-              return colorHelper.buildVectorStyle(borderColor, fillColor);
-            },
-          });
-        } else {
-          layer = new ImageLayer({
-            ...defaultProps,
-            source: new ImageArcGISRest({
-              url: urlHelper.buildTileUrl(
-                service,
-                tileTypeEnum.IMAGE_ARCGIS_REST
-              ),
-              crossOrigin: "Anonymous",
-              params: {
-                token: token,
-                layers: layerHelper.renderArcgisSublayerConfig(service),
-                dynamicLayers: layerHelper.renderSubLayersColorString(service),
-              },
+        layer = new VectorTileLayer({
+          ...defaultProps,
+          declutter: true,
+          source: new VectorTileSource({
+            format: new MVT({
+              idProperty: "gid",
+              geometryName: "geom",
             }),
-          });
-        }
+            url: urlHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
+          }),
+          style: isConditionalColorExist
+            ? (feature) => colorHelper.renderMvtStyle(feature, service)
+            : colorHelper.buildVectorStyle(),
+        });
       } else {
         if (serviceHelper.isGeowebcacheService(service)) {
           layer = new TileLayer({
@@ -529,6 +467,7 @@ const getters = {
 
     map.getLayers().forEach(function(item) {
       var layerId = item.get("id");
+      var layerType = item.get("type");
       if (layerId !== undefined && layerId === id) {
         layer = item;
       }

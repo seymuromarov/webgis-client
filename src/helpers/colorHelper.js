@@ -2,8 +2,45 @@ import $store from "@/store/store.js";
 import { Style, Fill, Stroke, CircleStyle } from "@/wrappers/openLayerImports";
 import { materialColors } from "@/constants/colors";
 import { _ } from "vue-underscore";
-
+import { operatorEnumTostring } from "@/utils/enumToString";
+import { coreHelper } from "@/helpers";
 const functions = {
+  renderMvtStyle: (feature, service) => {
+    var layerColor = service.layerColor;
+    let borderColor = null;
+    let fillColor = null;
+    let isConditionExist = false;
+    if (layerColor) {
+      const column = layerColor.column;
+      const currentFeatureColumnVal = feature.get(column);
+      const conditions = layerColor.conditions;
+      for (let i = 0; i < conditions.length; i++) {
+        const item = conditions[i];
+        var operator = operatorEnumTostring(item.operator);
+        const val = coreHelper.parseByTypeString(
+          layerColor.columnDataType,
+          item.value
+        );
+        const result = coreHelper.checkStringArithmeticOperation(
+          currentFeatureColumnVal,
+          val,
+          operator
+        );
+        if (result) {
+          isConditionExist = true;
+          borderColor = item.borderColor;
+          fillColor = item.fillColor;
+          break;
+        }
+      }
+    }
+
+    if (!layerColor || !isConditionExist) {
+      borderColor = service.color.borderColor;
+      fillColor = service.color.fillColor;
+    }
+    return functions.buildVectorStyle(borderColor, fillColor);
+  },
   renderColor: (id, fillColor, borderColor) => {
     let colors = [];
     let outlines = [];

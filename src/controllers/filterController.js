@@ -5,7 +5,7 @@ import {
   layerController,
 } from "@/controllers";
 import { serviceHelper } from "@/helpers";
-import layer from "@/api/layer";
+import datatable from "@/api/datatable";
 
 const functions = {};
 
@@ -13,38 +13,16 @@ const getters = {
   async getFilterColumnValues(id, column) {
     const service = layerController.getDynamicLayer(id);
     let filterColumnValues = [];
-    const params = { id };
+    const layerId = service.id;
+    const response = await datatable.getDistinctValues(layerId);
+    const result = response;
 
-    if (serviceHelper.isLocalService(service)) {
-      const getLayerColumnsDistinctData = await layer.getLayerColumnsDistinctData(
-        params
-      );
-      const result = getLayerColumnsDistinctData.data.result;
-
-      filterColumnValues =
-        result[
-          Object.keys(result).find(
-            (key) => key.toLowerCase() === column.toLowerCase()
-          )
-        ];
-    } else {
-      const tableData = tableController.getTableData();
-
-      const keys = Object.keys(tableData.tableHeadersWithAlias);
-      for (let i = 0; i < keys.length; i++) {
-        if (tableData.tableHeadersWithAlias[keys[i]] === column) {
-          column = keys[i];
-          break;
-        }
-      }
-      for (let i = 0; i < tableData.features.length; i++) {
-        if (
-          !filterColumnValues.includes(tableData.features[i].attributes[column])
-        ) {
-          filterColumnValues.push(tableData.features[i].attributes[column]);
-        }
-      }
-    }
+    filterColumnValues =
+      result[
+        Object.keys(result).find(
+          (key) => key.toLowerCase() === column.toLowerCase()
+        )
+      ];
 
     return filterColumnValues;
   },

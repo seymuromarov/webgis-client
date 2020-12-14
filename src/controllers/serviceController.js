@@ -74,7 +74,7 @@ const functions = {
           mapController.buildSelectionLayer(service.id);
       } else {
         functions.removeLayerColorIndex(service.id);
-        mapController.deleteService(service.id);
+        mapController.deleteService(service);
         functions.resetQuery(service.id);
         toolController.deleteServiceFeatures(service.id);
       }

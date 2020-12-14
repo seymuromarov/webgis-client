@@ -6,4 +6,7 @@ const success = (msg) => {
 const error = (msg) => {
   vm.$snotify.error(msg);
 };
+const info = (msg) => {
+  vm.$snotify.info(msg);
+};
 export default { success, error };

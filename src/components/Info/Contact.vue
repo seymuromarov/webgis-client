@@ -52,6 +52,7 @@
 <script>
 import info from "@/api/info";
 import { required } from "vuelidate/lib/validators";
+import { notifyService } from "@/services";
 export default {
   name: "Contact",
   data() {
@@ -94,15 +95,8 @@ export default {
         info
           .sendMessage(this.data)
           .then((response) => {
-            if (response.status === 200) {
-              this.$toasted.show("Successfully Added", {
-                icon: {
-                  name: "fas fa-check",
-                },
-              });
-              this.resetData();
-            }
-            this.loading = false;
+            notifyService.success("Successfully Added");
+            this.resetData();
           })
           .catch((error) => {
             // this.loading = false;

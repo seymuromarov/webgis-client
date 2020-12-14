@@ -23,33 +23,6 @@ export function readableFileSizeConverter(bytes, si = false, dp = 1) {
 
   return bytes.toFixed(dp) + " " + units[u];
 }
-export function getErrorMessage(response) {
-  let messages = [];
-  if (response !== 200) {
-    if (response.data) {
-      if (_.isString(response.data)) {
-        messages.push({
-          key: "general",
-          message: response.data,
-        });
-      } else if (_.isObject(response.data)) {
-        var keys = Object.keys(response.data);
-        keys.forEach((element) => {
-          messages.push({
-            key: element,
-            message: response.data[element][0],
-          });
-        });
-      }
-    } else
-      messages.push({
-        key: "general",
-        message: "Error",
-      });
-  }
-
-  return messages;
-}
 
 export function guid() {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>

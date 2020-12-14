@@ -160,6 +160,8 @@
         </div>
       </div>
     </Resizable>
+    <!-- Filter -->
+    <FilterModal />
     <ImageUploadModal
       v-if="activeService && selectedGid && isActiveServiceLocal"
       :gid="selectedGid"
@@ -178,6 +180,7 @@ import Multiselect from "vue-multiselect";
 import layer from "@/api/layer";
 import Resizable from "vue-resizable";
 import ImageUploadModal from "@/components/modals/ImageUploadModal";
+import FilterModal from "@/components/modals/FilterModal";
 import DataAddEditModal from "@/components/modals/DataAddEditModal";
 import {
   tableController,
@@ -195,6 +198,7 @@ export default {
     Resizable,
     ImageUploadModal,
     DataAddEditModal,
+    FilterModal,
   },
   data() {
     return {
@@ -305,7 +309,7 @@ export default {
         response = await layer.getLocalTableData(params);
       }
 
-      var data = response.data.features;
+      var data = response.features;
       this.tableData.features = [...this.tableData.features, ...data];
     },
     resetPaging() {

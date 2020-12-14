@@ -222,7 +222,7 @@
             <!-- Apply button -->
 
             <button class="btn btn-primary float-right" @click="applyFilter">
-              ( {{ $t("button.apply") }}
+              {{ $t("button.apply") }}
             </button>
           </div>
         </div>
@@ -248,7 +248,7 @@ import {
 } from "@/controllers";
 import { icons } from "@/constants/assets";
 import { layerHelper, serviceHelper } from "@/helpers";
-import layer from "@/api/layer";
+import datatable from "@/api/datatable";
 
 import { drawTypeEnum } from "@/enums";
 import { _ } from "vue-underscore";
@@ -293,8 +293,9 @@ export default {
       modalController.showFavoriteQueryModal();
     },
     async setTableHeaders(layerId) {
-      let response = await layer.getTableHeaders(layerId);
-      this.tableHeaders = response.data.columns.map((c) => c.columnName);
+      let response = await datatable.getTableInfo(layerId);
+
+      this.tableHeaders = response.columns.map((c) => c.columnName);
     },
     drawTypeOnChange(e) {
       let value = e.target.value;
@@ -358,6 +359,11 @@ export default {
 
     applyFilter() {
       tableController.getTable(this.activeService);
+      console.log(
+        "🚀 ~ file: FilterModal.vue ~ line 387 ~ applyFilter ~ this.activeService",
+        this.activeService
+      );
+
       this.$moodal.filterModal.hide();
     },
     async getFilterColumnValues(val) {

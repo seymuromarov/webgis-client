@@ -59,6 +59,7 @@
 import { required } from "vuelidate/lib/validators";
 import favoriteQuery from "@/api/favoriteQuery";
 import { modalController } from "@/controllers";
+import { notifyService } from "@/services";
 export default {
   name: "FavoriteQueryModal",
   props: {
@@ -115,11 +116,7 @@ export default {
       this.$v.$touch();
       if (!this.$v.$invalid) {
         favoriteQuery.add(this.data).then((response) => {
-          this.$toasted.show("Successfully Added", {
-            icon: {
-              name: "fas fa-check",
-            },
-          });
+          notifyService.success("Successfully Added");
           modalController.hideFavoriteQueryModal();
         });
       }
