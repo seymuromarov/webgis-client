@@ -1,6 +1,6 @@
 import $store from "@/store/store.js";
 import { mapController, modalController } from "@/controllers";
-import { drawTypeEnum } from "@/enums";
+import { drawTypeEnum, coordinateTypeEnum } from "@/enums";
 import { mapHelper } from "@/helpers";
 import { saveAs } from "file-saver";
 import {
@@ -490,9 +490,11 @@ const functions = {
     functions.pickDrawType(drawTypeEnum.NONE);
     setters.setMarkerStatus(true);
   },
-  addPoint(coord, featureOptions) {
+  addPoint(coord, featureOptions, type) {
+    if (!_.isUndefined(type) && type == coordinateTypeEnum.GEOGRAPHIC)
+      coord = mapController.transformToEPSG3857(coord);
     let feature = new Feature({
-      geometry: new Point(fromLonLat([coord[0], coord[1]])),
+      geometry: new Point(coord),
     });
     let featureOpt = {
       id: getters.getFeatureIdCounter(),

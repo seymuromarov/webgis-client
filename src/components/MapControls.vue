@@ -47,7 +47,7 @@
         <v-select
           class="mode-select"
           label="title"
-          v-model="selectedCoordinateOptions"
+          v-model="selectedCoordinateMode"
           :options="coordinateOptions"
           :clearable="false"
           :searchable="false"
@@ -60,7 +60,7 @@
             id="coordinate-x"
             v-model="coordinates.x"
             placeholder="x"
-            @keyup.enter="goToCoordinates"
+            @keyup.enter="goToCoordinate"
           />
         </div>
 
@@ -70,11 +70,11 @@
             id="coordinate-y"
             v-model="coordinates.y"
             placeholder="y"
-            @keyup.enter="goToCoordinates"
+            @keyup.enter="goToCoordinate"
           />
         </div>
 
-        <button class="control__button" @click="goToCoordinates">
+        <button class="control__button" @click="goToCoordinate">
           <img :src="icons.compass" alt="Go to coordinate" />
         </button>
       </div>
@@ -159,7 +159,7 @@ export default {
     };
   },
   mounted() {
-    this.selectedCoordinateOptions = this.coordinateOptions[0];
+    this.selectedCoordinateMode = this.coordinateOptions[0];
 
     var coordinates = this.getCoordinates();
     this.setCoordinates(coordinates[0], coordinates[1]);
@@ -168,9 +168,9 @@ export default {
     language(val) {
       if (this.coordinateOptions && this.coordinateOptions.length > 0) {
         var selected = this.coordinateOptions.find(
-          (c) => c.key == this.selectedCoordinateOptions.key
+          (c) => c.key == this.selectedCoordinateMode.key
         );
-        this.selectedCoordinateOptions = selected;
+        this.selectedCoordinateMode = selected;
       }
     },
     currentCenter(val) {
@@ -186,14 +186,14 @@ export default {
     language() {
       return this.$store.getters.language;
     },
-    selectedCoordinateOptions: {
-      get() {
-        return this.selectedCoordinateMode;
-      },
-      set(val) {
-        this.selectedCoordinateMode = val;
-      },
-    },
+    // selectedCoordinateMode: {
+    //   get() {
+    //     return this.selectedCoordinateMode;
+    //   },
+    //   set(val) {
+    //     this.selectedCoordinateMode = val;
+    //   },
+    // },
     coordinateOptions() {
       return [
         {
@@ -262,12 +262,9 @@ export default {
     getCoordinates() {
       let coordinates = [];
 
-      if (
-        this.selectedCoordinateOptions &&
-        this.selectedCoordinateOptions.key
-      ) {
+      if (this.selectedCoordinateMode && this.selectedCoordinateMode.key) {
         coordinates = mapController.getCurrentCenter(
-          this.selectedCoordinateOptions.key
+          this.selectedCoordinateMode.key
         );
       }
 
@@ -281,15 +278,25 @@ export default {
       this.searchInputValue = city.city;
     },
 
-    goToCoordinates() {
-      var center = [this.coordinates.x, this.coordinates.y];
-      mapController.setCenter(center, this.selectedCoordinateOptions.key);
+    goToCoordinate() {
+      const x = this.coordinates.x;
+      const y = this.coordinates.y;
+      let center = [x, y];
+      // if (this.selectedCoordinateMode.key == coordinateTypeEnum.GEOGRAPHIC) {
+      //   center = mapController.transformToEPSG3857(center);
+      // }
+      mapController.setCenter(center, this.selectedCoordinateMode.key);
       const featureName = "centerPoint";
       const featureOpts = {
         name: featureName,
       };
+
       toolController.deleteFeatureByName(featureName);
-      toolController.addPoint(center, featureOpts);
+      toolController.addPoint(
+        center,
+        featureOpts,
+        this.selectedCoordinateMode.key
+      );
     },
     zoomIn() {
       this.map.getView().setZoom(this.map.getView().getZoom() + 1);

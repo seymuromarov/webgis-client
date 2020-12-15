@@ -281,6 +281,12 @@ const functions = {
 
     return layer;
   },
+  transformToEPSG4326(coords) {
+    return transform(coords, "EPSG:3857", "EPSG:4326");
+  },
+  transformToEPSG3857(coords) {
+    return transform(coords, "EPSG:4326", "EPSG:3857");
+  },
 };
 
 const events = {
@@ -375,11 +381,14 @@ const setters = {
   },
   setCenter(center, type) {
     let map = getters.getMap();
-    if (type && type == coordinateTypeEnum.GEOGRAPHIC)
-      center = transform(center, "EPSG:4326", "EPSG:3857");
+    if (type && type == coordinateTypeEnum.GEOGRAPHIC) {
+      center = functions.transformToEPSG3857(center);
+    }
+
     map.getView().setCenter(center);
     setters.setMap(map);
   },
+
   setColorsArray(val) {
     $store.dispatch("SAVE_COLOR_PICKER_DYNAMIC_COLORS", val);
   },
