@@ -33,12 +33,10 @@ export default {
       info
         .getReleaseNotes()
         .then((response) => {
-          if (response.data) {
-            this.notes = response.data;
-          }
-          this.loading = false;
+          this.notes = response;
         })
-        .catch((error) => {
+        .catch((error) => {})
+        .finally(() => {
           this.loading = false;
         });
     },

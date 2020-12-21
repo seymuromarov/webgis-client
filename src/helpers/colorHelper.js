@@ -10,9 +10,15 @@ const functions = {
     let borderColor = null;
     let fillColor = null;
     let isConditionExist = false;
+
     if (layerColor) {
       const column = layerColor.column;
       const currentFeatureColumnVal = feature.get(column);
+      console.log(
+        "🚀 ~ file: colorHelper.js ~ line 17 ~ currentFeatureColumnVal",
+        currentFeatureColumnVal
+      );
+
       const conditions = layerColor.conditions;
       for (let i = 0; i < conditions.length; i++) {
         const item = conditions[i];
@@ -21,6 +27,7 @@ const functions = {
           layerColor.columnDataType,
           item.value
         );
+
         const result = coreHelper.checkStringArithmeticOperation(
           currentFeatureColumnVal,
           val,
@@ -34,11 +41,17 @@ const functions = {
         }
       }
     }
-
     if (!layerColor || !isConditionExist) {
       borderColor = service.color.borderColor;
       fillColor = service.color.fillColor;
     }
+    if (isConditionExist) {
+      console.log({
+        borderColor,
+        fillColor,
+      });
+    }
+
     return functions.buildVectorStyle(borderColor, fillColor);
   },
   renderColor: (id, fillColor, borderColor) => {

@@ -32,18 +32,20 @@
             <div class="form-group">
               <label for="layers">{{ $t("form.bunchLayerForm.layers") }}</label>
               <treeselect
-                v-model="data.layers"
+                v-model="data.layerIds"
                 :multiple="true"
                 :show-count="true"
                 :options="dynamicOptions"
                 :placeholder="$t('form.bunchLayerForm.layers')"
-                :class="{ 'is-invalid': submitted && !$v.data.layers.required }"
+                :class="{
+                  'is-invalid': submitted && !$v.data.layerIds.required,
+                }"
                 :limit="4"
                 :disable-branch-nodes="true"
                 search-nested
               />
               <div
-                v-if="submitted && !$v.data.layers.required"
+                v-if="submitted && !$v.data.layerIds.required"
                 class="invalid-feedback"
               >
                 {{
@@ -57,6 +59,7 @@
               type="button"
               class="btn btn-primary float-right"
               @click="add"
+              :disabled="loading"
             >
               {{ $t("button.add") }}
             </button>
@@ -71,6 +74,7 @@
 import Multiselect from "vue-multiselect";
 import bunch from "@/api/bunch";
 import { layerController, bunchController } from "@/controllers";
+import { notifyService } from "@/services";
 import { layerHelper } from "@/helpers";
 import { required } from "vuelidate/lib/validators";
 // import the component
@@ -93,21 +97,21 @@ export default {
       submitted: false,
       data: {
         label: "",
-        layers: [],
+        layerIds: [],
       },
     };
   },
   validations: {
     data: {
       label: { required },
-      layers: { required },
+      layerIds: { required },
     },
   },
   methods: {
     resetData() {
       this.data = {
         label: "",
-        layers: [],
+        layerIds: [],
       };
     },
     add() {
@@ -119,8 +123,9 @@ export default {
         bunch
           .add(this.data)
           .then((response) => {
-            bunchController.add(response.data);
+            this.$store.dispatch("fetchBunchList");
             this.resetData();
+            notifyService.created();
             this.$moodal.computedLayerModal.hide();
           })
           .finally(() => {

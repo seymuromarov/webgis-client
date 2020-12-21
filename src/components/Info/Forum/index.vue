@@ -46,9 +46,7 @@ export default {
       forum
         .getCategories()
         .then((response) => {
-          if (response.data) {
-            this.$store.commit("SET_CATEGORIES", response.data);
-          }
+          this.$store.commit("SET_CATEGORIES", response);
         })
         .catch();
     },

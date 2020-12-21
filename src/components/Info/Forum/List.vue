@@ -98,36 +98,37 @@ export default {
       forum
         .getIssues(1)
         .then((response) => {
-          if (response.data) {
-            this.$store.commit("SET_OPEN_ISSUES", response.data);
-            this.filteredIssues.open = response.data;
-            this.loading = false;
-          }
+          this.$store.commit("SET_OPEN_ISSUES", response);
+          this.filteredIssues.open = response;
         })
-        .catch();
+        .catch()
+        .finally(() => {
+          this.loading = false;
+        });
     },
     getClosedIssues() {
       this.loading = true;
       forum
         .getIssues(2)
         .then((response) => {
-          if (response.data) {
-            this.$store.commit("SET_CLOSED_ISSUES", response.data);
-            this.filteredIssues.closed = response.data;
-            this.loading = false;
-          }
+          this.$store.commit("SET_CLOSED_ISSUES", response);
+          this.filteredIssues.closed = response;
         })
-        .catch();
+        .catch()
+        .finally(() => {
+          this.loading = false;
+        });
     },
     getIssueCount() {
       forum
         .getIssueCount()
         .then((response) => {
-          if (response.data) {
-            this.$store.state.forum.issueCount = response.data;
-          }
+          this.$store.state.forum.issueCount = response;
         })
-        .catch();
+        .catch()
+        .finally(() => {
+          this.loading = false;
+        });
     },
     openIssue(id) {
       this.$emit("openIssue", id);

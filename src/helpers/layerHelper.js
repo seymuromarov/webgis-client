@@ -1,6 +1,6 @@
 import { serviceTypeEnum } from "@/enums";
-import { colorHelper, serviceHelper } from "@/helpers";
-
+import { serviceHelper } from "@/helpers";
+import { operatorEnumTostring } from "@/utils/enumToString";
 const mapper = {
   basemapMapping: (val) => {
     return {
@@ -160,49 +160,9 @@ const mapper = {
 };
 
 const functions = {
-  renderArcgisSublayerConfig: (service) => {
-    var subLayers = service.layers;
-    var activeLayers = subLayers
-      .filter((c) => c.isSelected)
-      .map((item, index) => {
-        return item.id;
-      });
-    var hiddenLayers = subLayers
-      .filter((c) => !c.isSelected)
-      .map((item, index) => {
-        return item.id;
-      });
-    var config = "";
-    if (activeLayers.length > 0) {
-      config = "show:" + activeLayers.join(" , ");
-    } else {
-      config = "hide:" + hiddenLayers.join(" , ");
-    }
-
-    return config;
+  buildLayerConditionLabel(column, operatorNo, value) {
+    return `${column} ${operatorEnumTostring(operatorNo)} ${value}`;
   },
-  renderSubLayersColorString: (layer) => {
-    var colorStringArr = [];
-    for (var i = 0; i < layer.layers.length; i++) {
-      let subLayer = layer.layers[i];
-
-      if (subLayer.color !== undefined && subLayer.color !== null) {
-        let colorString = colorHelper.renderColor(
-          subLayer.id,
-          subLayer.color.fill,
-          subLayer.color.border
-        );
-
-        colorStringArr.push(colorString);
-      }
-    }
-    var result = "";
-    if (colorStringArr.length > 0)
-      result = "[" + colorStringArr.join(" , ") + "]";
-
-    return result;
-  },
-
   treeFilter(data, label) {
     var r = data.filter(function(o) {
       if (serviceHelper.isCategory(o)) {

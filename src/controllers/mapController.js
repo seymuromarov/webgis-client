@@ -160,10 +160,6 @@ const functions = {
       var isDynamic = serviceHelper.isDynamic(service);
       if (isDynamic) {
         var isConditionalColorExist = service.layerColor != null;
-        console.log(
-          "🚀 ~ file: mapController.js ~ line 163 ~ buildLayer ~ isConditionalColorExist",
-          isConditionalColorExist
-        );
 
         layer = new VectorTileLayer({
           ...defaultProps,
@@ -259,22 +255,15 @@ const functions = {
           url: urlHelper.buildTileUrl(service, tileTypeEnum.LOCAL_MVT),
         }),
         style: (feature) => {
-          var featureLayerId = feature.get("layerId");
-          var layerIds = service.layers.map((item) => {
+          const featureLayerId = feature.get("layerId");
+          const layerIds = service.layers.map((item) => {
             return item.id;
           });
-          var index = layerIds.indexOf(featureLayerId);
 
-          var color = materialColors[index];
-          var colorObj = {
-            border: {
-              hex8: color,
-            },
-            fill: {
-              hex8: "#FFFFFF00",
-            },
-          };
-          return colorHelper.buildVectorStyle(colorObj);
+          const index = layerIds.indexOf(featureLayerId);
+          const borderColor = materialColors[index];
+          const fillColor = "#FFFFFF00";
+          return colorHelper.buildVectorStyle(borderColor, fillColor);
         },
       });
     }
@@ -292,6 +281,10 @@ const functions = {
 const events = {
   onMapClick(evt) {
     let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
+    console.log(
+      "🚀 ~ file: mapController.js ~ line 288 ~ onMapClick ~ coord",
+      coord
+    );
     setters.setClickedCoordinate(coord);
     setters.setClickedPixel(evt.pixel);
     if (toolController.getRemoveStatus()) {

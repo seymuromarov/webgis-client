@@ -66,28 +66,6 @@ const checker = {
       return service.layers.some((c) => checker.isQueryExist(c));
     } else return false;
   },
-
-  async isLayerColorEnabled(service) {
-    let isColorEnabled = false;
-
-    if (checker.isDynamicFromArcgis()) {
-      let response = await layer.getLayerDynamic({
-        token: tokenService.getToken(),
-        name: service.name,
-      });
-      if (response.data.layers[0].drawingInfo !== undefined) {
-        if (response.data.layers[0].drawingInfo.renderer.symbol !== undefined) {
-          if (
-            response.data.layers[0].drawingInfo.renderer.symbol.color !==
-            undefined
-          ) {
-            isColorEnabled = true;
-          }
-        }
-      }
-    } else if (checker.isDynamicFromLocal()) isColorEnabled = true;
-    return isColorEnabled;
-  },
 };
 
 export default {

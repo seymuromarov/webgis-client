@@ -1,7 +1,7 @@
 import $store from "@/store/store.js";
 import { layerHelper, serviceHelper } from "@/helpers";
 import { deepClone } from "@/utils";
-
+const defaultColorCondtionId = -1;
 const getters = {
   getBaseLayerList() {
     let data = $store.getters.baseLayerList;
@@ -89,12 +89,7 @@ const getters = {
     let list = getters
       .getDynamicLayersWithoutCategory()
       .filter((c) => c.isSelected);
-    // layerHelper.recursiveLayerMapping(
-    //   getters.getDynamicLayerList(),
-    //   (layer) => {
-    //     if (layer.isSelected) list.push(layer);
-    //   }
-    // );
+
     return list;
   },
   getSelectedLayers() {
@@ -103,11 +98,7 @@ const getters = {
       ...getters.getSelectedDyanmics(),
       ...getters.getSelectedBasemaps(),
     ];
-    // layerHelper.recursiveLayerMapping(layers, (layer) => {
-    //   if (layer.isSelected) {
-    //     selectedLayers.push(layer);
-    //   }
-    // });
+
     return list;
   },
 
@@ -130,6 +121,32 @@ const getters = {
   },
   getDefaultBaseLayerIds() {
     return $store.getters.defaultBaseLayerIds;
+  },
+  getLayerColorConditionList(item) {
+    const defaultColor = {
+      id: defaultColorCondtionId,
+      title: "Default",
+      borderColor: item.color.borderColor,
+      fillColor: item.color.fillColor,
+    };
+    const layerColor = item.layerColor;
+    if (!layerColor) return [defaultColor];
+
+    const conditonData = layerColor.conditions.map((c) => {
+      var title = layerHelper.buildLayerConditionLabel(
+        layerColor.column,
+        c.operator,
+        c.value
+      );
+      return {
+        id: c.id,
+        title,
+        borderColor: c.borderColor,
+        fillColor: c.fillColor,
+      };
+    });
+
+    return [defaultColor, ...conditonData];
   },
 };
 const setters = {
@@ -168,7 +185,10 @@ const setters = {
       getters.getDynamicLayerList(),
       async (layer) => {
         if (layer != null && layer.id == service.id) {
-          if (selectedColorOption && selectedColorOption.code !== "default") {
+          if (
+            selectedColorOption &&
+            selectedColorOption.code !== defaultColorCondtionId
+          ) {
             let conditionColor = layer.layerColor.conditions.find(
               (c) => c.id == parseInt(selectedColorOption.code)
             );
@@ -214,7 +234,7 @@ const setters = {
     $store.dispatch("saveDynamicLayerList", data);
   },
   setLayerColorOrderList(data) {
-    $store.dispatch("SAVE_LAYER_COLOR_ORDER_LIST", data);
+    $store.dispatch("saveLayerColorOrderList", data);
   },
 
   setFavoriteDynamicLayerIds(data) {

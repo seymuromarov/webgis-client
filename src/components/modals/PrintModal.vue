@@ -90,7 +90,9 @@
 
 <script>
 import { jsPDF } from "jspdf";
-import { mapController } from "@/controllers";
+import { mapController, layerController } from "@/controllers";
+import { layerHelper } from "@/helpers";
+import { hexToRgba } from "@/utils";
 import { logo, compass } from "@/constants/assets";
 
 export default {
@@ -145,9 +147,13 @@ export default {
     imageHeight() {
       return Math.round((this.dim[1] * this.resolution) / 25.4);
     },
+    selectedDynamics() {
+      return layerController.getSelectedDyanmics();
+    },
   },
   methods: {
     onModalOpen() {
+      console.log(this.selectedDynamics);
       var width = this.imageWidth;
       var height = this.imageHeight;
       var map = mapController.getMap();
@@ -207,24 +213,24 @@ export default {
       const titleFontSize = 14;
 
       const rectangleX = 10;
-      const rectangleY = 69;
+      const rectangleY = 39;
       const rectangleWidth = pageWidth - 20;
-      const rectangleHeight = pageHeight - 80;
-
-      const scaleFontSize = 8;
-      const scaleX = 20;
-      const scaleY = pageHeight - 30;
+      const rectangleHeight = pageHeight - 50;
 
       const extentFontSize = 8;
       const extentX = 20;
-      const extentY = pageHeight - 30;
+      const extentY = pageHeight - 90;
+
+      const scaleFontSize = 8;
+      const scaleX = 20;
+      const scaleY = pageHeight - 100;
 
       const timeFontSize = 8;
       const timeX = 20;
-      const timeY = pageHeight - 20;
+      const timeY = pageHeight - 75;
 
       const imageX = 20;
-      const imageY = 100;
+      const imageY = 70;
 
       const logoImageX = 10;
       const logoImageY = 10;
@@ -235,35 +241,44 @@ export default {
       const compassImageHeight = 20;
       const compassImageX =
         rectangleX + rectangleWidth - (10 + compassImageWidth);
-      const compassImageY = 75;
+      const compassImageY = 45;
 
       if (this.hasTitle) {
         pdf.setFontSize(titleFontSize);
         pdf.text(this.title, titleX, titleY, { align: "center", maxWidth: 80 });
       }
       //add options
-      let optionsStartY = timeY;
+      let optionsStartY = extentY;
+
+      if (this.hasExtent) {
+        var coordinateTitle = this.$t("form.printForm.coordinate");
+        pdf.setFontSize(extentFontSize);
+        pdf.text(`${coordinateTitle} : `, extentX, optionsStartY);
+        pdf.setFontSize(extentFontSize - 1);
+
+        var maxWidth =
+          (pageWidth - (extentX + pdf.getTextWidth(coordinateTitle))) / 2;
+
+        pdf.text(
+          this.currentExtent.join(" , "),
+          extentX + pdf.getTextWidth(coordinateTitle) + 5,
+          optionsStartY,
+          {
+            maxWidth,
+          }
+        );
+        optionsStartY += 8;
+      }
+
       if (this.hastScale) {
         var scaleTitle = this.$t("form.printForm.scale");
-        optionsStartY -= 10;
         pdf.setFontSize(scaleFontSize);
         pdf.text(
           `${scaleTitle} : ` + this.currentResolution + " km",
           scaleX,
           optionsStartY
         );
-      }
-      if (this.hasExtent) {
-        var coordinateTitle = this.$t("form.printForm.coordinate");
-        optionsStartY -= 10;
-        pdf.setFontSize(extentFontSize);
-        pdf.text(`${coordinateTitle} : `, extentX, optionsStartY);
-        pdf.setFontSize(extentFontSize - 1);
-        pdf.text(
-          this.currentExtent.join(" , "),
-          extentX + pdf.getTextWidth(coordinateTitle) + 5,
-          optionsStartY
-        );
+        optionsStartY += 5;
       }
 
       pdf.setFontSize(timeFontSize);
@@ -283,7 +298,8 @@ export default {
         currentdate.getMinutes() +
         ":" +
         currentdate.getSeconds();
-      pdf.text(datetime, timeX, timeY);
+      pdf.text(datetime, timeX, optionsStartY);
+      optionsStartY += 5;
 
       pdf.rect(rectangleX, rectangleY, rectangleWidth, rectangleHeight);
 
@@ -330,7 +346,65 @@ export default {
         canvasHeight - 20
       );
 
-      // pdf.save("map.pdf");
+      //legenda
+      if (this.selectedDynamics.length > 0) {
+        var legendaTitleX = pageWidth / 2 + 20;
+        // var legendaTitleStartY = pageHeight - 90;
+        var legendaTitleFontSize = 10;
+
+        var legendaConditionTitleFontSize = 8;
+        var legendaConditionTitleX = legendaTitleX + 10;
+
+        var colorBoxRectX = legendaTitleX + 5;
+        var colorBoxRectWidth = 2;
+        var colorBoxRectHeight = 2;
+
+        var legendaTextsStartY = pageHeight - 90;
+        this.selectedDynamics.forEach((item) => {
+          pdf.setFontSize(legendaTitleFontSize);
+
+          pdf.text(item.name, legendaTitleX, legendaTextsStartY);
+          legendaTextsStartY += 5;
+          var conditions = layerController.getLayerColorConditionList(item);
+
+          for (let i = 0; i < conditions.length; i++) {
+            const condition = conditions[i];
+
+            //break if last condition y big than rectangle end y
+            if (legendaTextsStartY > rectangleY + rectangleHeight) break;
+            var borderRgba = hexToRgba(condition.borderColor);
+            var fillRgba = hexToRgba(condition.fillColor);
+
+            pdf.setDrawColor(borderRgba.r, borderRgba.g, borderRgba.b);
+            pdf.setFillColor(fillRgba.r, fillRgba.g, fillRgba.b);
+            pdf.rect(
+              colorBoxRectX,
+              legendaTextsStartY - colorBoxRectWidth,
+              colorBoxRectWidth,
+              colorBoxRectHeight,
+              "FD"
+            );
+
+            pdf.setFontSize(legendaConditionTitleFontSize);
+            // var title = layerHelper.buildLayerConditionLabel(
+            //   item.layerColor.column,
+            //   condition.operator,
+            //   condition.value
+            // );
+
+            pdf.text(
+              condition.title,
+              legendaConditionTitleX,
+              legendaTextsStartY
+            );
+            legendaTextsStartY += 5;
+          }
+
+          //for padding legenda header titles
+          legendaTextsStartY += 5;
+        });
+      }
+
       pdf.autoPrint(); // <<--------------------- !!
       window.open(pdf.output("bloburl"));
     },

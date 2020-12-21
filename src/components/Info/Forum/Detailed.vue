@@ -84,22 +84,20 @@ export default {
       forum
         .getIssueById(id)
         .then((response) => {
-          if (response.data) {
-            this.issue = response.data;
-          }
-          this.loading = false;
+          this.issue = response;
         })
-        .catch();
+        .catch()
+        .finaly(() => {
+          this.loading = false;
+        });
     },
     closeIssue() {
       forum
         .closeIssue(this.issue.id)
         .then((response) => {
-          if (response.data) {
-            this.issue = response.data;
-            this.$store.commit("SET_OPEN_ISSUES", []);
-            this.$store.commit("SET_CLOSED_ISSUES", []);
-          }
+          this.issue = response;
+          this.$store.commit("SET_OPEN_ISSUES", []);
+          this.$store.commit("SET_CLOSED_ISSUES", []);
         })
         .catch();
     },

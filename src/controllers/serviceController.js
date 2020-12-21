@@ -23,8 +23,13 @@ const functions = {
     return i;
   },
   getServiceByObj(obj) {
+    console.log(
+      "🚀 ~ file: serviceController.js ~ line 26 ~ getServiceByObj ~ obj",
+      obj
+    );
     const isLayer = serviceHelper.isLayer(obj);
     const isBunch = serviceHelper.isBunch(obj);
+
     if (isLayer) {
       return layerController.getLayer(obj.id);
     } else if (isBunch) {
@@ -49,12 +54,9 @@ const functions = {
       }
 
       if (serviceHelper.isLayer(service)) {
-        if (isChecked && serviceHelper.isDynamicFromArcgis(service)) {
-          let subLayerResponse = await functions.getResponseDynamic(service);
-          service.layers = subLayerResponse.data.layers;
-        }
         layerController.setSelected(service, isChecked);
       } else {
+        console.log("bunch select");
         bunchController.setSelected(service, isChecked);
       }
 
@@ -93,55 +95,7 @@ const functions = {
       resolve();
     });
   },
-  async getResponseDynamic(service) {
-    let responseDynamic = null;
-    if (serviceHelper.isDynamicFromArcgis(service)) {
-      responseDynamic = await layer.getDynamicLayers({
-        token: tokenService.getToken(),
-        name: service.name,
-      });
-    }
-    return responseDynamic;
-  },
-  async dynamicLayersReset(service, status) {
-    if (serviceHelper.isDynamicFromArcgis(service)) {
-      var isColorEnabled = await serviceHelper.isLayerColorEnabled(service);
 
-      let list = layerHelper.recursiveLayerMapping(
-        layerController.getDynamicLayerList(),
-        async (layer) => {
-          if (layer != null && layer.id == service.id) {
-            if (layer.layers !== undefined && layer.layers !== null) {
-              layer.layers = layer.layers.map((item, index) => {
-                return {
-                  ...item,
-                  isColorEnabled,
-                };
-              });
-            }
-          }
-        }
-      );
-      layerController.setDynamicLayerList(list);
-    }
-  },
-
-  async selectSubService(service, index, subLayerId, e) {
-    let isChecked = e.target.checked;
-
-    let list = layerHelper.recursiveLayerMapping(
-      layerController.getDynamicLayerList(),
-      async (layer) => {
-        if (layer != null && layer.id == service.id) {
-          var subLayer = layer.layers.find((c) => c.id == subLayerId);
-          subLayer.isSelected = isChecked;
-        }
-      }
-    );
-    layerController.setDynamicLayerList(list);
-    functions.dynamicLayersReset(service, isChecked);
-    mapController.refreshService(service.id);
-  },
   saveColor(service, color, selectedColorOption) {
     var isLayer = serviceHelper.isLayer(service);
     var isBunch = serviceHelper.isBunch(service);

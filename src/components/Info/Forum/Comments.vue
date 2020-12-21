@@ -227,13 +227,13 @@ export default {
       forum
         .insertComment(body)
         .then((response) => {
-          if (response.data) {
-            this.rawComments.push(response.data);
-            this.activeReplyId = null;
-          }
-          this.loading = false;
+          this.rawComments.push(response);
+          this.activeReplyId = null;
         })
-        .catch();
+        .catch()
+        .finally(() => {
+          this.loading = false;
+        });
     },
     deleteComment(id) {
       this.$swal({

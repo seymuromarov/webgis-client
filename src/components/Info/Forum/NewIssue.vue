@@ -108,10 +108,8 @@ export default {
         forum
           .insertIssue(body)
           .then((response) => {
-            if (response.data) {
-              this.$emit("openIssue", response.data.id);
-              this.$store.commit("SET_OPEN_ISSUES", []);
-            }
+            this.$emit("openIssue", response.id);
+            this.$store.commit("SET_OPEN_ISSUES", []);
           })
           .catch();
       }

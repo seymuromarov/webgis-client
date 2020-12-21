@@ -11,7 +11,7 @@
             :title="item.label"
           >
             <span
-              v-if="item.label == 'Profile' && notificationCount > 0"
+              v-if="item.key == menuTabEnum.PROFILE && notificationCount > 0"
               class="badge badge-notify"
               >{{ notificationCount }}</span
             >
@@ -260,6 +260,7 @@ export default {
       activeLayerType: "gray",
       dynamicActiveTab: "dynamicTab",
       basemapActiveTab: "baseTab",
+      menuTabEnum,
     };
   },
   mounted() {},
@@ -361,7 +362,8 @@ export default {
       return list;
     },
     logout() {
-      authService.logout();
+      // authService.logout();
+      this.$store.dispatch("auth/logout");
       this.$router.push("/login");
     },
     showProfileModal() {

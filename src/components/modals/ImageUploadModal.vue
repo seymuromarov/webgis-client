@@ -52,7 +52,7 @@
                   v-if="checkPermission(['data_edit'])"
                   :title="$t('button.delete')"
                   class="btn btn-danger btn-sm"
-                  @click="deleteImage(item.id)"
+                  @click="deleteImage(layerId, item.id)"
                 >
                   <i class="fa fa-trash" aria-hidden="true"></i>
                 </button>
@@ -92,7 +92,7 @@ import vue2Dropzone from "vue2-dropzone";
 import download from "downloadjs";
 import Viewer from "v-viewer";
 import { LAYER_DATA_IMAGE_URLS } from "@/config/urls";
-import { tokenService } from "@/services";
+import { tokenService, notifyService } from "@/services";
 import { tableController } from "@/controllers";
 import image from "@/api/layerDataImage";
 import checkPermission from "@/utils/permission";
@@ -111,6 +111,15 @@ export default {
   },
 
   data() {
+    // const dropzoneUploadEvent = async (files) => {
+    //   const formData = new FormData();
+
+    //   formData.append("layerId", this.layerId);
+    //   formData.append("gid", this.gid);
+    //   formData.append("file", files[0]);
+
+    //   await image.add(formData);
+    // };
     return {
       files: [],
 
@@ -141,7 +150,7 @@ export default {
         // ".tiff",
       ],
       dropzoneOptions: {
-        url: LAYER_DATA_IMAGE_URLS.ADD,
+        url: process.env.VUE_APP_BASE_API + LAYER_DATA_IMAGE_URLS.ADD,
         thumbnailWidth: 150,
         maxFilesize: 2,
         dictDefaultMessage: "<i class='fa fa-cloud-upload'></i>UPLOAD ME",
@@ -154,9 +163,7 @@ export default {
   methods: {
     readableFileSizeConverter,
     checkPermission,
-    onSuccess(file, response) {
-      this.getImages();
-    },
+
     resetData() {
       this.files = [];
     },
@@ -187,10 +194,11 @@ export default {
           return "text/plain";
       }
     },
+
     async getImages() {
       var response = await image.getAll(this.layerId, this.gid);
 
-      var data = response.data;
+      var data = response;
       await Promise.all(
         data.map(async (x) => {
           var base64 = await this.getBase64File(x.id);
@@ -205,14 +213,18 @@ export default {
       var s = await image.getFile(id);
 
       //  this.files.find(c=>c.id===id).base64=base64;
-      return s.data;
+      return s;
     },
     isImage(extension) {
       return this.imageExtensions.includes(extension.toLowerCase());
     },
-    deleteImage(id) {
-      image.delete(id).then((response) => {
-        this.getImages();
+    deleteImage(layerId, id) {
+      notifyService.areYouSureDeleteRecord((result) => {
+        if (result.isConfirmed)
+          image.delete(layerId, id).then((response) => {
+            notifyService.deleted();
+            this.getImages();
+          });
       });
     },
     onModalOpen() {
@@ -227,10 +239,11 @@ export default {
     clearDropzone() {
       this.$refs.dropzone.removeAllFiles();
     },
+    onSuccess(file, response) {
+      this.getImages();
+      this.clearDropzone();
+    },
     sendingEvent(file, xhr, formData) {
-      // formData.append("layerId", this.activeTableService.id);
-      // formData.append("gid", this.editDataGid);
-      // formData.append("file", file);
       formData.append("layerId", this.layerId);
       formData.append("gid", this.gid);
       formData.append("file", file);

@@ -322,6 +322,7 @@ import {
 import { icons } from "@/constants/assets";
 import { drawTypeEnum } from "@/enums";
 import datatable from "@/api/datatable";
+import { notifyService } from "@/services";
 import DynamicFormInput from "@/components/renders/DynamicFormInput";
 export default {
   components: { DynamicFormInput },
@@ -481,6 +482,16 @@ export default {
       const isEdit = this.isEdit;
       if (isEdit) params.gid = this.gid;
       datatable.addOrEditData(params).then((response) => {
+        if (isEdit) {
+          notifyService.info(
+            "The record will be updated after commit accepted "
+          );
+        } else {
+          notifyService.info(
+            "The record will be created after commit accepted "
+          );
+        }
+
         modalController.hideDataAddEditModal();
       });
     },
@@ -488,13 +499,17 @@ export default {
       let data = null;
       const isEdit = this.isEdit;
       if (isEdit) {
-        let response = await datatable.getData(this.layerId, this.gid);
-        data = response.data;
+        let response = await datatable.getItem(this.layerId, this.gid);
+        data = response;
       }
 
       if (!this.isModalHidingForGeometrySelection) {
         var tableInfo = await datatable.getTableInfo(this.layerId);
-        const { columns, geometryType } = tableInfo.data;
+
+        let { columns, geometryType } = tableInfo;
+
+        //remove gid column
+        columns = columns.filter((item) => item.columnName !== "gid");
         if (isEdit) {
           columns.forEach((element) => {
             var item = data.find((c) => c.columnName == element.columnName);
@@ -505,8 +520,9 @@ export default {
             }
             element["value"] = value;
           });
-          if (data.geometries) {
-            let geom = JSON.parse(data.geometries);
+          var geometriesColmn = data.find((c) => c.columnName == "geometries");
+          if (geometriesColmn) {
+            let geom = JSON.parse(geometriesColmn.value);
 
             this.geometry = geometryType === "point" ? geom[0] : geom;
 

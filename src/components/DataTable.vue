@@ -39,7 +39,7 @@
               v-if="tableHeaders"
               :fetch="fetchFullData"
               type="xls"
-              :name="'test' + '_report.xls'"
+              :name="tableName + '_report'"
             >
               <i
                 :title="$t('datatable.exportExcel')"
@@ -178,6 +178,7 @@
 <script>
 import Multiselect from "vue-multiselect";
 import layer from "@/api/layer";
+import datatable from "@/api/datatable";
 import Resizable from "vue-resizable";
 import ImageUploadModal from "@/components/modals/ImageUploadModal";
 import FilterModal from "@/components/modals/FilterModal";
@@ -251,29 +252,34 @@ export default {
     isEndOfData() {
       return this.paging.page * this.paging.limit > this.totalCount;
     },
-    scrollHandler() {
+
+    async scrollHandler() {
       const table = document.getElementById("dataTable");
-      table.addEventListener("scroll", (e) => {
+      const scrollHeightTolerance = 0.01;
+
+      table.addEventListener("scroll", async (e) => {
+        const isEndOfScroll =
+          table.scrollTop + table.clientHeight >=
+          table.scrollHeight - table.scrollHeight * scrollHeightTolerance;
         if (
-          table.scrollTop + table.clientHeight >= table.scrollHeight &&
+          isEndOfScroll &&
           !this.paging.isBusy &&
           !this.isEndOfData() &&
           (serviceHelper.isLocalService(this.activeService) ||
             serviceHelper.isBunch(this.activeService))
         ) {
           var page = this.paging.page;
-          var page = this.paging.page;
           page += 1;
           this.isPagingBusy(true);
-          tableController.setTableLoading(true);
+          // tableController.setTableLoading(true);
           this.paging = {
             ...this.paging,
             page: page++,
           };
-
-          this.getDatas();
+          console.log("test");
+          await this.getDatas();
           this.isPagingBusy(false);
-          tableController.setTableLoading(false);
+          // tableController.setTableLoading(false);
         }
       });
     },
@@ -296,17 +302,16 @@ export default {
             query: { ...item.query },
           };
         });
-        response = await layer.getIntersectLocalTableData(service.id, {
+        response = await datatable.getIntersectedData(service.id, {
           layerQueries: params,
           paging: paging,
         });
       } else {
         params = {
-          layerId: service.id,
           ...service.query,
           paging: paging,
         };
-        response = await layer.getLocalTableData(params);
+        response = await datatable.getData(service.id, params);
       }
 
       var data = response.features;
@@ -378,21 +383,19 @@ export default {
             query: { ...item.query },
           };
         });
-
-        response = await layer.getIntersectLocalTableData(activeService.id, {
+        response = await datatable.getIntersectedData(activeService.id, {
           layerQueries: params,
           paging: paginForFullData,
         });
       } else {
         params = {
-          layerId: activeService.id,
           ...activeService.query,
           paging: paginForFullData,
           isGeometryDataExist: false,
         };
-        response = await layer.getLocalTableData(params);
+        response = await datatable.getData(activeService.id, params);
       }
-      var attributes = response.data.features.map((item, index) => {
+      var attributes = response.features.map((item, index) => {
         return item.attributes;
       });
 

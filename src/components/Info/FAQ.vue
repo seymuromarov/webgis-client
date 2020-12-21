@@ -52,12 +52,10 @@ export default {
       info
         .getFAQ()
         .then((response) => {
-          if (response.data) {
-            this.questions = response.data;
-          }
-          this.loading = false;
+            this.questions = response;
         })
         .catch((error) => {
+        }).finally(()=>{
           this.loading = false;
         });
     },

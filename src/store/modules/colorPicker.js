@@ -2,24 +2,6 @@ const state = {
   defaultFillColor: "#FFFFFF00",
   defaultBorderColor: "#F44336FF",
 
-  // fillColor: {
-  //     hex: "var(--transparent)",
-  //     rgba: {
-  //         r: 255,
-  //         g: 255,
-  //         b: 255,
-  //         a: 0,
-  //     },
-  // },
-  // borderColor: {
-  //     hex: "#000000",
-  //     rgba: {
-  //         r: 255,
-  //         g: 255,
-  //         b: 255,
-  //         a: 1,
-  //     },
-  // },
   shapeFillColor: {
     hex8: "var(--transparent)",
     rgba: {
@@ -44,7 +26,6 @@ const state = {
     borderTab: true,
   },
   activeColorPickerId: null,
-  layerColorOrderList: [],
 };
 const getters = {
   colorPicker: (state) => {
@@ -58,9 +39,6 @@ const getters = {
   },
   activeColorPickerId: (state) => {
     return state.activeColorPickerId;
-  },
-  layerColorOrderList: (state) => {
-    return state.layerColorOrderList;
   },
 };
 const mutations = {
@@ -95,9 +73,6 @@ const mutations = {
   SET_ACTIVE_COLOR_PICKER_ID(state, payload) {
     state.activeColorPickerId = payload;
   },
-  SET_LAYER_COLOR_ORDER_LIST(state, payload) {
-    state.layerColorOrderList = payload;
-  },
 };
 const actions = {
   SAVE_COLORPICKER(context, payload) {
@@ -126,9 +101,6 @@ const actions = {
   },
   SAVE_ACTIVE_COLOR_PICKER_ID(context, payload) {
     context.commit("SET_ACTIVE_COLOR_PICKER_ID", payload);
-  },
-  SAVE_LAYER_COLOR_ORDER_LIST(context, payload) {
-    context.commit("SET_LAYER_COLOR_ORDER_LIST", payload);
   },
 };
 export default { state, mutations, actions, getters };

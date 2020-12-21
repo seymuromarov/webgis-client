@@ -13,13 +13,12 @@ export default {
     return request.get(LAYER_DATA_IMAGE_URLS.GET_BASE64_FILE(id));
   },
   getAll(layerId, gid) {
-    const params = { layerId, gid };
-    return request.get(LAYER_DATA_IMAGE_URLS.GET_ALL, { params });
+    return request.get(LAYER_DATA_IMAGE_URLS.GET_ALL(layerId, gid));
   },
   add(data) {
     return request.post(LAYER_DATA_IMAGE_URLS.ADD, data);
   },
-  delete(id) {
-    return request.post(LAYER_DATA_IMAGE_URLS.DELETE(id));
+  delete(layerId, id) {
+    return request.delete(LAYER_DATA_IMAGE_URLS.DELETE(layerId, id));
   },
 };

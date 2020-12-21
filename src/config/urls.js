@@ -50,8 +50,8 @@ const LAYER_URLS = {
 };
 const DATATABLE_URLS = {
   GET_TABLE_INFO: (id) => `/datatable/${id}/GetTableInfo`,
-  ADD_OR_EDIT: "/datatable/AddOrEdit",
-  GET_ITEM: "/datatable/GetItem",
+  CREATE_OR_UPDATE: "/datatable/CreateOrUpdate",
+  GET_ITEM: (layerId, gid) => `/datatable/${layerId}/${gid}/GetItem`,
   GET_DATA: (layerId) => `/datatable/${layerId}/GetData`,
   GET_INTERSECT_DATA: (bunchId) => `/datatable/${bunchId}/GetIntersectedData`,
   GET_ARITHMETIC_DATA: (layerId) => `/datatable/${layerId}/GetArithmeticData`,
@@ -59,11 +59,11 @@ const DATATABLE_URLS = {
 };
 
 const LAYER_DATA_IMAGE_URLS = {
-  GET: "/layerdataimage",
-  GET_ALL: "/layerdataimage",
+  GET: (id) => `/layerdataimage/${id}`,
+  GET_ALL: (layerId, gid) => `/layerdataimage/${layerId}/${gid}`,
   ADD: "/layerdataimage",
   GET_BASE64_FILE: (id) => `/layerdataimage/${id}/GetBase64File`,
-  DELETE: (id) => `/layerdataimage/${id}`,
+  DELETE: (layerId, id) => `/layerdataimage/${layerId}/${id}`,
 };
 
 const ARCGIS_URLS = {

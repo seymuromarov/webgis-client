@@ -6,14 +6,10 @@ export default {
     return request.get(DATATABLE_URLS.GET_TABLE_INFO(layerId));
   },
   getItem(layerId, gid) {
-    let params = { gid };
-
-    return request.get(DATATABLE_URLS.GET_ITEM + "/" + layerId + "/", {
-      params,
-    });
+    return request.get(DATATABLE_URLS.GET_ITEM(layerId, gid));
   },
   addOrEditData(params) {
-    return request.post(DATATABLE_URLS.ADD_OR_EDIT, params);
+    return request.post(DATATABLE_URLS.CREATE_OR_UPDATE, params);
   },
   getData(layerId, params) {
     return request.get(DATATABLE_URLS.GET_DATA(layerId), {

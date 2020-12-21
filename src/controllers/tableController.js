@@ -9,6 +9,7 @@ import {
   modalController,
   filterController,
 } from "@/controllers";
+import serviceController from "./serviceController";
 
 const functions = {
   buildTableData(data, selectedService) {
@@ -53,7 +54,11 @@ const functions = {
   },
 
   getTable: async (service) => {
-    service = layerController.getDynamicLayer(service.id);
+    service = serviceController.getServiceByObj(service);
+    console.log(
+      "🚀 ~ file: tableController.js ~ line 58 ~ getTable: ~ service",
+      service
+    );
     setters.setTableVisible();
     setters.setTableLoading(true);
 
@@ -90,6 +95,10 @@ const functions = {
     let paging = getters.getDefaultPagingOptions();
 
     var isBunch = serviceHelper.isBunch(service);
+    console.log(
+      "🚀 ~ file: tableController.js ~ line 93 ~ getTableResponse: ~ isBunch",
+      isBunch
+    );
     if (isBunch) {
       const bunchId = service.id;
       params = service.layers.map((item, index) => {

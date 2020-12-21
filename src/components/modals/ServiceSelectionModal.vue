@@ -84,7 +84,6 @@ export default {
             });
           } else {
             notifyService.error("Data Not Exist In This Coordinate!");
-   
           }
           modalController.hideServiceSelectionModal();
         });

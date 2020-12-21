@@ -14,7 +14,7 @@ export default {
   edit(data) {
     return request.put(BUNCH_URLS.ADD, data);
   },
-  remove(id) {
+  delete(id) {
     return request.delete(BUNCH_URLS.DELETE(id));
   },
 };

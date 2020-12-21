@@ -54,14 +54,16 @@
           @click="showConditionModal"
           >{{ $t("general.showConditionsButtonTitle") }}</a
         >
-        <ColorConditionInfoModal :data="getConditionLegendData()" />
+        <ColorConditionInfoModal :data="conditions" />
 
         <v-select
           v-if="isLayerColorExist"
           class="condition__select"
           v-model="selectedColorOpt"
           :clearable="false"
+          label="title"
           :options="conditions"
+          :reduce="(c) => c.id"
         ></v-select>
       </div>
 
@@ -133,14 +135,14 @@ import ColorConditionInfoModal from "@/components/modals/ColorConditionInfoModal
 import Draggable from "vuedraggable";
 import { layerHelper, serviceHelper } from "@/helpers";
 import { guid } from "@/utils";
-import { operatorEnumTostring } from "@/utils/enumToString";
-
+import { notifyService } from "@/services";
 import {
   bunchController,
   mapController,
   serviceController,
   tableController,
   modalController,
+  layerController,
 } from "@/controllers";
 import bunch from "@/api/bunch";
 export default {
@@ -184,10 +186,7 @@ export default {
       layerIsSelected: false,
       isDragging: false,
       isColorConditionInfoModalVisible: false,
-      selectedColorOpt: {
-        code: "default",
-        label: "Default",
-      },
+      selectedColorOpt: -1, //default
     };
   },
 
@@ -224,50 +223,22 @@ export default {
       },
     },
     currentConditionColor() {
-      let borderColor = "";
-      let fillColor = "";
-      if (this.selectedColorOpt.code === "default") {
-        borderColor = this.data.color.borderColor;
-        fillColor = this.data.color.fillColor;
-      } else {
-        var condition = this.data.layerColor.conditions.find(
-          (c) => c.id === parseInt(this.selectedColorOpt.code)
-        );
-        borderColor = condition.borderColor;
-        fillColor = condition.fillColor;
-      }
+      var condition = this.conditions.find(
+        (c) => c.id === parseInt(this.selectedColorOpt)
+      );
+      var borderColor = condition.borderColor;
+      var fillColor = condition.fillColor;
 
       return { borderColor, fillColor };
     },
 
     conditions() {
-      const defaultOpt = {
-        code: "default",
-        label: "Default",
-      };
-      let options = [defaultOpt];
-      if (this.data.layerColor) {
-        const layerColor = this.data.layerColor;
-        var conditionOptions = layerColor.conditions.map((c) => {
-          var code = c.id;
-          var label = this.buildConditionLabel(
-            layerColor.column,
-            c.operator,
-            c.value
-          );
-          return { code, label };
-        });
-        options = [defaultOpt, ...conditionOptions];
-      }
+      var options = layerController.getLayerColorConditionList(this.data);
       return options;
     },
     switchModel: {
       get() {
-        if (serviceHelper.isLayer(this.data)) {
-          return this.data.isSelected;
-        } else {
-          return this.data.defaultVisibility;
-        }
+        return this.data.isSelected;
       },
       set(e) {
         if (e.target.checked === false) {
@@ -346,29 +317,7 @@ export default {
       this.isColorConditionInfoModalVisible = true;
       modalController.showColorConditionInfoModal();
     },
-    buildConditionLabel(column, operatorNo, value) {
-      return `${column} ${operatorEnumTostring(operatorNo)} ${value}`;
-    },
-    getConditionLegendData() {
-      const data = [
-        {
-          title: "Default",
-          borderColor: this.data.color.borderColor,
-          fillColor: this.data.color.fillColor,
-        },
-      ];
-      const layerColor = this.data.layerColor;
-      const conditonData = layerColor.conditions.map((c) => {
-        var title = this.buildConditionLabel(
-          layerColor.column,
-          c.operator,
-          c.value
-        );
-        return { title, borderColor: c.borderColor, fillColor: c.fillColor };
-      });
 
-      return [...data, ...conditonData];
-    },
     updateList(val) {
       this.$emit("updateList", val);
     },
@@ -377,8 +326,7 @@ export default {
     },
     toggleSubList() {
       this.subListVisibility = !this.subListVisibility;
-      if (this.subListVisibility)
-        serviceController.dynamicLayersReset(this.data, this.subListVisibility);
+
       // this.dynamicLayersReset(this.data, this.subListVisibility);
     },
     onColorPickerSave(color) {
@@ -386,7 +334,7 @@ export default {
         serviceController.saveColor(this.data, color, this.selectedColorOpt);
         resolve();
       }).then(() => {
-        mapController.refreshService(this.data.id);
+        mapController.refreshService(this.data);
       });
     },
     colorPickerOnClose() {
@@ -404,13 +352,12 @@ export default {
         );
       } else {
         serviceController.selectService(this.data, isChecked);
-
-        serviceController.dynamicLayersReset(this.data, isChecked);
       }
     },
 
     async getTableData(data) {
       var service = serviceHelper.isSublayer(data) ? data.parent : data;
+
       await tableController.getTable(service);
     },
     getLayerId() {
@@ -433,9 +380,14 @@ export default {
       }
     },
     deleteBunch() {
-      bunch.remove(this.data.id).then((response) => {
-        bunchController.remove(this.data.id);
-        mapController.deleteService(this.data);
+      notifyService.areYouSureDeleteRecord((result) => {
+        if (result.isConfirmed) {
+          bunch.delete(this.data.id).then((response) => {
+            this.$store.dispatch("fetchBunchList");
+            mapController.deleteService(this.data);
+          });
+          notifyService.deleted();
+        }
       });
     },
   },
