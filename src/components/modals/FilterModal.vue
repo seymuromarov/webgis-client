@@ -4,6 +4,7 @@
       name="filterModal"
       :title="$t('form.filterForm.modalTitle')"
       :maxWidth="600"
+      @afterHide="onModalClose"
     >
       <div class="data-table__filter">
         <div class="row form-group">
@@ -289,6 +290,9 @@ export default {
     this.extentType = this.drawTypeEnum.NONE;
   },
   methods: {
+    onModalClose() {
+      toolController.pickDrawType(drawTypeEnum.NONE);
+    },
     showFavoriteQueryModal() {
       modalController.showFavoriteQueryModal();
     },
@@ -329,8 +333,6 @@ export default {
               this.activeService,
               JSON.stringify(extentCoordinates)
             );
-
-            toolController.pickDrawType(this.drawTypeEnum.NONE);
             tableController.setTableVisible();
             filterController.setIsRequiredServiceRefresh(true);
           },
@@ -359,10 +361,6 @@ export default {
 
     applyFilter() {
       tableController.getTable(this.activeService);
-      console.log(
-        "🚀 ~ file: FilterModal.vue ~ line 387 ~ applyFilter ~ this.activeService",
-        this.activeService
-      );
 
       this.$moodal.filterModal.hide();
     },

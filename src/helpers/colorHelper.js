@@ -14,10 +14,6 @@ const functions = {
     if (layerColor) {
       const column = layerColor.column;
       const currentFeatureColumnVal = feature.get(column);
-      console.log(
-        "🚀 ~ file: colorHelper.js ~ line 17 ~ currentFeatureColumnVal",
-        currentFeatureColumnVal
-      );
 
       const conditions = layerColor.conditions;
       for (let i = 0; i < conditions.length; i++) {
@@ -44,12 +40,6 @@ const functions = {
     if (!layerColor || !isConditionExist) {
       borderColor = service.color.borderColor;
       fillColor = service.color.fillColor;
-    }
-    if (isConditionExist) {
-      console.log({
-        borderColor,
-        fillColor,
-      });
     }
 
     return functions.buildVectorStyle(borderColor, fillColor);

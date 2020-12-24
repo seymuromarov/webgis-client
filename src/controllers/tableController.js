@@ -55,10 +55,7 @@ const functions = {
 
   getTable: async (service) => {
     service = serviceController.getServiceByObj(service);
-    console.log(
-      "🚀 ~ file: tableController.js ~ line 58 ~ getTable: ~ service",
-      service
-    );
+
     setters.setTableVisible();
     setters.setTableLoading(true);
 
@@ -95,10 +92,7 @@ const functions = {
     let paging = getters.getDefaultPagingOptions();
 
     var isBunch = serviceHelper.isBunch(service);
-    console.log(
-      "🚀 ~ file: tableController.js ~ line 93 ~ getTableResponse: ~ isBunch",
-      isBunch
-    );
+
     if (isBunch) {
       const bunchId = service.id;
       params = service.layers.map((item, index) => {

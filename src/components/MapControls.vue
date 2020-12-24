@@ -282,9 +282,7 @@ export default {
       const x = this.coordinates.x;
       const y = this.coordinates.y;
       let center = [x, y];
-      // if (this.selectedCoordinateMode.key == coordinateTypeEnum.GEOGRAPHIC) {
-      //   center = mapController.transformToEPSG3857(center);
-      // }
+
       mapController.setCenter(center, this.selectedCoordinateMode.key);
       const featureName = "centerPoint";
       const featureOpts = {
@@ -292,7 +290,7 @@ export default {
       };
 
       toolController.deleteFeatureByName(featureName);
-      toolController.addPoint(
+      toolController.addMarker(
         center,
         featureOpts,
         this.selectedCoordinateMode.key

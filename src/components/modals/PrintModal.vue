@@ -99,7 +99,7 @@ export default {
   name: "PrintModal",
   data() {
     return {
-      title: "əəəəəə",
+      title: "",
       hasTitle: true,
       hasExtent: true,
       hastScale: true,
@@ -153,7 +153,6 @@ export default {
   },
   methods: {
     onModalOpen() {
-      console.log(this.selectedDynamics);
       var width = this.imageWidth;
       var height = this.imageHeight;
       var map = mapController.getMap();
@@ -386,11 +385,6 @@ export default {
             );
 
             pdf.setFontSize(legendaConditionTitleFontSize);
-            // var title = layerHelper.buildLayerConditionLabel(
-            //   item.layerColor.column,
-            //   condition.operator,
-            //   condition.value
-            // );
 
             pdf.text(
               condition.title,
@@ -412,7 +406,6 @@ export default {
 };
 </script>
 
-//
 <style lang="scss" scoped>
 .option-content {
   padding: 1rem 0;

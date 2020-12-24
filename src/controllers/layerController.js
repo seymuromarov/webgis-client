@@ -180,18 +180,19 @@ const setters = {
     }
   },
 
-  setColor(service, color, selectedColorOption) {
+  setColor(service, color, selectedConditionId) {
     var list = layerHelper.recursiveLayerMapping(
       getters.getDynamicLayerList(),
       async (layer) => {
         if (layer != null && layer.id == service.id) {
           if (
-            selectedColorOption &&
-            selectedColorOption.code !== defaultColorCondtionId
+            selectedConditionId &&
+            selectedConditionId !== defaultColorCondtionId
           ) {
             let conditionColor = layer.layerColor.conditions.find(
-              (c) => c.id == parseInt(selectedColorOption.code)
+              (c) => c.id == parseInt(selectedConditionId)
             );
+           
             if (conditionColor) {
               conditionColor.fillColor = color.fillColor;
               conditionColor.borderColor = color.borderColor;

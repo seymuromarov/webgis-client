@@ -205,7 +205,6 @@ export default {
 
         this.pointCoordinates = this.bbox;
         this.buildGraph();
-        toolController.pickDrawType(drawTypeEnum.NONE);
       });
     },
     async onChange() {
@@ -297,6 +296,7 @@ export default {
     onModalClose() {
       if (!this.isModalHidingForPoint) this.resetData();
       this.$emit("close");
+      toolController.pickDrawType(drawTypeEnum.NONE);
     },
   },
 

@@ -276,7 +276,6 @@ export default {
             ...this.paging,
             page: page++,
           };
-          console.log("test");
           await this.getDatas();
           this.isPagingBusy(false);
           // tableController.setTableLoading(false);

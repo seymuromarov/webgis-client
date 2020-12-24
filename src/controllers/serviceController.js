@@ -23,10 +23,6 @@ const functions = {
     return i;
   },
   getServiceByObj(obj) {
-    console.log(
-      "🚀 ~ file: serviceController.js ~ line 26 ~ getServiceByObj ~ obj",
-      obj
-    );
     const isLayer = serviceHelper.isLayer(obj);
     const isBunch = serviceHelper.isBunch(obj);
 
@@ -56,7 +52,6 @@ const functions = {
       if (serviceHelper.isLayer(service)) {
         layerController.setSelected(service, isChecked);
       } else {
-        console.log("bunch select");
         bunchController.setSelected(service, isChecked);
       }
 
@@ -96,13 +91,13 @@ const functions = {
     });
   },
 
-  saveColor(service, color, selectedColorOption) {
+  saveColor(service, color, selectedColorConditionId) {
     var isLayer = serviceHelper.isLayer(service);
     var isBunch = serviceHelper.isBunch(service);
 
     return new Promise((resolve) => {
       if (isLayer) {
-        layerController.setColor(service, color, selectedColorOption);
+        layerController.setColor(service, color, selectedColorConditionId);
       } else if (isBunch) {
         bunchController.setColor(service.id, color);
       }

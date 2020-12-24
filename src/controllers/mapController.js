@@ -281,10 +281,7 @@ const functions = {
 const events = {
   onMapClick(evt) {
     let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
-    console.log(
-      "🚀 ~ file: mapController.js ~ line 288 ~ onMapClick ~ coord",
-      coord
-    );
+
     setters.setClickedCoordinate(coord);
     setters.setClickedPixel(evt.pixel);
     if (toolController.getRemoveStatus()) {

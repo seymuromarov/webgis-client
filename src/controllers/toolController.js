@@ -5,7 +5,7 @@ import { mapHelper } from "@/helpers";
 import { saveAs } from "file-saver";
 import {
   featureStyle,
-  pointStyle,
+  markerStyle,
   textPointStyle,
 } from "@/constants/featureStyles";
 import { _ } from "vue-underscore";
@@ -226,6 +226,9 @@ const functions = {
       case drawTypeEnum.TEXT:
         geomType = drawTypeEnum.POINT;
         break;
+      case drawTypeEnum.MARKER:
+        geomType = drawTypeEnum.POINT;
+        break;
     }
 
     var options = {
@@ -249,8 +252,6 @@ const functions = {
     let map = mapController.getMap();
     map.addInteraction(draw);
     mapController.setMap(map);
-    // map.addOverlay(functions.createMeasureOverlay());
-    // map.addOverlay(functions.createHelpOverlay());
 
     functions.createMeasuremaptooltip();
     functions.createHelpmaptooltip();
@@ -312,9 +313,10 @@ const functions = {
           measuremaptooltipElement.className = `maptooltip maptooltip-static feature-${getters.getFeatureIdCounter()}`;
           measuremaptooltip.setOffset([0, -7]);
           let coordinates = [];
-
-          let t = e.feature.getGeometry().getType();
-          if (geomType == drawTypeEnum.POINT) {
+          if (
+            geomType == drawTypeEnum.POINT ||
+            geomType == drawTypeEnum.MARKER
+          ) {
             coordinates = e.feature.getGeometry().getCoordinates();
             coordinates = transform(coordinates, "EPSG:3857", "EPSG:4326");
           } else if (geomType == drawTypeEnum.LINESTRING) {
@@ -356,14 +358,20 @@ const functions = {
         }
         e.feature.setProperties(featureOpt);
 
-        if (type !== drawTypeEnum.TEXT) {
-          if (type !== drawTypeEnum.POINT) {
+        switch (type) {
+          case drawTypeEnum.TEXT:
+            e.feature.setStyle(textPointStyle);
+            break;
+          case drawTypeEnum.POINT:
+            break;
+          case drawTypeEnum.MARKER:
+            e.feature.setStyle(markerStyle);
+            break;
+
+          default:
+            //polygon , linestring , circle
             e.feature.setStyle(featureStyle);
-          } else if (type === drawTypeEnum.POINT) {
-            e.feature.setStyle(pointStyle);
-          }
-        } else {
-          e.feature.setStyle(textPointStyle);
+            break;
         }
 
         setters.addFeatureIdCounter(10);
@@ -486,12 +494,11 @@ const functions = {
       setters.setGraticuleVisibility(true);
     }
   },
-  addPlace() {
-    functions.pickDrawType(drawTypeEnum.NONE);
-    setters.setMarkerStatus(true);
-  },
-  addPoint(coord, featureOptions, type) {
-    if (!_.isUndefined(type) && type == coordinateTypeEnum.GEOGRAPHIC)
+  addMarker(coord, featureOptions, coordinateType) {
+    if (
+      !_.isUndefined(coordinateType) &&
+      coordinateType == coordinateTypeEnum.GEOGRAPHIC
+    )
       coord = mapController.transformToEPSG3857(coord);
     let feature = new Feature({
       geometry: new Point(coord),
@@ -502,7 +509,7 @@ const functions = {
     if (!_.isUndefined(featureOptions) && _.isObject(featureOptions)) {
       featureOpt = Object.assign(featureOpt, featureOptions); //extend object
     }
-    feature.setStyle(pointStyle);
+    feature.setStyle(markerStyle);
     feature.setProperties(featureOpt);
     var drawSource = mapController.getDrawSource();
     drawSource.addFeature(feature);

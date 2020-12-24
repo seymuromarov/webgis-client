@@ -13,6 +13,19 @@ const getters = {
         image: icons.mouse,
         click: () => toolController.pickDrawType(drawTypeEnum.NONE),
       },
+
+      {
+        key: "addPoint",
+        label: $i18n.t("menu.tool.addPoint"),
+        image: icons.point,
+        click: () => toolController.pickDrawType(drawTypeEnum.POINT),
+      },
+      {
+        key: "addPlace",
+        label: $i18n.t("menu.tool.addPlace"),
+        image: icons.place,
+        click: () => toolController.pickDrawType(drawTypeEnum.MARKER),
+      },
       {
         key: "addText",
         // label: "Add Text",
@@ -25,12 +38,6 @@ const getters = {
 
           toolController.pickDrawType(drawTypeEnum.TEXT, callback);
         },
-      },
-      {
-        key: "addPoint",
-        label: $i18n.t("menu.tool.addPoint"),
-        image: icons.point,
-        click: () => toolController.pickDrawType(drawTypeEnum.POINT),
       },
       {
         key: "rectangle",
@@ -62,12 +69,7 @@ const getters = {
         image: icons.line,
         click: () => toolController.pickDrawType(drawTypeEnum.LINESTRING),
       },
-      {
-        key: "addPlace",
-        label: $i18n.t("menu.tool.addPlace"),
-        image: icons.place,
-        click: () => {},
-      },
+
       {
         key: "reset",
         label: $i18n.t("menu.tool.reset"),

@@ -59,7 +59,7 @@
         <v-select
           v-if="isLayerColorExist"
           class="condition__select"
-          v-model="selectedColorOpt"
+          v-model="selectedColorConditionId"
           :clearable="false"
           label="title"
           :options="conditions"
@@ -186,7 +186,7 @@ export default {
       layerIsSelected: false,
       isDragging: false,
       isColorConditionInfoModalVisible: false,
-      selectedColorOpt: -1, //default
+      selectedColorConditionId: -1, //default
     };
   },
 
@@ -224,7 +224,7 @@ export default {
     },
     currentConditionColor() {
       var condition = this.conditions.find(
-        (c) => c.id === parseInt(this.selectedColorOpt)
+        (c) => c.id === parseInt(this.selectedColorConditionId)
       );
       var borderColor = condition.borderColor;
       var fillColor = condition.fillColor;
@@ -331,7 +331,11 @@ export default {
     },
     onColorPickerSave(color) {
       new Promise((resolve, reject) => {
-        serviceController.saveColor(this.data, color, this.selectedColorOpt);
+        serviceController.saveColor(
+          this.data,
+          color,
+          this.selectedColorConditionId
+        );
         resolve();
       }).then(() => {
         mapController.refreshService(this.data);
