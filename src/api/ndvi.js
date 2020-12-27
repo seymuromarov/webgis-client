@@ -11,7 +11,7 @@ export default {
   },
   async getNdviValue(name, pointX, pointY) {
     let infoResponse = await this.getNdviInfo(name);
-    let fullExtent = infoResponse.data.fullExtent;
+    let fullExtent = infoResponse.fullExtent;
     let extent = {
       xmin: fullExtent.xmin,
       ymin: fullExtent.ymin,

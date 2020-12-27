@@ -119,7 +119,7 @@ export default {
           this.$router.push("/");
           authService.resetFailedAttemptCount();
         })
-        .catch(() => {
+        .catch((response) => {
           authService.increaseFailedAttempCount();
           this.failedAttemptCount += 1;
 
