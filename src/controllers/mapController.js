@@ -280,6 +280,10 @@ const functions = {
 
 const events = {
   onMapClick(evt) {
+    console.log(
+      "🚀 ~ file: mapController.js ~ line 283 ~ onMapClick ~ evt",
+      evt
+    );
     let coord = transform(evt.coordinate, "EPSG:3857", "EPSG:4326");
 
     setters.setClickedCoordinate(coord);

@@ -227,8 +227,10 @@ export default {
         self.mapLayer.getView().fit(this.drawSource.getExtent());
       });
 
-      this.mapLayer.on("click", mapController.onMapClick);
-
+      this.mapLayer.on("singleclick", mapController.onMapClick);
+      // this.mapLayer.on("dblclick", function(evt) {
+      //   evt.preventDefault();
+      // });
       this.$store.dispatch("init").then(() => {
         if (this.hashResolveResult !== null)
           serviceController.setServicesStatusByIds(
