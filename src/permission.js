@@ -6,6 +6,8 @@ const whiteList = ["/login"]; // no redirect whitelist
 
 router.beforeEach(async (to, from, next) => {
   // // // start progress bar
+  console.log("test");
+
   // // determine whether the user has logged in
   const hasToken = tokenService.getToken();
   if (hasToken) {
@@ -22,13 +24,13 @@ router.beforeEach(async (to, from, next) => {
         try {
           await $store
             .dispatch("auth/getAuthorizedUser")
-            .then(() => {})
+            .then(() => {
+              next({ ...to, replace: true });
+            })
             .catch(async () => {
               await $store.dispatch("auth/logout");
               next(`/login`);
             });
-
-          next({ ...to, replace: true });
         } catch (error) {
           next(`/login`);
         }

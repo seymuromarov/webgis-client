@@ -189,7 +189,7 @@ const getters = {
 
 const setters = {
   setTableData(val) {
-    $store.dispatch("SAVE_DATATABLE", val);
+    $store.dispatch("saveDatatable", val);
   },
   setIsEditData(val) {
     $store.dispatch("saveIsEditData", val);
@@ -204,14 +204,14 @@ const setters = {
     $store.dispatch("SAVE_DATATABLE_TABS", val);
   },
   setTableVisible() {
-    $store.dispatch("SAVE_DATATABLE_VISIBLE", true);
+    $store.dispatch("saveDatatableVisibility", true);
   },
 
   setTableUnvisible() {
-    $store.dispatch("SAVE_DATATABLE_VISIBLE", false);
+    $store.dispatch("saveDatatableVisibility", false);
   },
   setTableLoading(val) {
-    $store.dispatch("SAVE_DATATABLE_LOADING", val);
+    $store.dispatch("saveDatatableLoading", val);
   },
 
   setIsSumFilter(val) {

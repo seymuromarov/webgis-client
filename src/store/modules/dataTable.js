@@ -1,10 +1,9 @@
 import { serviceHelper } from "@/helpers";
 const state = {
-  sumData: {},
+  sumData: null,
   infoData: null,
   data: {},
   paging: {},
-  // tabs: [],
   activeTabId: null,
   activeService: null,
   isVisible: false,
@@ -16,9 +15,6 @@ const state = {
 const mutations = {
   SET_DATATABLE(state, payload) {
     state.data = payload;
-  },
-  SET_DATATABLE_TABS(state, payload) {
-    state.tabs = payload;
   },
   SET_DATATABLE_ACTIVE_TAB_ID(state, payload) {
     state.activeTabId = payload;
@@ -38,10 +34,8 @@ const mutations = {
   SET_DATATABLE_CHECKED_COLUMNS_DATA(state, { id, value }) {
     state.data.checkedColumns = value;
   },
-  SET_DATATABLE_FILTER_VALUES(state, { id, value }) {
-    state.data.filterValues = value;
-  },
-  SET_DATATABLE_VISIBLE(state, payload) {
+
+  SET_DATATABLE_VISIBILITY(state, payload) {
     state.isVisible = payload;
   },
   SET_DATATABLE_LOADING(state, payload) {
@@ -59,7 +53,7 @@ const mutations = {
 };
 
 const actions = {
-  SAVE_DATATABLE(context, payload) {
+  saveDatatable(context, payload) {
     context.commit("SET_DATATABLE", payload);
   },
   saveIsEditData(context, payload) {
@@ -68,40 +62,35 @@ const actions = {
   saveEditDataGid(context, payload) {
     context.commit("SET_EDIT_DATA_GID", payload);
   },
-  SAVE_DATATABLE_ACTIVE_TAB_ID(context, id) {
+  saveDatatableActiveTabId(context, id) {
     context.commit("SET_DATATABLE_ACTIVE_TAB_ID", id);
   },
   saveTableActiveService(context, payload) {
     let activeTabId = null;
-    let isBunch = serviceHelper.isBunch(payload);
-    if (isBunch) activeTabId = payload.layers[0].id;
-    else activeTabId = payload.id;
+    if (payload) {
+      let isBunch = serviceHelper.isBunch(payload);
+      if (isBunch) activeTabId = payload.layers[0].id;
+      else activeTabId = payload.id;
 
-    context.commit("SET_DATATABLE_ACTIVE_SERVICE", payload);
-    context.commit("SET_DATATABLE_ACTIVE_TAB_ID", activeTabId);
+      context.commit("SET_DATATABLE_ACTIVE_SERVICE", payload);
+      context.commit("SET_DATATABLE_ACTIVE_TAB_ID", activeTabId);
+    }
   },
-  SAVE_DATATABLE_CHECKED_COLUMNS(context, { id, value }) {
+  saveDatatableCheckedColumns(context, { id, value }) {
     context.commit("SET_DATATABLE_CHECKED_COLUMNS", { id, value });
   },
-  SAVE_DATATABLE_CHECKED_COLUMNS_DATA(context, { id, value }) {
+  saveDatatableCheckedColumnsData(context, { id, value }) {
     context.commit("SET_DATATABLE_CHECKED_COLUMNS_DATA", { id, value });
   },
-  SAVE_DATATABLE_FILTER_VALUES(context, { id, value }) {
-    context.commit("SET_DATATABLE_FILTER_VALUES", { id, value });
+
+  saveDatatableVisibility(context, isVisible) {
+    context.commit("SET_DATATABLE_VISIBILITY", isVisible);
   },
-  SAVE_DATATABLE_VISIBLE(context, isVisible) {
-    context.commit("SET_DATATABLE_VISIBLE", isVisible);
-  },
-  SAVE_DATATABLE_LOADING(context, payload) {
+  saveDatatableLoading(context, payload) {
     context.commit("SET_DATATABLE_LOADING", payload);
   },
   saveDataTablePaging(context, payload) {
     context.commit("SET_DATATABLE_PAGING", payload);
-  },
-
-  RESET_DATATABLE(context) {
-    context.dispatch("SAVE_DATATABLE", []);
-    context.dispatch("SAVE_DATATABLE_TABS", []);
   },
 
   saveSumData(context, payload) {
@@ -109,6 +98,19 @@ const actions = {
   },
   saveInfoData(context, payload) {
     context.commit("SET_INFO_DATA", payload);
+  },
+
+  resetDataTable(context) {
+    context.commit("SET_DATATABLE", {});
+    context.commit("SET_IS_EDIT_DATA", false);
+    context.commit("SET_EDIT_DATA_GID", 0);
+    context.commit("SET_DATATABLE_ACTIVE_TAB_ID", null);
+    context.commit("SET_DATATABLE_ACTIVE_SERVICE", null);
+    context.commit("SET_DATATABLE_VISIBILITY", false);
+    context.commit("SET_DATATABLE_LOADING", false);
+    context.commit("SET_DATATABLE_PAGING", {});
+    context.commit("SET_SUM_DATA", null);
+    context.commit("SET_INFO_DATA", null);
   },
 };
 

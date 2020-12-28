@@ -18,7 +18,7 @@
 
       <!-- Report -->
       <CustomModal name="sumResultModal" :maxWidth="600">
-        <Report :result="sumData" />
+        <Report v-if="sumData" :result="sumData" />
       </CustomModal>
 
       <!-- Shape Color Picker -->
@@ -228,9 +228,7 @@ export default {
       });
 
       this.mapLayer.on("singleclick", mapController.onMapClick);
-      // this.mapLayer.on("dblclick", function(evt) {
-      //   evt.preventDefault();
-      // });
+
       this.$store.dispatch("init").then(() => {
         if (this.hashResolveResult !== null)
           serviceController.setServicesStatusByIds(

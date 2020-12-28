@@ -433,7 +433,7 @@ export default {
         return this.$store.state.dataTable.activeTabId;
       },
       set(id) {
-        this.$store.dispatch("SAVE_DATATABLE_ACTIVE_TAB_ID", id);
+        this.$store.dispatch("saveDatatableActiveTabId", id);
       },
     },
 

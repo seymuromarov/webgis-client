@@ -39,7 +39,9 @@ const actions = {
         });
     });
   },
-  logout({ commit }) {
+  logout({ commit, dispatch }) {
+    dispatch("resetDataTable", null, { root: true });
+
     userController.setRoles([]);
     userController.setDirectivePermissions([]);
     userController.setUserInfo({});
@@ -77,11 +79,6 @@ const actions = {
           userController.setUserInfo(userHelper.mapUserInfo(response));
 
           resolve(response);
-
-          // resolve({
-          //   roles: mappedRoles,
-          //   directivePermissions: mappedDirectivePermissions,
-          // });
         })
         .catch((error) => {
           reject(error);

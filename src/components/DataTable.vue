@@ -326,7 +326,7 @@ export default {
     toggleIsVisible() {
       toolController.deleteServiceFeatures(this.activeService.id);
       tableController.setTableUnvisible();
-      // this.$store.dispatch("SAVE_DATATABLE_VISIBLE", !this.isVisible);
+      // this.$store.dispatch("saveDatatableVisibility", !this.isVisible);
     },
     togglePopup(e) {
       this.isColumnPopupShowing = !this.isColumnPopupShowing;
@@ -472,7 +472,7 @@ export default {
         return this.tableData.tableStackedHeaders;
       },
       set(value) {
-        this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
+        this.$store.dispatch("saveDatatableCheckedColumns", value);
       },
     },
     tableHeadersWithAlias() {
@@ -484,7 +484,7 @@ export default {
         return this.tableData.checkedColumnsData;
       },
       set(value) {
-        this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS_DATA", value);
+        this.$store.dispatch("saveDatatableCheckedColumnsData", value);
       },
     },
 
@@ -493,7 +493,7 @@ export default {
         return this.tableData.checkedColumns;
       },
       set(value) {
-        this.$store.dispatch("SAVE_DATATABLE_CHECKED_COLUMNS", value);
+        this.$store.dispatch("saveDatatableCheckedColumns", value);
       },
     },
 
