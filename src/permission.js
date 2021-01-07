@@ -5,9 +5,6 @@ import { tokenService, userService, authService } from "@/services"; // get toke
 const whiteList = ["/login"]; // no redirect whitelist
 
 router.beforeEach(async (to, from, next) => {
-  // // // start progress bar
-  console.log("test");
-
   // // determine whether the user has logged in
   const hasToken = tokenService.getToken();
   if (hasToken) {

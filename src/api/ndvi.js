@@ -34,7 +34,7 @@ export default {
       ARCGIS_URLS.SERVICE_URl
     }/${name}/Identify?${urlHelper.formatQueryString(params)}`;
     let response = await request.get(url);
-    let results = response.data.results;
+    let results = response.results;
     let attributes = results[0].attributes;
     let value = {
       red: _.isUndefined(attributes["Red"]) ? 0 : attributes["Red"],
