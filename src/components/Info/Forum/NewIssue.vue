@@ -15,14 +15,17 @@
         <div class="form-group">
           <label for="title">{{ $t("form.createIssueForm.title") }}</label>
           <input
+            v-model="form.title"
             class="form-control"
-            :class="{ 'is-invalid': !titleValid }"
+            :class="{ 'is-invalid': isSumbmitted && !$v.form.title.required }"
             id="title"
             :placeholder="$t('form.createIssueForm.title')"
-            v-model="title"
             required
           />
-          <div class="invalid-feedback">
+          <div
+            v-if="isSumbmitted && !$v.form.title.required"
+            class="invalid-feedback"
+          >
             {{ $t("form.createIssueForm.validationMessages.titleRequired") }}
           </div>
         </div>
@@ -31,44 +34,47 @@
           <label for="category">{{
             $t("form.createIssueForm.category")
           }}</label>
-          <select
-            id="category"
-            class="form-control category"
-            :class="{ 'is-invalid': !categoryValid }"
-            :placeholder="$t('form.createIssueForm.title')"
-            v-model="selectedCategory"
+
+          <v-select
+            v-model="form.issueCategoryId"
+            :clearable="false"
+            :options="issueCategories"
+            :class="{
+              'is-invalid': isSumbmitted && !$v.form.issueCategoryId.required,
+            }"
+            :reduce="(option) => option.id"
+            label="name"
+          ></v-select>
+
+          <div
+            v-if="isSumbmitted && !$v.form.issueCategoryId.required"
+            class="invalid-feedback"
           >
-            <option
-              v-for="category in categories"
-              :key="category.id"
-              :value="category.id"
-              >{{ category.name }}</option
-            >
-          </select>
-          <div class="invalid-feedback">
             {{ $t("form.createIssueForm.validationMessages.categoryRequired") }}
           </div>
         </div>
-
+        <!-- v-if="submitted && !$v.data.layerIds.required" -->
         <div class="form-group content">
           <label for="content">{{ $t("form.createIssueForm.content") }}</label>
           <quill-editor
             id="content"
             class="content__editor"
-            :class="{ 'is-invalid': !contentValid }"
-            v-model="content"
+            :class="{ 'is-invalid': isSumbmitted && !$v.form.content.required }"
+            v-model="form.content"
             ref="myQuillEditor"
             :options="editorOption"
           ></quill-editor>
-          <div class="invalid-feedback">
+          <div
+            v-if="isSumbmitted && !$v.form.content.required"
+            class="invalid-feedback"
+          >
             {{ $t("form.createIssueForm.validationMessages.contentRequired") }}
           </div>
 
           <button
             type="button"
             class="btn btn-primary submit-btn"
-            :disabled="submitButtonDisabled && false"
-            @click="submitForm"
+            @click="createIssue"
           >
             {{ $t("button.submit") }}
           </button>
@@ -79,69 +85,50 @@
 </template>
 
 <script>
-import forum from "@/api/forum";
-
+import issue from "@/api/issue";
+import issueCategory from "@/api/issueCategory";
+import { required } from "vuelidate/lib/validators";
+import notifyService from "@/services/notifyService";
 export default {
   name: "NewIssue",
   data() {
     return {
-      title: null,
-      content: null,
-      selectedCategory: 0,
+      isSumbmitted: false,
+      form: {
+        title: null,
+        content: null,
+        issueCategoryId: null,
+      },
+      issueCategories: [],
       editorOption: {},
     };
   },
-  methods: {
-    submitForm() {
-      this.title = this.title !== null ? this.title.trim() : "";
-      this.selectedCategory =
-        this.selectedCategory !== 0 ? this.selectedCategory : -1;
-      this.content = this.content !== null ? this.content.trim() : "";
-
-      if (this.titleValid && this.categoryValid && this.contentValid) {
-        const body = {
-          title: this.title.trim(),
-          content: this.content,
-          categoryId: Number(this.selectedCategory),
-        };
-
-        forum
-          .insertIssue(body)
-          .then((response) => {
-            this.$emit("openIssue", response.id);
-            this.$store.commit("SET_OPEN_ISSUES", []);
-          })
-          .catch();
-      }
+  validations: {
+    form: {
+      title: { required },
+      content: { required },
+      issueCategoryId: { required },
     },
   },
-  computed: {
-    submitButtonDisabled() {
-      if (!this.titleValid && !this.categoryValid && !this.contentValid) {
-        return false;
+  mounted() {
+    this.getIssueCategories();
+  },
+  methods: {
+    createIssue() {
+      this.isSumbmitted = true;
+      this.$v.$touch();
+      if (!this.$v.$invalid) {
+        issue.add(this.form).then((response) => {
+          this.$emit("onIssueCreated", response);
+          notifyService.created();
+        });
       }
-      return true;
     },
-    titleValid() {
-      if (this.title !== null) {
-        return this.title.trim();
-      }
-      return true;
-    },
-    categoryValid() {
-      if (this.selectedCategory >= 0) {
-        return true;
-      }
-      return false;
-    },
-    contentValid() {
-      if (this.content !== null) {
-        return this.content.trim();
-      }
-      return true;
-    },
-    categories() {
-      return this.$store.state.forum.categories;
+    getIssueCategories() {
+      issueCategory.getAll().then((response) => {
+        this.issueCategories = response;
+        this.form.issueCategoryId = this.issueCategories[0].id;
+      });
     },
   },
 };

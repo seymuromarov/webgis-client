@@ -11,15 +11,11 @@
 </template>
 
 <script>
-import info from "@/api/info";
-
-// import Loader from "./parts/Loader";
+import releaseNote from "@/api/releaseNote";
 
 export default {
   name: "ReleaseNotes",
-  // components: {
-  //   Loader,
-  // },
+
   data() {
     return {
       notes: [],
@@ -30,8 +26,8 @@ export default {
     getReleaseNotes() {
       this.loading = true;
 
-      info
-        .getReleaseNotes()
+      releaseNote
+        .getAll()
         .then((response) => {
           this.notes = response;
         })

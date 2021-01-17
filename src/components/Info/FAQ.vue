@@ -30,14 +30,11 @@
 </template>
 
 <script>
-import info from "@/api/info";
-// import Loader from "./parts/Loader";
+import faq from "@/api/faq";
 
 export default {
   name: "FAQ",
-  // components: {
-  //   Loader,
-  // },
+
   data() {
     return {
       activeQuestionIds: [],
@@ -46,16 +43,20 @@ export default {
     };
   },
   methods: {
-    getFAQ() {
+    getFaqs() {
       this.loading = true;
 
-      info
-        .getFAQ()
+      faq
+        .getAll()
         .then((response) => {
-            this.questions = response;
+          console.log(
+            "🚀 ~ file: FAQ.vue ~ line 54 ~ .then ~ response",
+            response
+          );
+          this.questions = response;
         })
-        .catch((error) => {
-        }).finally(()=>{
+        .catch((error) => {})
+        .finally(() => {
           this.loading = false;
         });
     },
@@ -82,7 +83,7 @@ export default {
   },
   mounted() {
     if (!this.questions.length) {
-      this.getFAQ();
+      this.getFaqs();
     }
   },
 };

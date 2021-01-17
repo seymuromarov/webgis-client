@@ -24,6 +24,19 @@ const FAVORITEQUERY_URLS = {
   GET: (id) => `/favoritequery/${id}`,
   GET_ALL: "/favoritequery",
 };
+const ISSUE_URLS = {
+  ADD: "/issue",
+  EDIT: "/issue",
+  DELETE: (id) => `/issue/${id}`,
+  GET: (id) => `/issue/${id}`,
+  GET_ALL: "/issue",
+  GET_TOTAL_COUNTS: "/issue/counts",
+};
+const COMMENT_URLS = {
+  ADD: "/comment",
+  DELETE: (id) => `/comment/${id}`,
+  GET: (id) => `/comment/${id}`,
+};
 const FAVORITELAYER_URLS = {
   SET: "/favoritelayer",
   GET_ALL: "/favoritelayer",
@@ -47,6 +60,15 @@ const NDVI_URLS = {
 };
 const LAYER_URLS = {
   GET_ALL: "/layer/GetCategorizedLayers",
+};
+const FAQ_URLS = {
+  GET_ALL: "/faq",
+};
+const ISSUE_CATEGORY_URLS = {
+  GET_ALL: "/issueCategory",
+};
+const RELEASE_NOTE_URLS = {
+  GET_ALL: "/ReleaseNote",
 };
 const DATATABLE_URLS = {
   GET_TABLE_INFO: (id) => `/datatable/${id}/GetTableInfo`,
@@ -92,6 +114,11 @@ export {
   ACCOUNT_URL,
   LAYER_URLS,
   DATATABLE_URLS,
+  FAQ_URLS,
+  ISSUE_URLS,
+  COMMENT_URLS,
+  ISSUE_CATEGORY_URLS,
+  RELEASE_NOTE_URLS,
   NDVI_URLS,
   ARCGIS_URLS,
 };

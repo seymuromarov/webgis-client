@@ -1,122 +1,91 @@
 <template>
   <div>
     <!-- Comments -->
-    <div class="issue__comments">
-      <!-- <div class="issue__comment">
-                <div class="card">
-                    <h6 class="card-header">
-                        <div>
-                            <span class="issue__author">Peter Beck</span>
-                            <span class="issue__date">6 days ago</span>
-                        </div>
-                        <button type="button" class="btn btn-light">
-                            <i class="fas fa-reply"></i>
-                        </button>
-                    </h6>
-                    <div class="card-body">
-                        <p
-                            class="card-text"
-                        >Curabitur ultrices libero vel mauris venenatis, in varius leo gravida.</p>
-                    </div>
-                </div>
-                <div class="issue__comment_replies">
-                    <div class="issue__comment">
-                        <div class="card">
-                            <h6 class="card-header">
-                                <div>
-                                    <span class="issue__author">Peter Beck</span>
-                                    <span class="issue__date">6 days ago</span>
-                                </div>
-                            </h6>
-                            <div class="card-body">
-                                <p
-                                    class="card-text"
-                                >Curabitur ultrices libero vel mauris venenatis, in varius leo gravida.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="issue__comment">
-                        <div class="card">
-                            <h6 class="card-header">
-                                <div>
-                                    <span class="issue__author">Peter Beck</span>
-                                    <span class="issue__date">6 days ago</span>
-                                </div>
-                            </h6>
-                            <div class="card-body">
-                                <p
-                                    class="card-text"
-                                >Curabitur ultrices libero vel mauris venenatis, in varius leo gravida.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
-
-      <div class="issue__comment" v-for="comment in comments" :key="comment.id">
-        <!-- Comment -->
-        <div class="card">
-          <h6 class="card-header">
-            <div>
-              <span class="issue__author">{{ comment.user.userName }}</span>
-              <span class="issue__date" :title="comment.dateCreated">{{
-                comment.dateCreated
-              }}</span>
-            </div>
-            <div class="btn-group">
-              <button
-                type="button"
-                class="btn btn-light"
-                v-if="showDeleteBtn"
-                @click="deleteComment(comment.id)"
-              >
-                <i class="far fa-trash-alt"></i>
-              </button>
-              <button
-                type="button"
-                class="btn btn-light"
-                @click="setActiveReplyId(comment.id)"
-              >
-                <i class="fas fa-reply"></i>
-              </button>
-            </div>
-          </h6>
-          <div class="card-body" v-html="comment.content"></div>
-        </div>
-
-        <!-- Replies -->
-        <div class="issue__comment_replies">
-          <!-- Reply form -->
-          <NewComment
-            v-show="comment.id === activeReplyId"
-            :replyId="comment.id"
-            @submitComment="submitComment"
-          />
-
-          <!-- Reply comment -->
-          <div
-            class="issue__comment"
-            v-for="reply in comment.replies"
-            :key="reply.id"
-          >
-            <div class="card">
+    <div class="issue-comments">
+      <div
+        class="issue-comment-card"
+        v-for="comment in comments"
+        :key="comment.id"
+      >
+        <div class="row">
+          <div class="col-md-12">
+            <!-- Comment -->
+            <div class="card w-100">
               <h6 class="card-header">
-                <div>
-                  <span class="issue__author">{{ reply.user.userName }}</span>
-                  <span class="issue__date" :title="reply.dateCreated">{{
-                    reply.dateCreated
+                <div class="d-inline-block">
+                  <strong>{{ comment.user.userName }}</strong>
+                  <span class="text-muted ml-2" :title="comment.dateCreated">{{
+                    comment.dateCreated
                   }}</span>
                 </div>
-                <button
-                  type="button"
-                  class="btn btn-light"
-                  v-if="showDeleteBtn"
-                  @click="deleteComment(reply.id)"
-                >
-                  <i class="far fa-trash-alt"></i>
-                </button>
+                <div class="btn-group float-right">
+                  <button
+                    v-permission="['issue_edit']"
+                    type="button"
+                    class="btn btn-light"
+                    @click="deleteComment(comment.id)"
+                  >
+                    <i class="far fa-trash-alt"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn"
+                    :class="{
+                      'btn-success': comment.id === activeReplyId,
+                      'btn-light': comment.id !== activeReplyId,
+                    }"
+                    @click="setActiveReplyId(comment.id)"
+                  >
+                    <i class="fas fa-reply"></i>
+                  </button>
+                </div>
               </h6>
-              <div class="card-body" v-html="reply.content"></div>
+              <div class="card-body" v-html="comment.content"></div>
+            </div>
+          </div>
+
+          <div class="offset-md-2 col-md-10 mt-3">
+            <!-- Replies -->
+            <div class="issue-comment-reply">
+              <!-- Reply comment -->
+              <div
+                class="issue-comment-card"
+                v-for="reply in comment.replies"
+                :key="reply.id"
+              >
+                <div class="card mt-2">
+                  <h6 class="card-header">
+                    <div class="d-inline-block">
+                      <strong>{{ reply.user.userName }}</strong>
+                      <span
+                        class="text-muted ml-2"
+                        :title="reply.dateCreated"
+                        >{{ reply.dateCreated }}</span
+                      >
+                    </div>
+                    <div class="btn-group float-right">
+                      <button
+                        v-permission="['issue_edit']"
+                        type="button"
+                        class="btn btn-light"
+                        @click="deleteComment(reply.id)"
+                      >
+                        <i class="far fa-trash-alt"></i>
+                      </button>
+                    </div>
+                  </h6>
+                  <div class="card-body" v-html="reply.content"></div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3">
+              <!-- Reply form -->
+              <new-comment
+                v-show="comment.id === activeReplyId"
+                :issueId="issueId"
+                :replyId="comment.id"
+                @onCommentAdded="onCommentAdded"
+              />
             </div>
           </div>
         </div>
@@ -124,61 +93,39 @@
 
       <Loader v-if="loading" />
 
-      <!-- New Comment -->
-      <NewComment @submitComment="submitComment" />
-
-      <div class="modal show" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Modal title</h5>
-              <button
-                type="button"
-                class="close"
-                data-dismiss="modal"
-                aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <p>Modal body text goes here.</p>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal"
-              >
-                Close
-              </button>
-              <button type="button" class="btn btn-primary">
-                Save changes
-              </button>
-            </div>
-          </div>
-        </div>
+      <div class="mt-3">
+        <new-comment :issueId="issueId" @onCommentAdded="onCommentAdded" />
       </div>
+      <!-- New Comment -->
+      <!-- <NewComment @submitComment="submitComment" /> -->
     </div>
   </div>
 </template>
 
 <script>
+import permission from "@/directive/permission/index.js";
 import forum from "@/api/forum";
+import comment from "@/api/comment";
 import NewComment from "./NewComment";
+import { notifyService } from "@/services";
+console.log(
+  "🚀 ~ file: Comments.vue ~ line 104 ~ notifyService",
+  notifyService
+);
 // import Loader from "../parts/Loader";
 
 export default {
   name: "Comments",
+  directives: { permission },
   components: {
-    NewComment,
+    "new-comment": NewComment,
     // Loader,
   },
   props: {
-    rawComments: {
+    data: {
       type: Array,
     },
-    postId: {
+    issueId: {
       type: Number,
     },
   },
@@ -190,6 +137,10 @@ export default {
     };
   },
   methods: {
+    onCommentAdded(comment) {
+      notifyService.success("Comment successfully added");
+      this.$emit("onCommentAdded", comment);
+    },
     setActiveReplyId(id) {
       if (this.activeReplyId === id) {
         this.activeReplyId = null;
@@ -200,11 +151,11 @@ export default {
     rearrangeCommentList() {
       let comments = [];
 
-      this.rawComments.forEach((item) => {
+      this.data.forEach((item) => {
         if (!item.parentId) {
           comments.push({
             ...item,
-            replies: this.rawComments.filter((comment) => {
+            replies: this.data.filter((comment) => {
               if (comment.parentId) {
                 return comment.parentId === item.id;
               }
@@ -215,66 +166,34 @@ export default {
 
       this.comments = comments;
     },
-    submitComment(data) {
-      this.loading = true;
 
-      const body = {
-        parentId: null,
-        postId: this.postId,
-        ...data,
-      };
-
-      forum
-        .insertComment(body)
-        .then((response) => {
-          this.rawComments.push(response);
-          this.activeReplyId = null;
-        })
-        .catch()
-        .finally(() => {
-          this.loading = false;
-        });
-    },
     deleteComment(id) {
-      this.$swal({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
-      }).then((result) => {
-        if (result.value) {
-          this.loading = true;
-
-          forum
-            .deleteComment(id)
-            .then((response) => {
-              if (response.status === 200) {
-                this.rawComments.splice(
-                  this.rawComments.findIndex((x) => x.id === id),
-                  1
-                );
-              }
-              this.loading = false;
-            })
-            .catch();
+      notifyService.areYouSureAlert(
+        "Are you sure want to delete this comment?",
+        "Delete!",
+        (result) => {
+          if (result.isConfirmed) {
+            this.loading = true;
+            comment
+              .delete(id)
+              .then((response) => {
+                notifyService.deleted();
+                this.$emit("onCommentDeleted");
+              })
+              .finally(() => {
+                this.loading = false;
+              });
+          }
         }
-      });
+      );
     },
   },
-  computed: {
-    showDeleteBtn() {
-      // return this.$cookie.get("isAdmin");
-      return false;
-    },
-  },
+
   mounted() {
     this.rearrangeCommentList();
   },
   watch: {
-    rawComments() {
+    data() {
       this.rearrangeCommentList();
     },
   },
@@ -282,43 +201,12 @@ export default {
 </script>
 
 <style lang="scss">
-.issue__comments {
-  .issue__comment {
-    margin-top: 2.4rem;
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.4rem 2rem;
-      height: 3.6rem;
-    }
+.issue-comments {
+  .issue-comment-card {
     img {
       width: 100%;
       border-radius: 0.4rem;
       margin: 1.6rem 0;
-    }
-  }
-  .issue__comment_replies {
-    margin-left: 3.2rem;
-    padding-left: 3.2rem;
-    border-left: 0.1rem solid rgba(0, 0, 0, 0.1);
-  }
-}
-
-.new-comment {
-  // .card-header {
-  //     height: 3.6rem;
-  // }
-  .card-body {
-    padding: 0;
-  }
-  .quill-editor {
-    border: 0;
-    .ql-toolbar {
-      border-width: 0 0 0.1rem 0;
-    }
-    .ql-container {
-      border-width: 0;
     }
   }
 }

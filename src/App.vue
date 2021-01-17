@@ -16,6 +16,8 @@ export default {
     this.$store.dispatch("fetchRemoteMessages").then(() => {
       this.appReady = true;
     });
+
+    //
   },
 };
 </script>

@@ -7,46 +7,41 @@
           <button
             type="button"
             class="btn"
-            :class="activeTab === 1 ? 'btn-primary' : 'btn-light'"
-            @click="changeActiveTab(1)"
+            :class="activeTab === 'open' ? 'btn-primary' : 'btn-light'"
+            @click="changeActiveTab('open')"
           >
             <i
               class="fas fa-exclamation-circle issue-icon issue-icon--open"
             ></i>
-            {{ issueCount.open }}
+            {{ totalOpenedIssueCount }}
             {{ $t("menu.information.forum.openedIssues") }}
           </button>
           <button
             type="button"
             class="btn"
-            :class="activeTab === 2 ? 'btn-primary' : 'btn-light'"
-            @click="changeActiveTab(2)"
+            :class="activeTab === 'closed' ? 'btn-primary' : 'btn-light'"
+            @click="changeActiveTab('closed')"
           >
             <i class="far fa-check-circle issue-icon issue-icon--closed"></i>
-            {{ issueCount.closed }}
+            {{ totalClosedIssueCount }}
             {{ $t("menu.information.forum.closedIssues") }}
           </button>
         </div>
-        <select
-          class="form-control category"
-          placeholder="Filter by category"
-          @change="handleFilter"
-        >
-          <option :value="0" :selected="activeCategoryId === 0">All</option>
-          <option
-            v-for="category in categories"
-            :key="category.id"
-            :value="category.id"
-            :selected="activeCategoryId === category.id"
-            >{{ category.name }}</option
-          >
-        </select>
+        <v-select
+          v-model="selectedIssueCategoryId"
+          :clearable="false"
+          :options="issueCategoryOptions"
+          :reduce="(option) => option.id"
+          label="name"
+          class="ml-3"
+          @input="onIssueCategoryChange"
+        ></v-select>
       </div>
       <div>
         <button
           type="button"
           class="btn btn-primary new-issue"
-          @click="$emit('newIssue')"
+          @click="$emit('onNewIssueClick')"
         >
           {{ $t("menu.information.forum.createIssue") }}
         </button>
@@ -57,17 +52,37 @@
     <Loader v-if="loading" />
 
     <!-- List -->
-    <div class="card issues-card" v-if="activeIssueList.length">
+    <div class="card issues-card" v-if="activeIssueList">
       <ul class="list-group list-group-flush">
         <li
-          class="list-group-item issues-card__item"
+          class="list-group-item issues-card-item"
           v-for="issue in activeIssueList"
           :key="issue.id"
-          @click="openIssue(issue.id)"
+          @click="onIssueClick(issue)"
         >
-          <i class="issue-icon" :class="issueIconClass"></i>
-          <span>{{ issue.title }}</span>
-          <span class="issue__date">{{ issue.dateCreated }}</span>
+          <div class="flex-grow-1">
+            <i class="issue-icon" :class="issueIconClass"></i>
+            <span class="ml-3">{{ issue.title }}</span>
+            <span
+              class="badge ml-5"
+              :class="{
+                'badge-danger':
+                  issue.issueCategory.name.toLowerCase() === 'bug',
+                'badge-success':
+                  issue.issueCategory.name.toLowerCase() === 'feature',
+                'badge-info': issue.issueCategory.name.toLowerCase() === 'help',
+              }"
+              >{{ issue.issueCategory.name }}</span
+            >
+          </div>
+
+          <div
+            class="flex-grow-1 float-right justify-content-center align-items-center"
+          >
+            <small class="text-muted float-right">{{
+              issue.dateCreated
+            }}</small>
+          </div>
         </li>
       </ul>
     </div>
@@ -76,128 +91,119 @@
 
 <script>
 import forum from "@/api/forum";
-// import Loader from "../parts/Loader";
-
+import issue from "@/api/issue";
+import issueCategory from "@/api/issueCategory";
 export default {
   name: "IssueList",
-  // components: {
-  //   Loader,
-  // },
+
   data() {
     return {
+      openedIssues: [],
+      closedIssues: [],
+      issueCategories: [],
+      totalOpenedIssueCount: 0,
+      totalClosedIssueCount: 0,
+      selectedIssueCategoryId: null,
       filteredIssues: {
         open: [],
         closed: [],
       },
       loading: false,
+      activeTab: "open",
     };
+  },
+  mounted() {
+    this.getOpenIssues();
+
+    this.getIssueCount();
+    this.getIssueCategories();
   },
   methods: {
     getOpenIssues() {
       this.loading = true;
-      forum
-        .getIssues(1)
+      issue
+        .getAllOpen({ issueCategoryId: this.selectedIssueCategoryId })
         .then((response) => {
-          this.$store.commit("SET_OPEN_ISSUES", response);
-          this.filteredIssues.open = response;
+          this.openedIssues = response;
         })
-        .catch()
         .finally(() => {
           this.loading = false;
         });
     },
     getClosedIssues() {
       this.loading = true;
-      forum
-        .getIssues(2)
+      issue
+        .getAllClosed({ issueCategoryId: this.selectedIssueCategoryId })
         .then((response) => {
-          this.$store.commit("SET_CLOSED_ISSUES", response);
-          this.filteredIssues.closed = response;
+          this.closedIssues = response;
         })
-        .catch()
         .finally(() => {
           this.loading = false;
         });
     },
     getIssueCount() {
-      forum
-        .getIssueCount()
+      issue
+        .getCounts()
         .then((response) => {
-          this.$store.state.forum.issueCount = response;
+          this.totalOpenedIssueCount = response.open;
+          this.totalClosedIssueCount = response.closed;
         })
         .catch()
         .finally(() => {
           this.loading = false;
         });
     },
-    openIssue(id) {
-      this.$emit("openIssue", id);
+    getIssueCategories() {
+      this.loading = true;
+      issueCategory.getAll().then((response) => {
+        this.issueCategories = response;
+        this.loading = false;
+      });
     },
-    handleFilter(event) {
-      this.$store.commit("SET_ACTIVE_CATEGORY_ID", Number(event.target.value));
-      this.filterList();
+    onIssueClick(issue) {
+      this.$emit("onIssueClick", issue);
     },
-    filterList() {
-      if (this.activeCategoryId !== 0) {
-        this.filteredIssues.open = this.issues.open.filter((issue) => {
-          return issue.categoryId === this.activeCategoryId;
-        });
-        this.filteredIssues.closed = this.issues.closed.filter((issue) => {
-          return issue.categoryId === this.activeCategoryId;
-        });
-      } else {
-        this.filteredIssues = { ...this.issues };
-      }
+    onIssueCategoryChange(item) {
+      this.refreshIssuesByType(this.activeTab);
     },
-    changeActiveTab(value) {
-      this.$store.commit("SET_ACTIVE_TAB", value);
 
-      if (value === 1 && !this.issues.open.length) {
+    refreshIssuesByType(val) {
+      if (val === "open") {
         this.getOpenIssues();
-      } else if (value === 2 && !this.issues.closed.length) {
+      } else {
         this.getClosedIssues();
       }
     },
+    changeActiveTab(value) {
+      this.activeTab = value;
+      this.refreshIssuesByType(value);
+    },
   },
-  mounted() {
-    if (!this.issues.open.length) {
-      this.getOpenIssues();
-    } else {
-      this.filterList();
-    }
-    if (!(this.issueCount.open + this.issueCount.closed)) {
-      this.getIssueCount();
-    }
-  },
+
   computed: {
-    issues() {
-      return this.$store.state.forum.issueList;
+    issueCategoryOptions() {
+      var options = this.issueCategories.map((c) => {
+        return {
+          id: c.id,
+          name: c.name,
+        };
+      });
+      return [{ id: null, name: "All" }, ...options];
     },
-    issueCount() {
-      return this.$store.state.forum.issueCount;
-    },
-    activeTab() {
-      return this.$store.state.forum.activeTab;
-    },
-    activeCategoryId() {
-      return this.$store.state.forum.activeCategoryId;
-    },
+
     activeIssueList() {
-      if (this.activeTab === 1) {
-        return this.filteredIssues.open;
+      if (this.activeTab === "open") {
+        return this.openedIssues;
       } else {
-        return this.filteredIssues.closed;
+        return this.closedIssues;
       }
     },
     issueIconClass() {
-      if (this.activeTab === 1) {
+      if (this.activeTab === "open") {
         return "fas fa-exclamation-circle issue-icon--open";
       } else {
         return "far fa-check-circle issue-icon--closed";
       }
-    },
-    categories() {
-      return this.$store.state.forum.categories;
     },
   },
 };
@@ -239,7 +245,7 @@ export default {
   }
 
   .issues-card {
-    .issues-card__item {
+    .issues-card-item {
       display: flex;
 
       &:hover {
@@ -247,13 +253,8 @@ export default {
         background-color: rgba(0, 0, 0, 0.03);
       }
 
-      .issue__date {
-        margin-left: 0.8rem;
-      }
-
       .issue-icon {
         font-size: 1.6rem;
-        margin-right: 2rem;
       }
     }
   }

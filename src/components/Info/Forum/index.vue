@@ -1,25 +1,24 @@
 <template>
   <div id="Forum">
     <IssueList
-      @openIssue="openIssue"
+      @onIssueClick="openIssue"
       v-if="activeBlock === 'list'"
-      @newIssue="activeBlock = 'newIssue'"
+      @onNewIssueClick="activeBlock = 'newIssue'"
     />
     <IssueDetailed
       v-if="activeBlock === 'detailed'"
-      :openIssueId="openIssueId"
+      :issueId="selectedIssueId"
       @back="activeBlock = 'list'"
     />
     <NewIssue
       v-if="activeBlock === 'newIssue'"
       @back="activeBlock = 'list'"
-      @openIssue="openIssue"
+      @onIssueCreated="openIssue"
     />
   </div>
 </template>
 
 <script>
-import forum from "@/api/forum";
 import IssueList from "./List";
 import IssueDetailed from "./Detailed";
 import NewIssue from "./NewIssue";
@@ -34,31 +33,13 @@ export default {
   data() {
     return {
       activeBlock: "list",
-      openIssueId: null,
+      selectedIssueId: null,
     };
   },
   methods: {
-    openIssue(id) {
-      this.openIssueId = id;
+    openIssue(item) {
+      this.selectedIssueId = item.id;
       this.activeBlock = "detailed";
-    },
-    getCategories() {
-      forum
-        .getCategories()
-        .then((response) => {
-          this.$store.commit("SET_CATEGORIES", response);
-        })
-        .catch();
-    },
-  },
-  mounted() {
-    if (!this.categories.length) {
-      this.getCategories();
-    }
-  },
-  computed: {
-    categories() {
-      return this.$store.state.forum.categories;
     },
   },
 };
