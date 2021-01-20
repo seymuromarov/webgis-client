@@ -2,24 +2,26 @@ const state = {
   defaultFillColor: "#FFFFFF00",
   defaultBorderColor: "#F44336FF",
 
-  shapeFillColor: {
-    hex8: "var(--transparent)",
-    rgba: {
-      r: 255,
-      g: 255,
-      b: 255,
-      a: 1,
-    },
-  },
-  shapeBorderColor: {
-    hex8: "#000000",
-    rgba: {
-      r: 255,
-      g: 255,
-      b: 255,
-      a: 1,
-    },
-  },
+  shapeFillColor: "#FFFFFF00",
+  shapeBorderColor: "#F44336FF",
+  // shapeFillColor: {
+  //   hex8: "var(--transparent)",
+  //   rgba: {
+  //     r: 255,
+  //     g: 255,
+  //     b: 255,
+  //     a: 1,
+  //   },
+  // },
+  // shapeBorderColor: {
+  //   hex8: "#000000",
+  //   rgba: {
+  //     r: 255,
+  //     g: 255,
+  //     b: 255,
+  //     a: 1,
+  //   },
+  // },
   colorPicker: {
     visibility: false,
     layer: null,
@@ -36,6 +38,12 @@ const getters = {
   },
   defaultBorderColor: (state) => {
     return state.defaultBorderColor;
+  },
+  shapeFillColor: (state) => {
+    return state.shapeFillColor;
+  },
+  shapeBorderColor: (state) => {
+    return state.shapeBorderColor;
   },
   activeColorPickerId: (state) => {
     return state.activeColorPickerId;

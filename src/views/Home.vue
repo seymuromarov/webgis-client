@@ -239,7 +239,7 @@ export default {
           ...this.$store.getters.defaultDynamicLayerIds,
           ...this.$store.getters.defaultBaseLayerIds,
         ];
-
+        ``;
         serviceController.setServicesStatusByIds(defaultLayers, true);
         self.mapLayer.on("moveend", () => {
           historyController.updateHistoryMap();
@@ -259,8 +259,10 @@ export default {
   },
   methods: {
     setShapeColor() {
+      alert();
       document.body.style.cursor = "crosshair";
       this.$moodal.colorPickerModal.hide();
+      toolController.setColorPickStatus(true);
     },
 
     dragAndDropToast() {
@@ -288,14 +290,6 @@ export default {
       },
     },
 
-    // isDrawnShapeForDetection: {
-    //   get() {
-    //     return toolController.getDrawForChangeDetectionStatus();
-    //   },
-    //   set(value) {
-    //     toolController.setDrawForChangeDetectionStatus(value);
-    //   },
-    // },
     drawSource: {
       get() {
         return this.$store.getters.drawSource;

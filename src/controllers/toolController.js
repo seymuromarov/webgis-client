@@ -388,7 +388,7 @@ const functions = {
     let element = getters.getHelpMapTooltipElement();
     if (element && element.parentNode) {
       element.parentNode.removeChild(element);
-      setters.setHelpMapTooltipElement(element);
+      // setters.setHelpMapTooltipElement(element);
     }
 
     let helpmaptooltipElement = document.createElement("div");
@@ -407,9 +407,10 @@ const functions = {
   },
   createMeasuremaptooltip() {
     let element = getters.getMeasureMapTooltipElement();
+
     if (element && element.parentNode) {
       element.parentNode.removeChild(element);
-      setters.setMeasureMapTooltipElement(element);
+      // setters.setMeasureMapTooltipElement(element);
     }
 
     let measuremaptooltipElement = document.createElement("div");

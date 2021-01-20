@@ -5,7 +5,11 @@ import {
   resolutionOptionTypeEnum,
   coordinateTypeEnum,
 } from "@/enums";
-import { serviceController, toolController } from "@/controllers";
+import {
+  serviceController,
+  toolController,
+  colorPickerController,
+} from "@/controllers";
 import { defaultZoomLevelSettings } from "@/config/settings";
 import { materialColors } from "@/constants/colors";
 import { selectedLayerStyle } from "@/constants/featureStyles";
@@ -299,26 +303,32 @@ const events = {
       });
     } else if (toolController.getColorPickStatus()) {
       var map = getters.getMap();
-      map.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
-        try {
-          let newStyle = new Style({
-            fill: new Fill({
-              color: self.shapeFillColor.hex8,
-            }),
-            stroke: new Stroke({
-              color: self.shapeBorderColor.hex8,
-              width: 2,
-            }),
-            image: new CircleStyle({
-              radius: 7,
-              fill: new Fill({
-                color: self.shapeFillColor.hex8,
-              }),
-            }),
-          });
+      const fillColor = colorPickerController.getShapeFillColor();
 
-          feature.setStyle(newStyle);
-        } catch (e) {}
+      const borderColor = colorPickerController.getShapeBorderColor();
+
+      map.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
+        let newStyle = new Style({
+          fill: new Fill({
+            color: fillColor,
+          }),
+          stroke: new Stroke({
+            color: borderColor,
+            width: 2,
+          }),
+          image: new CircleStyle({
+            radius: 7,
+            fill: new Fill({
+              color: fillColor,
+            }),
+          }),
+        });
+        console.log(
+          "🚀 ~ file: mapController.js ~ line 320 ~ map.forEachFeatureAtPixel ~ newStyle",
+          newStyle
+        );
+
+        feature.setStyle(newStyle);
       });
       setters.setMap(map);
     } //only map click

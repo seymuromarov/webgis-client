@@ -10,6 +10,7 @@ import filterController from "./filterController";
 import historyController from "./historyController";
 import ndviController from "./ndviController";
 import userController from "./userController";
+import colorPickerController from "./colorPickerController";
 export {
   mapController,
   layerController,
@@ -23,4 +24,5 @@ export {
   historyController,
   ndviController,
   userController,
+  colorPickerController,
 };
