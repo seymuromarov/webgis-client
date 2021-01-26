@@ -103,7 +103,7 @@
           class="tableContent custom-scrollbar"
           id="dataTable"
           ref="dataTableContent"
-          v-if="!isTableCollapsed"
+          v-show="!isTableCollapsed"
         >
           <!-- Loader -->
           <Loader v-if="loading" />

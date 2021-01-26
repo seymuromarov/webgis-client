@@ -63,6 +63,7 @@ import {
 import { drawTypeEnum, resourceTypeEnum } from "@/enums";
 import { icons } from "@/constants/assets";
 import { urlHelper, mapHelper } from "@/helpers";
+import { resourceTypeToEnum } from "@/utils/resourceTypeToEnum";
 export default {
   name: "ComparerModal",
   components: { VueCompareImage },
@@ -96,6 +97,7 @@ export default {
         return {
           code: c.id,
           label: c.name,
+          resourceType: c.resourceType,
         };
       });
       return basemaps;
@@ -160,6 +162,7 @@ export default {
             return {
               code: c.id,
               label: c.name,
+              resourceType: c.resourceType,
             };
           })
           .slice(0, 2);
@@ -179,16 +182,36 @@ export default {
     },
     reload() {
       if (this.selecteds.length == 2) {
+        var leftResourceType = this.selecteds[0].resourceType;
+        console.log(
+          "🚀 ~ file: ComparerModal.vue ~ line 185 ~ reload ~ leftResourceType",
+          leftResourceType
+        );
+        var leftResourceEnum = resourceTypeToEnum(leftResourceType);
+        console.log(
+          "🚀 ~ file: ComparerModal.vue ~ line 186 ~ reload ~ leftResourceEnum",
+          leftResourceEnum
+        );
         this.leftImage = urlHelper.getImageUrl(
           this.selecteds[0].label,
           this.extent,
-          resourceTypeEnum.ARCGIS
+          leftResourceEnum
         );
 
+        var rightResourceType = this.selecteds[1].resourceType;
+        console.log(
+          "🚀 ~ file: ComparerModal.vue ~ line 198 ~ reload ~ rightResourceType",
+          rightResourceType
+        );
+        var rightResourceEnum = resourceTypeToEnum(rightResourceType);
+        console.log(
+          "🚀 ~ file: ComparerModal.vue ~ line 195 ~ reload ~ rightResourceEnum",
+          rightResourceEnum
+        );
         this.rightImage = urlHelper.getImageUrl(
           this.selecteds[1].label,
           this.extent,
-          resourceTypeEnum.ARCGIS
+          rightResourceEnum
         );
       } else this.reset();
 
