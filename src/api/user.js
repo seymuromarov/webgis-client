@@ -7,4 +7,11 @@ export default {
       method: "get",
     });
   },
+  changePassword(data) {
+    return request({
+      url: USER_URLS.CHANGE_PASSWORD_URL,
+      method: "put",
+      data,
+    });
+  },
 };

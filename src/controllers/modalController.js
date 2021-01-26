@@ -45,6 +45,12 @@ const functions = {
   showProfileModalModal() {
     vm.$moodal.profileModal.show();
   },
+  hideChangePasswordModal() {
+    vm.$moodal.changePasswordModal.hide();
+  },
+  showChangePasswordModal() {
+    vm.$moodal.changePasswordModal.show();
+  },
   hideFavoriteQueryModal() {
     vm.$moodal.favoriteQueryModal.hide();
   },

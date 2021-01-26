@@ -31,3 +31,4 @@ export { default as ImageUploadModal } from "./modals/ImageUploadModal";
 export { default as BlindSpotModal } from "./modals/BlindSpotModal";
 export { default as ProfileModal } from "./modals/ProfileModal/Index";
 export { default as FavoriteQueryModal } from "./modals/FavoriteQueryModal";
+export { default as ChangePasswordModal } from "./modals/ChangePasswordModal.vue";

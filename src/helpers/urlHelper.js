@@ -1,8 +1,12 @@
 import { tileTypeEnum, resourceTypeEnum } from "@/enums";
 import { serviceHelper } from "@/helpers";
 import { tokenService } from "@/services";
-import { ARCGIS_URLS } from "@/config/urls";
-import { arcgisImgExportSettings } from "@/config/settings";
+import { ARCGIS_URLS, GEOWEBCACHE_URLS, GEOSERVER_URLS } from "@/config/urls";
+import {
+  arcgisImgExportSettings,
+  geowebcacheImgExportSettings,
+  geoserverImgExportSettings,
+} from "@/config/settings";
 import qs from "qs";
 const functions = {
   formatQueryString(params) {
@@ -88,8 +92,21 @@ const functions = {
       params["bbox"] = bbox;
       let arcgisImgUrl = ARCGIS_URLS.EXPORT_IMAGE_URL(name, params);
       return arcgisImgUrl;
+    } else if (resourceType == resourceTypeEnum.GEOWEBCACHE) {
+      var params = geowebcacheImgExportSettings;
+      params["BBOX"] = bbox;
+      params["LAYERS"] = name;
+      let geowebcacheImgUrl = GEOWEBCACHE_URLS.EXPORT_IMAGE_URL(name, params);
+      return geowebcacheImgUrl;
+    } else if (resourceType == resourceTypeEnum.GEOSERVER) {
+      var params = geoserverImgExportSettings;
+      params["BBOX"] = bbox;
+      params["LAYERS"] = name;
+      let geoserverImgUrl = GEOSERVER_URLS.EXPORT_IMAGE_URL(name, params);
+      return geoserverImgUrl;
+    } else if (resourceType == resourceTypeEnum.GEOSERVER_GWC) {
+      return "";
     }
-    return "";
   },
 };
 export default { ...functions };

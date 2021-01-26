@@ -16,12 +16,17 @@
         />
       </div>
     </div>
+    <div class="col-md-12 mt-2" style="display:flex;justify-content: center;">
+      <button class="btn btn-outline-primary" @click="showChangePasswordModal">
+        {{ $t("form.changePasswordForm.modalTitle") }}
+      </button>
+    </div>
   </div>
 </template>
 <script>
 import { LanguageSelect } from "@/components";
 
-import { userController } from "@/controllers";
+import { userController, modalController } from "@/controllers";
 export default {
   name: "Profile",
   components: { LanguageSelect },
@@ -35,6 +40,11 @@ export default {
     var user = userController.getUserInfo();
     this.username = user.userName;
     this.email = user.email;
+  },
+  methods: {
+    showChangePasswordModal() {
+      modalController.showChangePasswordModal();
+    },
   },
 };
 </script>

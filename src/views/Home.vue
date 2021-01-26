@@ -13,6 +13,7 @@
       <Sidebar />
       <!-- Profile Modal -->
       <ProfileModal />
+      <ChangePasswordModal />
       <!-- Data table -->
       <DataTable ref="dataTable" />
 
@@ -53,23 +54,15 @@
 import {
   Map,
   View,
-  Feature,
-  Polygon,
-  Point,
   Modify,
-  Style,
-  Stroke,
-  Fill,
   defaultInteractions,
   DragRotateAndZoom,
   DragAndDrop,
   TileDebug,
   TileLayer,
   VectorLayer,
-  OSM,
   VectorSource,
   fromLonLat,
-  transform,
   defaultControls,
   ScaleLine,
   GPX,
@@ -83,7 +76,6 @@ import {
   getProjection,
 } from "@/wrappers/openLayerImports";
 
-// Custom components
 import {
   ShapeColorPicker,
   DataTable,
@@ -101,12 +93,10 @@ import {
   ServiceSelectionModal,
   BlindSpotModal,
   ComparerModal,
+  ChangePasswordModal,
 } from "@/components/";
 
-import { serviceHelper } from "@/helpers";
 import {
-  layerController,
-  tableController,
   toolController,
   mapController,
   serviceController,
@@ -114,7 +104,7 @@ import {
 } from "@/controllers";
 
 // Services
-import { tokenService, hashService, notifyService } from "@/services";
+import { hashService, notifyService } from "@/services";
 export default {
   name: "Home",
   components: {
@@ -134,6 +124,7 @@ export default {
     BlindSpotModal,
     ComparerModal,
     PrintModal,
+    ChangePasswordModal,
   },
   data() {
     return {
@@ -259,7 +250,6 @@ export default {
   },
   methods: {
     setShapeColor() {
-      alert();
       document.body.style.cursor = "crosshair";
       this.$moodal.colorPickerModal.hide();
       toolController.setColorPickStatus(true);

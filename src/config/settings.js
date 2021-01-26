@@ -21,10 +21,40 @@ const arcgisImgExportSettings = {
   imagesr: "4326",
   dpi: "90",
 };
+const geowebcacheImgExportSettings = {
+  SERVICE: "WMS",
+  REQUEST: "GetMap",
+  FORMAT: "image/png",
+  TRANSPARENT: "true",
+  // LAYERS: "Azersky2019_IVrub",
+  TILED: "true",
+  transparent: "true",
+  format: "image/png",
+  srs: "EPSG:3857",
+  WIDTH: "256",
+  HEIGHT: "256",
+  CRS: "EPSG:3857",
+};
+const geoserverImgExportSettings = {
+  SERVICE: "WMS",
+  REQUEST: "GetMap",
+  FORMAT: "image/png",
+  TRANSPARENT: "true",
+  // LAYERS: "Azersky2019_IVrub",
+  TILED: "true",
+  transparent: "true",
+  format: "image/png",
+  srs: "EPSG:3857",
+  WIDTH: "256",
+  HEIGHT: "256",
+  CRS: "EPSG:3857",
+};
 
 export {
   serviceZIndexSettings,
   defaultZoomLevelSettings,
   defaultScaleSettings,
   arcgisImgExportSettings,
+  geowebcacheImgExportSettings,
+  geoserverImgExportSettings,
 };

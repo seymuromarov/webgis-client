@@ -1,8 +1,9 @@
 import { urlHelper } from "@/helpers";
 const apiUrl = process.env.VUE_APP_BASE_API;
 const USER_URLS = {
-  GET_INFO_URL: "/user/GetInfo",
+  GET_INFO_URL: "/user/getinfo",
   GET_URL: "/user",
+  CHANGE_PASSWORD_URL: "/user/changepassword",
 };
 const ACCOUNT_URL = {
   LOGIN_URL: "/gettoken",
@@ -29,6 +30,7 @@ const ISSUE_URLS = {
   EDIT: "/issue",
   DELETE: (id) => `/issue/${id}`,
   GET: (id) => `/issue/${id}`,
+  CLOSE: (id) => `/issue/${id}/close`,
   GET_ALL: "/issue",
   GET_TOTAL_COUNTS: "/issue/counts",
 };
@@ -100,6 +102,30 @@ const ARCGIS_URLS = {
   },
   SERVICE_URl: "/service/arcgis",
 };
+const GEOWEBCACHE_URLS = {
+  EXPORT_IMAGE_URL: (name, params) => {
+    let url =
+      apiUrl +
+      "/service/geowebcache/" +
+      name +
+      "/?" +
+      urlHelper.formatQueryString(params);
+    return url;
+  },
+  SERVICE_URl: "/service/geowebcache",
+};
+const GEOSERVER_URLS = {
+  EXPORT_IMAGE_URL: (name, params) => {
+    let url =
+      apiUrl +
+      "/service/geoserver/" +
+      name +
+      "/?" +
+      urlHelper.formatQueryString(params);
+    return url;
+  },
+  SERVICE_URl: "/service/geoserver",
+};
 
 export {
   LAYER_DATA_IMAGE_URLS,
@@ -121,4 +147,6 @@ export {
   RELEASE_NOTE_URLS,
   NDVI_URLS,
   ARCGIS_URLS,
+  GEOWEBCACHE_URLS,
+  GEOSERVER_URLS,
 };

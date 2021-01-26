@@ -10,7 +10,7 @@
       <form>
         <div class="row mt-3">
           <div class="col-md-12">
-            <div class="form-group" ref="computedForm">
+            <div class="form-group">
               <label for="label">{{ $t("form.bunchLayerForm.label") }}</label>
               <input
                 type="text"

@@ -3,6 +3,6 @@ const resourceTypeEnum = {
   GEOWEBCACHE: "Geowebcache",
   GEOSERVER: "Geoserver",
   GEOSERVER_GWC: "GeoserverGwc",
-  ARCGIS: "ARCGIS",
+  ARCGIS: "Arcgis",
 };
 export default resourceTypeEnum;

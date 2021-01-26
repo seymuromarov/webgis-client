@@ -24,7 +24,18 @@
       <div class="tableDiv howMuchWidthHaveMap">
         <div class="tableHeader">
           <div class="table__tabs">
-            <div class="table__tab table__tab--active">{{ tableName }}</div>
+            <div class="table__tab table__tab--active">
+              {{ tableName }}
+
+              <i
+                class="fas"
+                :class="{
+                  'fa-chevron-down': !isTableCollapsed,
+                  'fa-chevron-up': isTableCollapsed,
+                }"
+                @click="toggleTableCollapse"
+              ></i>
+            </div>
           </div>
 
           <div class="table__operations">
@@ -92,6 +103,7 @@
           class="tableContent custom-scrollbar"
           id="dataTable"
           ref="dataTableContent"
+          v-if="!isTableCollapsed"
         >
           <!-- Loader -->
           <Loader v-if="loading" />
@@ -206,16 +218,17 @@ export default {
       currentTabId: null,
       isColumnPopupShowing: false,
       selectedGid: 0,
+      isTableCollapsed: true,
       resize: {
         handlers: ["t"],
         left: 0,
-        top: window.innerHeight - 200,
-        height: window.innerHeight,
+        top: window.innerHeight - this.height,
+        height: 200,
         width: window.innerWidth,
         maxW: 10000,
         maxH: window.innerHeight,
         minW: 150,
-        minH: 200,
+        minH: 40,
         fit: true,
         event: "",
       },
@@ -231,6 +244,13 @@ export default {
     window.removeEventListener("resize", this.update);
   },
   watch: {
+    resize: {
+      handler(val) {
+        console.log(val.height);
+      },
+      deep: true,
+      immediate: false,
+    },
     isVisible: {
       handler() {
         this.resetScroll();
@@ -242,7 +262,15 @@ export default {
   },
   methods: {
     checkPermission,
+    toggleTableCollapse() {
+      this.isTableCollapsed = !this.isTableCollapsed;
 
+      if (this.isTableCollapsed) {
+        this.resize.height = 40;
+      } else {
+        this.resize.height = 200;
+      }
+    },
     resetScroll() {
       if (this.$refs.dataTableContent) {
         this.$refs.dataTableContent.scrollTo(0, 0);
@@ -426,9 +454,11 @@ export default {
       this.resize.left = data.left;
       this.resize.top = data.top;
       this.resize.event = data.eventName;
-      if (data.eventName === "mount") {
-        this.resize.height = 200;
-      }
+
+      this.isTableCollapsed = false;
+      // if (data.eventName === "mount") {
+      //   this.resize.height = 200;
+      // }
     },
     update() {
       this.resize.top = window.innerHeight - 200;
@@ -440,6 +470,8 @@ export default {
     },
   },
   computed: {
+    tableMinHeight() {},
+
     isActiveServiceLocal() {
       return serviceHelper.isLocalService(this.activeService);
     },

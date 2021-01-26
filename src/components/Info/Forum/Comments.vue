@@ -104,15 +104,9 @@
 
 <script>
 import permission from "@/directive/permission/index.js";
-import forum from "@/api/forum";
 import comment from "@/api/comment";
 import NewComment from "./NewComment";
 import { notifyService } from "@/services";
-console.log(
-  "🚀 ~ file: Comments.vue ~ line 104 ~ notifyService",
-  notifyService
-);
-// import Loader from "../parts/Loader";
 
 export default {
   name: "Comments",

@@ -20,7 +20,7 @@
           <button
             type="button"
             class="btn btn-sm btn-danger"
-            v-if="showCloseBtn(issue)"
+            v-permission="['issue_edit']"
             @click="closeIssue"
           >
             Close
@@ -28,7 +28,7 @@
           <button
             type="button"
             class="btn btn-sm btn-light"
-            v-if="showDeleteBtn"
+            v-permission="['issue_delete']"
             @click="deletePost(issue.id)"
           >
             <i class="far fa-trash-alt"></i>
@@ -108,12 +108,11 @@
 </template>
 
 <script>
-import forum from "@/api/forum";
 import issue from "@/api/issue";
 import Comments from "./Comments";
 import NewComment from "./NewComment";
 import permission from "@/directive/permission/index.js";
-// import Loader from "../parts/Loader";
+import { notifyService } from "@/services";
 
 export default {
   name: "IssueDetailed",
@@ -155,12 +154,11 @@ export default {
         });
     },
     closeIssue() {
-      forum
-        .closeIssue(this.issue.id)
+      issue
+        .close(this.issue.id)
         .then((response) => {
           this.issue = response;
-          this.$store.commit("SET_OPEN_ISSUES", []);
-          this.$store.commit("SET_CLOSED_ISSUES", []);
+          notifyService.updated();
         })
         .catch();
     },
@@ -168,10 +166,7 @@ export default {
       this.issue = null;
       this.$emit("back");
     },
-    showCloseBtn(issue) {
-      // return this.$cookie.get("isAdmin") && issue.status === 1;
-      return true;
-    },
+
     deletePost(id) {
       this.$swal({
         title: "Are you sure?",
@@ -186,30 +181,17 @@ export default {
           this.loading = true;
 
           forum
-            .deleteIssue(id)
+            .delete(id)
             .then((response) => {
-              if (response.status === 200) {
-                if (this.issue.status === 1) {
-                  this.$store.commit("SET_OPEN_ISSUES", []);
-                }
-                if (this.issue.status === 2) {
-                  this.$store.commit("SET_CLOSED_ISSUES", []);
-                }
-                this.back();
-              }
               this.loading = false;
+              notifyService.deleted();
             })
             .catch();
         }
       });
     },
   },
-  computed: {
-    showDeleteBtn() {
-      // return this.$cookie.get("isAdmin");
-      return true;
-    },
-  },
+  computed: {},
 };
 </script>
 

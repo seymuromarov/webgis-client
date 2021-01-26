@@ -90,7 +90,6 @@
 </template>
 
 <script>
-import forum from "@/api/forum";
 import issue from "@/api/issue";
 import issueCategory from "@/api/issueCategory";
 export default {
