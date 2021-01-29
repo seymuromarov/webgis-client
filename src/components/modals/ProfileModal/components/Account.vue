@@ -11,7 +11,7 @@
       <div class="text-center">
         <LanguageSelect
           :styles="{
-            width: '160px',
+            width: '16rem',
           }"
         />
       </div>

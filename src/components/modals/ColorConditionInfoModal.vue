@@ -12,7 +12,7 @@
           class="condition-color-box"
           :style="{
             'background-color': item.fillColor,
-            border: `2px solid ${item.borderColor}`,
+            border: `0.125rem solid ${item.borderColor}`,
           }"
         ></span>
         <span class="m-1 condition-text">
@@ -47,8 +47,8 @@ export default {
     vertical-align: middle;
 
     display: inline-block;
-    width: 30px;
-    height: 20px;
+    width: 1.875rem;
+    height: 1.25rem;
   }
 }
 </style>

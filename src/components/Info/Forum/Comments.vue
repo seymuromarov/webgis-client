@@ -203,18 +203,18 @@ export default {
       justify-content: space-between;
       align-items: center;
       padding: 0.25rem 1.25rem;
-      height: 36px;
+      height: 2.25rem;
     }
     img {
       width: 100%;
-      border-radius: 4px;
+      border-radius: 0.25rem;
       margin: 1rem 0;
     }
   }
   .issue__comment_replies {
     margin-left: 2rem;
     padding-left: 2rem;
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 0.0625rem solid rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -228,7 +228,7 @@ export default {
   .quill-editor {
     border: 0;
     .ql-toolbar {
-      border-width: 0 0 1px 0;
+      border-width: 0 0 0.0625rem 0;
     }
     .ql-container {
       border-width: 0;

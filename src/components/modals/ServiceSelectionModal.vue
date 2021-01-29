@@ -103,8 +103,8 @@ export default {
     width: 100%;
     color: white;
     background-color: var(--primary-color-opacity-75);
-    padding: 15px;
-    margin: 1px 0px;
+    padding: 0.9375rem;
+    margin: 0.0625rem 0rem;
   }
 
   .list-item:hover,
@@ -122,7 +122,7 @@ export default {
 //     width: 100%;
 //     color: white;
 //     background-color: var(--primary-color-opacity-75);
-//     margin: 1px 0px;
+//     margin: 0.0625rem 0rem;
 //   }
 //   a:hover {
 //     background-color: var(--primary-color);

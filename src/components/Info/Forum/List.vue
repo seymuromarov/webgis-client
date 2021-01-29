@@ -233,7 +233,7 @@ export default {
       }
 
       select.category {
-        width: 130px;
+        width: 8.125rem;
         margin-left: 1rem;
       }
     }
@@ -257,7 +257,7 @@ export default {
       }
 
       .issue-icon {
-        font-size: 16px;
+        font-size: 1rem;
         margin-right: 1.25rem;
       }
     }

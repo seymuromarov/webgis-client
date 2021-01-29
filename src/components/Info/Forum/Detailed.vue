@@ -205,7 +205,7 @@ export default {
     .issue-icon {
       font-size: 1.75rem;
       margin-right: 1rem;
-      width: 24px;
+      width: 1.5rem;
     }
     .issue__title {
       color: #000000;
@@ -216,10 +216,10 @@ export default {
   .issue__content {
     margin: 1.5rem var(--content-gap) 0;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 0.0625rem solid rgba(0, 0, 0, 0.1);
     img {
       width: 100%;
-      border-radius: 4px;
+      border-radius: 0.25rem;
       margin: 1rem 0;
     }
   }

@@ -92,9 +92,9 @@
         <div
           v-for="(item, index) in selectedNdvis"
           :key="index"
-          style="margin:0px 10px;padding:10px;background-color:#cccccc33"
+          style="margin:0px 0.625rem;padding:0.625rem;background-color:#cccccc33"
         >
-          <div style="margin:5px 0px">
+          <div style="margin:0.3125rem 0rem">
             <h5 class="text-center">{{ item.ndvi.name }}</h5>
             <img class="img-responsive mw-100" :src="getImgUrl(item.ndvi)" />
           </div>
@@ -108,7 +108,7 @@
             }"
           >
             <div v-for="(basemap, index) in item.basemaps" :key="index">
-              <div style="margin:5px 0px">
+              <div style="margin:0.3125rem 0rem">
                 <h6 class="text-center">{{ basemap.name }}</h6>
                 <img class="img-responsive mw-100" :src="getImgUrl(basemap)" />
               </div>

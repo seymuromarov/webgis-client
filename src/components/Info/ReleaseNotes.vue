@@ -49,7 +49,7 @@ export default {
 .release-note {
   &:not(:last-of-type) {
     padding-bottom: 1rem;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 0.0625rem 0.625rem solid #e5e5e5;
   }
 
   &:not(:first-of-type) {

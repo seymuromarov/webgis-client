@@ -1,6 +1,6 @@
 .sidebar {
-  width: 56px;
-  padding: 16px;
+  width: 3.5rem;
+  padding: 1rem;
   box-sizing: border-box;
   position: absolute;
   top: 0;
@@ -8,17 +8,17 @@
   right: 0;
   z-index: 1;
   background-color: var(--primary-color);
-  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.25);
+  box-shadow: -0.125rem 0 0.25rem rgba(0, 0, 0, 0.25);
   color: var(--white);
   z-index: 11;
 
   .profile-popup {
     position: absolute;
-    right: 56px;
+    right: 3.5rem;
     top: 0;
-    border-bottom-left-radius: 5px;
+    border-bottom-left-radius: 0.3125rem;
     background-color: var(--primary-color);
-    padding: 16px;
+    padding: 1rem;
     text-align: left;
     display: flex;
     // align-items: center;
@@ -26,7 +26,7 @@
 
     .profile-popup-item {
       white-space: nowrap;
-      padding: 4px;
+      padding: 0.25rem;
       opacity: 0.6;
     }
     .profile-popup-item:hover,
@@ -42,7 +42,7 @@
     justify-content: space-between;
 
     .menu__item {
-      margin: 16px 0;
+      margin: 1rem 0;
 
       &:first-of-type {
         margin-top: 0;
@@ -58,8 +58,8 @@
         padding: 0;
         margin: 0;
         img {
-          width: 20px;
-          height: 20px;
+          width: 1.25rem;
+          height: 1.25rem;
           object-fit: contain;
           object-position: center;
           opacity: 0.6;
@@ -78,14 +78,14 @@
 
   .layer-types {
     position: absolute;
-    right: 60px;
-    bottom: 70px;
-    border-radius: 5px;
+    right: 3.75rem;
+    bottom: 4.375rem;
+    border-radius: 0.3125rem;
     background-color: var(--primary-color-opacity-85);
-    padding: 5px 0;
+    padding: 0.3125rem 0;
     .layer-types__item {
-      padding: 0 12px;
-      font-size: 14px;
+      padding: 0 0.75rem;
+      font-size: 0.875rem;
       text-align: left;
       &:hover,
       &.active {
@@ -97,10 +97,10 @@
 
   .list {
     position: absolute;
-    right: 56px;
+    right: 3.5rem;
     top: 0;
     bottom: 0;
-    min-width: 250px;
+    min-width: 15.625rem;
     text-align: left;
     background-color: var(--primary-color-opacity-85);
     display: flex;
@@ -108,10 +108,10 @@
 
     .list__header {
       background-color: var(--primary-color);
-      padding: 10px 16px;
-      font-size: 16px;
+      padding: 0.625rem 1rem;
+      font-size: 1rem;
       font-weight: 500;
-      // border-top-left-radius: 5px;
+      // border-top-left-radius: 0.3125rem;
     }
 
     .list__tabs {
@@ -121,8 +121,8 @@
         text-align: center;
         padding: 0.5rem 1rem;
         background-color: var(--primary-color);
-        font-size: 14px;
-        border-bottom: 1px solid transparent;
+        font-size: 0.875rem;
+        border-bottom: 0.0625rem solid transparent;
         &:hover {
           cursor: pointer;
           border-color: var(--white);
@@ -135,11 +135,11 @@
     .list__search {
       input {
         // background-color: var(--primary-color);
-        text-indent: 10px;
+        text-indent: 0.625rem;
         background-color: var(--primary-color-opacity-50);
         border: none;
-        border-bottom: 2px solid var(--primary-color);
-        padding: 5px;
+        border-bottom: 0.125rem solid var(--primary-color);
+        padding: 0.3125rem;
         color: white;
         width: 100%;
       }
@@ -155,19 +155,19 @@
       flex: 1;
 
       &.list__content--parent {
-        max-height: calc(100vh - 44px);
+        max-height: calc(100vh - 2.75rem);
         overflow: auto;
       }
 
       .list__item {
-        font-size: 14px;
+        font-size: 0.875rem;
 
         &:hover {
           background-color: rgba(255, 255, 255, 0.15);
         }
 
         .item__header {
-          padding: 8px 16px;
+          padding: 0.5rem 1rem;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -175,16 +175,16 @@
           .title {
             display: flex;
             align-items: center;
-            font-size: 14px;
+            font-size: 0.875rem;
           }
           i:hover {
             cursor: pointer;
           }
           .icons {
             & > * {
-              margin-left: 8px;
-              height: 18px;
-              width: 16px;
+              margin-left: 0.5rem;
+              height: 1.125rem;
+              width: 1rem;
               &:hover {
                 cursor: pointer;
               }
@@ -199,10 +199,10 @@
         }
 
         .pre {
-          width: 24px;
+          width: 1.5rem;
           text-align: center;
-          margin-right: 22px;
-          font-size: 18px;
+          margin-right: 1.375rem;
+          font-size: 1.125rem;
         }
       }
     }
@@ -214,7 +214,7 @@
     border-radius: 0;
     background-color: var(--primary-color);
     color: var(--white);
-    font-size: 14px;
+    font-size: 0.875rem;
 
     &:hover {
       color: var(--white);

@@ -17,7 +17,7 @@ hr {
 
 .text-left-layer {
   text-align: left !important;
-  margin-left: 20px;
+  margin-left: 1.25rem;
 }
 
 .hidden {
@@ -26,9 +26,9 @@ hr {
 
 .userNameLabel {
   text-align: left !important;
-  margin-left: 20px;
-  font-size: 18px;
-  margin-top: 8px;
+  margin-left: 1.25rem;
+  font-size: 1.125rem;
+  margin-top: 0.5rem;
 }
 .btn-xs {
   padding: 0.25rem 0.5rem;
@@ -40,8 +40,8 @@ hr {
   position: absolute;
   right: 0.5em;
   z-index: 10;
-  width: 34px;
-  height: 34px;
+  width: 2.125rem;
+  height: 2.125rem;
   padding: 0 !important;
 }
 
@@ -57,10 +57,10 @@ hr {
   padding: 0;
 
   button {
-    width: 31px;
-    height: 31px;
+    width: 1.9375rem;
+    height: 1.9375rem;
     background: white;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border: 0.0625rem solid rgba(0, 0, 0, 0.2);
 
     &:focus {
       box-shadow: unset !important;
@@ -76,15 +76,15 @@ hr {
   #gcd-button-control {
     left: unset;
     top: unset;
-    width: 30px;
-    height: 30px;
+    width: 1.875rem;
+    height: 1.875rem;
     background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBBkRBSDfaGCTAAAA2UlEQVQoz4XOMUoDQRQG4C+pRLENLOQCsQukVNJ4gRTpJCQXEFN5AK31ALIXEFIGTGnjFRbstAqKBCVFsrCOhbu62YD+08zP++YxQE3fzJuVR9eaKtk3Fby6FXuQWeqVxzVTny7s5L0tker+gr7gcmNjZC5RL+rMy8/rImPB0fe1ruPeqgLu0CnAno/qr71jtwDPWlvgAE9FuZJpV8BEqlGUpqVEVBqfCuKy70nNjbVEjk0EwdqwTLoSIT+p2FqQGZVJ3aEz5040MJRtk82McjL4jyz8kYGFmy85wkTZ8zKtPwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNC0yNVQxNTowNTozMiswMjowMEYPGlwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDQtMjVUMTU6MDU6MzIrMDI6MDA3UqLgAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==");
   }
 }
 
 .btn-control {
   background: white;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 0.0625rem solid rgba(0, 0, 0, 0.2);
 
   &:focus {
     box-shadow: unset !important;
@@ -123,7 +123,7 @@ hr {
 //
 //#map .ol-zoom-in.ol-has-maptooltip:hover [role=maptooltip],
 //#map .ol-zoom-in.ol-has-maptooltip:focus [role=maptooltip] {
-//  top: 3px;
+//  top: 0.1875rem;
 //}
 //
 //#map .ol-zoom-out.ol-has-maptooltip:hover [role=maptooltip],
@@ -142,7 +142,7 @@ hr {
 }
 
 .button {
-  margin-top: 35px;
+  margin-top: 2.1875rem;
 }
 
 .flip-list-move {
@@ -159,12 +159,12 @@ hr {
 }
 
 .list-group {
-  min-height: 20px;
+  min-height: 1.25rem;
 }
 
 .list-group-item--custom {
   cursor: move;
-  padding: 5px 0 !important;
+  padding: 0.3125rem 0 !important;
   border: unset !important;
 }
 
@@ -175,9 +175,9 @@ hr {
 .maptooltip {
   position: relative;
   background: rgba(0, 0, 0, 0.5);
-  border-radius: 4px;
+  border-radius: 0.25rem;
   color: white;
-  padding: 4px 8px;
+  padding: 0.25rem 0.5rem;
   opacity: 0.7;
   white-space: nowrap;
 }
@@ -190,18 +190,18 @@ hr {
 .maptooltip-static {
   background-color: #ffcc33;
   color: black;
-  border: 1px solid white;
+  border: 0.0625rem solid white;
 }
 
 .maptooltip-measure:before,
 .maptooltip-static:before {
-  border-top: 6px solid rgba(0, 0, 0, 0.5);
-  border-right: 6px solid transparent;
-  border-left: 6px solid transparent;
+  border-top: 0.375rem solid rgba(0, 0, 0, 0.5);
+  border-right: 0.375rem solid transparent;
+  border-left: 0.375rem solid transparent;
   content: "";
   position: absolute;
-  bottom: -6px;
-  margin-left: -7px;
+  bottom: -0.375rem;
+  margin-left: -0.4375rem;
   left: 50%;
 }
 
@@ -215,9 +215,9 @@ hr {
 
 .material-switch > label {
   cursor: pointer;
-  height: 0px;
+  height: 0rem;
   position: relative;
-  width: 25px;
+  width: 1.5625rem;
 }
 
 .label-primary {
@@ -226,31 +226,31 @@ hr {
 
 .material-switch > label::before {
   background: rgb(0, 0, 0);
-  box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
-  border-radius: 8px;
+  box-shadow: inset 0rem 0rem 0.625rem rgba(0, 0, 0, 0.5);
+  border-radius: 0.5rem;
   content: "";
-  height: 14px;
-  margin-top: -8px;
+  height: 0.875rem;
+  margin-top: -0.5rem;
   position: absolute;
   opacity: 0.3;
   transition: all 0.4s ease-in-out;
-  width: 25px;
+  width: 1.5625rem;
 }
 
 .material-switch > label::after {
   background: rgb(255, 255, 255);
-  border-radius: 16px;
-  -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+  border-radius: 1rem;
+  -webkit-box-shadow: 0rem 0rem 0.3125rem rgba(0, 0, 0, 0.3);
+  box-shadow: 0rem 0rem 0.3125rem rgba(0, 0, 0, 0.3);
   content: "";
-  height: 16px;
-  left: -4px;
-  margin-top: -8px;
+  height: 1rem;
+  left: -0.25rem;
+  margin-top: -0.5rem;
   position: absolute;
-  top: -1.5px;
+  top: -0.09375rem;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
-  width: 15px;
+  width: 0.9375rem;
 }
 
 .material-switch > input[type="checkbox"]:checked + label::before {
@@ -260,7 +260,7 @@ hr {
 
 .material-switch > input[type="checkbox"]:checked + label::after {
   background: inherit;
-  left: 12px;
+  left: 0.75rem;
 }
 
 .makeMePoint {
@@ -269,18 +269,18 @@ hr {
 
 .modalText {
   display: block;
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 
 .v--modal-box {
   overflow: auto !important;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 
 .colorPickers {
   text-align: center;
-  padding: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.625rem;
+  border-bottom: 0.0625rem solid rgba(255, 255, 255, 0.2);
 
   &.colorPickers--dark {
     .nav-item a {
@@ -313,7 +313,7 @@ hr {
   }
 
   .colorPickerButton {
-    margin-top: 8px;
+    margin-top: 0.5rem;
     text-align: right;
     .btn {
       border-radius: 0;
@@ -331,7 +331,7 @@ hr {
       }
     }
     .btn--save {
-      margin-left: 8px;
+      margin-left: 0.5rem;
       background-color: #5799d280;
       color: #fff;
       font-weight: 500;
@@ -343,7 +343,7 @@ hr {
 }
 
 .colorPickers h4 {
-  padding: 10px 0;
+  padding: 0.625rem 0;
 }
 
 .colorPicker {
@@ -351,37 +351,37 @@ hr {
 }
 
 .latLongShow {
-  top: 9px;
-  right: 80px;
+  top: 0.5625rem;
+  right: 5rem;
   position: absolute;
   z-index: 1050;
   background: whitesmoke;
-  padding: 3px 8px;
-  border-radius: 5px;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 0.3125rem;
 }
 
 .latLongShowForm {
-  top: 9px;
-  right: 80px;
+  top: 0.5625rem;
+  right: 5rem;
   position: absolute;
   z-index: 9999;
   background: whitesmoke;
-  padding: 3px 8px;
-  border-radius: 5px;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 0.3125rem;
 }
 
 .infokml {
   top: 7%;
-  right: 10px;
+  right: 0.625rem;
   position: absolute;
   z-index: 9999;
   background: whitesmoke;
-  padding: 5px 10px;
-  border-radius: 10px;
+  padding: 0.3125rem 0.625rem;
+  border-radius: 0.625rem;
 }
 
 .layerDiv {
-  padding-left: 20px !important;
+  padding-left: 1.25rem !important;
 }
 
 .map:-moz-full-screen {
@@ -408,39 +408,39 @@ hr {
 .sup-bar-layout {
   max-height: 100vh;
   overflow: auto;
-  width: 300px !important;
+  width: 18.75rem !important;
 }
 
 .map-layout {
   max-height: 100vh;
-  // width: calc(100% - 300px);
+  // width: calc(100% - 18.75rem);
   width: 100%;
   position: relative;
 }
 
 .howMuchWidthHaveMap {
   //wtf?
-  width: calc(100% - 56px) !important;
+  width: calc(100% - 3.5rem) !important;
 }
 
 .selectLayerForm {
-  bottom: 50px;
-  right: 10px;
+  bottom: 3.125rem;
+  right: 0.625rem;
   z-index: 999;
   position: absolute;
   background: white;
   text-align: left;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 0.625rem;
+  border-radius: 0.625rem;
 }
 
 .serviceTitle {
-  font-size: 14px;
-  margin-left: 25px;
+  font-size: 0.875rem;
+  margin-left: 1.5625rem;
   word-wrap: break-word;
 }
 .layer-category-group {
-  margin-left: 10px !important;
+  margin-left: 0.625rem !important;
 }
 
 .filter-modal-class {
@@ -448,8 +448,8 @@ hr {
 }
 
 .azc-cosmos-logo {
-  height: 45px;
-  margin: 10px 0;
+  height: 2.8125rem;
+  margin: 0.625rem 0;
 }
 
 .fade-enter-active,
@@ -473,7 +473,7 @@ hr {
 .slide-fade-enter, .slide-fade-leave-to
   /* .slide-fade-leave-active below version 2.1.8 */
  {
-  transform: translateX(10px);
+  transform: translateX(0.625rem);
   opacity: 0;
 }
 
@@ -498,19 +498,19 @@ hr {
 
 .custom-scrollbar {
   &::-webkit-scrollbar {
-    width: 5px;
-    height: 8px;
+    width: 0.3125rem;
+    height: 0.5rem;
   }
 
   &::-webkit-scrollbar-track {
     background: var(--primary-color);
-    border-radius: 5px;
+    border-radius: 0.3125rem;
   }
 
   &::-webkit-scrollbar-thumb {
     background: #9096a1;
-    border-radius: 5px;
-    height: 30px;
+    border-radius: 0.3125rem;
+    height: 1.875rem;
   }
 
   &::-webkit-scrollbar-thumb:hover {
@@ -521,8 +521,8 @@ hr {
 .badge-notify {
   background: red;
   position: relative;
-  top: 15px;
-  left: 10px;
+  top: 0.9375rem;
+  left: 0.625rem;
   z-index: 200;
   border-radius: 50%;
   color: white;

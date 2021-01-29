@@ -13,14 +13,14 @@
       -webkit-transform: scale(1.5); /* Safari and Chrome */
       -o-transform: scale(1.5); /* Opera */
       transform: scale(1.5);
-      margin-left: 10px;
+      margin-left: 0.625rem;
     }
   }
 
   .tree-item {
-    border: 1px solid gray;
-    padding: 3px 5px;
-    border-radius: 5px;
+    border: 0.0625rem solid gray;
+    padding: 0.1875rem 0.3125rem;
+    border-radius: 0.3125rem;
     cursor: pointer;
 
     // .tree-open-btn :hover,

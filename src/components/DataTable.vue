@@ -123,7 +123,7 @@
                   v-if="isActiveServiceLocal"
                   class="table__column--sticky"
                   :style="{
-                    width: checkPermission(['data_edit']) ? '80px' : '40px',
+                    width: checkPermission(['data_edit']) ? '5rem' : '2.5rem',
                   }"
                 >
                   #
@@ -149,7 +149,7 @@
                   v-if="isActiveServiceLocal"
                   class="table__column--sticky"
                   :style="{
-                    width: checkPermission(['data_edit']) ? '80px' : '40px',
+                    width: checkPermission(['data_edit']) ? '5rem' : '2.5rem',
                   }"
                 >
                   <i
@@ -591,17 +591,17 @@ export default {
   .tableHeader {
     background-color: #1b2537;
     color: #ffffff;
-    height: 40px;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 0 1.25rem;
     .table__tabs {
       display: flex;
       .table__tab {
-        margin: 0 10px 0 0;
-        padding: 0 10px;
-        font-size: 16px;
+        margin: 0 0.625rem 0 0;
+        padding: 0 0.625rem;
+        font-size: 1rem;
         font-weight: 500;
         opacity: 0.6;
         &:hover {
@@ -649,8 +649,8 @@ export default {
 
     th,
     td {
-      font-size: 14px;
-      padding: 4px 20px;
+      font-size: 0.875rem;
+      padding: 0.25rem 0.5rem 1.25rem;
       text-align: left;
       vertical-align: middle;
     }

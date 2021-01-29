@@ -400,7 +400,7 @@ export default {
 
 <style lang="scss" scoped>
 ::v-deep .condition__select {
-  border-radius: 0px;
+  border-radius: 0rem;
   background-color: var(--primary-color);
   width: 90%;
   color: white;
