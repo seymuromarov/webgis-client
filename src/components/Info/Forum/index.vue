@@ -59,14 +59,14 @@ export default {
   }
   .issue__author {
     font-weight: 600;
-    margin-right: 1.6rem;
+    margin-right: 1rem;
     color: rgba(0, 0, 0, 0.8);
   }
   .submit-btn {
     width: 20%;
   }
   .back-btn {
-    margin-bottom: 1.6rem;
+    margin-bottom: 1rem;
     width: 15%;
   }
 }

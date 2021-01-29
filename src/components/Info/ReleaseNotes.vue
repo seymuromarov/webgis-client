@@ -48,17 +48,17 @@ export default {
 <style lang="scss">
 .release-note {
   &:not(:last-of-type) {
-    padding-bottom: 1.6rem;
-    border-bottom: 0.1rem solid #e5e5e5;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e5e5;
   }
 
   &:not(:first-of-type) {
-    padding-top: 1.6rem;
+    padding-top: 1rem;
   }
 
   .content {
-    padding-left: 1.6rem;
-    margin-top: 0.8rem;
+    padding-left: 1rem;
+    margin-top: 0.5rem;
     margin-bottom: 0;
   }
 }

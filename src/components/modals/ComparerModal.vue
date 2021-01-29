@@ -18,7 +18,7 @@
             :selectable="() => selecteds.length < 2"
             @input="onChange"
           ></v-select>
-          <span class="text-muted form-text" style="font-size:1.12rem"
+          <span class="text-muted form-text" style="font-size:0.7rem"
             >Extent Area : {{ JSON.stringify(extent) }}</span
           >
         </div>

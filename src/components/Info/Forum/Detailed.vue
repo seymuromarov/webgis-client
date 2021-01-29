@@ -196,16 +196,31 @@ export default {
 </script>
 
 <style lang="scss">
-.issue-detail {
-  &-content {
-    --content-gap: 4.8rem;
-    margin: 2.4rem var(--content-gap) 0;
-    padding-bottom: 2.4rem;
-    border-bottom: 0.1rem solid rgba(0, 0, 0, 0.1);
+.issue-details {
+  --content-gap: 3rem;
+
+  .issue__header {
+    display: flex;
+    align-items: baseline;
+    .issue-icon {
+      font-size: 1.75rem;
+      margin-right: 1rem;
+      width: 24px;
+    }
+    .issue__title {
+      color: #000000;
+      margin-right: var(--content-gap);
+    }
+  }
+
+  .issue__content {
+    margin: 1.5rem var(--content-gap) 0;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     img {
       width: 100%;
-      border-radius: 0.4rem;
-      margin: 1.6rem 0;
+      border-radius: 4px;
+      margin: 1rem 0;
     }
   }
 }

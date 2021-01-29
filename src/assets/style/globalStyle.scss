@@ -5,34 +5,14 @@
 @import "modals/change-detector";
 @import "snotify/index";
 
-$breakpoint-xs: 0;
-$breakpoint-sm: 576px;
-$breakpoint-md: 768px;
-$breakpoint-lg: 992px;
-$breakpoint-xl: 1200px;
-
-:root {
-  font-size: 10px;
-  @media screen and (min-width: $breakpoint-sm) and (max-width: $breakpoint-md){
-    font-size: 8px;
-  }
-  @media screen and (max-width: $breakpoint-sm){
-    font-size: 6px;
-  }
-}
-
-body {
-  font-size: 1.6rem;
-}
-
 #map {
   height: 100vh;
   width: 100%;
 }
 
 hr {
-  margin-top: 0.8rem !important;
-  margin-bottom: 0.8rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
 }
 
 .text-left-layer {
@@ -51,10 +31,10 @@ hr {
   margin-top: 0.8rem;
 }
 .btn-xs {
-  padding: 0.4rem 0.8rem;
-  font-size: 1rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6rem;
   line-height: 1.5;
-  border-radius: 0.32rem;
+  border-radius: 0.2rem;
 }
 .action-button-class {
   position: absolute;
@@ -87,7 +67,7 @@ hr {
     }
 
     &:hover {
-      box-shadow: 0 0 0 0.32rem rgba(0, 123, 255, 0.25) !important;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
     }
 
     color: black;
@@ -111,7 +91,7 @@ hr {
   }
 
   &:hover {
-    box-shadow: 0 0 0 0.32rem rgba(0, 123, 255, 0.25) !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
   }
 
   .i {
@@ -327,7 +307,7 @@ hr {
     .nav-item {
       flex: 1;
       a {
-        padding: 0.8rem;
+        padding: 0.5rem;
       }
     }
   }
@@ -337,7 +317,7 @@ hr {
     text-align: right;
     .btn {
       border-radius: 0;
-      padding: 0.32rem 1.2rem;
+      padding: 0.2rem 0.75rem;
       &:focus {
         box-shadow: none;
       }
@@ -512,7 +492,7 @@ hr {
 .sidebar {
   .list-group-item {
     border: none;
-    padding: 0.32rem 0;
+    padding: 0.2rem 0;
   }
 }
 
