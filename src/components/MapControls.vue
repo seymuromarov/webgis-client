@@ -375,41 +375,41 @@ export default {
       color: var(--white);
       transition: all 0.2s ease-in-out;
       transition-delay: 0.1s;
-      font-size: 1.4rem;
+      font-size: 14px;
       &::placeholder {
         color: rgba(255, 255, 255, 0.8);
       }
 
       &.control-select__input--expanded {
-        padding: 0 0.8rem;
-        width: 20rem;
+        padding: 0 8px;
+        width: 200px;
       }
     }
 
     &:focus-within .control-select__results,
     .control-select__results:active {
-      max-height: 15rem;
+      max-height: 150px;
       overflow: auto;
     }
 
     &__results {
-      max-height: 0rem;
+      max-height: 0px;
       position: absolute;
       background-color: var(--primary-color-opacity-85);
       left: 0;
       right: 0;
-      border-bottom-left-radius: 0.5rem;
-      border-bottom-right-radius: 0.5rem;
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
       overflow: hidden;
       transition: max-height 0.1s ease-in-out;
       ul {
         margin: 0;
-        padding: 0.3rem 0;
+        padding: 3px 0;
         list-style-type: none;
         li {
-          padding: 0.2rem 1rem;
+          padding: 2px 10px;
           color: var(--white);
-          font-size: 1.4rem;
+          font-size: 14px;
           &:hover {
             background-color: var(--primary-color-lighten-200);
             cursor: pointer;
@@ -420,7 +420,7 @@ export default {
   }
 
   .control__button-group {
-    margin: 1rem;
+    margin: 10px;
     display: flex;
     align-items: self-start;
 
@@ -429,13 +429,13 @@ export default {
 
       .control__button {
         &:first-of-type {
-          border-top-left-radius: 0.5rem;
-          border-top-right-radius: 0.5rem;
+          border-top-left-radius: 5px;
+          border-top-right-radius: 5px;
         }
 
         &:last-of-type {
-          border-bottom-left-radius: 0.5rem;
-          border-bottom-right-radius: 0.5rem;
+          border-bottom-left-radius: 5px;
+          border-bottom-right-radius: 5px;
         }
       }
     }
@@ -445,13 +445,13 @@ export default {
 
       .control__button {
         &:first-of-type {
-          border-top-left-radius: 0.5rem;
-          border-bottom-left-radius: 0.5rem;
+          border-top-left-radius: 5px;
+          border-bottom-left-radius: 5px;
         }
 
         &:last-of-type {
-          border-top-right-radius: 0.5rem;
-          border-bottom-right-radius: 0.5rem;
+          border-top-right-radius: 5px;
+          border-bottom-right-radius: 5px;
         }
       }
     }
@@ -463,10 +463,10 @@ export default {
   }
 
   .control__button {
-    margin: 1rem;
-    padding: 1rem;
+    margin: 10px;
+    padding: 10px;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 5px;
     background-color: var(--primary-color-opacity-85);
     color: var(--white);
     &:hover {
@@ -484,8 +484,8 @@ export default {
     }
 
     img {
-      width: 1.8rem;
-      height: 1.8rem;
+      width: 18px;
+      height: 18px;
       object-fit: contain;
       object-position: center;
     }
@@ -493,16 +493,16 @@ export default {
 
   .search {
     display: flex;
-    margin: 1rem;
+    margin: 10px;
     .search__logo {
       background-color: var(--primary-color);
-      padding: 0.7rem 1.4rem;
-      border-top-left-radius: 0.5rem;
-      border-bottom-left-radius: 0.5rem;
+      padding: 7px 14px;
+      border-top-left-radius: 5px;
+      border-bottom-left-radius: 5px;
       display: flex;
       align-items: center;
       img {
-        height: 2.4rem;
+        height: 24px;
       }
     }
 
@@ -518,7 +518,7 @@ export default {
     align-items: stretch !important;
 
     .mode-select {
-      min-width: 12rem;
+      min-width: 120px;
 
       &.vs--single.vs--open .vs__selected {
         position: initial;
@@ -526,12 +526,12 @@ export default {
 
       &.vs--open .vs__dropdown-toggle {
         height: 100%;
-        border-radius: 0.5rem 0 0 0;
+        border-radius: 5px 0 0 0;
       }
 
       .vs__dropdown-toggle {
         height: 100%;
-        border-radius: 0.5rem 0 0 0.5rem;
+        border-radius: 5px 0 0 5px;
         border: 0;
         background-color: var(--primary-color-opacity-85);
 
@@ -546,7 +546,7 @@ export default {
         background-color: var(--primary-color-opacity-85);
 
         li {
-          padding: 0.2rem 0.8rem;
+          padding: 2px 8px;
           color: var(--white);
           &:hover {
             background-color: var(--primary-color-opacity-95);
@@ -571,7 +571,7 @@ export default {
         padding: 0 0.5rem;
         background-color: var(--primary-color-opacity-85);
         color: var(--white);
-        font-size: 1.4rem;
+        font-size: 14px;
         display: flex;
         align-items: center;
         transition: all 0.2s ease-in-out;
@@ -585,7 +585,7 @@ export default {
         border: 0;
         color: var(--white);
         transition: all 0.2s ease-in-out;
-        font-size: 1.4rem;
+        font-size: 14px;
       }
 
       &:focus-within {
@@ -607,22 +607,22 @@ export default {
   .scale {
     position: absolute;
     bottom: 0;
-    border-radius: 0.5rem;
+    border-radius: 5px;
     background-color: var(--primary-color-opacity-50);
 
     input {
-      margin: 0.4rem;
+      margin: 4px;
       background-color: transparent;
-      border: 0.1rem solid #fff;
-      border-radius: 0rem;
+      border: 1px solid #fff;
+      border-radius: 0px;
       border-top: 0;
       text-align: center;
       color: #fff;
-      font-size: 1.4rem;
+      font-size: 14px;
     }
 
     .control__button {
-      padding: 0.4rem 0.8rem;
+      padding: 4px 8px;
       border-top-left-radius: 0;
       background-color: var(--primary-color-opacity-85);
       border-bottom-left-radius: 0;

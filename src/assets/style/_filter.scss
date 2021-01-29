@@ -5,12 +5,12 @@
   flex-direction: column;
 
   .filter__tabs {
-    margin: 1rem 0;
+    margin: 10px 0;
     display: flex;
     .tab {
-      padding: 0.4rem 0.8rem;
+      padding: 4px 8px;
       flex: 1;
-      font-size: 1.4rem;
+      font-size: 14px;
       color: var(--primary-color);
       cursor: pointer;
       text-align: center;
@@ -25,11 +25,11 @@
 
   .filter__fields {
     display: flex;
-    height: 15rem;
+    height: 150px;
 
     .filter__fields__columns {
       flex: 1;
-      margin-right: 0.8rem;
+      margin-right: 8px;
     }
     .filter__fields__values {
       flex: 1;
@@ -37,17 +37,17 @@
 
     .filter__fields__list {
       list-style-type: none;
-      padding: 0.5rem 0;
+      padding: 5px 0;
       margin: 0;
-      margin-bottom: 0.5rem;
+      margin-bottom: 5px;
       overflow-y: auto;
       height: 100%;
-      border: 0.1rem solid #a9a9a9;
-      border-radius: 0.4rem;
+      border: 1px solid #a9a9a9;
+      border-radius: 4px;
 
       .list__item {
         cursor: pointer;
-        padding-left: 1rem;
+        padding-left: 10px;
 
         &:hover {
           background-color: var(--primary-color-opacity-85);
@@ -58,13 +58,13 @@
   }
 
   .filter__actions {
-    margin: 2rem 0 1rem;
+    margin: 20px 0 10px;
     display: flex;
     justify-content: space-between;
     button {
-      min-width: 5rem;
-      max-width: 7.5rem;
-      margin: 0.3rem;
+      min-width: 50px;
+      max-width: 75px;
+      margin: 3px;
 
       &:first-child {
         margin-left: 0;
@@ -80,14 +80,14 @@
       color: #7f7f7f;
     }
     textarea {
-      padding: 0.8rem 1.2rem;
+      padding: 8px 12px;
       width: 100%;
-      border-radius: 0.4rem;
+      border-radius: 4px;
       outline: none;
       transition: all 0.3s ease-in-out;
 
       &:focus {
-        box-shadow: 0 0 0.4rem 0.1rem rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.1);
       }
     }
   }

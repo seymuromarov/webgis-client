@@ -17,7 +17,7 @@ hr {
 
 .text-left-layer {
   text-align: left !important;
-  margin-left: 2rem;
+  margin-left: 20px;
 }
 
 .hidden {
@@ -26,9 +26,9 @@ hr {
 
 .userNameLabel {
   text-align: left !important;
-  margin-left: 2rem;
-  font-size: 1.8rem;
-  margin-top: 0.8rem;
+  margin-left: 20px;
+  font-size: 18px;
+  margin-top: 8px;
 }
 .btn-xs {
   padding: 0.25rem 0.5rem;
@@ -40,8 +40,8 @@ hr {
   position: absolute;
   right: 0.5em;
   z-index: 10;
-  width: 3.4rem;
-  height: 3.4rem;
+  width: 34px;
+  height: 34px;
   padding: 0 !important;
 }
 
@@ -57,10 +57,10 @@ hr {
   padding: 0;
 
   button {
-    width: 3.1rem;
-    height: 3.1rem;
+    width: 31px;
+    height: 31px;
     background: white;
-    border: 0.1rem solid rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
 
     &:focus {
       box-shadow: unset !important;
@@ -76,15 +76,15 @@ hr {
   #gcd-button-control {
     left: unset;
     top: unset;
-    width: 3rem;
-    height: 3rem;
+    width: 30px;
+    height: 30px;
     background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBBkRBSDfaGCTAAAA2UlEQVQoz4XOMUoDQRQG4C+pRLENLOQCsQukVNJ4gRTpJCQXEFN5AK31ALIXEFIGTGnjFRbstAqKBCVFsrCOhbu62YD+08zP++YxQE3fzJuVR9eaKtk3Fby6FXuQWeqVxzVTny7s5L0tker+gr7gcmNjZC5RL+rMy8/rImPB0fe1ruPeqgLu0CnAno/qr71jtwDPWlvgAE9FuZJpV8BEqlGUpqVEVBqfCuKy70nNjbVEjk0EwdqwTLoSIT+p2FqQGZVJ3aEz5040MJRtk82McjL4jyz8kYGFmy85wkTZ8zKtPwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNC0yNVQxNTowNTozMiswMjowMEYPGlwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDQtMjVUMTU6MDU6MzIrMDI6MDA3UqLgAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==");
   }
 }
 
 .btn-control {
   background: white;
-  border: 0.1rem solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
 
   &:focus {
     box-shadow: unset !important;
@@ -100,7 +100,7 @@ hr {
 }
 
 // #map .ol-zoom .ol-zoom-out {
-//   margin-top: 20.4rem;
+//   margin-top: 204px;
 // }
 #map .ol-zoom-out,
 #map .ol-zoom-in,
@@ -114,7 +114,7 @@ hr {
 //}
 //
 //#map .ol-touch .ol-zoom .ol-zoom-out {
-//  margin-top: 21.2rem;
+//  margin-top: 212px;
 //}
 //
 //#map .ol-touch .ol-zoomslider {
@@ -123,12 +123,12 @@ hr {
 //
 //#map .ol-zoom-in.ol-has-maptooltip:hover [role=maptooltip],
 //#map .ol-zoom-in.ol-has-maptooltip:focus [role=maptooltip] {
-//  top: 0.3rem;
+//  top: 3px;
 //}
 //
 //#map .ol-zoom-out.ol-has-maptooltip:hover [role=maptooltip],
 //#map .ol-zoom-out.ol-has-maptooltip:focus [role=maptooltip] {
-//  top: 23.2rem;
+//  top: 232px;
 //}
 //
 
@@ -142,7 +142,7 @@ hr {
 }
 
 .button {
-  margin-top: 3.5rem;
+  margin-top: 35px;
 }
 
 .flip-list-move {
@@ -159,12 +159,12 @@ hr {
 }
 
 .list-group {
-  min-height: 2rem;
+  min-height: 20px;
 }
 
 .list-group-item--custom {
   cursor: move;
-  padding: 0.5rem 0 !important;
+  padding: 5px 0 !important;
   border: unset !important;
 }
 
@@ -175,9 +175,9 @@ hr {
 .maptooltip {
   position: relative;
   background: rgba(0, 0, 0, 0.5);
-  border-radius: 0.4rem;
+  border-radius: 4px;
   color: white;
-  padding: 0.4rem 0.8rem;
+  padding: 4px 8px;
   opacity: 0.7;
   white-space: nowrap;
 }
@@ -190,18 +190,18 @@ hr {
 .maptooltip-static {
   background-color: #ffcc33;
   color: black;
-  border: 0.1rem solid white;
+  border: 1px solid white;
 }
 
 .maptooltip-measure:before,
 .maptooltip-static:before {
-  border-top: 0.6rem solid rgba(0, 0, 0, 0.5);
-  border-right: 0.6rem solid transparent;
-  border-left: 0.6rem solid transparent;
+  border-top: 6px solid rgba(0, 0, 0, 0.5);
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
   content: "";
   position: absolute;
-  bottom: -0.6rem;
-  margin-left: -0.7rem;
+  bottom: -6px;
+  margin-left: -7px;
   left: 50%;
 }
 
@@ -215,9 +215,9 @@ hr {
 
 .material-switch > label {
   cursor: pointer;
-  height: 0rem;
+  height: 0px;
   position: relative;
-  width: 2.5rem;
+  width: 25px;
 }
 
 .label-primary {
@@ -226,31 +226,31 @@ hr {
 
 .material-switch > label::before {
   background: rgb(0, 0, 0);
-  box-shadow: inset 0rem 0rem 1rem rgba(0, 0, 0, 0.5);
-  border-radius: 0.8rem;
+  box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
   content: "";
-  height: 1.4rem;
-  margin-top: -0.8rem;
+  height: 14px;
+  margin-top: -8px;
   position: absolute;
   opacity: 0.3;
   transition: all 0.4s ease-in-out;
-  width: 2.5rem;
+  width: 25px;
 }
 
 .material-switch > label::after {
   background: rgb(255, 255, 255);
-  border-radius: 1.6rem;
-  -webkit-box-shadow: 0rem 0rem 0.5rem rgba(0, 0, 0, 0.3);
-  box-shadow: 0rem 0rem 0.5rem rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
   content: "";
-  height: 1.6rem;
-  left: -0.4rem;
-  margin-top: -0.8rem;
+  height: 16px;
+  left: -4px;
+  margin-top: -8px;
   position: absolute;
-  top: -0.15rem;
+  top: -1.5px;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
-  width: 1.5rem;
+  width: 15px;
 }
 
 .material-switch > input[type="checkbox"]:checked + label::before {
@@ -260,7 +260,7 @@ hr {
 
 .material-switch > input[type="checkbox"]:checked + label::after {
   background: inherit;
-  left: 1.2rem;
+  left: 12px;
 }
 
 .makeMePoint {
@@ -269,18 +269,18 @@ hr {
 
 .modalText {
   display: block;
-  font-size: 1.8rem;
+  font-size: 18px;
 }
 
 .v--modal-box {
   overflow: auto !important;
-  border-radius: 0.8rem;
+  border-radius: 8px;
 }
 
 .colorPickers {
   text-align: center;
-  padding: 1rem;
-  border-bottom: 0.1rem solid rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 
   &.colorPickers--dark {
     .nav-item a {
@@ -313,7 +313,7 @@ hr {
   }
 
   .colorPickerButton {
-    margin-top: 0.8rem;
+    margin-top: 8px;
     text-align: right;
     .btn {
       border-radius: 0;
@@ -331,7 +331,7 @@ hr {
       }
     }
     .btn--save {
-      margin-left: 0.8rem;
+      margin-left: 8px;
       background-color: #5799d280;
       color: #fff;
       font-weight: 500;
@@ -343,7 +343,7 @@ hr {
 }
 
 .colorPickers h4 {
-  padding: 1rem 0;
+  padding: 10px 0;
 }
 
 .colorPicker {
@@ -351,37 +351,37 @@ hr {
 }
 
 .latLongShow {
-  top: 0.9rem;
-  right: 8rem;
+  top: 9px;
+  right: 80px;
   position: absolute;
   z-index: 1050;
   background: whitesmoke;
-  padding: 0.3rem 0.8rem;
-  border-radius: 0.5rem;
+  padding: 3px 8px;
+  border-radius: 5px;
 }
 
 .latLongShowForm {
-  top: 0.9rem;
-  right: 8rem;
+  top: 9px;
+  right: 80px;
   position: absolute;
   z-index: 9999;
   background: whitesmoke;
-  padding: 0.3rem 0.8rem;
-  border-radius: 0.5rem;
+  padding: 3px 8px;
+  border-radius: 5px;
 }
 
 .infokml {
   top: 7%;
-  right: 1rem;
+  right: 10px;
   position: absolute;
   z-index: 9999;
   background: whitesmoke;
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
+  padding: 5px 10px;
+  border-radius: 10px;
 }
 
 .layerDiv {
-  padding-left: 2rem !important;
+  padding-left: 20px !important;
 }
 
 .map:-moz-full-screen {
@@ -408,39 +408,39 @@ hr {
 .sup-bar-layout {
   max-height: 100vh;
   overflow: auto;
-  width: 30rem !important;
+  width: 300px !important;
 }
 
 .map-layout {
   max-height: 100vh;
-  // width: calc(100% - 30rem);
+  // width: calc(100% - 300px);
   width: 100%;
   position: relative;
 }
 
 .howMuchWidthHaveMap {
   //wtf?
-  width: calc(100% - 5.6rem) !important;
+  width: calc(100% - 56px) !important;
 }
 
 .selectLayerForm {
-  bottom: 5rem;
-  right: 1rem;
+  bottom: 50px;
+  right: 10px;
   z-index: 999;
   position: absolute;
   background: white;
   text-align: left;
-  padding: 1rem;
-  border-radius: 1rem;
+  padding: 10px;
+  border-radius: 10px;
 }
 
 .serviceTitle {
-  font-size: 1.4rem;
-  margin-left: 2.5rem;
+  font-size: 14px;
+  margin-left: 25px;
   word-wrap: break-word;
 }
 .layer-category-group {
-  margin-left: 1rem !important;
+  margin-left: 10px !important;
 }
 
 .filter-modal-class {
@@ -448,8 +448,8 @@ hr {
 }
 
 .azc-cosmos-logo {
-  height: 4.5rem;
-  margin: 1rem 0;
+  height: 45px;
+  margin: 10px 0;
 }
 
 .fade-enter-active,
@@ -473,7 +473,7 @@ hr {
 .slide-fade-enter, .slide-fade-leave-to
   /* .slide-fade-leave-active below version 2.1.8 */
  {
-  transform: translateX(1rem);
+  transform: translateX(10px);
   opacity: 0;
 }
 
@@ -498,19 +498,19 @@ hr {
 
 .custom-scrollbar {
   &::-webkit-scrollbar {
-    width: 0.5rem;
-    height: 0.8rem;
+    width: 5px;
+    height: 8px;
   }
 
   &::-webkit-scrollbar-track {
     background: var(--primary-color);
-    border-radius: 0.5rem;
+    border-radius: 5px;
   }
 
   &::-webkit-scrollbar-thumb {
     background: #9096a1;
-    border-radius: 0.5rem;
-    height: 3rem;
+    border-radius: 5px;
+    height: 30px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
@@ -521,8 +521,8 @@ hr {
 .badge-notify {
   background: red;
   position: relative;
-  top: 1.5rem;
-  left: 1rem;
+  top: 15px;
+  left: 10px;
   z-index: 200;
   border-radius: 50%;
   color: white;

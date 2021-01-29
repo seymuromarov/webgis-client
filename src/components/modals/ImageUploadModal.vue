@@ -254,7 +254,7 @@ export default {
 <style scoped>
 .upload-content-scroll {
   position: relative;
-  height: 40rem;
+  height: 400px;
   width: 100%;
   overflow: auto;
 }

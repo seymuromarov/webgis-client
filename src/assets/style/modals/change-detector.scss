@@ -13,7 +13,7 @@
   }
 
   &-title {
-    font-size: 2rem;
+    font-size: 20px;
     font-weight: 900;
     text-align: center;
   }
@@ -21,16 +21,16 @@
   // width: 90%;
   // min-height: 60%;
   // background-color: white;
-  // border-radius: 0.7rem;
-  // padding: 2rem;
+  // border-radius: 7px;
+  // padding: 20px;
   // position: relative;
   // max-height: 90%;
   // overflow-y: scroll;
 
   & > button {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 10px;
+    right: 10px;
     border: none;
     background-color: transparent;
     outline: none;

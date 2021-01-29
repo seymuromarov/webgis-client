@@ -26,7 +26,7 @@ export default {
   position: absolute;
 
   img {
-    width: 6rem;
+    width: 60px;
   }
 }
 </style>

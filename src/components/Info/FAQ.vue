@@ -95,7 +95,7 @@ export default {
     padding: 0;
     .btn-link {
       color: #5a5a5a;
-      padding: 0.8 1.2rem;
+      padding: 8px 12px;
     }
   }
 

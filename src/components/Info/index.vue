@@ -124,18 +124,18 @@ export default {
   }
 
   .modal-dialog {
-    // max-width: 65rem;
+    // max-width: 650px;
     .modal-content {
-      border: 0.1rem solid var(--primary-color);
+      border: 1px solid var(--primary-color);
       .modal-header {
-        padding: 0rem;
+        padding: 0px;
         border-bottom: 0;
         position: relative;
         background-color: var(--primary-color);
         .nav {
           width: 100%;
           &.nav-tabs {
-            border-bottom: 0.1rem solid #dee2e6;
+            border-bottom: 1px solid #dee2e6;
             .nav-link {
               color: var(--white);
               padding: 0.35rem 1rem;
@@ -149,7 +149,7 @@ export default {
 
           .close {
             position: absolute;
-            right: 1rem;
+            right: 10px;
             height: 100%;
             padding: 0;
             margin: 0;
@@ -164,7 +164,7 @@ export default {
 
       .modal-body {
         text-align: left;
-        min-height: 40rem;
+        min-height: 400px;
       }
     }
   }
