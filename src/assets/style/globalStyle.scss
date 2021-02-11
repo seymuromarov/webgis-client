@@ -5,6 +5,18 @@
 @import "modals/change-detector";
 @import "snotify/index";
 
+@media (max-width: 1024px) {
+    :root {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 900px) {
+    :root {
+        font-size: 20px;
+    }
+}
+
 #map {
   height: 100vh;
   width: 100%;
