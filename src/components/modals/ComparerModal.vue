@@ -91,6 +91,12 @@ export default {
   created() {},
   mounted() {},
   computed: {
+    currentZoomLevel() {
+      return mapController.getCurrentZoomLevel();
+    },
+    currentCenter() {
+      return mapController.getCurrentCenter();
+    },
     selectedBasemaps() {
       return basemaps;
     },
@@ -126,8 +132,8 @@ export default {
         this.swipeMap = new Map({
           maxResolution: 1000,
           view: new View({
-            center: [0, 0],
-            zoom: 2,
+            center: this.currentCenter,
+            zoom: this.currentZoomLevel,
           }),
         });
 
@@ -137,9 +143,16 @@ export default {
           var leftService = layerController.getBaseLayer(selecteds[0].code);
 
           var rightService = layerController.getBaseLayer(selecteds[1].code);
-          var leftLayer = mapController.buildLayer(leftService);
+          var leftL = mapController.buildLayer(leftService);
 
-          var rightLayer = mapController.buildLayer(rightService);
+          var rightL = mapController.buildLayer(rightService);
+
+          let leftLayer = new TileLayer({
+            source: mapController.getBaseLayouts()[2].layout,
+          });
+          let rightLayer = new TileLayer({
+            source: mapController.getBaseLayouts()[3].layout,
+          });
 
           this.swipeMap.addLayer(leftLayer);
           this.swipeMap.addLayer(rightLayer);
