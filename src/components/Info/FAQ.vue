@@ -49,10 +49,6 @@ export default {
       faq
         .getAll()
         .then((response) => {
-          console.log(
-            "🚀 ~ file: FAQ.vue ~ line 54 ~ .then ~ response",
-            response
-          );
           this.questions = response;
         })
         .catch((error) => {})

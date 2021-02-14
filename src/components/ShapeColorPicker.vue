@@ -37,10 +37,7 @@
 import { Chrome } from "vue-color";
 import { mapGetters } from "vuex";
 import { colorPickerController } from "@/controllers";
-console.log(
-  "🚀 ~ file: ShapeColorPicker.vue ~ line 40 ~ colorPickerController",
-  colorPickerController
-);
+
 export default {
   name: "color",
   props: {},

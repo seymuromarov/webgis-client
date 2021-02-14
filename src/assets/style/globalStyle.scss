@@ -13,10 +13,10 @@ $breakpoint-xl: 1200px;
 
 :root {
   font-size: 10px;
-  @media screen and (min-width: $breakpoint-sm) and (max-width: $breakpoint-md){
+  @media screen and (min-width: $breakpoint-sm) and (max-width: $breakpoint-md) {
     font-size: 8px;
   }
-  @media screen and (max-width: $breakpoint-sm){
+  @media screen and (max-width: $breakpoint-sm) {
     font-size: 6px;
   }
 }

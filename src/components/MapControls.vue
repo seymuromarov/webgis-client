@@ -141,9 +141,6 @@ import { coordinateTypeEnum } from "@/enums";
 export default {
   name: "MapControls",
   data() {
-    // let dataObj = ;
-    // dataObj.selectedCoordinateMode = dataObj.coordinateOptions[0];
-
     return {
       icons,
       cities,

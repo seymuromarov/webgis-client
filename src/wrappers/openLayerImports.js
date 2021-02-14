@@ -7,6 +7,7 @@ import {
   DragAndDrop,
 } from "ol/interaction";
 import TileDebug from "ol/source/TileDebug";
+import { getRenderPixel } from "ol/render";
 import {
   Circle as CircleStyle,
   Text,
@@ -152,4 +153,5 @@ export {
   unByKey,
   Projection,
   TileWMS,
+  getRenderPixel,
 };

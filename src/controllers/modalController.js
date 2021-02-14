@@ -77,10 +77,10 @@ const functions = {
   },
 
   hideComparerModal() {
-    vm.$moodal.comparerModal.hide();
+    vm.$moodal.comparerModal.close();
   },
   showComparerModal() {
-    vm.$moodal.comparerModal.show();
+    vm.$moodal.comparerModal.open();
   },
   hideChangeDetectionModal() {
     vm.$moodal.changeDetectionModal.hide();

@@ -244,13 +244,6 @@ export default {
     window.removeEventListener("resize", this.update);
   },
   watch: {
-    resize: {
-      handler(val) {
-        console.log(val.height);
-      },
-      deep: true,
-      immediate: false,
-    },
     isVisible: {
       handler() {
         this.resetScroll();

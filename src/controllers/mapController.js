@@ -323,10 +323,6 @@ const events = {
             }),
           }),
         });
-        console.log(
-          "🚀 ~ file: mapController.js ~ line 320 ~ map.forEachFeatureAtPixel ~ newStyle",
-          newStyle
-        );
 
         feature.setStyle(newStyle);
       });

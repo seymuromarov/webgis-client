@@ -4,54 +4,43 @@
     title="Swap Image"
     width="50%"
     :minHeight="500"
-    @beforeShow="onModalOpen"
+    @afterOpen="afterModalOpen"
     @afterHide="onModalClose"
   >
-    <form>
+    <div class="container">
       <div class="row">
-        <div class="col-md-9">
-          <v-select
-            v-model="selecteds"
-            multiple
-            placeholder="Choose up to 2 basemaps!"
-            :options="basemaps"
-            :selectable="() => selecteds.length < 2"
-            @input="onChange"
-          ></v-select>
-          <span class="text-muted form-text" style="font-size:1.12rem"
-            >Extent Area : {{ JSON.stringify(extent) }}</span
-          >
-        </div>
-        <div class="col-md-3">
-          <button
-            type="button"
-            class="btn btn-info btn-sm mr-2"
-            @click="onExtentClick"
-          >
-            <img :src="icons.square" />
-          </button>
-          <button
-            type="button"
-            class="btn btn-info btn-sm mr-2"
-            @click="changeRotation"
-          >
-            <img :src="icons.swap" />
-          </button>
-        </div>
-      </div>
-      <div class="row juxtapose-container">
         <div class="col-md-12">
-          <div v-if="juxtapose" class="juxtapose" id="juxtapose"></div>
-          <!-- <div class="rotate-vci-container">
-            <VueCompareImage :leftImage="leftImage" :rightImage="rightImage" />
-          </div> -->
+          <form>
+            <div class="row">
+              <div class="col-md-12">
+                <v-select
+                  v-model="selecteds"
+                  multiple
+                  placeholder="Choose up to 2 basemaps!"
+                  :options="basemaps"
+                  :selectable="() => selecteds.length < 2"
+                  @input="onChange"
+                ></v-select>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div v-show="isSwipeReady" class="col-md-12">
+          <div id="swipeMap"></div>
+          <input type="range" class="form-range w-100" v-model="swipeValue" />
         </div>
       </div>
-    </form>
+    </div>
   </CustomModal>
 </template>
 
 <script>
+import {
+  Map,
+  View,
+  getRenderPixel,
+  TileLayer,
+} from "@/wrappers/openLayerImports";
 import "juxtaposejs/build/js/juxtapose.min.js";
 import VueCompareImage from "vue-compare-image";
 import {
@@ -69,6 +58,8 @@ export default {
   components: { VueCompareImage },
   data() {
     return {
+      swipeMap: null,
+
       drawTypeEnum,
       icons,
       extent: null,
@@ -78,7 +69,8 @@ export default {
       isModalHideForExtent: false,
       juxtapose: null,
       isVertical: true,
-
+      isSwipeReady: false,
+      swipeValue: 50,
       juxtaposeOptions: {
         animate: true,
         showLabels: false,
@@ -88,6 +80,16 @@ export default {
       },
     };
   },
+  watch: {
+    swipeValue: {
+      deep: true,
+      handler(val) {
+        this.swipeMap.render();
+      },
+    },
+  },
+  created() {},
+  mounted() {},
   computed: {
     selectedBasemaps() {
       return basemaps;
@@ -107,126 +109,77 @@ export default {
     },
   },
   methods: {
-    removeElementsByClass(className) {
-      var elements = document.getElementsByClassName(className);
-      while (elements.length > 0) {
-        elements[0].parentNode.removeChild(elements[0]);
-      }
-    },
+    afterModalOpen() {},
 
-    renderJuxtapose() {
-      this.juxtapose = false;
-      this.removeElementsByClass("jx-slider");
-      if (this.leftImage && this.rightImage) {
-        if (this.isVertical) this.juxtaposeOptions["mode"] = "vertical";
-        else this.juxtaposeOptions["mode"] = "horizontal";
-        this.juxtapose = new juxtapose.JXSlider(
-          "#juxtapose",
-          [
-            {
-              src: this.leftImage,
-            },
-            {
-              src: this.rightImage,
-            },
-          ],
-          this.juxtaposeOptions
-        );
-      }
-    },
-    onExtentClick() {
-      modalController.hideComparerModal();
-      this.isModalHideForExtent = true;
-      let options = {
-        name: "comparermodal",
-      };
-      toolController.deleteFeatureByName("comparermodal");
-
-      toolController.pickDrawType(
-        drawTypeEnum.BOX,
-        () => {
-          modalController.showComparerModal();
-          this.extent = mapHelper.bboxToExtent(this.bbox);
-          this.isModalHideForExtent = false;
-          this.reload();
-        },
-        options
-      );
-    },
-    onModalOpen() {
-      if (!this.isModalHideForExtent) {
-        this.extent = mapController.getCurrentExtent();
-        this.selecteds = layerController
-          .getSelectedBasemaps()
-          .map((c) => {
-            return {
-              code: c.id,
-              label: c.name,
-              resourceType: c.resourceType,
-            };
-          })
-          .slice(0, 2);
-
-        this.reload();
-      }
-    },
-    reset() {
-      this.leftImage = "";
-      this.rightImage = "";
-    },
-    changeRotation() {
-      this.juxtapose = false;
-      this.isVertical = !this.isVertical;
-
-      this.reload();
-    },
-    reload() {
-      if (this.selecteds.length == 2) {
-        var leftResourceType = this.selecteds[0].resourceType;
-        console.log(
-          "🚀 ~ file: ComparerModal.vue ~ line 185 ~ reload ~ leftResourceType",
-          leftResourceType
-        );
-        var leftResourceEnum = resourceTypeToEnum(leftResourceType);
-        console.log(
-          "🚀 ~ file: ComparerModal.vue ~ line 186 ~ reload ~ leftResourceEnum",
-          leftResourceEnum
-        );
-        this.leftImage = urlHelper.getImageUrl(
-          this.selecteds[0].label,
-          this.extent,
-          leftResourceEnum
-        );
-
-        var rightResourceType = this.selecteds[1].resourceType;
-        console.log(
-          "🚀 ~ file: ComparerModal.vue ~ line 198 ~ reload ~ rightResourceType",
-          rightResourceType
-        );
-        var rightResourceEnum = resourceTypeToEnum(rightResourceType);
-        console.log(
-          "🚀 ~ file: ComparerModal.vue ~ line 195 ~ reload ~ rightResourceEnum",
-          rightResourceEnum
-        );
-        this.rightImage = urlHelper.getImageUrl(
-          this.selecteds[1].label,
-          this.extent,
-          rightResourceEnum
-        );
-      } else this.reset();
-
-      this.renderJuxtapose();
-      this.$forceUpdate();
-    },
     onModalClose() {},
     onChange(selecteds) {
-      this.reload();
+      if (selecteds.length == 2) {
+        this.isSwipeReady = true;
+      } else {
+        this.isSwipeReady = false;
+      }
+
+      if (this.isSwipeReady) {
+        const swipeMapId = "swipeMap";
+        document.getElementById(swipeMapId).innerHTML = "";
+
+        this.swipeMap = new Map({
+          maxResolution: 1000,
+          view: new View({
+            center: [0, 0],
+            zoom: 2,
+          }),
+        });
+
+        setTimeout(() => {
+          this.swipeMap.setTarget(document.getElementById(swipeMapId));
+
+          var leftService = layerController.getBaseLayer(selecteds[0].code);
+
+          var rightService = layerController.getBaseLayer(selecteds[1].code);
+          var leftLayer = mapController.buildLayer(leftService);
+
+          var rightLayer = mapController.buildLayer(rightService);
+
+          this.swipeMap.addLayer(leftLayer);
+          this.swipeMap.addLayer(rightLayer);
+          rightLayer.on("prerender", (event) => {
+            var ctx = event.context;
+            var mapSize = this.swipeMap.getSize();
+
+            var width = mapSize[0] * (this.swipeValue / 100);
+            var tl = getRenderPixel(event, [width, 0]);
+            var tr = getRenderPixel(event, [mapSize[0], 0]);
+            var bl = getRenderPixel(event, [width, mapSize[1]]);
+            var br = getRenderPixel(event, mapSize);
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(tl[0], tl[1]);
+            ctx.lineTo(bl[0], bl[1]);
+            ctx.lineTo(br[0], br[1]);
+            ctx.lineTo(tr[0], tr[1]);
+            ctx.closePath();
+            ctx.clip();
+          });
+
+          rightLayer.on("postrender", function(event) {
+            var ctx = event.context;
+            ctx.restore();
+          });
+        }, 1000);
+      }
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+#swipeMap {
+  height: 70vh;
+  width: 100%;
+}
+
 .juxtapose-container {
   background: rgba($color: #aaaaaa, $alpha: 0.3);
 }
