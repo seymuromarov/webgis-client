@@ -143,16 +143,9 @@ export default {
           var leftService = layerController.getBaseLayer(selecteds[0].code);
 
           var rightService = layerController.getBaseLayer(selecteds[1].code);
-          var leftL = mapController.buildLayer(leftService);
+          var leftLayer = mapController.buildLayer(leftService);
 
-          var rightL = mapController.buildLayer(rightService);
-
-          let leftLayer = new TileLayer({
-            source: mapController.getBaseLayouts()[2].layout,
-          });
-          let rightLayer = new TileLayer({
-            source: mapController.getBaseLayouts()[3].layout,
-          });
+          var rightLayer = mapController.buildLayer(rightService);
 
           this.swipeMap.addLayer(leftLayer);
           this.swipeMap.addLayer(rightLayer);
