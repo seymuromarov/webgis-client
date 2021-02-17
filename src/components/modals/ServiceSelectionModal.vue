@@ -83,7 +83,7 @@ export default {
               mapController.focusToServicePolygon(item.id, this.clickedPixel);
             });
           } else {
-            notifyService.error("Data Not Exist In This Coordinate!");
+            // notifyService.error("Data Not Exist In This Coordinate!");
           }
           modalController.hideServiceSelectionModal();
         });

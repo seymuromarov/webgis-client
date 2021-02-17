@@ -236,8 +236,12 @@ const functions = {
       type: geomType,
       freehandCondition: shiftKeyOnly,
       condition: function(e) {
+        console.log(
+          "🚀 ~ file: toolController.js ~ line 239 ~ addInteraction ~ e",
+          e
+        );
         // when the point's button is 1(leftclick), allows drawing
-        if (e.pointerEvent.buttons === 1) {
+        if (e.originalEvent.buttons === 1) {
           return true;
         } else {
           return false;
