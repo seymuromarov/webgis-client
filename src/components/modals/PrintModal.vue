@@ -408,7 +408,7 @@ export default {
 
 <style lang="scss" scoped>
 .option-content {
-  padding: 1rem 0;
+  padding: 0.625rem 0rem;
 }
 .disable-content {
   background-color: #9e9e9e66;

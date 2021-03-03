@@ -123,7 +123,7 @@
                   v-if="isActiveServiceLocal"
                   class="table__column--sticky"
                   :style="{
-                    width: checkPermission(['data_edit']) ? '8rem' : '4rem',
+                    width: checkPermission(['data_edit']) ? '5rem' : '2.5rem',
                   }"
                 >
                   #
@@ -149,7 +149,7 @@
                   v-if="isActiveServiceLocal"
                   class="table__column--sticky"
                   :style="{
-                    width: checkPermission(['data_edit']) ? '8rem' : '4rem',
+                    width: checkPermission(['data_edit']) ? '5rem' : '2.5rem',
                   }"
                 >
                   <i
@@ -561,11 +561,9 @@ export default {
   position: absolute;
   bottom: 0;
   top: 0;
-  left: 0;
   display: flex;
   align-items: flex-end;
   pointer-events: none;
-  z-index: 11;
   & > * {
     pointer-events: all;
   }
@@ -575,7 +573,6 @@ export default {
   position: absolute !important;
   .resizable-t {
     z-index: 10 !important;
-    width: calc(100% - 5.6rem) !important;
     &:hover {
       background-color: #2a354baa;
     }
@@ -587,17 +584,17 @@ export default {
   .tableHeader {
     background-color: #1b2537;
     color: #ffffff;
-    height: 4rem;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 2rem;
+    padding: 0 1.25rem;
     .table__tabs {
       display: flex;
       .table__tab {
-        margin: 0 1rem 0 0;
-        padding: 0 1rem;
-        font-size: 1.6rem;
+        margin: 0 0.625rem 0 0;
+        padding: 0 0.625rem;
+        font-size: 1rem;
         font-weight: 500;
         opacity: 0.6;
         &:hover {
@@ -619,7 +616,7 @@ export default {
       }
 
       & > *:not(:first-child) {
-        margin-left: 1.6rem;
+        margin-left: 1rem;
       }
     }
   }
@@ -645,8 +642,8 @@ export default {
 
     th,
     td {
-      font-size: 1.4rem;
-      padding: 0.4rem 2rem;
+      font-size: 0.875rem;
+      padding: 0.25rem 0.5rem 1.25rem;
       text-align: left;
       vertical-align: middle;
     }

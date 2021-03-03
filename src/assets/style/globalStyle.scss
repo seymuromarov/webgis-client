@@ -5,24 +5,16 @@
 @import "modals/change-detector";
 @import "snotify/index";
 
-$breakpoint-xs: 0;
-$breakpoint-sm: 576px;
-$breakpoint-md: 768px;
-$breakpoint-lg: 992px;
-$breakpoint-xl: 1200px;
-
-:root {
-  font-size: 10px;
-  @media screen and (min-width: $breakpoint-sm) and (max-width: $breakpoint-md) {
-    font-size: 8px;
-  }
-  @media screen and (max-width: $breakpoint-sm) {
-    font-size: 6px;
+@media (max-width: 1024px) {
+  :root {
+    font-size: 18px;
   }
 }
 
-body {
-  font-size: 1.6rem;
+@media (max-width: 900px) {
+  :root {
+    font-size: 20px;
+  }
 }
 
 #map {
@@ -31,13 +23,13 @@ body {
 }
 
 hr {
-  margin-top: 0.8rem !important;
-  margin-bottom: 0.8rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
 }
 
 .text-left-layer {
   text-align: left !important;
-  margin-left: 2rem;
+  margin-left: 1.25rem;
 }
 
 .hidden {
@@ -46,22 +38,22 @@ hr {
 
 .userNameLabel {
   text-align: left !important;
-  margin-left: 2rem;
-  font-size: 1.8rem;
-  margin-top: 0.8rem;
+  margin-left: 1.25rem;
+  font-size: 1.125rem;
+  margin-top: 0.5rem;
 }
 .btn-xs {
-  padding: 0.4rem 0.8rem;
-  font-size: 1rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6rem;
   line-height: 1.5;
-  border-radius: 0.32rem;
+  border-radius: 0.2rem;
 }
 .action-button-class {
   position: absolute;
   right: 0.5em;
   z-index: 10;
-  width: 3.4rem;
-  height: 3.4rem;
+  width: 2.125rem;
+  height: 2.125rem;
   padding: 0 !important;
 }
 
@@ -77,17 +69,17 @@ hr {
   padding: 0;
 
   button {
-    width: 3.1rem;
-    height: 3.1rem;
+    width: 1.9375rem;
+    height: 1.9375rem;
     background: white;
-    border: 0.1rem solid rgba(0, 0, 0, 0.2);
+    border: 0.0625rem solid rgba(0, 0, 0, 0.2);
 
     &:focus {
       box-shadow: unset !important;
     }
 
     &:hover {
-      box-shadow: 0 0 0 0.32rem rgba(0, 123, 255, 0.25) !important;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
     }
 
     color: black;
@@ -96,22 +88,22 @@ hr {
   #gcd-button-control {
     left: unset;
     top: unset;
-    width: 3rem;
-    height: 3rem;
+    width: 1.875rem;
+    height: 1.875rem;
     background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBBkRBSDfaGCTAAAA2UlEQVQoz4XOMUoDQRQG4C+pRLENLOQCsQukVNJ4gRTpJCQXEFN5AK31ALIXEFIGTGnjFRbstAqKBCVFsrCOhbu62YD+08zP++YxQE3fzJuVR9eaKtk3Fby6FXuQWeqVxzVTny7s5L0tker+gr7gcmNjZC5RL+rMy8/rImPB0fe1ruPeqgLu0CnAno/qr71jtwDPWlvgAE9FuZJpV8BEqlGUpqVEVBqfCuKy70nNjbVEjk0EwdqwTLoSIT+p2FqQGZVJ3aEz5040MJRtk82McjL4jyz8kYGFmy85wkTZ8zKtPwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNC0yNVQxNTowNTozMiswMjowMEYPGlwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDQtMjVUMTU6MDU6MzIrMDI6MDA3UqLgAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==");
   }
 }
 
 .btn-control {
   background: white;
-  border: 0.1rem solid rgba(0, 0, 0, 0.2);
+  border: 0.0625rem solid rgba(0, 0, 0, 0.2);
 
   &:focus {
     box-shadow: unset !important;
   }
 
   &:hover {
-    box-shadow: 0 0 0 0.32rem rgba(0, 123, 255, 0.25) !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
   }
 
   .i {
@@ -120,7 +112,7 @@ hr {
 }
 
 // #map .ol-zoom .ol-zoom-out {
-//   margin-top: 20.4rem;
+//   margin-top: 204px;
 // }
 #map .ol-zoom-out,
 #map .ol-zoom-in,
@@ -134,7 +126,7 @@ hr {
 //}
 //
 //#map .ol-touch .ol-zoom .ol-zoom-out {
-//  margin-top: 21.2rem;
+//  margin-top: 212px;
 //}
 //
 //#map .ol-touch .ol-zoomslider {
@@ -143,12 +135,12 @@ hr {
 //
 //#map .ol-zoom-in.ol-has-maptooltip:hover [role=maptooltip],
 //#map .ol-zoom-in.ol-has-maptooltip:focus [role=maptooltip] {
-//  top: 0.3rem;
+//  top: 0.1875rem;
 //}
 //
 //#map .ol-zoom-out.ol-has-maptooltip:hover [role=maptooltip],
 //#map .ol-zoom-out.ol-has-maptooltip:focus [role=maptooltip] {
-//  top: 23.2rem;
+//  top: 232px;
 //}
 //
 
@@ -162,7 +154,7 @@ hr {
 }
 
 .button {
-  margin-top: 3.5rem;
+  margin-top: 2.1875rem;
 }
 
 .flip-list-move {
@@ -179,12 +171,12 @@ hr {
 }
 
 .list-group {
-  min-height: 2rem;
+  min-height: 1.25rem;
 }
 
 .list-group-item--custom {
   cursor: move;
-  padding: 0.5rem 0 !important;
+  padding: 0.3125rem 0 !important;
   border: unset !important;
 }
 
@@ -195,9 +187,9 @@ hr {
 .maptooltip {
   position: relative;
   background: rgba(0, 0, 0, 0.5);
-  border-radius: 0.4rem;
+  border-radius: 0.25rem;
   color: white;
-  padding: 0.4rem 0.8rem;
+  padding: 0.25rem 0.5rem;
   opacity: 0.7;
   white-space: nowrap;
 }
@@ -210,18 +202,18 @@ hr {
 .maptooltip-static {
   background-color: #ffcc33;
   color: black;
-  border: 0.1rem solid white;
+  border: 0.0625rem solid white;
 }
 
 .maptooltip-measure:before,
 .maptooltip-static:before {
-  border-top: 0.6rem solid rgba(0, 0, 0, 0.5);
-  border-right: 0.6rem solid transparent;
-  border-left: 0.6rem solid transparent;
+  border-top: 0.375rem solid rgba(0, 0, 0, 0.5);
+  border-right: 0.375rem solid transparent;
+  border-left: 0.375rem solid transparent;
   content: "";
   position: absolute;
-  bottom: -0.6rem;
-  margin-left: -0.7rem;
+  bottom: -0.375rem;
+  margin-left: -0.4375rem;
   left: 50%;
 }
 
@@ -237,7 +229,7 @@ hr {
   cursor: pointer;
   height: 0rem;
   position: relative;
-  width: 2.5rem;
+  width: 1.5625rem;
 }
 
 .label-primary {
@@ -246,31 +238,31 @@ hr {
 
 .material-switch > label::before {
   background: rgb(0, 0, 0);
-  box-shadow: inset 0rem 0rem 1rem rgba(0, 0, 0, 0.5);
-  border-radius: 0.8rem;
+  box-shadow: inset 0rem 0rem 0.625rem rgba(0, 0, 0, 0.5);
+  border-radius: 0.5rem;
   content: "";
-  height: 1.4rem;
-  margin-top: -0.8rem;
+  height: 0.875rem;
+  margin-top: -0.5rem;
   position: absolute;
   opacity: 0.3;
   transition: all 0.4s ease-in-out;
-  width: 2.5rem;
+  width: 1.5625rem;
 }
 
 .material-switch > label::after {
   background: rgb(255, 255, 255);
-  border-radius: 1.6rem;
-  -webkit-box-shadow: 0rem 0rem 0.5rem rgba(0, 0, 0, 0.3);
-  box-shadow: 0rem 0rem 0.5rem rgba(0, 0, 0, 0.3);
+  border-radius: 1rem;
+  -webkit-box-shadow: 0rem 0rem 0.3125rem rgba(0, 0, 0, 0.3);
+  box-shadow: 0rem 0rem 0.3125rem rgba(0, 0, 0, 0.3);
   content: "";
-  height: 1.6rem;
-  left: -0.4rem;
-  margin-top: -0.8rem;
+  height: 1rem;
+  left: -0.25rem;
+  margin-top: -0.5rem;
   position: absolute;
-  top: -0.15rem;
+  top: -0.09375rem;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
-  width: 1.5rem;
+  width: 0.9375rem;
 }
 
 .material-switch > input[type="checkbox"]:checked + label::before {
@@ -280,7 +272,7 @@ hr {
 
 .material-switch > input[type="checkbox"]:checked + label::after {
   background: inherit;
-  left: 1.2rem;
+  left: 0.75rem;
 }
 
 .makeMePoint {
@@ -289,18 +281,18 @@ hr {
 
 .modalText {
   display: block;
-  font-size: 1.8rem;
+  font-size: 1.125rem;
 }
 
 .v--modal-box {
   overflow: auto !important;
-  border-radius: 0.8rem;
+  border-radius: 0.5rem;
 }
 
 .colorPickers {
   text-align: center;
-  padding: 1rem;
-  border-bottom: 0.1rem solid rgba(255, 255, 255, 0.2);
+  padding: 0.625rem;
+  border-bottom: 0.0625rem solid rgba(255, 255, 255, 0.2);
 
   &.colorPickers--dark {
     .nav-item a {
@@ -327,17 +319,17 @@ hr {
     .nav-item {
       flex: 1;
       a {
-        padding: 0.8rem;
+        padding: 0.5rem;
       }
     }
   }
 
   .colorPickerButton {
-    margin-top: 0.8rem;
+    margin-top: 0.5rem;
     text-align: right;
     .btn {
       border-radius: 0;
-      padding: 0.32rem 1.2rem;
+      padding: 0.2rem 0.75rem;
       &:focus {
         box-shadow: none;
       }
@@ -351,7 +343,7 @@ hr {
       }
     }
     .btn--save {
-      margin-left: 0.8rem;
+      margin-left: 0.5rem;
       background-color: #5799d280;
       color: #fff;
       font-weight: 500;
@@ -363,7 +355,7 @@ hr {
 }
 
 .colorPickers h4 {
-  padding: 1rem 0;
+  padding: 0.625rem 0;
 }
 
 .colorPicker {
@@ -371,37 +363,37 @@ hr {
 }
 
 .latLongShow {
-  top: 0.9rem;
-  right: 8rem;
+  top: 0.5625rem;
+  right: 5rem;
   position: absolute;
   z-index: 1050;
   background: whitesmoke;
-  padding: 0.3rem 0.8rem;
-  border-radius: 0.5rem;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 0.3125rem;
 }
 
 .latLongShowForm {
-  top: 0.9rem;
-  right: 8rem;
+  top: 0.5625rem;
+  right: 5rem;
   position: absolute;
   z-index: 9999;
   background: whitesmoke;
-  padding: 0.3rem 0.8rem;
-  border-radius: 0.5rem;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 0.3125rem;
 }
 
 .infokml {
   top: 7%;
-  right: 1rem;
+  right: 0.625rem;
   position: absolute;
   z-index: 9999;
   background: whitesmoke;
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
+  padding: 0.3125rem 0.625rem;
+  border-radius: 0.625rem;
 }
 
 .layerDiv {
-  padding-left: 2rem !important;
+  padding-left: 1.25rem !important;
 }
 
 .map:-moz-full-screen {
@@ -428,39 +420,39 @@ hr {
 .sup-bar-layout {
   max-height: 100vh;
   overflow: auto;
-  width: 30rem !important;
+  width: 18.75rem !important;
 }
 
 .map-layout {
   max-height: 100vh;
-  // width: calc(100% - 30rem);
+  // width: calc(100% - 18.75rem);
   width: 100%;
   position: relative;
 }
 
 .howMuchWidthHaveMap {
   //wtf?
-  width: calc(100% - 5.6rem) !important;
+  width: calc(100% - 3.5rem) !important;
 }
 
 .selectLayerForm {
-  bottom: 5rem;
-  right: 1rem;
+  bottom: 3.125rem;
+  right: 0.625rem;
   z-index: 999;
   position: absolute;
   background: white;
   text-align: left;
-  padding: 1rem;
-  border-radius: 1rem;
+  padding: 0.625rem;
+  border-radius: 0.625rem;
 }
 
 .serviceTitle {
-  font-size: 1.4rem;
-  margin-left: 2.5rem;
+  font-size: 0.875rem;
+  margin-left: 1.5625rem;
   word-wrap: break-word;
 }
 .layer-category-group {
-  margin-left: 1rem !important;
+  margin-left: 0.625rem !important;
 }
 
 .filter-modal-class {
@@ -468,8 +460,8 @@ hr {
 }
 
 .azc-cosmos-logo {
-  height: 4.5rem;
-  margin: 1rem 0;
+  height: 2.8125rem;
+  margin: 0.625rem 0;
 }
 
 .fade-enter-active,
@@ -493,7 +485,7 @@ hr {
 .slide-fade-enter, .slide-fade-leave-to
   /* .slide-fade-leave-active below version 2.1.8 */
  {
-  transform: translateX(1rem);
+  transform: translateX(0.625rem);
   opacity: 0;
 }
 
@@ -512,25 +504,25 @@ hr {
 .sidebar {
   .list-group-item {
     border: none;
-    padding: 0.32rem 0;
+    padding: 0.2rem 0;
   }
 }
 
 .custom-scrollbar {
   &::-webkit-scrollbar {
-    width: 0.5rem;
-    height: 0.8rem;
+    width: 0.3125rem;
+    height: 0.5rem;
   }
 
   &::-webkit-scrollbar-track {
     background: var(--primary-color);
-    border-radius: 0.5rem;
+    border-radius: 0.3125rem;
   }
 
   &::-webkit-scrollbar-thumb {
     background: #9096a1;
-    border-radius: 0.5rem;
-    height: 3rem;
+    border-radius: 0.3125rem;
+    height: 1.875rem;
   }
 
   &::-webkit-scrollbar-thumb:hover {
@@ -541,8 +533,8 @@ hr {
 .badge-notify {
   background: red;
   position: relative;
-  top: 1.5rem;
-  left: 1rem;
+  top: 0.9375rem;
+  left: 0.625rem;
   z-index: 200;
   border-radius: 50%;
   color: white;

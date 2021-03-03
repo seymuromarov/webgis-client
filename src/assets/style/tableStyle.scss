@@ -5,7 +5,7 @@
   border-spacing: 0;
 
   th {
-    width: 20rem;
+    width: 12.5rem;
   }
   thead,
   tbody tr {
@@ -37,7 +37,7 @@
   .table__column--sticky {
     position: sticky;
     right: 0;
-    border-left: 0.1rem solid #ddefef !important;
+    border-left: 0.0625rem solid #ddefef !important;
   }
 }
 
@@ -45,7 +45,7 @@
   overflow-x: auto;
   overflow-y: auto;
   width: 100%;
-  height: calc(100% - 4rem);
+  height: calc(100% - 2.5rem);
   position: relative;
 }
 
@@ -55,86 +55,86 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  //height: 30rem;
+  //height: 18.75rem;
   // overflow-x: auto;
   // overflow-y: hidden;
   //overflow: auto;
-  border-radius: 1rem 1rem 0 0;
+  border-radius: 0.625rem 0.625rem 0 0;
   z-index: 10;
 }
 
 .tableHeader {
-  height: 3.5rem;
+  height: 2.1875rem;
   background-color: #fff;
 }
 
 .tableShowColumns {
-  max-height: 12.5rem;
+  max-height: 7.8125rem;
   padding: 0;
   position: absolute;
-  top: 4.5rem;
-  right: 4.5rem;
+  top: 2.8125rem;
+  right: 2.8125rem;
   overflow: auto;
-  border-radius: 0.5rem;
+  border-radius: 0.3125rem;
   background-color: var(--primary-color-opacity-85);
   color: var(--white);
   text-align: left;
   z-index: 99;
 
   .table__column {
-    padding: 0.2rem 1rem;
+    padding: 0.125rem 0.25rem 0.625rem;
     display: flex;
     align-items: center;
     .column__checkbox {
-      margin-right: 0.8rem;
+      margin-right: 0.5rem;
     }
     .column__name {
       margin: 0;
-      font-size: 1.4rem;
+      font-size: 0.875rem;
     }
   }
 }
 
 .tableColumns {
   // position: absolute;
-  top: 0.8rem;
-  right: 4rem;
+  top: 0.5rem;
+  right: 2.5rem;
 }
 .tableClose {
   // position: absolute;
-  top: 0.8rem;
-  right: 1.5rem;
+  top: 0.5rem;
+  right: 0.9375rem;
 }
 
 .tableFilter {
   // position: absolute;
-  top: 0.8rem;
-  right: 7rem;
+  top: 0.5rem;
+  right: 4.375rem;
 }
 
 .excelIcon {
   // position: absolute;
-  right: 10rem;
-  top: 0.8rem;
+  right: 6.25rem;
+  top: 0.5rem;
 }
 .tableSimpleFilter {
   position: absolute;
-  top: 0.8rem;
-  right: 12.5rem;
+  top: 0.5rem;
+  right: 7.8125rem;
 }
 .tableModalHeader {
   text-align: center;
-  margin-top: 1rem;
+  margin-top: 0.625rem;
   margin-bottom: 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 0.1rem solid;
+  padding-bottom: 0.3125rem;
+  border-bottom: 0.0625rem solid;
   color: #606060;
 }
 
 .table th,
 .table td {
-  padding: 1.2rem;
+  padding: 0.75rem;
   vertical-align: top;
-  border-top: 0.1rem solid #dee2e6;
-  //border-right: 0.1rem solid black;
+  border-top: 0.0625rem solid #dee2e6;
+  //border-right: 0.0625rem solid black;
 }

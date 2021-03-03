@@ -140,6 +140,6 @@ export default {
   }
 }
 .submit-btn {
-  margin-top: 1.6rem;
+    margin-top: 1rem;
 }
 </style>

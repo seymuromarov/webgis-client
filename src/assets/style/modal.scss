@@ -16,7 +16,7 @@
   .modal__content {
     // width: 50%;
     background-color: var(--white);
-    border-radius: 0.4rem;
+    border-radius: 0.25rem;
     text-align: left;
     pointer-events: all;
     display: flex;
@@ -28,14 +28,14 @@
     .modal__header {
       display: flex;
       justify-content: space-between;
-      padding: 0.8rem 1.6rem;
+      padding: 0.5rem 1rem;
       background: var(--primary-color);
       color: var(--white);
-      border-top-left-radius: 0.4rem;
-      border-top-right-radius: 0.4rem;
+      border-top-left-radius: 0.25rem;
+      border-top-right-radius: 0.25rem;
       .header__title {
         font-weight: 600;
-        font-size: 1.6rem;
+        font-size: 1rem;
       }
 
       .header__close:hover {
@@ -44,8 +44,8 @@
     }
 
     .modal__body {
-      padding: 1.6rem 0.8rem;
-      max-height: calc(100vh - 4rem - 4rem);
+      padding: 1rem 0.5rem;
+      max-height: calc(100vh - 2.5rem - 2.5rem);
       overflow: auto;
       flex: 1;
     }

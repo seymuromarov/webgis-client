@@ -4,8 +4,8 @@
     <LanguageSelect
       :styles="{
         position: 'absolute',
-        top: '1rem',
-        right: '1rem',
+        top: '0.625rem',
+        right: '0.625rem',
         width: '16rem',
       }"
     />
@@ -169,31 +169,31 @@ export default {
 }
 .form-block {
   top: 20%;
-  left: calc(50% - 20rem);
+  left: calc(50% - 12.5rem);
   position: absolute;
-  width: 40rem;
-  box-shadow: 0.2rem 0.4rem 2rem rgba(0, 0, 0, 0.3);
+  width: 25rem;
+  box-shadow: 0.125rem 0.25rem 1.25rem rgba(0, 0, 0, 0.3);
   background: #fff;
-  padding: 2rem;
+  padding: 1.25rem;
   border: none;
 
   text-align: center;
   box-sizing: border-box;
-  border-radius: 0.5rem;
+  border-radius: 0.3125rem;
   opacity: 0.8;
 }
 
 .form input {
   /* width: 75%; */
-  font-size: 1.6rem;
+  font-size: 1rem;
   text-align: center;
   color: #fff;
   background: #7b7b7b;
 
-  /* padding: 0.5rem 1rem;
-  margin: 0.5rem 0; */
+  /* padding: 0.3125rem 0.625rem;
+  margin: 0.3125rem 0; */
   outline: none;
-  /* border-radius: 0.5rem; */
+  /* border-radius: 0.3125rem; */
   border: 0;
 }
 
@@ -203,14 +203,14 @@ export default {
 
 /* .form button {
   display: block;
-  height: 4.5rem;
-  margin: 2rem auto 1rem auto;
+  height: 45px;
+  margin: 1.25rem auto 0.625rem auto;
   background: #4d8084;
   color: #fff;
-  font-size: 2.5rem;
+  font-size: 25px;
   border: 0;
-  border-radius: 2rem;
-  padding: 0 1rem;
+  border-radius: 1.25rem;
+  padding: 0 0.625rem;
   cursor: pointer;
   outline: 0;
 } */
@@ -251,14 +251,14 @@ export default {
   position: absolute;
   right: 0;
   bottom: 0;
-  margin-right: 1rem;
+  margin-right: 0.625rem;
 }
 
 .sign {
   float: right;
   color: #fff;
-  line-height: 4rem;
-  font-size: 1.3rem;
+  line-height: 2.5rem;
+  font-size: 0.8125rem;
   font-family: Arial;
 }
 
@@ -269,6 +269,6 @@ export default {
 .logo {
   display: block;
   width: 67%;
-  margin: 1.5rem auto 4.5rem auto;
+  margin: 0.9375rem auto 2.8125rem auto;
 }
 </style>

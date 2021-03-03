@@ -195,12 +195,43 @@ export default {
 </script>
 
 <style lang="scss">
-.issue-comments {
-  .issue-comment-card {
+.issue__comments {
+  .issue__comment {
+    margin-top: 1.5rem;
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.25rem 1.25rem;
+      height: 2.25rem;
+    }
     img {
       width: 100%;
-      border-radius: 0.4rem;
-      margin: 1.6rem 0;
+      border-radius: 0.25rem;
+      margin: 1rem 0;
+    }
+  }
+  .issue__comment_replies {
+    margin-left: 2rem;
+    padding-left: 2rem;
+    border-left: 0.0625rem solid rgba(0, 0, 0, 0.1);
+  }
+}
+
+.new-comment {
+  // .card-header {
+  //     height: 36px;
+  // }
+  .card-body {
+    padding: 0;
+  }
+  .quill-editor {
+    border: 0;
+    .ql-toolbar {
+      border-width: 0 0 0.0625rem 0;
+    }
+    .ql-container {
+      border-width: 0;
     }
   }
 }

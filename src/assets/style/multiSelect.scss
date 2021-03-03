@@ -1,9 +1,9 @@
 .multiselect {
-  font-size: 1.4rem !important;
+  font-size: 0.875rem !important;
 }
 
 .multiselect__option:after {
-  line-height: 3rem !important;
+  line-height: 1.875rem !important;
 }
 
 .multiselect__option--highlight {
@@ -25,17 +25,17 @@
 }
 
 .multiselect__select {
-  height: 3rem !important;
+  height: 1.875rem !important;
 }
 
 .multiselect__option {
-  padding: 0.6rem 1.2rem !important;
-  min-height: 3rem !important;
+  padding: 0.375rem 0.75rem !important;
+  min-height: 1.875rem !important;
 }
 
 .multiselect__tags {
-  min-height: 3rem !important;
-  // padding: 0.4rem 4rem 0 0.8rem !important;
+  min-height: 1.875rem !important;
+  // padding: 0.25rem 0.5rem 0.5rem 2.5rem 0 0.5rem !important;
 }
 
 .multiselect__tag {
@@ -47,5 +47,5 @@
 }
 
 .multiselect--active .multiselect__tags {
-  padding: 0.8rem 4rem 0 0.8rem !important;
+  padding: 0.5rem 2.5rem 0 0.5rem !important;
 }

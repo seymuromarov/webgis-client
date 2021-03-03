@@ -52,7 +52,7 @@ export default {
 
 <style lang="scss" scoped>
 ::v-deep .language__select {
-  border-radius: 1rem;
+  border-radius: 0.625rem;
   background-color: var(--primary-color);
   width: 100%;
   color: white;
@@ -64,7 +64,7 @@ export default {
   .vs__dropdown-menu {
     background-color: var(--primary-color);
     color: white;
-    min-width: 10rem;
+    min-width: 6.25rem;
   }
   .vs__selected,
   .vs__dropdown-option {

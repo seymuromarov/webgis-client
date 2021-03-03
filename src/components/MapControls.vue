@@ -372,20 +372,20 @@ export default {
       color: var(--white);
       transition: all 0.2s ease-in-out;
       transition-delay: 0.1s;
-      font-size: 1.4rem;
+      font-size: 0.875rem;
       &::placeholder {
         color: rgba(255, 255, 255, 0.8);
       }
 
       &.control-select__input--expanded {
-        padding: 0 0.8rem;
-        width: 20rem;
+        padding: 0 0.5rem;
+        width: 12.5rem;
       }
     }
 
     &:focus-within .control-select__results,
     .control-select__results:active {
-      max-height: 15rem;
+      max-height: 9.375rem;
       overflow: auto;
     }
 
@@ -395,18 +395,18 @@ export default {
       background-color: var(--primary-color-opacity-85);
       left: 0;
       right: 0;
-      border-bottom-left-radius: 0.5rem;
-      border-bottom-right-radius: 0.5rem;
+      border-bottom-left-radius: 0.3125rem;
+      border-bottom-right-radius: 0.3125rem;
       overflow: hidden;
       transition: max-height 0.1s ease-in-out;
       ul {
         margin: 0;
-        padding: 0.3rem 0;
+        padding: 0.1875rem 0;
         list-style-type: none;
         li {
-          padding: 0.2rem 1rem;
+          padding: 0.125rem 0.625rem;
           color: var(--white);
-          font-size: 1.4rem;
+          font-size: 0.875rem;
           &:hover {
             background-color: var(--primary-color-lighten-200);
             cursor: pointer;
@@ -417,7 +417,7 @@ export default {
   }
 
   .control__button-group {
-    margin: 1rem;
+    margin: 0.625rem;
     display: flex;
     align-items: self-start;
 
@@ -426,13 +426,13 @@ export default {
 
       .control__button {
         &:first-of-type {
-          border-top-left-radius: 0.5rem;
-          border-top-right-radius: 0.5rem;
+          border-top-left-radius: 0.3125rem;
+          border-top-right-radius: 0.3125rem;
         }
 
         &:last-of-type {
-          border-bottom-left-radius: 0.5rem;
-          border-bottom-right-radius: 0.5rem;
+          border-bottom-left-radius: 0.3125rem;
+          border-bottom-right-radius: 0.3125rem;
         }
       }
     }
@@ -442,13 +442,13 @@ export default {
 
       .control__button {
         &:first-of-type {
-          border-top-left-radius: 0.5rem;
-          border-bottom-left-radius: 0.5rem;
+          border-top-left-radius: 0.3125rem;
+          border-bottom-left-radius: 0.3125rem;
         }
 
         &:last-of-type {
-          border-top-right-radius: 0.5rem;
-          border-bottom-right-radius: 0.5rem;
+          border-top-right-radius: 0.3125rem;
+          border-bottom-right-radius: 0.3125rem;
         }
       }
     }
@@ -460,10 +460,10 @@ export default {
   }
 
   .control__button {
-    margin: 1rem;
-    padding: 1rem;
+    margin: 0.625rem;
+    padding: 0.625rem;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 0.3125rem;
     background-color: var(--primary-color-opacity-85);
     color: var(--white);
     &:hover {
@@ -481,8 +481,8 @@ export default {
     }
 
     img {
-      width: 1.8rem;
-      height: 1.8rem;
+      width: 1.125rem;
+      height: 1.125rem;
       object-fit: contain;
       object-position: center;
     }
@@ -490,16 +490,16 @@ export default {
 
   .search {
     display: flex;
-    margin: 1rem;
+    margin: 0.625rem;
     .search__logo {
       background-color: var(--primary-color);
-      padding: 0.7rem 1.4rem;
-      border-top-left-radius: 0.5rem;
-      border-bottom-left-radius: 0.5rem;
+      padding: 0.4375rem 0.875rem;
+      border-top-left-radius: 0.3125rem;
+      border-bottom-left-radius: 0.3125rem;
       display: flex;
       align-items: center;
       img {
-        height: 2.4rem;
+        height: 1.5rem;
       }
     }
 
@@ -515,7 +515,7 @@ export default {
     align-items: stretch !important;
 
     .mode-select {
-      min-width: 12rem;
+      min-width: 7.5rem;
 
       &.vs--single.vs--open .vs__selected {
         position: initial;
@@ -523,12 +523,12 @@ export default {
 
       &.vs--open .vs__dropdown-toggle {
         height: 100%;
-        border-radius: 0.5rem 0 0 0;
+        border-radius: 0.3125rem 0 0 0;
       }
 
       .vs__dropdown-toggle {
         height: 100%;
-        border-radius: 0.5rem 0 0 0.5rem;
+        border-radius: 0.3125rem 0 0 0.3125rem;
         border: 0;
         background-color: var(--primary-color-opacity-85);
 
@@ -543,7 +543,7 @@ export default {
         background-color: var(--primary-color-opacity-85);
 
         li {
-          padding: 0.2rem 0.8rem;
+          padding: 0.125rem 0.5rem;
           color: var(--white);
           &:hover {
             background-color: var(--primary-color-opacity-95);
@@ -565,10 +565,10 @@ export default {
 
       label {
         height: 100%;
-        padding: 0 0.8rem;
+        padding: 0 0.5rem;
         background-color: var(--primary-color-opacity-85);
         color: var(--white);
-        font-size: 1.4rem;
+        font-size: 0.875rem;
         display: flex;
         align-items: center;
         transition: all 0.2s ease-in-out;
@@ -576,13 +576,13 @@ export default {
 
       input {
         height: 100%;
-        width: 10rem;
-        padding: 0 0.4rem;
+        width: 6.25rem;
+        padding: 0 0.25rem;
         background-color: var(--primary-color-opacity-85);
         border: 0;
         color: var(--white);
         transition: all 0.2s ease-in-out;
-        font-size: 1.4rem;
+        font-size: 0.875rem;
       }
 
       &:focus-within {
@@ -604,22 +604,22 @@ export default {
   .scale {
     position: absolute;
     bottom: 0;
-    border-radius: 0.5rem;
+    border-radius: 0.3125rem;
     background-color: var(--primary-color-opacity-50);
 
     input {
-      margin: 0.4rem;
+      margin: 0.25rem 0.5rem;
       background-color: transparent;
-      border: 0.1rem solid #fff;
+      border: 0.0625rem solid #fff;
       border-radius: 0rem;
       border-top: 0;
       text-align: center;
       color: #fff;
-      font-size: 1.4rem;
+      font-size: 0.875rem;
     }
 
     .control__button {
-      padding: 0.4rem 0.8rem;
+      padding: 0.25rem 0.5rem 0.5rem;
       border-top-left-radius: 0;
       background-color: var(--primary-color-opacity-85);
       border-bottom-left-radius: 0;

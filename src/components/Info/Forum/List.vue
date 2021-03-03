@@ -214,7 +214,7 @@ export default {
   display: flex;
   flex-direction: column;
   .issue__action-bar {
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
     display: flex;
     justify-content: space-between;
 
@@ -233,13 +233,13 @@ export default {
       }
 
       select.category {
-        width: 13rem;
-        margin-left: 1.6rem;
+        width: 8.125rem;
+        margin-left: 1rem;
       }
     }
 
     .new-issue {
-      margin-left: 1.6rem;
+      margin-left: 1rem;
     }
   }
 
@@ -252,8 +252,13 @@ export default {
         background-color: rgba(0, 0, 0, 0.03);
       }
 
+      .issue__date {
+        margin-left: 0.5rem;
+      }
+
       .issue-icon {
-        font-size: 1.6rem;
+        font-size: 1rem;
+        margin-right: 1.25rem;
       }
     }
   }

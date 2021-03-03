@@ -1,5 +1,5 @@
 <template>
-  <li style="margin: 1rem 0;">
+  <li style="margin: 0.625rem 0rem;">
     <span
       v-if="checkCategoryCondition()"
       class="tree-item"
