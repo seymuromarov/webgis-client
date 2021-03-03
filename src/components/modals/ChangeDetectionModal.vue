@@ -4,6 +4,7 @@
     title="Change detection"
     :width="800"
     :minHeight="400"
+    @beforeShow="onModalOpen"
     @afterHide="$emit('close')"
   >
     <div class="row form-group">
@@ -40,6 +41,11 @@
 <script>
 import { layerController, toolController } from "@/controllers";
 import { urlHelper, mapHelper } from "@/helpers";
+import { resourceTypeToEnum } from "@/utils/resourceTypeToEnum";
+console.log(
+  "🚀 ~ file: ChangeDetectionModal.vue ~ line 45 ~ resourceTypeToEnum",
+  resourceTypeToEnum
+);
 import { resourceTypeEnum } from "@/enums";
 // import the component
 import Treeselect from "@riophae/vue-treeselect";
@@ -61,17 +67,29 @@ export default {
 
       var extent = mapHelper.bboxToExtent(this.bbox);
       for (let item of arr) {
-        const url = urlHelper.getImageUrl(
-          item.label,
-          extent,
-          resourceTypeEnum.ARCGIS
+        var service = layerController.getBaseLayer(item.id);
+        var type = resourceTypeToEnum(service.resourceType);
+        console.log(
+          "🚀 ~ file: ChangeDetectionModal.vue ~ line 72 ~ selectedLayers:function ~ type",
+          type
         );
+        const url = urlHelper.getImageUrl(item.label, extent, type);
 
         this.exportedImages.push({
           image: url,
           label: item.label,
         });
       }
+    },
+  },
+
+  methods: {
+    onModalOpen() {
+      this.reset();
+    },
+    reset() {
+      this.selectedLayers = [];
+      this.exportedImages = [];
     },
   },
 

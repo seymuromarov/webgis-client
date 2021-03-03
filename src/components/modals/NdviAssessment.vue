@@ -166,6 +166,16 @@ export default {
           display: true,
           text: "Ndvi Data",
         },
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                max: 1,
+                min: -1,
+              },
+            },
+          ],
+        },
       },
       pointCoordinates: null,
       isModalHidingForPoint: false,
@@ -268,6 +278,10 @@ export default {
         this.chartData = {
           labels: labels,
           datasets: [dataset],
+
+          // scales:{
+
+          // }
         };
 
         this.isCalculating = false;
