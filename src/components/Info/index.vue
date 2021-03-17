@@ -58,7 +58,6 @@ import FAQ from "./FAQ";
 import ReleaseNotes from "./ReleaseNotes";
 import Contact from "./Contact";
 import Forum from "./Forum/index";
-import info from "@/api/info";
 
 export default {
   name: "InfoModal",

@@ -63,7 +63,7 @@
 import auth from "@/api/auth";
 import { authService, tokenService, notifyService } from "@/services";
 import { userController } from "@/controllers";
-import { getErrorMessage } from "@/utils";
+import { getErrorMessage } from "@/utils/errorMessage";
 import { LanguageSelect } from "@/components";
 import captchaSettings from "@/data/captcha";
 import VueRecaptcha from "vue-recaptcha";

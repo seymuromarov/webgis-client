@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import info from "@/api/info";
+import mail from "@/api/mail";
 import { required } from "vuelidate/lib/validators";
 import { notifyService } from "@/services";
 export default {
@@ -86,14 +86,14 @@ export default {
         message: null,
       };
     },
-    sendMessage() {
+    contactUs() {
       this.submitted = true;
       this.$v.$touch();
       if (!this.$v.$invalid) {
         this.loading = true;
 
-        info
-          .sendMessage(this.data)
+        mail
+          .contactUs(this.data)
           .then((response) => {
             notifyService.success("Successfully Added");
             this.resetData();

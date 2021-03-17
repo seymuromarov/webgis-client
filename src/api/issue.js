@@ -27,6 +27,6 @@ export default {
     return request.delete(ISSUE_URLS.DELETE(id));
   },
   close(id) {
-    return request.delete(ISSUE_URLS.CLOSE(id));
+    return request.put(ISSUE_URLS.CLOSE(id));
   },
 };

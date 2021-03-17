@@ -18,6 +18,9 @@ const BUNCH_URLS = {
   GET: (id) => `/bunch/${id}`,
   GET_ALL: "/bunch",
 };
+const MAIL_URLS = {
+  CONTACT_US: "/mail/contactus",
+};
 const FAVORITEQUERY_URLS = {
   ADD: "/favoritequery",
   EDIT: "/favoritequery",
@@ -149,4 +152,5 @@ export {
   ARCGIS_URLS,
   GEOWEBCACHE_URLS,
   GEOSERVER_URLS,
+  MAIL_URLS,
 };

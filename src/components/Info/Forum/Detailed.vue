@@ -18,6 +18,7 @@
         <h2 class="d-inline-block ml-3">{{ issue.title }}</h2>
         <div class="btn-group d-inline-block ml-3">
           <button
+            v-if="issue.issueStatus === 1"
             type="button"
             class="btn btn-sm btn-danger"
             v-permission="['issue_edit']"
@@ -180,11 +181,12 @@ export default {
         if (result.value) {
           this.loading = true;
 
-          forum
+          issue
             .delete(id)
             .then((response) => {
               this.loading = false;
               notifyService.deleted();
+              this.back();
             })
             .catch();
         }
