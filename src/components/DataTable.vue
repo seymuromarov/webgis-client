@@ -564,6 +564,9 @@ export default {
   display: flex;
   align-items: flex-end;
   pointer-events: none;
+  transform: translateX(-100%);
+  z-index: 11;
+  
   & > * {
     pointer-events: all;
   }
